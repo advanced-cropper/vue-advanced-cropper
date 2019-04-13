@@ -1,0 +1,52 @@
+<script>
+import classnames from "classnames";
+import bem from "easy-bem";
+import dragHandler from "../../mixins/dragHandler.js";
+
+const cn = bem("vue-square-handler");
+
+export default {
+  name: "SquareHandler",
+  mixins: [dragHandler],
+  props: {
+    classname: {
+      type: String
+    }
+  },
+  computed: {
+    classnames() {
+      return {
+        default: classnames(!this.disableDefaultClasses && cn(), this.classname)
+      };
+    }
+  }
+};
+</script>
+
+<template>
+  <div 
+    ref="handler" 
+    :class="classnames.default" 
+    @touchstart="this.onTouchStart"
+    @mousedown="this.onMouseDown"
+  >
+  </div>
+</template>
+
+<style lang="scss">
+.vue-square-handler {
+  width: 30px;
+  height: 30px;
+  &:after {
+    content: "";
+    display: block;
+    background: white;
+    height: 10px;
+    width: 10px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+</style>
