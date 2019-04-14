@@ -1,4 +1,13 @@
+<script>
+import classnames from 'classnames';
+import bem from 'easy-bem';
+
+import {ResizeEvent, MoveEvent} from '../../utils/events.js'
+
+const cn = bem('vue-movable-container')
+
 export default {
+  name: "MovableContainer",
   created() {
     window.addEventListener('mouseup', this.onMouseUp, { passive: false })
     window.addEventListener('mousemove', this.onMouseMove, { passive: false })
@@ -12,11 +21,15 @@ export default {
     window.removeEventListener('touchend', this.onTouchEnd)
   },
   mounted() {
-    if (!this.$refs.stencil) {
-      throw new Error('You should add ref "stencil" to your root stencil component to use dragStencil mixin')
-    }
     this.touches = []
     this.draggingAnchor = []
+  },
+  computed: {
+    classnames() {
+      return {
+        default: classnames(!this.disableDefaultClasses && cn(), this.classname),
+      }
+    },
   },
   methods: {
     onTouchStart(e) {
@@ -38,7 +51,7 @@ export default {
     },
     onTouchMove(e) {
       if (this.touches.length) {
-        this.processMove(e.touches)
+        this.processMove(e, e.touches)
         if (e.preventDefault) {
           e.preventDefault()
         }
@@ -59,7 +72,7 @@ export default {
     },
     onMouseMove(e) {
       if (this.touches.length) {
-        this.processMove([{
+        this.processMove(e, [{
           fake: true,
           clientX: e.clientX,
           clientY: e.clientY
@@ -73,31 +86,20 @@ export default {
       this.touches = []
     },
     initAnchor(touch) {
-      const stencil = this.$refs.stencil
-      const {left, top} = stencil.getBoundingClientRect()
+      const container = this.$refs.container
+      const {left, top} = container.getBoundingClientRect()
 
       this.anchor = {
         x: touch.clientX - left,
         y: touch.clientY - top
       }
     },
-    onMove(move) {
-      const coefficient = this.width / this.stencilWidth
-      this.$emit('change', {
-        left: this.left + coefficient * move.x,
-        top: this.top + coefficient * move.y,
-        width: this.width,
-        height: this.height
-      })
-    },
-    processMove(touches) {
+    processMove(event, touches) {
       const newTouches = [...touches]
       if (this.touches.length) {
-        const coefficient = this.width / this.stencilWidth
+        const container = this.$refs.container
 
-        const stencil = this.$refs.stencil
-
-        const {left, top} = stencil.getBoundingClientRect()
+        const {left, top} = container.getBoundingClientRect()
 
         // Moving:
         const coordinates = {
@@ -108,10 +110,10 @@ export default {
         }
 
         if (this.touches.length === 1 && newTouches.length === 1) {
-          this.onMove({
-            x: (newTouches[0].clientX - left - this.anchor.x),
-            y: (newTouches[0].clientY - top - this.anchor.y)
-          })
+          this.$emit('move', new MoveEvent(event, {
+            left: (newTouches[0].clientX - left - this.anchor.x),
+            top: (newTouches[0].clientY - top - this.anchor.y)
+          }))
         } else if (this.touches.length > 1 && this.touches.length === newTouches.length) {
           const vectors = newTouches.map((touch, index) => ({
             x: touch.clientX - this.touches[index].clientX,
@@ -129,11 +131,11 @@ export default {
           const summaryShift = vectors.reduce((shift, vector) => shift + vector.length, 0)
 
           const massPoint = {
-            x: vectors.reduce((value, vector, index) => value + (1 - vector.length / summaryShift) * newTouches[index].clientX, 0),
-            y: vectors.reduce((value, vector, index) => value + (1 - vector.length / summaryShift) * newTouches[index].clientY, 0)
+            left: vectors.reduce((value, vector, index) => value + (1 - vector.length / summaryShift) * newTouches[index].clientX, 0),
+            top: vectors.reduce((value, vector, index) => value + (1 - vector.length / summaryShift) * newTouches[index].clientY, 0)
           }
 
-          let resize = {
+          let directions = {
             top: 0,
             bottom: 0,
             left: 0,
@@ -142,24 +144,19 @@ export default {
 
           vectors.forEach((vector, index) => {
             if (vector.length / summaryShift > 0.25) {
-              if (newTouches[index].clientY > massPoint.y) {
-                resize.top += vector.y
+              if (newTouches[index].clientY > massPoint.top) {
+                directions.bottom += vector.y
               } else {
-                resize.bottom -= vector.y
+                directions.top -= vector.y
               }
-              if (newTouches[index].clientX > massPoint.x) {
-                resize.right += vector.x
+              if (newTouches[index].clientX > massPoint.left) {
+                directions.right += vector.x
               } else {
-                resize.left -= vector.x
+                directions.left -= vector.x
               }
             }
           })
-
-          coordinates.height += (resize.top + resize.bottom) * coefficient
-          coordinates.top -= resize.bottom * coefficient
-
-          coordinates.width += (resize.left + resize.right) * coefficient
-          coordinates.left -= resize.left * coefficient
+          this.$emit('resize', new ResizeEvent(event, directions, massPoint))
         }
         this.touches = newTouches
       }
@@ -168,4 +165,22 @@ export default {
       this.touches = []
     }
   }
-}
+  
+};
+</script>
+
+<template>
+  <div 
+    ref="container"
+    @touchstart="this.onTouchStart"
+    @mousedown="this.onMouseDown"
+  >
+    <slot></slot>
+  </div>
+</template>
+
+<style lang="scss">
+  .vue-movable-container {
+	position: relative;
+  }
+</style>

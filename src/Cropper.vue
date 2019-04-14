@@ -4,6 +4,7 @@ import classnames from 'classnames';
 import bem from 'easy-bem';
 import Vue from 'vue';
 import RectangleStencil from './components/stencils/RectangleStencil.vue'
+import {approximiateEqual} from './utils/services.js'
 
 const cn = bem('vue-advanced-cropper')
 
@@ -26,11 +27,39 @@ export default {
     },
     defaultCoordinates: {
       type: Function,
-      default: function(cropper, image) {
-        const width = Math.min(image.naturalWidth, image.naturalHeight) / 2;
-        const height = width*1.5;
+      default: function(cropper, image, props) {
+        let aspectRatio = props.aspectRatio
+        if (!aspectRatio) {
+          if (props.minAspectRatio && props.maxAspectRatio) {
+            aspectRatio = (props.minAspectRatio + props.maxAspectRatio)/2
+          }
+          else if (props.minAspectRatio) {
+            aspectRatio = props.minAspectRatio
+          }
+          else if (props.maxAspectRatio) {
+            aspectRatio = props.maxAspectRatio
+          }
+        }
+
+        const baseSize = Math.min(image.naturalWidth, image.naturalHeight)
+
+        let width, height;
+        if (!aspectRatio) {
+          width =  baseSize / 2;
+          height = width
+        }
+        else if (aspectRatio < 1) {
+          height = baseSize * Math.max(0.5, 0.95 - Math.pow(aspectRatio, 6));
+          width = height * aspectRatio
+        }
+        else {
+          width = baseSize * Math.max(0.5, 0.95 - Math.pow(1/aspectRatio, 6));
+          height = width * 1/aspectRatio
+        }
+
         const left = image.naturalWidth / 2 - width/2;
         const top = image.naturalHeight / 2 - height/2;
+
         return {
           width, height, left, top
         }
@@ -64,7 +93,19 @@ export default {
     minHeight: {
       type: [Number, String],
     },
+    maxWidth: {
+      type: [Number, String],
+    },
+    maxHeight: {
+      type: [Number, String],
+    },
     aspectRatio: {
+      type: [Number, String],
+    },
+    minAspectRatio: {
+      type: [Number, String],
+    },
+    maxAspectRatio: {
       type: [Number, String],
     },
     scaleable: {
@@ -154,9 +195,19 @@ export default {
       },
     }
   },
+  mounted() {
+    this.onChangeImage();
+  },
+  created() {
+		window.addEventListener("resize", this.refreshImage, false);
+		window.addEventListener("orientationchange", this.refreshImage, false);
+	},
+	destroyed () {
+		window.removeEventListener("resize", this.refreshImage);
+		window.removeEventListener("orientationchange", this.refreshImage);
+	},
   methods: {
     onChangeCoordinates(newCoordinates) {
-      //console.log("MOVE", newCoordinates, this.coordinates)
       const stencil = this.$refs.stencil
       const processedCoordinates = this.processCoordinates(newCoordinates)
       this.coordinates = processedCoordinates
@@ -164,7 +215,7 @@ export default {
         coordinates: {
           ...processedCoordinates
         },
-        // canvas: stencil.canvas(),
+        // canvas: this.canvas(),
         // params: stencil.params()
       })
     },
@@ -178,6 +229,147 @@ export default {
         })
       }
     },
+    onResize(resizeEvent) {
+      const coefficient = this.coefficient
+      const directions = {...resizeEvent.scaling}
+      const anchor = resizeEvent.anchor
+      const horizontalDirection = resizeEvent.horizontalDirection
+      const verticalDirection = resizeEvent.verticalDirection
+
+      const actualCoordinates = {
+        ...this.coordinates,
+        right: this.coordinates.left + this.coordinates.width,
+        bottom: this.coordinates.top + this.coordinates.height,
+      }
+
+      const frozenDirections = {
+        left: false,
+        right: false,
+        top: false,
+        bottom: false
+      }
+
+      const imageNaturalWidth = this.imageWidth / coefficient;
+      const imageNaturalHeight = this.imageHeight / coefficient;
+
+      // let aspectRatio = this.aspectRatio || (nativeEvent.shiftKey ? this.width / this.height : null)
+
+      // if (!aspectRatio && this.minAspectRatio && coordinates.width/coordinates.height < this.minAspectRatio) {
+      //   aspectRatio = this.minAspectRatio
+      // }
+      // if (!aspectRatio && this.minAspectRatio && coordinates.width/coordinates.height > this.maxAspectRatio) {
+      //   aspectRatio = this.maxAspectRatio
+      // }
+
+
+      // if (aspectRatio) {
+        
+      // }
+
+      const newWidth = actualCoordinates.width + coefficient * (directions.left + directions.right)
+      const newHeight = actualCoordinates.height + coefficient * (directions.top + directions.bottom)
+
+      let ratioBroken = null;
+      if (this.aspectRatio && !approximiateEqual(newWidth / newHeight, this.aspectRatio)) {
+        ratioBroken = this.aspectRatio
+      }
+      else if (this.minAspectRatio && newWidth / newHeight < this.minAspectRatio) {
+        ratioBroken = this.minAspectRatio
+      }
+      else if (this.maxAspectRatio && newWidth / newHeight > this.maxAspectRatio) {
+        ratioBroken = this.maxAspectRatio
+      }
+
+      if (horizontalDirection === 'east' && !verticalDirection) {
+        if (coefficient*directions.right + actualCoordinates.right > imageNaturalWidth) {
+          directions.right = Math.max(0, imageNaturalWidth - actualCoordinates.right) / coefficient
+        }
+        if (ratioBroken) {
+          directions.right = (actualCoordinates.height * ratioBroken - actualCoordinates.width) / coefficient
+        }
+        // if (ratioBroken) {
+        //     directions.top = directions.right / (ratioBroken * 2)
+        //     directions.bottom = directions.right / (ratioBroken * 2)
+        // }
+      }
+      if (horizontalDirection === 'west' && !verticalDirection) {
+        if (coefficient*directions.left + actualCoordinates.left < 0) {
+          directions.left = 0
+        }
+        if (ratioBroken) {
+          directions.left = (actualCoordinates.height * ratioBroken - actualCoordinates.width) / coefficient
+        }
+        // if (ratioBroken) {
+        //     directions.top = directions.left / (ratioBroken * 2)
+        //     directions.bottom = directions.left / (ratioBroken * 2)
+        // }
+      }
+      if (verticalDirection === 'south' && !horizontalDirection) {
+        if (coefficient*directions.bottom + actualCoordinates.bottom > imageNaturalHeight) {
+          directions.bottom = Math.max(0, imageNaturalHeight - actualCoordinates.bottom) / coefficient;
+        }
+        // if (ratioBroken) {
+        //   directions.left = directions.bottom * (ratioBroken / 2)
+        //   directions.right = directions.bottom * (ratioBroken / 2)
+        // }
+        if (ratioBroken) {
+          directions.bottom = (actualCoordinates.width / ratioBroken - actualCoordinates.height) / coefficient
+        }
+      }
+
+
+
+      const processDirection = (directions, currentDirection, value) => {
+        const result = {...directions}
+        const currentShift = directions[currentDirection]
+        if (ratioBroken) {
+          ['left', 'right', 'top', 'bottom'].forEach(direction => {
+            if (direction !== currentDirection) {
+              directions[direction] = Math.abs(value/currentShift) * directions[direction]
+            }
+          })
+        }
+        directions[currentDirection] = value
+      }
+
+      // Undoing the resizing, that will overlap boundaries
+      // if (coefficient*directions.right + actualCoordinates.right > imageNaturalWidth) {
+      //   directions = processDirection(directions, 'right', Math.max(0, imageNaturalWidth - actualCoordinates.right) / coefficient)
+      // }
+      // if (coefficient*directions.bottom + actualCoordinates.bottom > imageNaturalHeight) {
+      //   directions.bottom = Math.max(0, imageNaturalHeight - actualCoordinates.bottom) / coefficient;
+      // }
+      // if (actualCoordinates.left - coefficient*directions.left  < 0) {
+      //   directions.left = 0;
+      // }
+      // if (actualCoordinates.top - coefficient*directions.top  < 0) {
+      //   directions.top = 0;
+      // }
+
+
+
+
+
+
+      const coordinates = {
+        width: this.coordinates.width + coefficient * (directions.right + directions.left),
+        height: this.coordinates.height + coefficient * (directions.top + directions.bottom),
+        left: this.coordinates.left - coefficient * directions.left,
+        top: this.coordinates.top - coefficient * directions.top
+      }
+
+
+
+      this.onChangeCoordinates(coordinates)
+    },
+    onMove({directions}) {
+      this.onChangeCoordinates({
+        left: this.coordinates.left + this.coefficient * directions.left,
+        top: this.coordinates.top + this.coefficient * directions.top,
+        width: this.coordinates.width,
+        height: this.coordinates.height
+      })
+    },
     processCoordinates(receivedCoordinates) {
 
       const newCoordinates = {
@@ -186,42 +378,53 @@ export default {
       const changeWidth = newCoordinates.width - this.coordinates.width
       const changeHeight = newCoordinates.height - this.coordinates.height
 
-      if (newCoordinates.left < 0) {
-        if (changeWidth > 0) {
-          // Undoing width change
-          newCoordinates.width = Math.max(this.coordinates.width, newCoordinates.width + newCoordinates.left)
-        }
-        newCoordinates.left = 0
-      }
-      if (newCoordinates.left + newCoordinates.width > this.imageWidth / this.coefficient) {
-        if (changeWidth > 0) {
-          const gap = newCoordinates.left + newCoordinates.width - this.imageWidth / this.coefficient
-          // Undoing width change
-          newCoordinates.width = Math.max(this.coordinates.width, newCoordinates.width - gap)
-        }
-        newCoordinates.left = Math.max(0, this.imageWidth / this.coefficient - newCoordinates.width)
-      }
 
-      if (newCoordinates.top < 0) {
-        if (changeHeight > 0) {
-          // Undoing width change
-          newCoordinates.height = Math.max(this.coordinates.height, newCoordinates.height + newCoordinates.top)
-        }
-        newCoordinates.top = 0
-      }
-      if (newCoordinates.top + newCoordinates.height > this.imageHeight / this.coefficient) {
-        if (changeHeight > 0) {
-          const gap = newCoordinates.top + newCoordinates.height - this.imageHeight / this.coefficient
-          // Undoing width change
-          newCoordinates.height = Math.max(this.coordinates.height, newCoordinates.height - gap)
-        }
-        newCoordinates.top = Math.max(0, this.imageHeight / this.coefficient - newCoordinates.height)
-      }
 
+      // if (newCoordinates.left < 0) {
+      //   if (changeWidth > 0) {
+      //     newCoordinates.width = Math.max(this.coordinates.width, newCoordinates.width + newCoordinates.left)
+      //   }
+      //   newCoordinates.left = 0
+      // }
+      // if (newCoordinates.left + newCoordinates.width > this.imageWidth / this.coefficient) {
+      //   if (changeWidth > 0) {
+      //     const gap = newCoordinates.left + newCoordinates.width - this.imageWidth / this.coefficient
+      //     newCoordinates.width = Math.max(this.coordinates.width, newCoordinates.width - gap)
+      //   }
+      //   newCoordinates.left = Math.max(0, this.imageWidth / this.coefficient - newCoordinates.width)
+      // }
+
+      // if (newCoordinates.top < 0) {
+      //   if (changeHeight > 0) {
+      //     newCoordinates.height = Math.max(this.coordinates.height, newCoordinates.height + newCoordinates.top)
+      //   }
+      //   newCoordinates.top = 0
+      // }
+      // if (newCoordinates.top + newCoordinates.height > this.imageHeight / this.coefficient) {
+      //   if (changeHeight > 0) {
+      //     const gap = newCoordinates.top + newCoordinates.height - this.imageHeight / this.coefficient
+      //     newCoordinates.height = Math.max(this.coordinates.height, newCoordinates.height - gap)
+      //   }
+      //   newCoordinates.top = Math.max(0, this.imageHeight / this.coefficient - newCoordinates.height)
+      // }
+
+      //       if (this.aspectRatio ) {
+        
+      //   if (this.aspectRatio >= 1) {
+      //     if (newCoordinates.width / this.aspectRatio !== newCoordinates.height) {
+      //       newCoordinates.height = newCoordinates.width / this.aspectRatio
+      //     }
+      //   }
+      //   else {
+      //     if (newCoordinates.width !== newCoordinates.height * this.aspectRatio) {
+      //       newCoordinates.width = newCoordinates.height * this.aspectRatio
+      //     }
+      //   }
+      // }
       return newCoordinates
     },
     resetCoordinates() {
-      this.onChangeCoordinates(this.defaultCoordinates(this.$refs.cropper, this.$refs.image));
+      this.onChangeCoordinates(this.defaultCoordinates(this.$refs.cropper, this.$refs.image, this.$props));
     },
     refreshImage() {
       return new Promise((resolve) => {
@@ -248,17 +451,6 @@ export default {
       
     }
   },
-  mounted() {
-    this.onChangeImage();
-  },
-  created() {
-		window.addEventListener("resize", this.refreshImage, false);
-		window.addEventListener("orientationchange", this.refreshImage, false);
-	},
-	destroyed () {
-		window.removeEventListener("resize", this.refreshImage);
-		window.removeEventListener("orientationchange", this.refreshImage);
-	},
 };
 </script>
 
@@ -266,7 +458,7 @@ export default {
   <div :class="classes.cropper" ref="cropper">
     <img :src="src" :class="classes.image" :style="imageStyle" ref="image"/>
     <div :class="classes.area" :style="imageStyle">
-      <div :class="classes.stencilWrapper" :style="wrapperStyle">
+      <div :class="classes.stencilWrapper" :style="wrapperStyle" ref="stencil">
         <component 
           :is="stencilComponent" 
           :img="src"
@@ -276,11 +468,12 @@ export default {
           :height="coordinates.height"
           :stencil-width="stencilCoordinates.width"
           :stencil-height="stencilCoordinates.height"
-          @change="onChangeCoordinates"
+          @resize="onResize"
+          @move="onMove"
         />
+       <canvas ref="canvas"></canvas>
       </div>
     </div>
-    
   </div>
 </template>
 

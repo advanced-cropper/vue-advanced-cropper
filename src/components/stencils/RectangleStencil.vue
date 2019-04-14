@@ -3,18 +3,14 @@ import classnames from 'classnames';
 import bem from 'easy-bem';
 import PreviewImage from '../service/PreviewImage.vue';
 import BoundingBox from '../service/BoundingBox.vue';
-import dragStencil from '../../mixins/dragStencil.js'
-import resizeStencil from '../../mixins/resizeStencil.js'
+import MoveableContainer from '../service/MoveableContainer.vue';
 
 const cn = bem('vue-rectangle-stencil')
 
 export default {
-  mixins: [
-    dragStencil, resizeStencil
-  ],
   name: "RectangleStencil",
   components: {
-    PreviewImage, BoundingBox
+    PreviewImage, BoundingBox, MoveableContainer
   },
   props: {
     img: {
@@ -81,6 +77,32 @@ export default {
         },
         canvas: null,
       }
+    },
+    onMove(moveEvent) {
+      this.$emit('move', moveEvent)
+      return
+      const coefficient = this.width / this.stencilWidth
+      this.$emit('change', {
+        left: this.left + coefficient * move.left,
+        top: this.top + coefficient * move.top,
+        width: this.width,
+        height: this.height
+      })
+    },
+    onResize(resizeEvent) {
+      this.$emit('resize', resizeEvent)
+      return
+      
+      const resize = resizeEvent.directions
+      const event = resizeEvent.nativeEvent;
+      const coefficient = this.width / this.stencilWidth
+
+      this.$emit('change', {
+        width: this.width + coefficient * (resize.right + resize.left),
+        height: this.height + coefficient * (resize.top + resize.bottom),
+        left: this.left - coefficient * resize.left,
+        top: this.top - coefficient * resize.top
+      })
     }
   },
   computed: {
@@ -102,23 +124,22 @@ export default {
 
 <template>
   <div :class="classes.stencil"
-    @touchstart="this.onTouchStart"
-    @mousedown="this.onMouseDown"
     ref="stencil"
   >
-    <BoundingBox @change="onResize">
-      <PreviewImage 
-        :img="img"
-        :classname="classes.preview"
-        :previewWidth="stencilWidth" 
-        :previewHeight="stencilHeight"
-        :width="width"
-        :height="height"
-        :left="left"
-        :top="top"
-      />
+    <BoundingBox @resize="onResize">
+      <MoveableContainer @move="onMove" @resize="onResize">
+        <PreviewImage 
+          :img="img"
+          :classname="classes.preview"
+          :previewWidth="stencilWidth" 
+          :previewHeight="stencilHeight"
+          :width="width"
+          :height="height"
+          :left="left"
+          :top="top"
+        />
+      </MoveableContainer>
     </BoundingBox>    
-    <canvas ref="canvas"/>
   </div>
 </template>
 

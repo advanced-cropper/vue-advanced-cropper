@@ -1,3 +1,5 @@
+import { MoveEvent } from '../utils/events'
+
 export default {
   created() {
     window.addEventListener('mouseup', this.onMouseUp, { passive: false })
@@ -45,7 +47,7 @@ export default {
     },
     onTouchMove(e) {
       if (this.touches.length) {
-        this.processMove(e.touches)
+        this.processMove(e, e.touches)
         if (e.preventDefault) {
           e.preventDefault()
         }
@@ -66,7 +68,7 @@ export default {
     },
     onMouseMove(e) {
       if (this.touches.length) {
-        this.processMove([
+        this.processMove(e, [
           {
             fake: true,
             clientX: e.clientX,
@@ -82,24 +84,21 @@ export default {
       this.touches = []
     },
     initAnchor(touch) {
-      const handler = this.$refs.handler
-      const { left, top } = handler.getBoundingClientRect()
-
       this.anchor = {
-        x: touch.clientX - left,
-        y: touch.clientY - top
+        left: touch.clientX,
+        top: touch.clientY
       }
     },
-    processMove(touches) {
+    processMove(event, touches) {
       const newTouches = [...touches]
       if (this.touches.length) {
         if (this.touches.length === 1 && newTouches.length === 1) {
-          this.$emit('move', {
-            x: this.touches[0].clientX - newTouches[0].clientX,
-            y: this.touches[0].clientY - newTouches[0].clientY
-          })
+          console.log(this.anchor.left, newTouches[0].clientX)
+          this.$emit('move', new MoveEvent(event, {
+            left: this.touches[0].clientX - newTouches[0].clientX,
+            top: this.touches[0].clientY - newTouches[0].clientY
+          }))
         }
-
         this.touches = newTouches
       }
     },

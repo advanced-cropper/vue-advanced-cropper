@@ -1,13 +1,13 @@
 <script>
 import classnames from "classnames";
 import bem from "easy-bem";
-import dragHandler from "../../mixins/dragHandler.js";
+import handler from "../../mixins/handler.js";
 
 const cn = bem("vue-square-handler");
 
 export default {
   name: "SquareHandler",
-  mixins: [dragHandler],
+  mixins: [handler],
   props: {
     classname: {
       type: String

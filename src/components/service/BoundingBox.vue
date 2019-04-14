@@ -7,7 +7,7 @@ import CircleHandler from '../handlers/SquareHandler.vue'
 const cn = bem('vue-bounding-box')
 
 export default {
-  name: "PreviewImage",
+  name: "BoundingBox",
   props: {
     img: {
       type: String
@@ -56,34 +56,60 @@ export default {
       }
     },
   },
+  created() {
+    window.addEventListener('mouseup', this.onMouseUp, { passive: false })
+    window.addEventListener('mousemove', this.onMouseMove, { passive: false })
+    window.addEventListener('touchmove', this.onTouchMove, { passive: false })
+    window.addEventListener('touchend', this.onTouchEnd, { passive: false })
+  },
+  destroyed() {
+    window.removeEventListener('mouseup', this.onMouseUp)
+    window.removeEventListener('mousemove', this.onMouseMove)
+    window.removeEventListener('touchmove', this.onTouchMove)
+    window.removeEventListener('touchend', this.onTouchEnd)
+  },
+  mounted() {
+    this.touches = []
+    this.draggingAnchor = []
+  },
   methods: {
-    onHandlerMove(coordinates, horizontalDirection, verticalDirection) {
-      const resizeDirections = {
+    onHandlerMove(moveEvent, horizontalDirection, verticalDirection) {
+      const directions = moveEvent.directions
+      const scaling = {
         left: 0,
         right: 0,
         top: 0,
         bottom: 0
       }
       if (horizontalDirection === 'west') {
-        resizeDirections.left += coordinates.x
+        scaling.left += directions.left
       }
       else if (horizontalDirection === 'east') {
-        resizeDirections.right -= coordinates.x
+        scaling.right -= directions.left
       }
       if (verticalDirection === 'north') {
-        resizeDirections.top += coordinates.y
+        scaling.top += directions.top
       }
       else if (verticalDirection === 'south') {
-        resizeDirections.bottom -= coordinates.y
+        scaling.bottom -= directions.top
       }
-      this.$emit('change', resizeDirections)
-    }
+      
+      this.$emit('resize', {
+        nativeEvent: moveEvent.nativeEvent,
+        scaling,
+        horizontalDirection,
+        verticalDirection
+      })
+    },
   }
 };
 </script>
 
 <template>
-  <div :class="classnames.default">
+  <div 
+    ref="box"
+    :class="classnames.default"
+  >
     <slot></slot>
     <div>
       <component @move="onHandlerMove($event, 'east', 'north')" :is="handlerComponent" :class="classnames.handler.eastNorth"/>
