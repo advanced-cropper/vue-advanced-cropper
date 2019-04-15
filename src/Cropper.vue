@@ -231,10 +231,10 @@ export default {
     },
     onResize(resizeEvent) {
       const coefficient = this.coefficient
-      const directions = {...resizeEvent.scaling}
       const anchor = resizeEvent.anchor
       const horizontalDirection = resizeEvent.horizontalDirection
       const verticalDirection = resizeEvent.verticalDirection
+      let directions = {...resizeEvent.scaling}
 
       const actualCoordinates = {
         ...this.coordinates,
@@ -249,8 +249,6 @@ export default {
         bottom: false
       }
 
-      const imageNaturalWidth = this.imageWidth / coefficient;
-      const imageNaturalHeight = this.imageHeight / coefficient;
 
       // let aspectRatio = this.aspectRatio || (nativeEvent.shiftKey ? this.width / this.height : null)
 
@@ -266,11 +264,40 @@ export default {
         
       // }
 
+      const minHeight = 100
+      const minWidth = 100 * this.minAspectRatio
+
+      if (actualCoordinates.width + coefficient*(directions.left + directions.right) < minWidth) {
+        const overlapWidth = Math.max(0, actualCoordinates.width + coefficient*(directions.left + directions.right) - minWidth)
+        if (verticalDirection === 'east') {
+          directions.left = -overlapWidth / coefficient 
+        }
+        else if (verticalDirection === 'west') {
+          directions.right = -overlapWidth / coefficient 
+        }
+      }
+
+      if (actualCoordinates.height + coefficient*(directions.top + directions.bottom) < minHeight) {
+        const overlapHeight = Math.max(0, actualCoordinates.height + coefficient*(directions.top + directions.bottom) - minHeight)
+        if (verticalDirection === 'north') {
+          directions.top = -overlapHeight / coefficient 
+        }
+        else if (verticalDirection === 'south') {
+          directions.bottom = -overlapHeight / coefficient 
+        }
+      }
+
+
+
       const newWidth = actualCoordinates.width + coefficient * (directions.left + directions.right)
       const newHeight = actualCoordinates.height + coefficient * (directions.top + directions.bottom)
 
+
+
+
+
       let ratioBroken = null;
-      if (this.aspectRatio && !approximiateEqual(newWidth / newHeight, this.aspectRatio)) {
+      if (this.aspectRatio && newWidth / newHeight !== this.aspectRatio) {
         ratioBroken = this.aspectRatio
       }
       else if (this.minAspectRatio && newWidth / newHeight < this.minAspectRatio) {
@@ -279,72 +306,125 @@ export default {
       else if (this.maxAspectRatio && newWidth / newHeight > this.maxAspectRatio) {
         ratioBroken = this.maxAspectRatio
       }
+      
 
-      if (horizontalDirection === 'east' && !verticalDirection) {
-        if (coefficient*directions.right + actualCoordinates.right > imageNaturalWidth) {
-          directions.right = Math.max(0, imageNaturalWidth - actualCoordinates.right) / coefficient
-        }
-        if (ratioBroken) {
-          directions.right = (actualCoordinates.height * ratioBroken - actualCoordinates.width) / coefficient
-        }
-        // if (ratioBroken) {
-        //     directions.top = directions.right / (ratioBroken * 2)
-        //     directions.bottom = directions.right / (ratioBroken * 2)
-        // }
+
+      if (ratioBroken) {
+        const shifts = {...directions}
+        //if (horizontalDirection && verticalDirection) {
+          if (newWidth > newHeight) {
+            let overlapWidth = actualCoordinates.width - newWidth
+            let overlapHeight = actualCoordinates.height - newWidth / ratioBroken
+            console.log("ШИРИНА БОЛЬШЕ", newWidth,newHeight )
+            if (verticalDirection === 'north') {
+              directions.top = -overlapHeight  / coefficient
+            }
+            else if (verticalDirection === 'south') {
+              directions.bottom = -overlapHeight  / coefficient
+            }
+            else if (horizontalDirection === 'east') {
+              directions.right = 0
+            }
+            else if (horizontalDirection === 'west') {
+              directions.left = 0
+            }
+
+          }
+          else {
+            let overlapHeight = actualCoordinates.height - newHeight
+            let overlapWidth = actualCoordinates.width - newHeight * ratioBroken
+
+            console.log("ВЫСОТА БОЛЬШЕ", newWidth,newHeight )
+
+            if (horizontalDirection === 'west') {
+              directions.left = -overlapWidth  / coefficient
+            }
+            else if (horizontalDirection === 'east') {
+              directions.right = -overlapWidth  / coefficient
+            }
+            else if (verticalDirection === 'north') {
+              directions.top = 0
+            }
+            else if (verticalDirection === 'south') {
+              directions.bottom = 0
+            }
+          }
+       //}
+        
+
       }
-      if (horizontalDirection === 'west' && !verticalDirection) {
-        if (coefficient*directions.left + actualCoordinates.left < 0) {
-          directions.left = 0
-        }
-        if (ratioBroken) {
-          directions.left = (actualCoordinates.height * ratioBroken - actualCoordinates.width) / coefficient
-        }
-        // if (ratioBroken) {
-        //     directions.top = directions.left / (ratioBroken * 2)
-        //     directions.bottom = directions.left / (ratioBroken * 2)
-        // }
-      }
-      if (verticalDirection === 'south' && !horizontalDirection) {
-        if (coefficient*directions.bottom + actualCoordinates.bottom > imageNaturalHeight) {
-          directions.bottom = Math.max(0, imageNaturalHeight - actualCoordinates.bottom) / coefficient;
-        }
-        // if (ratioBroken) {
-        //   directions.left = directions.bottom * (ratioBroken / 2)
-        //   directions.right = directions.bottom * (ratioBroken / 2)
-        // }
-        if (ratioBroken) {
-          directions.bottom = (actualCoordinates.width / ratioBroken - actualCoordinates.height) / coefficient
-        }
-      }
+
+
+      // if (horizontalDirection === 'east' && !verticalDirection) {
+      //   if (coefficient*directions.right + actualCoordinates.right > imageNaturalWidth) {
+      //     directions.right = Math.max(0, imageNaturalWidth - actualCoordinates.right) / coefficient
+      //   }
+      //   if (ratioBroken) {
+      //     directions.right = (actualCoordinates.height * ratioBroken - actualCoordinates.width) / coefficient
+      //   }
+      // }
+      // if (horizontalDirection === 'west' && !verticalDirection) {
+      //   if (actualCoordinates.left - coefficient*directions.left < 0) {
+      //     directions.left = 0
+      //   }
+      //   if (ratioBroken) {
+      //     directions.left = (actualCoordinates.height * ratioBroken - actualCoordinates.width) / coefficient
+      //   }
+      // }
+      // if (verticalDirection === 'south' && !horizontalDirection) {
+      //   if (coefficient*directions.bottom + actualCoordinates.bottom > imageNaturalHeight) {
+      //     directions.bottom = Math.max(0, imageNaturalHeight - actualCoordinates.bottom) / coefficient;
+      //   }
+      //   if (ratioBroken) {
+      //     directions.bottom = (actualCoordinates.width / ratioBroken - actualCoordinates.height) / coefficient
+      //   }
+      // }
+      // if (verticalDirection === 'north' && !horizontalDirection) {
+      //   if (actualCoordinates.top - coefficient*directions.bottom  < 0) {
+      //     directions.top = 0;
+      //   }
+      //   if (ratioBroken) {
+      //     directions.top = (actualCoordinates.width / ratioBroken - actualCoordinates.height) / coefficient
+      //   }
+      // }
 
 
 
       const processDirection = (directions, currentDirection, value) => {
         const result = {...directions}
         const currentShift = directions[currentDirection]
-        if (ratioBroken) {
-          ['left', 'right', 'top', 'bottom'].forEach(direction => {
-            if (direction !== currentDirection) {
-              directions[direction] = Math.abs(value/currentShift) * directions[direction]
-            }
+        const multiplier = Math.abs(value/currentShift)
+        const variants = ['left', 'right', 'top', 'bottom']
+        //if (ratioBroken) {
+          variants.forEach(direction => {
+           // if (direction !== currentDirection) {
+              result[direction] = 0
+          //  }
           })
-        }
-        directions[currentDirection] = value
+        //}
+        result[currentDirection] = 0
+        return result;
       }
 
+      const imageNaturalWidth = this.imageWidth / coefficient;
+      const imageNaturalHeight = this.imageHeight / coefficient;
+
+
+
       // Undoing the resizing, that will overlap boundaries
-      // if (coefficient*directions.right + actualCoordinates.right > imageNaturalWidth) {
-      //   directions = processDirection(directions, 'right', Math.max(0, imageNaturalWidth - actualCoordinates.right) / coefficient)
-      // }
-      // if (coefficient*directions.bottom + actualCoordinates.bottom > imageNaturalHeight) {
-      //   directions.bottom = Math.max(0, imageNaturalHeight - actualCoordinates.bottom) / coefficient;
-      // }
-      // if (actualCoordinates.left - coefficient*directions.left  < 0) {
-      //   directions.left = 0;
-      // }
-      // if (actualCoordinates.top - coefficient*directions.top  < 0) {
-      //   directions.top = 0;
-      // }
+      if (actualCoordinates.left - coefficient*directions.left  < 0) {
+        directions = processDirection(directions, 'left', 0)
+      }
+      if (actualCoordinates.top - coefficient*directions.top  < 0) {
+        directions = processDirection(directions, 'top', 0)
+      }
+
+      if (coefficient*directions.right + actualCoordinates.right > imageNaturalWidth) {
+        directions = processDirection(directions, 'right', Math.max(0, imageNaturalWidth - actualCoordinates.right) / coefficient)
+      }
+      if (coefficient*directions.bottom + actualCoordinates.bottom > imageNaturalHeight) {
+        directions = processDirection(directions, 'bottom', Math.max(0, imageNaturalHeight - actualCoordinates.bottom) / coefficient)
+      }
 
 
 
@@ -380,33 +460,19 @@ export default {
 
 
 
-      // if (newCoordinates.left < 0) {
-      //   if (changeWidth > 0) {
-      //     newCoordinates.width = Math.max(this.coordinates.width, newCoordinates.width + newCoordinates.left)
-      //   }
-      //   newCoordinates.left = 0
-      // }
-      // if (newCoordinates.left + newCoordinates.width > this.imageWidth / this.coefficient) {
-      //   if (changeWidth > 0) {
-      //     const gap = newCoordinates.left + newCoordinates.width - this.imageWidth / this.coefficient
-      //     newCoordinates.width = Math.max(this.coordinates.width, newCoordinates.width - gap)
-      //   }
-      //   newCoordinates.left = Math.max(0, this.imageWidth / this.coefficient - newCoordinates.width)
-      // }
+      if (newCoordinates.left < 0) {
+        newCoordinates.left = 0
+      }
+      if (newCoordinates.left + newCoordinates.width > this.imageWidth / this.coefficient) {
+        newCoordinates.left = Math.max(0, this.imageWidth / this.coefficient - newCoordinates.width)
+      }
 
-      // if (newCoordinates.top < 0) {
-      //   if (changeHeight > 0) {
-      //     newCoordinates.height = Math.max(this.coordinates.height, newCoordinates.height + newCoordinates.top)
-      //   }
-      //   newCoordinates.top = 0
-      // }
-      // if (newCoordinates.top + newCoordinates.height > this.imageHeight / this.coefficient) {
-      //   if (changeHeight > 0) {
-      //     const gap = newCoordinates.top + newCoordinates.height - this.imageHeight / this.coefficient
-      //     newCoordinates.height = Math.max(this.coordinates.height, newCoordinates.height - gap)
-      //   }
-      //   newCoordinates.top = Math.max(0, this.imageHeight / this.coefficient - newCoordinates.height)
-      // }
+      if (newCoordinates.top < 0) {
+        newCoordinates.top = 0
+      }
+      if (newCoordinates.top + newCoordinates.height > this.imageHeight / this.coefficient) {
+        newCoordinates.top = Math.max(0, this.imageHeight / this.coefficient - newCoordinates.height)
+      }
 
       //       if (this.aspectRatio ) {
         

@@ -1,6 +1,16 @@
 import { MoveEvent } from '../utils/events'
 
 export default {
+  props: {
+    horizontal: {
+      type: Boolean,
+      default: false
+    },
+    vertical: {
+      type: Boolean,
+      default: false
+    }
+  },
   created() {
     window.addEventListener('mouseup', this.onMouseUp, { passive: false })
     window.addEventListener('mousemove', this.onMouseMove, { passive: false })
@@ -84,20 +94,37 @@ export default {
       this.touches = []
     },
     initAnchor(touch) {
+      const handler = this.$refs.handler
+      const {left, right, bottom, top} = handler.getBoundingClientRect()
+
       this.anchor = {
-        left: touch.clientX,
-        top: touch.clientY
+        left: touch.clientX - left,
+        top: touch.clientY - top,
+        bottom: bottom - touch.clientY,
+        right: right - touch.clientX
       }
     },
     processMove(event, touches) {
       const newTouches = [...touches]
       if (this.touches.length) {
         if (this.touches.length === 1 && newTouches.length === 1) {
-          console.log(this.anchor.left, newTouches[0].clientX)
-          this.$emit('move', new MoveEvent(event, {
-            left: this.touches[0].clientX - newTouches[0].clientX,
-            top: this.touches[0].clientY - newTouches[0].clientY
-          }))
+          const handler = this.$refs.handler
+          const {left, right, bottom, top} = handler.getBoundingClientRect()
+
+          // const horizontalMoveAllowed = Math.abs((left + right) / 2 - newTouches[0].clientX) < (right - left) / 2
+          // const verticalMoveAllowed = Math.abs((top + bottom) / 2 - newTouches[0].clientY) < (bottom - top) / 2
+
+          // if (this.horizontal && this.vertical && horizontalMoveAllowed && verticalMoveAllowed || this.horizontal && !this.vertical && horizontalMoveAllowed || !this.horizontal && this.vertical && verticalMoveAllowed) {
+          this.$emit('move', {
+            nativeEvent: event,
+            handler: handler,
+            anchor: this.anchor,
+            position: {
+              left: newTouches[0].clientX,
+              top: newTouches[0].clientY
+            }
+          })
+          // }
         }
         this.touches = newTouches
       }

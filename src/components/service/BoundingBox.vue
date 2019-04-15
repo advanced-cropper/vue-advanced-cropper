@@ -74,25 +74,41 @@ export default {
   },
   methods: {
     onHandlerMove(moveEvent, horizontalDirection, verticalDirection) {
-      const directions = moveEvent.directions
+      const position = moveEvent.position
+      const anchor = moveEvent.anchor
       const scaling = {
         left: 0,
         right: 0,
         top: 0,
         bottom: 0
       }
+      const handler = moveEvent.handler
+      const {left, right, bottom, top} = handler.getBoundingClientRect()
+
       if (horizontalDirection === 'west') {
-        scaling.left += directions.left
+        scaling.left += left - position.left + anchor.left
       }
       else if (horizontalDirection === 'east') {
-        scaling.right -= directions.left
+        scaling.right += position.left - right + anchor.right
       }
       if (verticalDirection === 'north') {
-        scaling.top += directions.top
+        scaling.top += top - position.top + anchor.top
       }
       else if (verticalDirection === 'south') {
-        scaling.bottom -= directions.top
+        scaling.bottom += position.top - bottom + anchor.bottom
       }
+      // if (horizontalDirection === 'west') {
+      //   scaling.left += left - position.left + (right - left)/2
+      // }
+      // else if (horizontalDirection === 'east') {
+      //   scaling.right += position.left - right + (right - left)/2
+      // }
+      // if (verticalDirection === 'north') {
+      //   scaling.top += top - position.top + (bottom - top)/2
+      // }
+      // else if (verticalDirection === 'south') {
+      //   scaling.bottom += position.top - bottom + (bottom - top)/2
+      // }
       
       this.$emit('resize', {
         nativeEvent: moveEvent.nativeEvent,
@@ -112,14 +128,14 @@ export default {
   >
     <slot></slot>
     <div>
-      <component @move="onHandlerMove($event, 'east', 'north')" :is="handlerComponent" :class="classnames.handler.eastNorth"/>
-      <component @move="onHandlerMove($event,  null,  'north')" :is="handlerComponent" :class="classnames.handler.north"/>
-      <component @move="onHandlerMove($event, 'west', 'north')" :is="handlerComponent" :class="classnames.handler.westNorth"/>
-      <component @move="onHandlerMove($event, 'west',  null)" :is="handlerComponent" :class="classnames.handler.west"/>
-      <component @move="onHandlerMove($event, 'west', 'south')" :is="handlerComponent" :class="classnames.handler.westSouth"/>
-      <component @move="onHandlerMove($event,  null,  'south')" :is="handlerComponent" :class="classnames.handler.south"/>
-      <component @move="onHandlerMove($event, 'east', 'south')" :is="handlerComponent" :class="classnames.handler.eastSouth"/>
-      <component @move="onHandlerMove($event, 'east',  null)" :is="handlerComponent" :class="classnames.handler.east" />
+      <component @move="onHandlerMove($event, 'east', 'north')" :is="handlerComponent" :class="classnames.handler.eastNorth" horizontal vertical/>
+      <component @move="onHandlerMove($event,  null,  'north')" :is="handlerComponent" :class="classnames.handler.north" vertical/>
+      <component @move="onHandlerMove($event, 'west', 'north')" :is="handlerComponent" :class="classnames.handler.westNorth" horizontal vertical/>
+      <component @move="onHandlerMove($event, 'west',  null)" :is="handlerComponent" :class="classnames.handler.west" horizontal/>
+      <component @move="onHandlerMove($event, 'west', 'south')" :is="handlerComponent" :class="classnames.handler.westSouth" horizontal vertical/>
+      <component @move="onHandlerMove($event,  null,  'south')" :is="handlerComponent" :class="classnames.handler.south" vertical/>
+      <component @move="onHandlerMove($event, 'east', 'south')" :is="handlerComponent" :class="classnames.handler.eastSouth" horizontal vertical/>
+      <component @move="onHandlerMove($event, 'east',  null)" :is="handlerComponent" :class="classnames.handler.east"  horizontal/>
     </div>
   </div>
 </template>
