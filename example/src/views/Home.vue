@@ -3,13 +3,16 @@
     <div class="cropper-wrapper">
       <Cropper 
         :src="require('../assets/test3.png')"
-        :min-aspect-ratio="12/16"
-        :max-aspect-ratio="24/16"
-        :aspect-ratio="16/16"
         cropper-class="cropper"
         image-class="cropper__image"
-        min-width="100"
-        min-height="100"
+        :max-width="70"
+        :max-height="70"
+        :min-width="30"
+        :min-height="30"
+        :stencilProps="{
+          minAspectRatio: 8/16,
+          maxAspectRatio: 32/16,
+        }"
         @change="change"
       />
     </div>

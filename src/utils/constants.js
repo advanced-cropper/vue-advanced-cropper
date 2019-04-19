@@ -1,1 +1,9 @@
-export const RESIZE_NORTH_EAST = 1
+export const WEST = 1
+export const WEST_NORTH = 2
+export const NORTH = 3
+export const EAST_NORTH = 4
+export const EAST = 5
+export const EAST_SOUTH = 6
+export const SOUTH = 7
+export const WEST_SOUTH = 8
+export const EPSILON = 1/1000
