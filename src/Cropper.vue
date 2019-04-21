@@ -1,10 +1,17 @@
 <script>
+import classnames from 'classnames'
+import bem from 'easy-bem'
+import Vue from 'vue'
+import debounce from 'debounce'
 
-import classnames from 'classnames';
-import bem from 'easy-bem';
-import Vue from 'vue';
-import RectangleStencil from './components/stencils/RectangleStencil.vue'
-import {approximiateEqual} from './utils/services.js'
+import { RectangleStencil } from './components/stencils'
+import { approximiateEqual } from './utils/services'
+
+import {
+  HORIZONTAL_DIRECTIONS,
+  VERTICAL_DIRECTIONS,
+  ALL_DIRECTIONS
+} from './utils/constants'
 
 const cn = bem('vue-advanced-cropper')
 
@@ -27,8 +34,7 @@ export default {
     },
     defaultCoordinates: {
       type: Function,
-      default: function(cropper, image, {stencilProps, ...props}) {
-
+      default: function(cropper, image, aspectRatio, props) {
         if (props.minWidth > props.maxWidth) {
           throw ("Minimum width can't be more than maximum width. Can't setup default coordinates")
         }
@@ -50,11 +56,6 @@ export default {
         const maxWidth = props.maxWidth / 100 * image.naturalWidth
         const maxHeight = props.maxHeight / 100 * image.naturalHeight
 
-        const aspectRatio = {
-          minimum: stencilProps.aspectRatio || stencilProps.minAspectRatio,
-          maximum: stencilProps.aspectRatio || stencilProps.maxAspectRatio,
-        }
-
         const minBoundaries = {}
 
         if (minWidth * aspectRatio.minimum < minHeight) {
@@ -70,7 +71,6 @@ export default {
           minBoundaries.height = aspectRatio.minimum ? minWidth * aspectRatio.minimum : minHeight
           minBoundaries.aspectRatio = aspectRatio.minimum || (minWidth/minHeight)
         }
-
 
         if (minBoundaries.height < minHeight || minBoundaries.height > maxHeight) {
           throw ("Current aspect ratio can't is uncompatible with minimum/maximum height and width settings. Can't setup default coordinates")
@@ -92,15 +92,16 @@ export default {
 
         let width, height;
         if (maxBoundaries.height > maxBoundaries.width) {
-          height = Math.max(minBoundaries.height, maxBoundaries.height * (0.95 - Math.pow(maxBoundaries.aspectRatio, 6)))
+          height = Math.max(minBoundaries.height, maxBoundaries.height * 0.8)
           width = width/ minBoundaries.aspectRatio
         }
         else {
-          width = Math.max(minBoundaries.width, maxBoundaries.width * (0.95 - Math.pow(minBoundaries.aspectRatio, 6)))
+          width = Math.max(minBoundaries.width, maxBoundaries.width * 0.8)
           height = Math.min(maxHeight, width / maxBoundaries.aspectRatio)
         }
-        console.log(maxBoundaries, minBoundaries, this.restrictions, {height, width})
 
+        const desiredAspectRatio = maxWidth / maxHeight
+        
         const left = image.naturalWidth / 2 - width/2;
         const top = image.naturalHeight / 2 - height/2;
 
@@ -117,17 +118,17 @@ export default {
           const areaHeight = cropper.clientHeight;
           const areaWidth = cropper.clientWidth;
 
-          let newHeight = areaHeight;
-          let newWidth = imageWidth * areaHeight / imageHeight
+          let currentHeight = areaHeight;
+          let currentWidth = imageWidth * areaHeight / imageHeight
 
-          if (newWidth > areaWidth) {
-            newWidth = areaWidth;
-            newHeight = imageHeight * areaWidth / imageWidth;
+          if (currentWidth > areaWidth) {
+            currentWidth = areaWidth;
+            currentHeight = imageHeight * areaWidth / imageWidth;
           }
 
           return {
-            width: newWidth,
-            height: newHeight
+            width: currentWidth,
+            height: currentHeight
           }
       }
     },
@@ -185,6 +186,10 @@ export default {
     stencilWrapperClass: {
       type: String,
     },
+    debounce: {
+      type: Number,
+      default: 500
+    }
   },
   computed: {
     coefficient() {
@@ -246,6 +251,7 @@ export default {
   },
   mounted() {
     this.onChangeImage();
+    this.debouncedUpdateCoordinates = debounce(this.updateCoordinates, this.debounce)
   },
   created() {
 		window.addEventListener("resize", this.refreshImage, false);
@@ -256,14 +262,32 @@ export default {
 		window.removeEventListener("orientationchange", this.refreshImage);
 	},
   methods: {
-    onChangeCoordinates(newCoordinates) {
+    updateCanvas(coordinates) {
+      const canvas = this.$refs.canvas
+      canvas.width = coordinates.width;
+      canvas.height = coordinates.height;
+
+      const ctx = canvas.getContext('2d')
+      const image = this.$refs.image
+      ctx.drawImage(image,
+        coordinates.left, coordinates.top,
+        coordinates.width, coordinates.height, 
+        0, 0, 
+        coordinates.width, coordinates.height
+      )
+    },
+    updateCoordinates(coordinates) {
       const stencil = this.$refs.stencil
-      this.coordinates = newCoordinates
+      this.updateCanvas(coordinates)
       this.$emit('change', {
-        coordinates: newCoordinates,
-        // canvas: this.canvas(),
-        // params: stencil.params()
+        coordinates: coordinates,
+        canvas: this.$refs.canvas,
+        //params: stencil.params()
       })
+    },
+    onChangeCoordinates(newCoordinates) {
+      this.coordinates = newCoordinates
+      this.debouncedUpdateCoordinates(newCoordinates)
     },
     onChangeImage() {
       const image = this.$refs.image
@@ -275,10 +299,7 @@ export default {
         })
       }
     },
-    onResize(resizeDirections) {
-      const coefficient = this.coefficient
-      let directions = {...resizeDirections}
-
+    onResize(resizeEvent) {
       const actualCoordinates = {
         width: this.coordinates.width,
         height: this.coordinates.height,
@@ -288,94 +309,186 @@ export default {
         bottom: this.coordinates.top + this.coordinates.height,
       }
 
-      const imageNaturalWidth = this.imageWidth / coefficient;
-      const imageNaturalHeight = this.imageHeight / coefficient;
+      const directions = resizeEvent.directions
 
-      // Respect minimal and maximal size:
-      const minHeight = (this.minHeight/100) * imageNaturalHeight
-      const minWidth = (this.minWidth/100) * imageNaturalWidth
+      const allowedDirections = resizeEvent.allowedDirections || {
+        left: true,
+        right: true,
+        bottom: true,
+        top: true
+      }
 
-      const maxHeight = this.maxHeight * imageNaturalHeight /100
-      const maxWidth = this.maxWidth * imageNaturalWidth /100
+      Object.keys(allowedDirections).forEach(direction => {
+        if (!allowedDirections[direction]) {
+          directions[direction] = 0
+        }
+      })
 
-      const newWidth = actualCoordinates.width + coefficient*(directions.left + directions.right)
-      const newHeight = actualCoordinates.height + coefficient*(directions.top + directions.bottom)
+      const event = resizeEvent.nativeEvent;
 
-      // const shifts = {...directions}
-      // if (newWidth < minWidth || newWidth > maxWidth) {
-      //   const overlapWidth = Math.abs(0, newWidth < minWidth ? newWidth - minWidth : newWidth - maxWidth )
-      //   directions.left = overlapWidth / coefficient * (shifts.left / (shifts.left + shifts.right)) 
-      //   directions.right = overlapWidth / coefficient * (shifts.right / (shifts.left + shifts.right)) 
-      // }
-      // if (newHeight < minHeight || newHeight > maxHeight && (directions.top || directions.bottom)) {
-      //   const overlapHeight = Math.abs(0, newHeight < minHeight ? newHeight - minHeight : newHeight - maxHeight)
-      //   directions.top = overlapHeight / coefficient * (shifts.top / (shifts.top + shifts.bottom)) 
-      //   directions.bottom = overlapHeight / coefficient * (shifts.bottom / (shifts.top + shifts.bottom)) 
-      // }
-
-      // let overlaps = {
-      //   width: 0,
-      //   height: 0
-      // }
-
-      // if (newWidth < minWidth || newWidth > maxWidth) {
-      //   overlaps.width = (newWidth < minWidth) ? (minWidth - newWidth)  : (maxWidth - newWidth)
-      // }
-
-      // if (newHeight < minHeight || newHeight > maxHeight) {
-      //   overlaps.height = (newHeight < minHeight) ? (minHeight - newHeight) : (maxHeight - newHeight)
-      // }
-
-      // if (overlaps.height || overlaps.width) {
-      //   const firstMultiplier = (newHeight + overlaps.height - actualCoordinates.height) / ((directions.bottom + directions.top) * coefficient)
-      //   const secondMultiplier = (newWidth + overlaps.width - actualCoordinates.width) / ((directions.right + directions.left) * coefficient)
-
-      //   let multiplier;
-      //   if (overlaps.height && overlaps.width) {
-      //     if (Math.abs(firstMultiplier) < Math.abs(secondMultiplier)) {
-      //       multiplier = firstMultiplier
-      //     } else {
-      //       multiplier = secondMultiplier
-      //     }
-      //   } else if (overlaps.height) {
-      //     multiplier = firstMultiplier
-      //   } else if (overlaps.width) {
-      //     multiplier = secondMultiplier
-      //   }
-
-      //   const availableDirections = ['left', 'right', 'top', 'bottom']
-      //   availableDirections.forEach(direction => {
-      //     directions[direction] *= multiplier
-      //   })
-
-      // }
+      // Variables for readibility
+      const coefficient = this.coefficient
+      const aspectRatio = this.stencilAspectRatio()
+      const {minHeight, minWidth, maxWidth, maxHeight} = this.restrictions
 
 
+      // 1. First step: checks, that desired box not fewer minWidth and minHeight
+      let currentWidth = actualCoordinates.width + coefficient*(directions.left + directions.right)
+      let currentHeight = actualCoordinates.height + coefficient*(directions.top + directions.bottom)
 
-
-
-      // if (newWidth < minWidth || newWidth > maxWidth || newHeight < minHeight || newHeight > maxHeight) {
-      //   directions.top = 0
-      //   directions.bottom = 0
-      //   directions.left = 0
-      //   directions.right = 0
-      // }
-
-      // Здесь нужно поменять так, чтобы насколько сократили одно продвижение, настолько сократили и другие
-
-      // Checking overlap:
-      // const leftOverlap = actualCoordinates.left - coefficient*directions.left < 0
-      // const topOverlap = actualCoordinates.top - coefficient*directions.top  < 0
-      // const rightOverlap = coefficient*directions.right + actualCoordinates.right >= imageNaturalWidth
-      // const bottomOverlap = coefficient*directions.bottom + actualCoordinates.bottom >= imageNaturalHeight
-      // if (!leftOverlap && !rightOverlap && !topOverlap && !bottomOverlap) {
-        this.onChangeCoordinates({
-          width: this.coordinates.width + coefficient * (directions.right + directions.left),
-          height: this.coordinates.height + coefficient * (directions.top + directions.bottom),
-          left: this.coordinates.left - coefficient * directions.left,
-          top: this.coordinates.top - coefficient * directions.top
+      if (currentWidth < minWidth) {
+        const multiplier = (directions.right + directions.left) ? (minWidth - actualCoordinates.width) / ((directions.right + directions.left) * coefficient) : 0
+        HORIZONTAL_DIRECTIONS.forEach(direction => {
+          directions[direction] *= multiplier
         })
-      // }
+      }
+    
+      if (currentHeight < minHeight) {
+        const multiplier = (directions.bottom + directions.top) ? (minHeight - actualCoordinates.height) / ((directions.bottom + directions.top) * coefficient) : 0
+        VERTICAL_DIRECTIONS.forEach(direction => {
+          directions[direction] *= multiplier
+        })
+      }
+
+      // 2. Second step: fix desired box to correspondent to aspect ratio
+      currentWidth = actualCoordinates.width + coefficient*(directions.left + directions.right)
+      currentHeight = actualCoordinates.height + coefficient*(directions.top + directions.bottom)
+
+      // Checks ratio:
+      let ratioBroken = null;
+      if (event.shiftKey) {
+        ratioBroken = actualCoordinates.width / actualCoordinates.height
+      } else if (aspectRatio.minimum && currentWidth / currentHeight < aspectRatio.minimum) {
+        ratioBroken = aspectRatio.minimum
+      } else if (aspectRatio.maximum && currentWidth / currentHeight > aspectRatio.maximum) {
+        ratioBroken = aspectRatio.maximum
+      }
+  
+      if (ratioBroken) {
+        // Fix width
+       if (Math.sqrt(Math.pow(currentWidth / ratioBroken - actualCoordinates.height,2) + Math.pow(currentWidth - actualCoordinates.width,2)) < Math.sqrt(Math.pow(currentHeight - actualCoordinates.height, 2) + Math.pow(currentHeight * ratioBroken - actualCoordinates.width, 2)) && currentWidth / ratioBroken >= minHeight) {
+          let overlapWidth = actualCoordinates.width - currentWidth
+          let overlapHeight = actualCoordinates.height - currentWidth / ratioBroken
+          if (allowedDirections.top && allowedDirections.bottom) {
+            directions.bottom = -overlapHeight / (2*coefficient)
+            directions.top = -overlapHeight / (2*coefficient)
+          }
+          else if (allowedDirections.top) {
+            directions.top = -overlapHeight  / coefficient
+          }
+          else if (allowedDirections.bottom) {
+            directions.bottom = -overlapHeight  / coefficient
+          }
+          else if (allowedDirections.right) {
+            directions.right = 0
+          }
+          else if (allowedDirections.left) {
+            directions.left = 0
+          }
+        }
+         // Fix height
+        else if (currentHeight * ratioBroken >= minWidth) {
+          let overlapHeight = actualCoordinates.height - currentHeight
+          let overlapWidth = actualCoordinates.width - currentHeight * ratioBroken
+          if (allowedDirections.left && allowedDirections.right) {
+            directions.left = -overlapWidth  / (2*coefficient)
+            directions.right = -overlapWidth  / (2*coefficient)
+          }
+          else if (allowedDirections.left) {
+            directions.left = -overlapWidth  / coefficient
+          }
+          else if (allowedDirections.right) {
+            directions.right = -overlapWidth  / coefficient
+          }
+          else if (allowedDirections.top) {
+            directions.top = 0
+          }
+          else if (allowedDirections.bottom) {
+            directions.bottom = 0
+          }
+        }
+      }
+
+      // 3. Third step: check if desired box with correct aspect ratios break some limits
+      currentWidth = actualCoordinates.width + coefficient*(directions.left + directions.right)
+      currentHeight = actualCoordinates.height + coefficient*(directions.top + directions.bottom)
+
+      const maxResize = {
+        width: Infinity,
+        height: Infinity
+      }
+ 
+      if (Math.floor(actualCoordinates.left + actualCoordinates.width + coefficient*directions.right) > this.imageNaturalWidth) {
+        maxResize.width = Math.min(maxResize.width, this.imageNaturalWidth - (actualCoordinates.left + actualCoordinates.width))
+      }
+      if (actualCoordinates.left - coefficient*directions.left < 0) {
+        maxResize.width = Math.min(maxResize.width, actualCoordinates.left)
+      }
+      if (currentWidth < minWidth) {
+        maxResize.width = Math.min(maxResize.width, minWidth - actualCoordinates.width)
+      } 
+      if (currentWidth > maxWidth) {
+        maxResize.width = Math.min(maxResize.width, maxWidth - actualCoordinates.width)
+      }
+
+      if (Math.floor(actualCoordinates.top + actualCoordinates.height + coefficient*directions.bottom) > this.imageNaturalHeight) {
+        maxResize.height = Math.min(maxResize.height, this.imageNaturalHeight - (actualCoordinates.top + actualCoordinates.height))
+      }
+      if (actualCoordinates.top - coefficient*directions.top < 0) {
+        maxResize.height = Math.min(maxResize.height, actualCoordinates.top)
+      } 
+      if (currentHeight < minHeight) {
+        maxResize.height = Math.min(maxResize.height, minHeight - actualCoordinates.height)
+      } 
+      if (currentHeight > maxHeight) {
+        maxResize.height = Math.min(maxResize.height, maxHeight - actualCoordinates.height)
+      }
+
+      if (maxResize.width !== Infinity && (directions.right + directions.left) ) {
+        const multiplier = maxResize.width / ((directions.right + directions.left)* coefficient)
+        HORIZONTAL_DIRECTIONS.forEach(direction => {
+          directions[direction] *= multiplier
+        })
+      }
+
+      if (maxResize.height !== Infinity && (directions.bottom + directions.top) ) {
+        const multiplier = maxResize.height / ((directions.bottom + directions.top) * coefficient)
+        VERTICAL_DIRECTIONS.forEach(direction => {
+          directions[direction] *= multiplier
+        })
+      }
+
+      // 4. Fourth step: undo some resizes to correspondent with aspect ratio and limits simultaneosly
+      const limitedWidth = actualCoordinates.width + coefficient*(directions.left + directions.right)
+      const limitedHeight = actualCoordinates.height + coefficient*(directions.top + directions.bottom)
+      
+      if (event.shiftKey && limitedWidth / limitedHeight !== actualCoordinates.width / actualCoordinates.height) {
+        ratioBroken = actualCoordinates.width / actualCoordinates.height
+      } else if (limitedWidth / limitedHeight < aspectRatio.minimum) {
+        ratioBroken = aspectRatio.minimum
+      } else if (limitedWidth / limitedHeight > aspectRatio.maximum) {
+        ratioBroken = aspectRatio.maximum
+      }
+      if (ratioBroken) {
+        if (ratioBroken > 0) {
+          const multiplier = (directions.right + directions.left) ? (limitedHeight * ratioBroken - actualCoordinates.width) / ((directions.right + directions.left) * coefficient) : 0
+          HORIZONTAL_DIRECTIONS.forEach(direction => {
+            directions[direction] *= multiplier
+          })
+        }
+        else {
+          const multiplier = directions.bottom + directions.top ? (limitedWidth / ratioBroken - actualCoordinates.height) / ((directions.top + directions.bottom) * coefficient) : 0
+          VERTICAL_DIRECTIONS.forEach(direction => {
+            directions[direction] *= multiplier
+          })
+        }
+      }
+      this.onChangeCoordinates({
+        width: this.coordinates.width + coefficient * (directions.right + directions.left),
+        height: this.coordinates.height + coefficient * (directions.top + directions.bottom),
+        left: this.coordinates.left - coefficient * directions.left,
+        top: this.coordinates.top - coefficient * directions.top
+      })
     },
     onMove({directions}) {
       const newCoordinates = {
@@ -401,7 +514,7 @@ export default {
       this.onChangeCoordinates(newCoordinates)
     },
     resetCoordinates() {
-      this.onChangeCoordinates(this.defaultCoordinates(this.$refs.cropper, this.$refs.image, this.$props));
+      this.onChangeCoordinates(this.defaultCoordinates(this.$refs.cropper, this.$refs.image, this.stencilAspectRatio(), this.$props));
     },
     refreshImage() {
       return new Promise((resolve) => {
@@ -430,8 +543,8 @@ export default {
       })
     },
     stencilAspectRatio() {
-      if (this.$refs.stencil.aspectRatio) {
-        return this.$refs.stencil.aspectRatio() 
+      if (this.$refs.stencil.aspectRatios) {
+        return this.$refs.stencil.aspectRatios() 
       } else {
         return {
           minimum: this.stencilProps.aspectRatio || this.stencilProps.minAspectRatio,
@@ -457,17 +570,19 @@ export default {
           :height="coordinates.height"
           :stencil-width="stencilCoordinates.width"
           :stencil-height="stencilCoordinates.height"
-          :min-width="restrictions.minWidth"
-          :max-width="restrictions.maxWidth"
-          :min-height="restrictions.minHeight"
-          :max-height="restrictions.maxHeight"
-          :image-width="imageNaturalWidth"
-          :image-height="imageNaturalHeight"
+          :cropper-data="{
+            maxWidth: restrictions.maxWidth,
+            minWidth: restrictions.minWidth,
+            maxHeight: restrictions.maxHeight,
+            minHeight: restrictions.minHeight,
+            imageWidth: imageNaturalWidth, 
+            imageHeight: imageNaturalHeight, 
+          }"
           @resize="onResize"
           @move="onMove"
           v-bind="stencilProps"
         />
-       <canvas ref="canvas"></canvas>
+       <canvas ref="canvas" :style="{display:'none'}"></canvas>
       </div>
     </div>
   </div>
@@ -481,6 +596,7 @@ export default {
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    user-select: none;
     &__image {
       opacity: 0.5;
       display: inline-block;

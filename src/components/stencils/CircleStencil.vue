@@ -1,114 +1,151 @@
-<template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br />
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener"
-        >vue-cli documentation</a
-      >.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li>
-        <a
-          href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel"
-          target="_blank"
-          rel="noopener"
-          >babel</a
-        >
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint"
-          target="_blank"
-          rel="noopener"
-          >eslint</a
-        >
-      </li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li>
-        <a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a>
-      </li>
-      <li>
-        <a href="https://forum.vuejs.org" target="_blank" rel="noopener"
-          >Forum</a
-        >
-      </li>
-      <li>
-        <a href="https://chat.vuejs.org" target="_blank" rel="noopener"
-          >Community Chat</a
-        >
-      </li>
-      <li>
-        <a href="https://twitter.com/vuejs" target="_blank" rel="noopener"
-          >Twitter</a
-        >
-      </li>
-      <li>
-        <a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a>
-      </li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li>
-        <a href="https://router.vuejs.org" target="_blank" rel="noopener"
-          >vue-router</a
-        >
-      </li>
-      <li>
-        <a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a>
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/vue-devtools#vue-devtools"
-          target="_blank"
-          rel="noopener"
-          >vue-devtools</a
-        >
-      </li>
-      <li>
-        <a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener"
-          >vue-loader</a
-        >
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/awesome-vue"
-          target="_blank"
-          rel="noopener"
-          >awesome-vue</a
-        >
-      </li>
-    </ul>
-  </div>
-</template>
-
 <script>
+import classnames from 'classnames';
+import bem from 'easy-bem';
+import {PreviewImage,BoundingBox, MoveableContainer} from '../service';
+
+import {
+  NORTH,
+  EAST,
+  WEST,
+  SOUTH,
+  EPSILON,
+  HORIZONTAL_DIRECTIONS,
+  VERTICAL_DIRECTIONS,
+  ALL_DIRECTIONS
+} from '../../utils/constants'
+
+const cn = bem('vue-rectangle-stencil')
+
 export default {
-  name: "HelloWorld",
+  name: "RectangleStencil",
+  components: {
+    PreviewImage, BoundingBox, MoveableContainer
+  },
   props: {
-    msg: String
+    img: {
+      type: String
+    },
+    stencilClass: {
+       type: String
+    },
+    height: {
+       type: Number,
+       default: 0
+    },
+    width: {
+       type: Number,
+       default: 0
+    },
+    stencilHeight: {
+       type: Number
+    },
+    stencilWidth: {
+       type: Number
+    },
+    left: {
+       type: Number
+    },
+    top: {
+       type: Number
+    },
+    imageWidth: {
+       type: Number
+    },
+    imageHeight: {
+       type: Number
+    },
+    disableDefaultClasses: {
+      type: Boolean,
+      default: false
+    },
+    handlers: {
+      type: Object
+    },
+    handlerComponent: {
+      type: [Object, String],
+    },
+    handlerClassnames: {
+      type: Object,
+      default() {
+        return {}
+      },
+    },
+    type: {
+      type: String,
+      default: 'RectangleStencil'
+    },
+    aspectRatio: {
+      type: [Number, String],
+    },
+    minAspectRatio: {
+      type: [Number, String],
+    },
+    maxAspectRatio: {
+      type: [Number, String],
+    },
+  },
+  methods: {
+    onMove(moveEvent) {
+      this.$emit('move', moveEvent)
+    },
+    onResize(resizeEvent) {
+      this.$emit('resize', resizeEvent)
+    },
+    aspectRatios() {
+      return {
+          minimum: this.aspectRatio || this.minAspectRatio,
+          maximum: this.aspectRatio || this.maxAspectRatio,
+        }
+    }
+  },
+  computed: {
+    classes() {
+      return {
+        stencil: classnames(!this.disableDefaultClasses && cn(), this.classname),
+        preview: classnames(!this.disableDefaultClasses && cn('preview'), this.previewClassname),
+      };
+    },
+    pixelWidth() {
+      return this.width * this.areaWidth
+    },
+    pixelHeight() {
+      return this.height * this.areaHeight
+    }
   }
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
+<template>
+  <div :class="classes.stencil"
+    ref="stencil"
+  >
+    <BoundingBox 
+      @resize="onResize"
+      :handlers="handlers"
+      :handlerComponent="handlerComponent"
+      :handlerClassnames="handlerClassnames"
+    >
+      <MoveableContainer @move="onMove" @resize="onResize">
+        <PreviewImage 
+          :img="img"
+          :classname="classes.preview"
+          :previewWidth="stencilWidth" 
+          :previewHeight="stencilHeight"
+          :width="width"
+          :height="height"
+          :left="left"
+          :top="top"
+        />
+      </MoveableContainer>
+    </BoundingBox>    
+  </div>
+</template>
+
+<style lang="scss">
+  .vue-rectangle-stencil {
+    background: rgba(red, 0.1);
+    height: 100%;
+    width: 100%;
+    cursor: move;
+  }
 </style>

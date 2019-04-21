@@ -6,4 +6,7 @@ export const EAST = 5
 export const EAST_SOUTH = 6
 export const SOUTH = 7
 export const WEST_SOUTH = 8
-export const EPSILON = 1/1000
+
+export const HORIZONTAL_DIRECTIONS = ['left', 'right']
+export const VERTICAL_DIRECTIONS = ['top', 'bottom']
+export const ALL_DIRECTIONS = ['left', 'right', 'top', 'bottom']

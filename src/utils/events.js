@@ -1,14 +1,13 @@
 export class ResizeEvent {
-  constructor(nativeEvent, directions, anchor) {
+  constructor(nativeEvent, directions, allowedDirections) {
     this.nativeEvent = nativeEvent
     this.directions = directions
-    this.anchor = anchor
+    this.allowedDirections = allowedDirections
   }
 }
 export class MoveEvent {
-  constructor(nativeEvent, directions, anchor) {
+  constructor(nativeEvent, directions) {
     this.nativeEvent = nativeEvent
     this.directions = directions
-    this.anchor = anchor
   }
 }

@@ -1,16 +1,6 @@
 import { MoveEvent } from '../utils/events'
 
 export default {
-  props: {
-    horizontal: {
-      type: Boolean,
-      default: false
-    },
-    vertical: {
-      type: Boolean,
-      default: false
-    }
-  },
   created() {
     window.addEventListener('mouseup', this.onMouseUp, { passive: false })
     window.addEventListener('mousemove', this.onMouseMove, { passive: false })
@@ -26,7 +16,7 @@ export default {
   mounted() {
     if (!this.$refs.handler) {
       throw new Error(
-        'You should add ref "handler" to your root handler component to use dragHandler mixin'
+        'You should add ref "handler" to your root handler component to use handler mixin'
       )
     }
     this.touches = []
@@ -111,20 +101,10 @@ export default {
           const handler = this.$refs.handler
           const {left, right, bottom, top} = handler.getBoundingClientRect()
 
-          // const horizontalMoveAllowed = Math.abs((left + right) / 2 - newTouches[0].clientX) < (right - left) / 2
-          // const verticalMoveAllowed = Math.abs((top + bottom) / 2 - newTouches[0].clientY) < (bottom - top) / 2
-
-          // if (this.horizontal && this.vertical && horizontalMoveAllowed && verticalMoveAllowed || this.horizontal && !this.vertical && horizontalMoveAllowed || !this.horizontal && this.vertical && verticalMoveAllowed) {
-          this.$emit('move', {
-            nativeEvent: event,
-            handler: handler,
-            anchor: this.anchor,
-            position: {
-              left: newTouches[0].clientX,
-              top: newTouches[0].clientY
-            }
+          this.$emit('move', new MoveEvent(event, {
+            left: newTouches[0].clientX,
+            top: newTouches[0].clientY
           })
-          // }
         }
         this.touches = newTouches
       }

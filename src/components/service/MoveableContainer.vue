@@ -156,7 +156,7 @@ export default {
               }
             }
           })
-          //this.$emit('resize', new ResizeEvent(event, directions, massPoint))
+          this.$emit('resize', new ResizeEvent(event, directions))
         }
         this.touches = newTouches
       }

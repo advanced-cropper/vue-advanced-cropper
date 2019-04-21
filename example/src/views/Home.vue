@@ -5,14 +5,8 @@
         :src="require('../assets/test3.png')"
         cropper-class="cropper"
         image-class="cropper__image"
-        :max-width="70"
-        :max-height="70"
-        :min-width="30"
-        :min-height="30"
-        :stencilProps="{
-          minAspectRatio: 8/16,
-          maxAspectRatio: 32/16,
-        }"
+        :min-width="20"
+        :min-height="20"
         @change="change"
       />
     </div>
