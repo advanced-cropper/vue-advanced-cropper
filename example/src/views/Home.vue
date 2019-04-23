@@ -7,6 +7,10 @@
         image-class="cropper__image"
         :min-width="20"
         :min-height="20"
+        :stencil-props="{
+          maxAspectRatio: 16/9,
+          minAspectRatio: 9/16,
+        }"
         @change="change"
       />
     </div>

@@ -1,4 +1,4 @@
-import { MoveEvent } from '../utils/events'
+import { HandlerEvent } from '../utils/events'
 
 export default {
   created() {
@@ -101,10 +101,13 @@ export default {
           const handler = this.$refs.handler
           const {left, right, bottom, top} = handler.getBoundingClientRect()
 
-          this.$emit('move', new MoveEvent(event, {
-            left: newTouches[0].clientX,
-            top: newTouches[0].clientY
-          })
+          this.$emit('move', new HandlerEvent(event, {
+              left: newTouches[0].clientX,
+              top: newTouches[0].clientY
+            },
+            handler,
+            this.anchor
+          ))
         }
         this.touches = newTouches
       }

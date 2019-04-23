@@ -133,15 +133,23 @@ export default {
         directions.bottom += position.top - bottom + anchor.bottom
       }
       
+      let respectDirection
+      if (!verticalDirection && horizontalDirection) {
+        respectDirection = 'width'
+      } else if (verticalDirection && !horizontalDirection) {
+        respectDirection = 'height'
+      }
+
       this.$emit('resize', {
         nativeEvent: handlerEvent.nativeEvent,
         directions,
         allowedDirections: {
-          left: horizontalDirection === 'west',
-          right: horizontalDirection === 'east',
-          bottom: verticalDirection === 'south',
-          top: verticalDirection === 'north',
-        }
+          left: horizontalDirection === 'west'  || !horizontalDirection,
+          right: horizontalDirection === 'east' || !horizontalDirection,
+          bottom: verticalDirection === 'south' || !verticalDirection,
+          top: verticalDirection === 'north' || !verticalDirection,
+        },
+        respectDirection
       })
     },
   }

@@ -3,16 +3,6 @@ import classnames from 'classnames';
 import bem from 'easy-bem';
 import {PreviewImage,BoundingBox, MoveableContainer} from '../service';
 
-import {
-  NORTH,
-  EAST,
-  WEST,
-  SOUTH,
-  EPSILON,
-  HORIZONTAL_DIRECTIONS,
-  VERTICAL_DIRECTIONS,
-  ALL_DIRECTIONS
-} from '../../utils/constants'
 
 const cn = bem('vue-rectangle-stencil')
 
