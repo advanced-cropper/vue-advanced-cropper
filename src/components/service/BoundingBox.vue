@@ -7,6 +7,9 @@ import { DefaultLine } from '../lines'
 
 const cn = bem('vue-bounding-box')
 
+const HORIZONTAL_DIRECTIONS = ['east', 'west', null]
+const VERTICAL_DIRECTIONS = ['south', 'north', null]
+
 export default {
   name: "BoundingBox",
   props: {
@@ -67,28 +70,79 @@ export default {
       },
     },
   },
+  data() {
+    const points = []
+    HORIZONTAL_DIRECTIONS.forEach(hDirection => {
+      VERTICAL_DIRECTIONS.forEach(vDirection => {
+        let name, className;
+        if (hDirection !== vDirection) {
+          if (hDirection && vDirection) {
+            name = `${hDirection}${vDirection[0].toUpperCase()}${vDirection.slice(1)}`
+            className = `${hDirection}-${vDirection}`
+          } else  {
+            name = hDirection || vDirection
+            className = hDirection || vDirection
+          }
+          points.push({
+            name,
+            className,
+            verticalDirection: vDirection,
+            horizontalDirection: hDirection
+          })
+        }
+      })
+    })
+    return {
+      points
+    }
+  },
   computed: {
     classnames() {
-      const handler = {};
+      const handler = {}
+      const line = {}
+
+      this.points.forEach(point => {
+        if (!point.horizontalDirection || !point.verticalDirection) {
+          line[point.name] = classnames(!this.disableDefaultClasses && cn('line', {[point.className]: true}), this.lineClassnames[point.name])
+        }
+        handler[point.name] = classnames(!this.disableDefaultClasses && cn('handler', {[point.className]: true}), this.handlerClassnames[point.name])
+      })
+
       return {
         default: classnames(!this.disableDefaultClasses && cn(), this.classname),
-        handler: {
-          eastNorth: classnames(!this.disableDefaultClasses && cn('handler', {'east-north': true}), this.handlerClassnames.eastNorth),
-          north: classnames(!this.disableDefaultClasses && cn('handler', {'north': true}), this.handlerClassnames.north),
-          westNorth: classnames(!this.disableDefaultClasses && cn('handler', {'west-north': true}), this.handlerClassnames.westNorth),
-          west: classnames(!this.disableDefaultClasses && cn('handler', {'west': true}), this.handlerClassnames.west),
-          westSouth: classnames(!this.disableDefaultClasses && cn('handler', {'west-south': true}), this.handlerClassnames.westSouth),
-          south: classnames(!this.disableDefaultClasses && cn('handler', {'south': true}), this.handlerClassnames.south),
-          eastSouth: classnames(!this.disableDefaultClasses && cn('handler', {'east-south': true}), this.handlerClassnames.eastSouth),
-          east: classnames(!this.disableDefaultClasses && cn('handler', {'east': true}), this.handlerClassnames.east),
-        },
-        line: {
-          north: classnames(!this.disableDefaultClasses && cn('line', {'north': true}), this.lineClassnames.north),
-          west: classnames(!this.disableDefaultClasses && cn('line', {'west': true}), this.lineClassnames.west),
-          south: classnames(!this.disableDefaultClasses && cn('line', {'south': true}), this.lineClassnames.south),
-          east: classnames(!this.disableDefaultClasses && cn('line', {'east': true}), this.lineClassnames.east),
-        },
+        handler,
+        line,
       }
+    },
+    lineNodes() {
+      const lines = []
+      this.points.forEach(point => {
+        if (!point.horizontalDirection || !point.verticalDirection) {
+          lines.push({
+            name: point.name,
+            component: this.lineComponent,
+            visible: !!this.lines[point.name],
+            className: this.classnames.line[point.name],
+            verticalDirection: point.verticalDirection,
+            horizontalDirection: point.horizontalDirection
+          })
+        }
+      })
+      return lines
+    },
+    handlerNodes() {
+      const handlers = []
+      this.points.forEach(point => {
+        handlers.push({
+          name: point.name,
+          component: this.handlerComponent,
+          visible: !!this.handlers[point.name],
+          className: this.classnames.handler[point.name],
+          verticalDirection: point.verticalDirection,
+          horizontalDirection: point.horizontalDirection
+        })
+      })
+      return handlers
     },
   },
   created() {
@@ -108,16 +162,16 @@ export default {
     this.draggingAnchor = []
   },
   methods: {
-    onHandlerMove(handlerEvent, horizontalDirection, verticalDirection) {
-      const position = handlerEvent.position
-      const anchor = handlerEvent.anchor
+    onHandlerMove(dragEvent, horizontalDirection, verticalDirection) {
+      const position = dragEvent.position
+      const anchor = dragEvent.anchor
       const directions = {
         left: 0,
         right: 0,
         top: 0,
         bottom: 0
       }
-      const handler = handlerEvent.handler
+      const handler = dragEvent.element
       const {left, right, bottom, top} = handler.getBoundingClientRect()
 
       if (horizontalDirection === 'west') {
@@ -141,7 +195,7 @@ export default {
       }
 
       this.$emit('resize', {
-        nativeEvent: handlerEvent.nativeEvent,
+        nativeEvent: dragEvent.nativeEvent,
         directions,
         allowedDirections: {
           left: horizontalDirection === 'west'  || !horizontalDirection,
@@ -164,93 +218,25 @@ export default {
     <slot></slot>
     <div>
       <component 
-        :is="lineComponent"
-        v-if="lines.north" 
-        :classname="classnames.line.north"
-        position="north" 
-        @move="onHandlerMove($event,  null,  'north')"
-      />
-      <component
-        :is="lineComponent" 
-        v-if="lines.west" 
-        :classname="classnames.line.west"
-        position="west"  
-        @move="onHandlerMove($event, 'west',  null)"  
-      />
-      <component 
-        :is="lineComponent"
-        v-if="lines.south"
-        :classname="classnames.line.south"
-        position="south"  
-        @move="onHandlerMove($event, null, 'south')"  
-      />
-      <component 
-        :is="lineComponent"
-        v-if="lines.east"
-        :classname="classnames.line.east"
-        position="east"  
-        @move="onHandlerMove($event, 'east',  null)"  
+        v-for="line in lineNodes"
+        v-if="line.visible" 
+        :key="line.name"
+        :is="line.component"
+        :classname="line.className"
+        :position="line.name" 
+        @move="onHandlerMove($event, line.horizontalDirection, line.verticalDirection)"
       />
     </div>
     <div>
       <component 
-        :is="handlerComponent"
-        vertical-position="north" 
-        horizontal-position="east" 
-        v-if="handlers.eastNorth" 
-        @move="onHandlerMove($event, 'east', 'north')"  
-        :classname="classnames.handler.eastNorth"
-      />
-      <component 
-        :is="handlerComponent"
-        vertical-position="north" 
-        v-if="handlers.north" 
-        @move="onHandlerMove($event,  null,  'north')"  
-        :classname="classnames.handler.north"
-      />
-      <component 
-        :is="handlerComponent"
-        vertical-position="north"
-        horizontal-position="west" 
-        v-if="handlers.westNorth" 
-        @move="onHandlerMove($event, 'west', 'north')"  
-        :classname="classnames.handler.westNorth"
-      />
-      <component 
-        :is="handlerComponent"
-        horizontal-position="west" 
-        v-if="handlers.west" 
-        @move="onHandlerMove($event, 'west',  null)"  
-        :classname="classnames.handler.west"
-      />
-      <component 
-        :is="handlerComponent"
-        vertical-position="south" 
-        horizontal-position="west" v-if="handlers.westSouth" 
-        @move="onHandlerMove($event, 'west', 'south')"  
-        :classname="classnames.handler.westSouth"
-      />
-      <component 
-        :is="handlerComponent"
-        vertical-position="south" 
-        v-if="handlers.south" 
-        @move="onHandlerMove($event,  null,  'south')"  
-        :classname="classnames.handler.south"
-      />
-      <component 
-        :is="handlerComponent"
-        vertical-position="south" 
-        horizontal-position="east" 
-        v-if="handlers.eastSouth"
-        @move="onHandlerMove($event, 'east', 'south')"  
-        :classname="classnames.handler.eastSouth"
-      />
-      <component 
-        :is="handlerComponent"
-        horizontal-position="east" 
-        v-if="handlers.east" 
-        @move="onHandlerMove($event, 'east',  null)"  
-        :classname="classnames.handler.east"
+        v-for="handler in handlerNodes"
+        v-if="handler.visible" 
+        :key="handler.name"
+        :is="handler.component"
+        :classname="handler.className"
+        :horizontalPosition="handler.horizontalDirection" 
+        :verticalPosition="handler.verticalDirection" 
+        @move="onHandlerMove($event, handler.horizontalDirection, handler.verticalDirection)"
       />
     </div>
   </div>

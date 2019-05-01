@@ -1,13 +1,13 @@
 <script>
 import classnames from "classnames";
 import bem from "easy-bem";
-import handler from "../../mixins/handler.js";
+import draggable from "../../mixins/draggable.js";
 
 const cn = bem("vue-square-handler");
 
 export default {
   name: "SquareHandler",
-  mixins: [handler],
+  mixins: [draggable],
   props: {
     classname: {
       type: String
@@ -25,7 +25,7 @@ export default {
 
 <template>
   <div 
-    ref="handler" 
+    ref="draggable" 
     :class="classnames.default" 
     @touchstart="this.onTouchStart"
     @mousedown="this.onMouseDown"

@@ -1,4 +1,4 @@
-import { HandlerEvent } from '../utils/events'
+import { DragEvent } from '../utils/events'
 
 export default {
   created() {
@@ -14,9 +14,9 @@ export default {
     window.removeEventListener('touchend', this.onTouchEnd)
   },
   mounted() {
-    if (!this.$refs.handler) {
+    if (!this.$refs.draggable) {
       throw new Error(
-        'You should add ref "handler" to your root handler component to use handler mixin'
+        'You should add ref "draggable" to your root element to use draggable mixin'
       )
     }
     this.touches = []
@@ -84,8 +84,8 @@ export default {
       this.touches = []
     },
     initAnchor(touch) {
-      const handler = this.$refs.handler
-      const {left, right, bottom, top} = handler.getBoundingClientRect()
+      const draggable = this.$refs.draggable
+      const {left, right, bottom, top} = draggable.getBoundingClientRect()
 
       this.anchor = {
         left: touch.clientX - left,
@@ -98,15 +98,14 @@ export default {
       const newTouches = [...touches]
       if (this.touches.length) {
         if (this.touches.length === 1 && newTouches.length === 1) {
-          const handler = this.$refs.handler
-          const {left, right, bottom, top} = handler.getBoundingClientRect()
+          const element = this.$refs.draggable
 
-          this.$emit('move', new HandlerEvent(event, {
-              left: newTouches[0].clientX,
-              top: newTouches[0].clientY
-            },
-            handler,
-            this.anchor
+          this.$emit('move', new DragEvent(event, {
+            left: newTouches[0].clientX,
+            top: newTouches[0].clientY
+          },
+          element,
+          this.anchor
           ))
         }
         this.touches = newTouches

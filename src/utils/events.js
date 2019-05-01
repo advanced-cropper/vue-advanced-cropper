@@ -14,11 +14,11 @@ export class MoveEvent {
   }
 }
 
-export class HandlerEvent {
-  constructor(nativeEvent, position, handler, anchor) {
+export class DragEvent {
+  constructor(nativeEvent, position, element, anchor) {
     this.nativeEvent = nativeEvent
     this.position = position
-    this.handler = handler
+    this.element = element
     this.anchor = anchor
   }
 }

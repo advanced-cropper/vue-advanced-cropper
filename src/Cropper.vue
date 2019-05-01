@@ -5,10 +5,7 @@ import Vue from 'vue'
 import debounce from 'debounce'
 
 import { RectangleStencil } from './components/stencils'
-import { approximiateEqual } from './utils/services'
 import { ResizeEvent, MoveEvent } from './utils/events'
-
-
 
 import {
   resize, move
@@ -32,6 +29,14 @@ export default {
     canvas: {
       type: Boolean,
       default: true
+    },
+    resizeAlgorithm: {
+      type: Function,
+      default: resize
+    },
+    moveAlgorithm: {
+      type: Function,
+      default: move
     },
     defaultSize: {
       type: Function,
@@ -258,7 +263,7 @@ export default {
       }
     },
     onResize(resizeEvent) {
-      this.onChangeCoordinates(resize(
+      this.onChangeCoordinates(this.resizeAlgorithm(
         this.coordinates, 
         this.restrictions, 
         this.imageSize,
@@ -268,7 +273,7 @@ export default {
       ))
     },
     onMove(moveEvent) {
-      this.onChangeCoordinates(move(
+      this.onChangeCoordinates(this.moveAlgorithm(
         this.coordinates, 
         this.restrictions, 
         this.imageSize,
@@ -303,7 +308,7 @@ export default {
       coordinates.top = imageSize.height / 2 - coordinates.height / 2
 
       const defaultSize = this.defaultSize(cropper, image, this.$props);
-      coordinates = resize(coordinates, this.restrictions, imageSize, coefficient, aspectRatio, new ResizeEvent(null, {
+      coordinates = this.resizeAlgorithm(coordinates, this.restrictions, imageSize, coefficient, aspectRatio, new ResizeEvent(null, {
         left: (defaultSize.width - coordinates.width) / (2*coefficient),
         right: (defaultSize.width - coordinates.width) / (2*coefficient),
         top: (defaultSize.height - coordinates.height) / (2*coefficient),
@@ -311,7 +316,7 @@ export default {
       }))
 
       const defaultPosition = this.defaultPosition(cropper, image, coordinates.width, coordinates.height, this.$props)
-      coordinates = move(coordinates, this.restrictions, imageSize, coefficient, new MoveEvent(null, {
+      coordinates = this.moveAlgorithm(coordinates, this.restrictions, imageSize, coefficient, new MoveEvent(null, {
         left: (coordinates.left - defaultPosition.left) / (coefficient),
         top: (coordinates.top - defaultPosition.top) / (coefficient),
       }))
