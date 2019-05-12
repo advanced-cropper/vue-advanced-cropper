@@ -33,18 +33,22 @@ export default {
   },
   methods: {
     onTouchStart(e) {
-      this.touches = [...e.touches]
+      if (e.cancelable) {
+        this.touches = [...e.touches]
 
-      if (e.touches.length) {
-        this.initAnchor(this.touches.reduce((mean, touch) => {
-          return {
-            clientX: mean.clientX + touch.clientX / e.touches.length,
-            clientY: mean.clientY + touch.clientY / e.touches.length
-          }
-        }, {clientX: 0, clientY: 0}))
+        if (e.touches.length) {
+          this.initAnchor(this.touches.reduce((mean, touch) => {
+            return {
+              clientX: mean.clientX + touch.clientX / e.touches.length,
+              clientY: mean.clientY + touch.clientY / e.touches.length
+            }
+          }, {clientX: 0, clientY: 0}))
+        }
+        if (e.preventDefault) {
+          e.preventDefault()
+        }
+        e.stopPropagation()
       }
-      e.preventDefault()
-      e.stopPropagation()
     },
     onTouchEnd(e) {
       this.processEnd()
@@ -77,7 +81,7 @@ export default {
           clientX: e.clientX,
           clientY: e.clientY
         }])
-        if (e.preventDefault) {
+        if (e.preventDefault  && e.cancelable) {
           e.preventDefault()
         }
       }
