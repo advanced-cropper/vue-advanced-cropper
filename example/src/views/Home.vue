@@ -218,11 +218,17 @@
           </div>
         </div>
 
-
-
         <div class="row">
           <p>
             There are default customizable components from a box that allow you to create your first cropper in five minutes.
+          </p>
+        </div>
+
+        <pre class="source-code"><code class="language-js">{{stencilExample}}</code></pre>
+
+        <div class="row">
+          <p>
+            That’s almost all (you can find detailed tutorials <a class="link">here</a>). There are different stencils below as examples of different stencils that you can create
           </p>
         </div>
 
@@ -244,11 +250,72 @@ export default {
   components: {
     HelloWorld,
     HomeButton,
-    Cropper
+    Cropper,
   },
   methods: {
     change(coordinates) {
       //console.log("CHANGE!", coordinates)
+    }
+  },
+  data() {
+    return {
+      stencilExample:
+`\<script\>
+import {
+  PreviewImage, 
+  BoundingBox, 
+  MoveableArea
+} from 'vue-advanced-cropper/service';
+
+export default {
+  name: "MyStencil",
+  components: {
+    PreviewImage, BoundingBox, MoveableArea
+  },
+  props: [
+    // Image src
+    'img',
+    // Coordinates of box relative to original image size
+    'height', 'width', 'left', 'top',
+    // Stencil size desired by cropper 
+    'stencilHeight', 'stencilWidth',
+    // Aspect ratios
+    'aspectRatio', 'minAspectRatio', 'maxAspectRatio',
+  ],
+  methods: {
+    onMove(moveEvent) {
+      this.$emit('move', moveEvent)
+    },
+    onResize(resizeEvent) {
+      this.$emit('resize', resizeEvent)
+    },
+    aspectRatios() {
+      return {
+          minimum: this.aspectRatio || this.minAspectRatio,
+          maximum: this.aspectRatio || this.maxAspectRatio,
+        }
+    }
+  },
+};
+\<\/script\>
+
+<template>
+  <div class="my-stencil">
+    <BoundingBox @resize="onResize">
+      <MoveableArea @move="onMove">
+        <PreviewImage 
+          :img="img"
+          :previewWidth="stencilWidth" 
+          :previewHeight="stencilHeight"
+          :width="width"
+          :height="height"
+          :left="left"
+          :top="top"
+        />
+      </MoveableArea>
+    </BoundingBox>    
+  </div>
+</template>`
     }
   }
 };
@@ -458,7 +525,7 @@ export default {
     text-align: center;
     width: 100%;
     img {
-      width: 100%;
+      max-width: 100%;
     }
   }
 
