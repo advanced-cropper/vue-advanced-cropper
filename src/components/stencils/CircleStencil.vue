@@ -1,7 +1,7 @@
 <script>
 import classnames from 'classnames';
 import bem from 'easy-bem';
-import {PreviewImage,BoundingBox, MoveableArea} from '../service';
+import {PreviewImage,BoundingBox, DraggableArea} from '../service';
 
 
 const cn = bem('vue-rectangle-stencil')
@@ -9,7 +9,7 @@ const cn = bem('vue-rectangle-stencil')
 export default {
   name: "RectangleStencil",
   components: {
-    PreviewImage, BoundingBox, MoveableArea
+    PreviewImage, BoundingBox, DraggableArea
   },
   props: {
     img: {
@@ -91,8 +91,8 @@ export default {
   computed: {
     classes() {
       return {
-        stencil: classnames(!this.disableDefaultClasses && cn(), this.classname),
-        preview: classnames(!this.disableDefaultClasses && cn('preview'), this.previewClassname),
+        stencil: classnames(cn(), this.classname),
+        preview: classnames(cn('preview'), this.previewClassname),
       };
     },
     pixelWidth() {
@@ -115,7 +115,7 @@ export default {
       :handlerComponent="handlerComponent"
       :handlerClassnames="handlerClassnames"
     >
-      <MoveableArea @move="onMove" @resize="onResize">
+      <DraggableArea @move="onMove" @resize="onResize">
         <PreviewImage 
           :img="img"
           :classname="classes.preview"
@@ -126,7 +126,7 @@ export default {
           :left="left"
           :top="top"
         />
-      </MoveableArea>
+      </DraggableArea>
     </BoundingBox>    
   </div>
 </template>

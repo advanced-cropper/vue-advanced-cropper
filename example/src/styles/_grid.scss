@@ -1,0 +1,8 @@
+@import "./_constants.scss";
+
+@mixin container {
+  width: 100%;
+  max-width: $screen-md;
+  margin: 0 auto;
+  padding: 0 22px;
+}

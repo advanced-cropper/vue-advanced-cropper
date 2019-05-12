@@ -16,7 +16,7 @@ export default {
   computed: {
     classnames() {
       return {
-        default: classnames(!this.disableDefaultClasses && cn(), this.classname)
+        default: classnames(cn(), this.classname)
       };
     }
   }

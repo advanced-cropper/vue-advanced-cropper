@@ -4,10 +4,10 @@ import bem from 'easy-bem';
 
 import {ResizeEvent, MoveEvent} from '../../utils/events.js'
 
-const cn = bem('vue-movable-container')
+const cn = bem('vue-draggable-container')
 
 export default {
-  name: "MovableContainer",
+  name: "DraggableArea",
   created() {
     window.addEventListener('mouseup', this.onMouseUp, { passive: false })
     window.addEventListener('mousemove', this.onMouseMove, { passive: false })
@@ -27,7 +27,7 @@ export default {
   computed: {
     classnames() {
       return {
-        default: classnames(!this.disableDefaultClasses && cn(), this.classname),
+        default: classnames(cn(), this.classname),
       }
     },
   },
@@ -101,7 +101,6 @@ export default {
 
         const {left, top} = container.getBoundingClientRect()
 
-        // Moving:
         const coordinates = {
           width: this.width,
           height: this.height,
@@ -180,7 +179,7 @@ export default {
 </template>
 
 <style lang="scss">
-  .vue-movable-container {
-	position: relative;
+  .vue-draggable-area {
+	  position: relative;
   }
 </style>

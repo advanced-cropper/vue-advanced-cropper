@@ -2,83 +2,97 @@
 import classnames from "classnames";
 import bem from "easy-bem";
 import draggable from "../../mixins/draggable.js";
+import { LineWrapper } from "../service";
 
 const cn = bem("vue-default-line");
 
 export default {
   name: "DefaultLine",
-  mixins: [draggable],
+  components: {
+    LineWrapper
+  },
   props: {
     classname: {
       type: String
     },
-    position: {
+    hoverClassname: {
       type: String
     },
+    position: {
+      type: String
+    }
+  },
+  data() {
+    return {
+      hover: false
+    };
   },
   computed: {
     classnames() {
       return {
-        default: classnames(!this.disableDefaultClasses && cn({[this.position]: true}), this.classname)
+        default: classnames(
+          cn({ [this.position]: true }),
+          this.classname,
+          this.hover && this.hoverClassname
+        )
       };
+    }
+  },
+  methods: {
+    onDrag(dragEvent) {
+      this.$emit("drag", dragEvent);
+    },
+    onEnter() {
+      this.hover = true;
+    },
+    onLeave() {
+      this.hover = false;
     }
   }
 };
 </script>
 
 <template>
-  <div 
-    ref="draggable" 
-    :class="classnames.default" 
-    @touchstart="this.onTouchStart"
-    @mousedown="this.onMouseDown"
-  >
-  </div>
+	<LineWrapper @enter="onEnter" @leave="onLeave" @drag="onDrag" :position="position">
+		<div :class="classnames.default" ></div>
+	</LineWrapper>
 </template>
 
 <style lang="scss">
 .vue-default-line {
-	background: none;
-	&:after {
-		content: "";
-		transition: border 0.5s;
-		border: dashed 1px transparent;
-		position: absolute;
-	}
-	&--north, &--south {
-		height: 12px;
-		&:after {
-			height: 0px;
-			width: 100%;
-			top: 50%;
-			left: 0;
-		}
-		&, &:after {
-			transform: translateY(-50%);
-		}
-	}
-	&--east, &--west {
-		width: 12px;
-		&:after {
-			width: 0px;
-			height: 100%;
-			left: 50%;
-		}
-		&, &:after {
-			transform: translateX(-50%);
-		}
-	}
-	&--east:hover:after {
-		border-right: dashed 1px rgba(white, 0.3);
-	}
-	&--west:hover:after {
-		border-left: dashed 1px rgba(white, 0.3);
-	}
-	&--south:hover:after {
-		border-top: dashed 1px rgba(white, 0.3);
-	}
-	&--north:hover:after {
-		border-bottom: dashed 1px rgba(white, 0.3);
-	}
+  background: none;
+  transition: border 0.5s;
+  border-color: transparent;
+  border-width: 0px;
+
+  &--south,
+  &--north {
+    height: 0;
+    width: 100%;
+  }
+
+  &--east,
+  &--west {
+    height: 100%;
+    width: 0;
+  }
+
+  &--east {
+    border-right-width: 1px;
+  }
+  &--west {
+    border-left-width: 1px;
+  }
+  &--south {
+    border-top-width: 1px;
+  }
+  &--north {
+    border-bottom-width: 1px;
+  }
+
+  &--hover {
+    opacity: 1;
+    border-color: white;
+  }
 }
 </style>

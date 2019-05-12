@@ -1,19 +1,24 @@
 {
-  "parser": "babel-eslint",
-  "extends": [
-    "standard"
-  ],
-  "env": {
-    "es6": true
-  },
-  "plugins": [
-    "react",
-    "eslint-plugin-import"
-  ],
-  "parserOptions": {
-    "sourceType": "module"
-  },
-  "rules": {
-    "space-before-function-paren": 0
-  }
+	"parser": "babel-eslint",
+	"extends": [
+		"standard"
+	],
+	"env": {
+		"es6": true
+	},
+	"plugins": [
+		"react",
+		"eslint-plugin-import"
+	],
+	"parserOptions": {
+		"sourceType": "module"
+	},
+	"rules": {
+		"space-before-function-parent": 0,
+		"indent": [
+			2,
+			"tab"
+		],
+		"no-tabs": 0
+	}
 }

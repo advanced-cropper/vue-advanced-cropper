@@ -40,8 +40,8 @@ export default {
   computed: {
     classnames() {
       return {
-        default: classnames(!this.disableDefaultClasses && cn(), this.classname),
-        image: classnames(!this.disableDefaultClasses && cn('image'), this.imageClassname)
+        default: classnames(cn(), this.classname),
+        image: classnames(cn('image'), this.imageClassname)
       }
 		},
 		wrapperStyle() {
@@ -77,6 +77,7 @@ export default {
     overflow: hidden;
 		position: relative;
     &__image {
+    	pointer-events: none;
       position: absolute;
     }
   }

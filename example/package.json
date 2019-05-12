@@ -8,9 +8,10 @@
   },
   "dependencies": {
     "core-js": "^2.6.5",
+    "easy-bem": "^1.0.1",
     "vue": "^2.6.6",
-    "vue-router": "^3.0.1",
-    "vue-advanced-cropper": "file:.."
+    "vue-advanced-cropper": "file:..",
+    "vue-router": "^3.0.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.5.0",
