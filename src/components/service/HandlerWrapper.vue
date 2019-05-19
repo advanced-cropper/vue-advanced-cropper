@@ -2,7 +2,7 @@
 import classnames from "classnames";
 import bem from "easy-bem";
 import { directionNames } from "../../utils/core.js";
-import draggable from "../../mixins/draggable";
+import DraggableElement from './DraggableElement.vue';
 
 const cn = bem("vue-handler-wrapper");
 
@@ -11,25 +11,35 @@ const VERTICAL_DIRECTIONS = ["south", "north", null];
 
 export default {
   name: "handler-wrapper",
-  mixins: [draggable],
+  components: {
+    DraggableElement
+  },
   props: {
     horizontalPosition: {
       type: String
     },
     verticalPosition: {
       type: String
+    },
+    classname: {
+      type: String
     }
   },
   computed: {
-    classname() {
+    classnames() {
+      let defaultClassname;
       if (this.horizontalPosition || this.verticalPosition) {
         const position = directionNames(
           this.horizontalPosition,
           this.verticalPosition
         );
-        return cn({ [position.className]: true });
+        defaultClassname = classnames(this.classname, cn({ [position.classname]: true }));
       } else {
-        return cn();
+        defaultClassname = classnames(this.classname, cn());
+      }
+      return {
+        default: defaultClassname,
+        draggable: cn('draggable')
       }
     }
   }
@@ -37,25 +47,29 @@ export default {
 </script>
 
 <template>
-  <div 
-	ref="draggable"
-	@touchstart="this.onTouchStart"
-  @mousedown="this.onMouseDown"
-	:class="classname"
-  >
-	<slot></slot>
+  <div :class="classnames.default">
+    <DraggableElement 
+      :class="classnames.draggable"
+      @drag="$emit('drag', $event)" 
+      @leave="$emit('leave')"
+      @enter="$emit('enter')"
+    >
+	    <slot></slot>
+    </DraggableElement>
   </div>
 </template>
 
 <style lang="scss">
 .vue-handler-wrapper {
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   position: absolute;
   transform: translate(-50%, -50%);
+  &__draggable {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
   &--west-north {
     left: 0;
     top: 0;

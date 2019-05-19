@@ -68,10 +68,10 @@ export default {
     HORIZONTAL_DIRECTIONS.forEach(hDirection => {
       VERTICAL_DIRECTIONS.forEach(vDirection => {
         if (hDirection !== vDirection) {
-          let { name, className } = directionNames(hDirection, vDirection);
+          let { name, classname } = directionNames(hDirection, vDirection);
           points.push({
             name,
-            className,
+            classname,
             verticalDirection: vDirection,
             horizontalDirection: hDirection
           });
@@ -163,9 +163,6 @@ export default {
       };
       const handler = dragEvent.element;
       const { left, right, bottom, top } = handler.getBoundingClientRect();
-
-      console.log("111>>>", position , {left, distance: position.left - right + anchor.right})
-      
 
       if (horizontalDirection === "west") {
         directions.left += left - position.left + anchor.left;

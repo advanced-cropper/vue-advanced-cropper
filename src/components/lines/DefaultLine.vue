@@ -64,6 +64,7 @@ export default {
   transition: border 0.5s;
   border-color: transparent;
   border-width: 0px;
+  border-style: solid;
 
   &--south,
   &--north {

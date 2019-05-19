@@ -35,6 +35,12 @@ export default {
     stencilWidth: {
       type: Number
     },
+    stencilLeft: {
+      type: Number
+    },
+    stencilTop: {
+      type: Number
+    },
     left: {
       type: Number
     },
@@ -46,10 +52,6 @@ export default {
     },
     imageHeight: {
       type: Number
-    },
-    disableDefaultClasses: {
-      type: Boolean,
-      default: false
     },
     handlers: {
       type: Object
@@ -84,6 +86,12 @@ export default {
     classname: {
       type: String
     },
+    previewClassname: {
+      type: String
+    },
+    boundingBoxClassname: {
+      type: String
+    },
     type: {
       type: String,
       default: "RectangleStencil"
@@ -115,14 +123,16 @@ export default {
   computed: {
     classes() {
       return {
-        stencil: classnames(
-          cn(),
-          this.classname
-        ),
-        preview: classnames(
-          cn("preview"),
-          this.previewClassname
-        )
+        stencil: classnames(cn(), this.classname),
+        preview: classnames(cn("preview"), this.previewClassname)
+      };
+    },
+    style() {
+      return {
+        width: `${this.stencilWidth}px`,
+        height: `${this.stencilHeight}px`,
+        left: `${this.stencilLeft}px`,
+        top: `${this.stencilTop}px`
       };
     }
   }
@@ -130,10 +140,10 @@ export default {
 </script>
 
 <template>
-  <div :class="classes.stencil">
+  <div :class="classes.stencil" :style="style">
     <BoundingBox 
       @resize="onResize"
-      :classname="classname"
+      :classname="boundingBoxClassname"
       :handlers="handlers"
       :handlerComponent="handlerComponent"
       :handlersClassnames="handlersClassnames"
@@ -159,6 +169,7 @@ export default {
 
 <style lang="scss">
 .vue-rectangle-stencil {
+  position: absolute;
   background: rgba(red, 0.1);
   height: 100%;
   width: 100%;

@@ -2,16 +2,15 @@
 import classnames from "classnames";
 import bem from "easy-bem";
 import { directionNames } from "../../utils/core.js";
-import draggable from "../../mixins/draggable";
+import DraggableElement from './DraggableElement.vue';
 
 const cn = bem("vue-line-wrapper");
 
-const HORIZONTAL_DIRECTIONS = ["east", "west", null];
-const VERTICAL_DIRECTIONS = ["south", "north", null];
-
 export default {
   name: "line-wrapper",
-  mixins: [draggable],
+  components: {
+    DraggableElement
+  },
   props: {
     position: {
       type: String,
@@ -27,16 +26,14 @@ export default {
 </script>
 
 <template>
-  <div 
-	ref="draggable"
-	@mouseover="this.onMouseOver"
-	@mouseleave="this.onMouseLeave"
-    @mousedown="this.onMouseDown"
-	@touchstart="this.onTouchStart"
-	:class="classname"
+  <DraggableElement 
+    :class="classname"
+    @drag="$emit('drag', $event)" 
+    @leave="$emit('leave')"
+    @enter="$emit('enter')"
   >
-	<slot></slot>
-  </div>
+    <slot></slot>
+  </DraggableElement>
 </template>
 
 <style lang="scss">

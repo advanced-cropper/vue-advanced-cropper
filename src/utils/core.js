@@ -4,6 +4,70 @@ import {
 	ALL_DIRECTIONS
 } from './constants'
 
+export function fitConditions(directions, frozenDirections, coordinates, restrictions, coefficient, imageSize) {
+	const { minHeight, minWidth, maxHeight, maxWidth } = restrictions
+	const currentWidth = coordinates.width + coefficient * (directions.left + directions.right)
+	const currentHeight = coordinates.height + coefficient * (directions.top + directions.bottom)
+
+	let maxResize = {
+		width: Infinity,
+		height: Infinity
+	}
+	
+	// Break right border
+	if (Math.floor(coordinates.left + coordinates.width + coefficient * directions.right) > imageSize.width) {
+		maxResize.width = Math.min(maxResize.width, imageSize.width - (coordinates.left + coordinates.width))
+	}
+	// Break left border
+	if (coordinates.left - coefficient * directions.left < 0) {
+		maxResize.width = Math.min(maxResize.width, coordinates.left)
+	}
+	// Break min width
+	if (currentWidth < minWidth) {
+		maxResize.width = Math.min(maxResize.width, minWidth - coordinates.width)
+	}
+	// Break max width
+	if (currentWidth > maxWidth) {
+		maxResize.width = Math.min(maxResize.width, maxWidth - coordinates.width)
+	}
+	// Break bottom border
+	if (Math.floor(coordinates.top + coordinates.height + coefficient * directions.bottom) > imageSize.height) {
+		maxResize.height = Math.min(maxResize.height, imageSize.height - (coordinates.top + coordinates.height))
+	}
+	// Break top border
+	if (coordinates.top - coefficient * directions.top < 0) {
+		maxResize.height = Math.min(maxResize.height, coordinates.top)
+	}
+	// Break min height
+	if (currentHeight < minHeight) {
+		maxResize.height = Math.min(maxResize.height, minHeight - coordinates.height)
+	}
+	// Break max height
+	if (currentHeight > maxHeight) {
+		maxResize.height = Math.min(maxResize.height, maxHeight - coordinates.height)
+	}
+
+	const result = {...directions}
+
+	if (maxResize.width !== Infinity && (directions.right + directions.left)) {
+		const multiplier = maxResize.width / ((directions.right + directions.left) * coefficient)
+		HORIZONTAL_DIRECTIONS.forEach(direction => {
+			result[direction] *= multiplier
+		})
+		frozenDirections.width = true
+	}
+
+	if (maxResize.height !== Infinity && (directions.bottom + directions.top)) {
+		const multiplier = maxResize.height / ((directions.bottom + directions.top) * coefficient)
+		VERTICAL_DIRECTIONS.forEach(direction => {
+			result[direction] *= multiplier
+		})
+		frozenDirections.height = true
+	}
+
+	return result;
+}
+
 export function resize (coordinates, restrictions, imageSize, coefficient, aspectRatio, resizeEvent) {
 	const actualCoordinates = {
 		...coordinates,
@@ -11,7 +75,7 @@ export function resize (coordinates, restrictions, imageSize, coefficient, aspec
 		bottom: coordinates.top + coordinates.height
 	}
 
-	const directions = {
+	let directions = {
 		...resizeEvent.directions
 	}
 
@@ -22,6 +86,11 @@ export function resize (coordinates, restrictions, imageSize, coefficient, aspec
 		right: true,
 		bottom: true,
 		top: true
+	}
+
+	let frozenDirections = {
+		width: false,
+		height: false
 	}
 
 	Object.keys(allowedDirections).forEach(direction => {
@@ -58,6 +127,9 @@ export function resize (coordinates, restrictions, imageSize, coefficient, aspec
 		})
 	}
 
+	// 1.5. Third step: check if desired box with correct aspect ratios break some limits
+	directions = fitConditions(directions, frozenDirections, actualCoordinates, restrictions, coefficient, imageSize);
+
 	// 2. Second step: fix desired box to correspondent to aspect ratio
 	currentWidth = actualCoordinates.width + coefficient * (directions.left + directions.right)
 	currentHeight = actualCoordinates.height + coefficient * (directions.top + directions.bottom)
@@ -74,7 +146,7 @@ export function resize (coordinates, restrictions, imageSize, coefficient, aspec
 
 	if (ratioBroken) {
 		if (!respectDirection) {
-			if (currentWidth > currentHeight) {
+			if (actualCoordinates.width > actualCoordinates.height) {
 				respectDirection = 'width'
 			} else {
 				respectDirection = 'height'
@@ -116,64 +188,14 @@ export function resize (coordinates, restrictions, imageSize, coefficient, aspec
 	}
 
 	// 3. Third step: check if desired box with correct aspect ratios break some limits
-	currentWidth = actualCoordinates.width + coefficient * (directions.left + directions.right)
-	currentHeight = actualCoordinates.height + coefficient * (directions.top + directions.bottom)
-
-	const maxResize = {
-		width: Infinity,
-		height: Infinity
-	}
-
-	if (Math.floor(actualCoordinates.left + actualCoordinates.width + coefficient * directions.right) > imageSize.width) {
-		maxResize.width = Math.min(maxResize.width, imageSize.width - (actualCoordinates.left + actualCoordinates.width))
-	}
-	if (actualCoordinates.left - coefficient * directions.left < 0) {
-		maxResize.width = Math.min(maxResize.width, actualCoordinates.left)
-	}
-	if (currentWidth < minWidth) {
-		maxResize.width = Math.min(maxResize.width, minWidth - actualCoordinates.width)
-	}
-	if (currentWidth > maxWidth) {
-		maxResize.width = Math.min(maxResize.width, maxWidth - actualCoordinates.width)
-	}
-
-	if (Math.floor(actualCoordinates.top + actualCoordinates.height + coefficient * directions.bottom) > imageSize.height) {
-		maxResize.height = Math.min(maxResize.height, imageSize.height - (actualCoordinates.top + actualCoordinates.height))
-	}
-	if (actualCoordinates.top - coefficient * directions.top < 0) {
-		maxResize.height = Math.min(maxResize.height, actualCoordinates.top)
-	}
-	if (currentHeight < minHeight) {
-		maxResize.height = Math.min(maxResize.height, minHeight - actualCoordinates.height)
-	}
-	if (currentHeight > maxHeight) {
-		maxResize.height = Math.min(maxResize.height, maxHeight - actualCoordinates.height)
-	}
-
-	const frozenDirections = {
-		width: false,
-		height: false
-	}
-
-	if (maxResize.width !== Infinity && (directions.right + directions.left)) {
-		const multiplier = maxResize.width / ((directions.right + directions.left) * coefficient)
-		HORIZONTAL_DIRECTIONS.forEach(direction => {
-			directions[direction] *= multiplier
-		})
-		frozenDirections.width = true
-	}
-
-	if (maxResize.height !== Infinity && (directions.bottom + directions.top)) {
-		const multiplier = maxResize.height / ((directions.bottom + directions.top) * coefficient)
-		VERTICAL_DIRECTIONS.forEach(direction => {
-			directions[direction] *= multiplier
-		})
-		frozenDirections.height = true
-	}
+	directions = fitConditions(directions, frozenDirections, actualCoordinates, restrictions, coefficient, imageSize);
 
 	// 4. Fourth step: undo some resizes to correspondent with aspect ratio and limits simultaneosly
 	const limitedWidth = actualCoordinates.width + coefficient * (directions.left + directions.right)
 	const limitedHeight = actualCoordinates.height + coefficient * (directions.top + directions.bottom)
+
+	console.log(">>>>", limitedWidth, limitedHeight)
+
 
 	if (event.shiftKey && limitedWidth / limitedHeight !== actualCoordinates.width / actualCoordinates.height) {
 		ratioBroken = actualCoordinates.width / actualCoordinates.height
@@ -182,9 +204,11 @@ export function resize (coordinates, restrictions, imageSize, coefficient, aspec
 	} else if (limitedWidth / limitedHeight > aspectRatio.maximum) {
 		ratioBroken = aspectRatio.maximum
 	}
+
 	if (ratioBroken) {
 		if (!frozenDirections.width) {
 			const multiplier = (directions.right + directions.left) ? (limitedHeight * ratioBroken - actualCoordinates.width) / ((directions.right + directions.left) * coefficient) : 0
+			//console.log(multiplier)
 			HORIZONTAL_DIRECTIONS.forEach(direction => {
 				directions[direction] *= multiplier
 			})
@@ -194,18 +218,19 @@ export function resize (coordinates, restrictions, imageSize, coefficient, aspec
 				directions[direction] *= multiplier
 			})
 		} else {
+			// const multiplier = Math.min(
+			// 	directions.bottom + directions.top ? (limitedWidth / ratioBroken - actualCoordinates.height) / ((directions.top + directions.bottom) * coefficient) : 0,
+			// 	(directions.right + directions.left) ? (limitedHeight * ratioBroken - actualCoordinates.width) / ((directions.right + directions.left) * coefficient) : 0
+			// )
+			
 			ALL_DIRECTIONS.forEach(direction => {
-				directions[direction] *= 0
+				directions[direction] *= 0//Math.min(0, multiplier)
 			})
 		}
 	}
 
-	console.log('>>>', {
-		currentWidth: coordinates.width,
-		width: coordinates.width + coefficient * (directions.right + directions.left),
-		right: directions.right
-	})
 
+	
 	return {
 		width: coordinates.width + coefficient * (directions.right + directions.left),
 		height: coordinates.height + coefficient * (directions.top + directions.bottom),
@@ -283,6 +308,7 @@ export function defaultSize (cropper, image, props) {
 		newWidth = Math.max(minWidth, maxWidth * 0.8)
 		newHeight = Math.max(minHeight, maxHeight * 0.8)
 	}
+
 	return {
 		height: newHeight,
 		width: newWidth
@@ -290,13 +316,13 @@ export function defaultSize (cropper, image, props) {
 }
 
 export function directionNames (hDirection, vDirection) {
-	let name, className
+	let name, classname
 	if (hDirection && vDirection) {
 		name = `${hDirection}${vDirection[0].toUpperCase()}${vDirection.slice(1)}`
-		className = `${hDirection}-${vDirection}`
+		classname = `${hDirection}-${vDirection}`
 	} else {
 		name = hDirection || vDirection
-		className = hDirection || vDirection
+		classname = hDirection || vDirection
 	}
-	return {name, className}
+	return {name, classname}
 }

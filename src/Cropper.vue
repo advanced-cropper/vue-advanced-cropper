@@ -11,6 +11,16 @@ import * as core from "./utils/core";
 
 const cn = bem("vue-advanced-cropper");
 
+export {
+  PreviewCanvas,
+  PreviewImage,
+  DraggableArea,
+  BoundingBox,
+  LineWrapper,
+  HandlerWrapper,
+  DraggableElement,
+} from "./components/service";
+
 export default {
   name: "Cropper",
   props: {
@@ -115,18 +125,9 @@ export default {
     },
     classes() {
       return {
-        cropper: classnames(
-          cn(),
-          this.classname
-        ),
-        image: classnames(
-          cn("image"),
-          this.imageClassname
-        ),
-        area: classnames(
-          cn("area"),
-          this.areaClassname
-        ),
+        cropper: classnames(cn(), this.classname),
+        image: classnames(cn("image"), this.imageClassname),
+        area: classnames(cn("area"), this.areaClassname),
         stencilWrapper: classnames(
           cn("stencil-wrapper"),
           this.stencilWrapperClassname
@@ -261,7 +262,7 @@ export default {
           this.restrictions,
           this.imageSize,
           this.coefficient,
-          this.stencilAspectRatio(),
+          this.stencilAspectRatios(),
           resizeEvent
         )
       );
@@ -282,7 +283,7 @@ export default {
       const image = this.$refs.image;
       const imageSize = this.imageSize;
       const { minWidth, minHeight, maxWidth, maxHeight } = this.restrictions;
-      const aspectRatio = this.stencilAspectRatio();
+      const aspectRatio = this.stencilAspectRatios();
       const coefficient = this.coefficient;
 
       let coordinates = {};
@@ -343,17 +344,19 @@ export default {
     },
     refreshImage() {
       const image = this.$refs.image;
-      image.style.maxHeight = 'initial';
-      image.style.maxWidth = 'initial';
+      image.style.maxHeight = "initial";
+      image.style.maxWidth = "initial";
 
       return new Promise(resolve => {
         const cropper = this.$refs.cropper;
 
         this.imageSize.height = image.naturalHeight;
         this.imageSize.width = image.naturalWidth;
-        
+
         this.boundarySize.width = cropper.clientWidth;
         this.boundarySize.height = cropper.clientHeight;
+
+        console.log("!", this.imageSize.width, this.imageSize.height, this.boundarySize.width, this.boundarySize.height)
 
         Vue.nextTick(() => {
           const { height, width } = this.areaSize(cropper, image);
@@ -366,10 +369,8 @@ export default {
           resolve();
         });
       });
-
-
     },
-    stencilAspectRatio() {
+    stencilAspectRatios() {
       if (this.$refs.stencil.aspectRatios) {
         return this.$refs.stencil.aspectRatios();
       } else {
@@ -389,30 +390,23 @@ export default {
   <div :class="classes.cropper" ref="cropper">
     <img :src="src" :class="classes.image" :style="imageStyle" ref="image"/>
     <div :class="classes.area" :style="areaStyle">
-      <div :class="classes.stencilWrapper" :style="wrapperStyle" ref="stencil">
-        <component 
-          :is="stencilComponent" 
-          :img="src"
-          :left="coordinates.left"
-          :top="coordinates.top"
-          :width="coordinates.width"
-          :height="coordinates.height"
-          :stencil-width="stencilCoordinates.width"
-          :stencil-height="stencilCoordinates.height"
-          :cropper-data="{
-            maxWidth: restrictions.maxWidth,
-            minWidth: restrictions.minWidth,
-            maxHeight: restrictions.maxHeight,
-            minHeight: restrictions.minHeight,
-            imageWidth: imageSize.width, 
-            imageHeight: imageSize.height, 
-          }"
-          @resize="onResize"
-          @move="onMove"
-          v-bind="stencilProps"
-        />
-       <canvas ref="canvas" :style="{display:'none'}"></canvas>
-      </div>
+      <component 
+        ref="stencil"
+        :is="stencilComponent" 
+        :img="src"
+        :left="coordinates.left"
+        :top="coordinates.top"
+        :width="coordinates.width"
+        :height="coordinates.height"
+        :stencil-width="stencilCoordinates.width"
+        :stencil-height="stencilCoordinates.height"
+        :stencil-left="stencilCoordinates.left"
+        :stencil-top="stencilCoordinates.top"
+        @resize="onResize"
+        @move="onMove"
+        v-bind="stencilProps"
+      />
+      <canvas ref="canvas" :style="{display:'none'}"></canvas>
     </div>
   </div>
 </template>

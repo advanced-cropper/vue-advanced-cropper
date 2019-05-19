@@ -15,6 +15,9 @@ export default {
     classname: {
       type: String
     },
+    hoverClassname: {
+      type: String
+    },
     horizontalPosition: {
       type: String
     },
@@ -25,13 +28,23 @@ export default {
   computed: {
     classnames() {
       return {
-        default: classnames(cn(), this.classname)
+        default: classnames(
+          cn({ [this.position]: true }),
+          this.classname,
+          this.hover && this.hoverClassname
+        )
       };
     }
   },
   methods: {
     onDrag(dragEvent) {
       this.$emit("drag", dragEvent);
+    },
+    onEnter() {
+      this.hover = true;
+    },
+    onLeave() {
+      this.hover = false;
     }
   }
 };
