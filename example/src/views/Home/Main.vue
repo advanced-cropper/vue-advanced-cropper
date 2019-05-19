@@ -2,7 +2,7 @@
   <div class="home">
     <div class="presentation">
       <div class="container container--centered">
-        <img class="presentation__logo" src="../assets/home/logo.svg" alt="">
+        <img class="presentation__logo" src="../../assets/home/logo.svg" alt="">
         <div class="presentation__title-wrapper">
           <h1 class="presentation__title">
             Advanced Cropper
@@ -17,7 +17,7 @@
         <div class="presentation__buttons">
           <a class="presentation__button" href="http://github.com/Norserium/vue-advanced-cropper/">
             <home-button
-              :icon="require('../assets/home/github.svg')"
+              :icon="require('../../assets/home/github.svg')"
               text="Github"
               caption="Sources / Development"
               action
@@ -25,7 +25,7 @@
           </a>
           <a class="presentation__button" href="">
             <home-button
-              :icon="require('../assets/home/npm.svg')"
+              :icon="require('../../assets/home/npm.svg')"
               text="NPM"
               caption="Library / Publishing"
             />
@@ -34,14 +34,14 @@
         </div>
       </div>
       <div class="presentation__border">
-        <img  src="../assets/home/presentation-bottom-border.svg" alt="">
+        <img  src="../../assets/home/presentation-bottom-border.svg" alt="">
       </div>
     </div>
 
     <div class="demo-section">
       <div class="container container--centered">
         <Cropper 
-          :src="require('../assets/test.jpeg')"
+          :src="require('../../assets/test.jpeg')"
           classname="demo-cropper"
           image-classname="demo-cropper__image"
           :min-width="20"
@@ -62,7 +62,7 @@
         />
       </div>
       <div class="section-border section-border--hide-mobile">
-        <img  src="../assets/home/gray-bottom-border.svg" alt="">
+        <img  src="../../assets/home/gray-bottom-border.svg" alt="">
       </div>
     </div>
 
@@ -109,7 +109,7 @@
         </div>
       </div>
       <div class="section-border">
-        <img  src="../assets/home/white-bottom-border.svg" alt="">
+        <img  src="../../assets/home/white-bottom-border.svg" alt="">
       </div>
 
     </div>
@@ -134,7 +134,7 @@
         <div class="row">
           <div class="col">
              <div class="example-cropper">
-              <img :src="require('../assets/home/example-cropper.svg')"/>
+              <img :src="require('../../assets/home/example-cropper.svg')"/>
              </div>
           </div>
           <div class="col">
@@ -170,7 +170,7 @@
         <div class="row">
           <div class="col">
             <div class="example-stencil">
-              <img :src="require('../assets/home/example-stencil.svg')"/>
+              <img :src="require('../../assets/home/example-stencil.svg')"/>
             </div>
           </div>
           <div class="col">
@@ -196,12 +196,12 @@
         <div class="row">
           <div class="col">
             <div class="example-event">
-              <img :src="require('../assets/home/resize-event.svg')"/>
+              <img :src="require('../../assets/home/resize-event.svg')"/>
             </div>
           </div>
           <div class="col">
             <div class="example-event">
-              <img :src="require('../assets/home/move-event.svg')"/>
+              <img :src="require('../../assets/home/move-event.svg')"/>
             </div>
           </div>
         </div>
@@ -214,7 +214,7 @@
 
         <div class="row">
           <div class="example-stencil-elements">
-            <img :src="require('../assets/home/example-stencil-elements.svg')"/>
+            <img :src="require('../../assets/home/example-stencil-elements.svg')"/>
           </div>
         </div>
 
@@ -228,8 +228,21 @@
 
         <div class="row">
           <p>
-            That’s almost all (you can find detailed tutorials <a class="link">here</a>). There are different stencils below as examples of different stencils that you can create
+            That’s almost all that you need to know. There are different stencils below as examples of different stencils that you can create
           </p>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <Example>
+              <CircleExample/> 
+            </Example>            
+          </div>
+          <div class="col">
+            <Example>
+              <CommonExample/> 
+            </Example>            
+          </div>
         </div>
 
 
@@ -238,96 +251,15 @@
   </div>
 </template>
 
-
-<script>
-// @ is an alias to /src
-import HelloWorld from "@/components/HelloWorld.vue";
-import HomeButton from "@/components/HomeButton.vue";
-import Cropper from "vue-advanced-cropper";
-
-export default {
-  name: "home",
-  components: {
-    HelloWorld,
-    HomeButton,
-    Cropper,
-  },
-  methods: {
-    change(coordinates) {
-      //console.log("CHANGE!", coordinates)
-    }
-  },
-  data() {
-    return {
-      stencilExample:
-`\<script\>
-import {
-  PreviewImage, 
-  BoundingBox, 
-  MoveableArea
-} from 'vue-advanced-cropper/service';
-
-export default {
-  name: "MyStencil",
-  components: {
-    PreviewImage, BoundingBox, MoveableArea
-  },
-  props: [
-    // Image src
-    'img',
-    // Coordinates of box relative to original image size
-    'height', 'width', 'left', 'top',
-    // Stencil size desired by cropper 
-    'stencilHeight', 'stencilWidth',
-    // Aspect ratios
-    'aspectRatio', 'minAspectRatio', 'maxAspectRatio',
-  ],
-  methods: {
-    onMove(moveEvent) {
-      this.$emit('move', moveEvent)
-    },
-    onResize(resizeEvent) {
-      this.$emit('resize', resizeEvent)
-    },
-    aspectRatios() {
-      return {
-          minimum: this.aspectRatio || this.minAspectRatio,
-          maximum: this.aspectRatio || this.maxAspectRatio,
-        }
-    }
-  },
-};
-\<\/script\>
-
-<template>
-  <div class="my-stencil">
-    <BoundingBox @resize="onResize">
-      <MoveableArea @move="onMove">
-        <PreviewImage 
-          :img="img"
-          :previewWidth="stencilWidth" 
-          :previewHeight="stencilHeight"
-          :width="width"
-          :height="height"
-          :left="left"
-          :top="top"
-        />
-      </MoveableArea>
-    </BoundingBox>    
-  </div>
-</template>`
-    }
-  }
-};
-</script>
-
 <style lang="scss">
-@import "../styles/constants";
-@import "../styles/grid";
+@import "../../styles/constants";
+@import "../../styles/grid";
+
 
 .home {
+  padding-bottom: 40px;
   .presentation {
-    background: url("../assets/home/background.png");
+    background: url("../../assets/home/background.png");
     background-size: auto 100%;
     background-color: $vue-color;
     background-size: cover;
@@ -347,7 +279,6 @@ export default {
       bottom: 0;
       position: absolute;
     }
-  
 
     &__title {
       font-size: 44px;
@@ -378,7 +309,7 @@ export default {
       margin-top: 50px;
       margin-bottom: 50px;
       @media (max-width: $screen-xs) {
-        width: 100%;        
+        width: 100%;
         display: block;
         padding-left: 30px;
         padding-right: 30px;
@@ -416,7 +347,7 @@ export default {
 
   .demo-section {
     position: relative;
-    background: url("../assets/home/demo-background.png");
+    background: url("../../assets/home/demo-background.png");
     background-size: auto 100%;
     background-color: #0d0d0d;
     width: 100%;
@@ -501,7 +432,9 @@ export default {
       & + .col {
         margin-top: 30px;
       }
-      &, &:not(:first-child), &:not(:last-child) {
+      &,
+      &:not(:first-child),
+      &:not(:last-child) {
         padding: 0px;
       }
     }
@@ -548,7 +481,6 @@ export default {
     line-height: 32px;
     font-weight: lighter;
     li {
-
       list-style: none;
       position: relative;
       &:before {
@@ -576,7 +508,6 @@ export default {
       position: relative;
     }
   }
-
 
   .feature {
     font-weight: lighter;
@@ -613,7 +544,7 @@ export default {
   .shift {
     margin-top: 20px;
   }
-  
+
   .title {
     font-size: 45px;
     font-family: ArBerkley;
@@ -643,6 +574,92 @@ export default {
     font-weight: 600;
   }
 }
-
 </style>
 
+
+
+<script>
+import HelloWorld from "@/components/HelloWorld.vue";
+import HomeButton from "@/components/HomeButton.vue";
+import Example from "@/components/Example.vue";
+import CircleExample from "./Examples/CircleExample/Example.vue";
+import CommonExample from "./Examples/CommonExample/Example.vue";
+import Cropper from "vue-advanced-cropper";
+
+export default {
+  name: "home",
+  components: {
+    HelloWorld,
+    HomeButton,
+    Example,
+    Cropper,
+    CommonExample,
+    CircleExample
+  },
+  methods: {
+    change(coordinates) {
+      //console.log("CHANGE!", coordinates)
+    }
+  },
+  data() {
+    return {
+      stencilExample: `\<script\>
+import {
+  PreviewImage, 
+  BoundingBox, 
+  MoveableArea
+} from 'vue-advanced-cropper/service';
+
+export default {
+  name: "MyStencil",
+  components: {
+    PreviewImage, BoundingBox, MoveableArea
+  },
+  props: [
+    // Image src
+    'img',
+    // Coordinates of box relative to original image size
+    'height', 'width', 'left', 'top',
+    // Stencil size desired by cropper 
+    'stencilHeight', 'stencilWidth',
+    // Aspect ratios
+    'aspectRatio', 'minAspectRatio', 'maxAspectRatio',
+  ],
+  methods: {
+    onMove(moveEvent) {
+      this.$emit('move', moveEvent)
+    },
+    onResize(resizeEvent) {
+      this.$emit('resize', resizeEvent)
+    },
+    aspectRatios() {
+      return {
+          minimum: this.aspectRatio || this.minAspectRatio,
+          maximum: this.aspectRatio || this.maxAspectRatio,
+        }
+    }
+  },
+};
+\<\/script\>
+
+<template>
+  <div class="my-stencil">
+    <BoundingBox @resize="onResize">
+      <MoveableArea @move="onMove">
+        <PreviewImage 
+          :img="img"
+          :previewWidth="stencilWidth" 
+          :previewHeight="stencilHeight"
+          :width="width"
+          :height="height"
+          :left="left"
+          :top="top"
+        />
+      </MoveableArea>
+    </BoundingBox>    
+  </div>
+</template>`
+    };
+  }
+};
+</script>
