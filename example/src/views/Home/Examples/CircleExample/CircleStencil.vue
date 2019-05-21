@@ -63,13 +63,18 @@ export default {
       const { position, anchor, element } = dragEvent;
       const { left, right, bottom, top } = element.getBoundingClientRect();
 
+      const widthResize = position.left - left - anchor.left
+      const heightResize = top - position.top + anchor.top
+
+      const resize = (widthResize + heightResize) / 2
+
       this.$emit("resize", {
         nativeEvent: dragEvent.nativeEvent,
         directions: {
-          left: position.left - left - anchor.left,
-          right: position.left - left - anchor.left,
-          top: top - position.top + anchor.top,
-          bottom: top - position.top + anchor.top,
+          left: resize,
+          right: resize,
+          top: resize,
+          bottom: resize,
         }
       });
     },
