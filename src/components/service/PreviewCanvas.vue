@@ -5,16 +5,16 @@ import bem from 'easy-bem';
 const cn = bem('vue-preview-canvas')
 
 export default {
-  name: "PreviewCanvas",
-  props: {
-    img: {
-      type: String
-    },
-    classname: {
-      type: String,
-    },
-    imageClassname: {
-      type: String,
+	name: 'PreviewCanvas',
+	props: {
+		img: {
+			type: String
+		},
+		classname: {
+			type: String,
+		},
+		imageClassname: {
+			type: String,
 		},
 		width: {
 			type: Number,
@@ -36,13 +36,13 @@ export default {
 			type: Number,
 			required: true
 		}
-  },
-  computed: {
-    classnames() {
-      return {
-        default: classnames(cn(), this.classname),
-        image: classnames(cn('image'), this.imageClassname)
-      }
+	},
+	computed: {
+		classnames() {
+			return {
+				default: classnames(cn(), this.classname),
+				image: classnames(cn('image'), this.imageClassname)
+			}
 		},
 		wrapperStyle() {
 			return {
@@ -61,14 +61,22 @@ export default {
 				left: `${-this.left*coefficient}px`,
 				top: `${-this.top*coefficient}px`
 			}
-    }
-  },
+		}
+	},
 };
 </script>
 
 <template>
-  <div :class="classnames.default" :style="wrapperStyle">
-    <img :src="img" :class="classnames.image" :style="imageStyle" ref="image"/> 
+  <div
+    :class="classnames.default"
+    :style="wrapperStyle"
+  >
+    <img
+      ref="image"
+      :src="img"
+      :class="classnames.image"
+      :style="imageStyle"
+    >
   </div>
 </template>
 

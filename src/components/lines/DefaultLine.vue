@@ -1,61 +1,66 @@
 <script>
-import classnames from "classnames";
-import bem from "easy-bem";
-import draggable from "../../mixins/draggable.js";
-import { LineWrapper } from "../service";
+import classnames from 'classnames';
+import bem from 'easy-bem';
+import draggable from '../../mixins/draggable.js';
+import { LineWrapper } from '../service';
 
-const cn = bem("vue-default-line");
+const cn = bem('vue-default-line');
 
 export default {
-  name: "DefaultLine",
-  components: {
-    LineWrapper
-  },
-  props: {
-    classname: {
-      type: String
-    },
-    hoverClassname: {
-      type: String
-    },
-    position: {
-      type: String
-    }
-  },
-  data() {
-    return {
-      hover: false
-    };
-  },
-  computed: {
-    classnames() {
-      return {
-        default: classnames(
-          cn({ [this.position]: true }),
-          this.classname,
-          this.hover && this.hoverClassname
-        )
-      };
-    }
-  },
-  methods: {
-    onDrag(dragEvent) {
-      this.$emit("drag", dragEvent);
-    },
-    onEnter() {
-      this.hover = true;
-    },
-    onLeave() {
-      this.hover = false;
-    }
-  }
+	name: 'DefaultLine',
+	components: {
+		LineWrapper
+	},
+	props: {
+		classname: {
+			type: String
+		},
+		hoverClassname: {
+			type: String
+		},
+		position: {
+			type: String
+		}
+	},
+	data() {
+		return {
+			hover: false
+		};
+	},
+	computed: {
+		classnames() {
+			return {
+				default: classnames(
+					cn({ [this.position]: true }),
+					this.classname,
+					this.hover && this.hoverClassname
+				)
+			};
+		}
+	},
+	methods: {
+		onDrag(dragEvent) {
+			this.$emit('drag', dragEvent);
+		},
+		onEnter() {
+			this.hover = true;
+		},
+		onLeave() {
+			this.hover = false;
+		}
+	}
 };
 </script>
 
 <template>
-	<LineWrapper @enter="onEnter" @leave="onLeave" @drag="onDrag" :position="position">
-		<div :class="classnames.default" ></div>
-	</LineWrapper>
+  <LineWrapper
+    :position="position"
+    @enter="onEnter"
+    @leave="onLeave"
+    @drag="onDrag"
+  >
+    <div :class="classnames.default" />
+  </LineWrapper>
 </template>
 
 <style lang="scss">

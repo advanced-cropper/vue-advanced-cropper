@@ -1,38 +1,38 @@
 <script>
-import classnames from "classnames";
-import bem from "easy-bem";
-import { directionNames } from "../../utils/core.js";
+import classnames from 'classnames';
+import bem from 'easy-bem';
+import { directionNames } from '../../utils/core.js';
 import DraggableElement from './DraggableElement.vue';
 
-const cn = bem("vue-line-wrapper");
+const cn = bem('vue-line-wrapper');
 
 export default {
-  name: "line-wrapper",
-  components: {
-    DraggableElement
-  },
-  props: {
-    position: {
-      type: String,
-      required: true
-    }
-  },
-  computed: {
-    classname() {
-      return cn({ [this.position]: true });
-    }
-  }
+	name: 'LineWrapper',
+	components: {
+		DraggableElement
+	},
+	props: {
+		position: {
+			type: String,
+			required: true
+		}
+	},
+	computed: {
+		classname() {
+			return cn({ [this.position]: true });
+		}
+	}
 };
 </script>
 
 <template>
-  <DraggableElement 
+  <DraggableElement
     :class="classname"
-    @drag="$emit('drag', $event)" 
+    @drag="$emit('drag', $event)"
     @leave="$emit('leave')"
     @enter="$emit('enter')"
   >
-    <slot></slot>
+    <slot />
   </DraggableElement>
 </template>
 

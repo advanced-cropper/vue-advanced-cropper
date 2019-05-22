@@ -1,8 +1,7 @@
 <template>
-	<Cropper 
+  <Cropper
     :src="require('./assets/image.jpg')"
     classname="common-example"
-    @change="change"
     :stencil-props="{
       aspectRatio: 10/12,
       classname: 'common-example__stencil',
@@ -14,19 +13,19 @@
       handlersClassnames: {
         default: 'common-example__handler',
         over: 'common-example__handler--hover',
-      } 
+      }
     }"
-	/>
+  />
 </template>
 
 <script>
-import Cropper from "vue-advanced-cropper";
+import Cropper from 'vue-advanced-cropper';
 
 export default {
-  name: 'common-example',
-  components: {
+	name: 'CommonExample',
+	components: {
 	  Cropper
-  }
+	}
 }
 </script>
 

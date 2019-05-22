@@ -1,60 +1,60 @@
 <script>
-import classnames from "classnames";
-import bem from "easy-bem";
-import { directionNames } from "../../utils/core.js";
+import classnames from 'classnames';
+import bem from 'easy-bem';
+import { directionNames } from '../../utils/core.js';
 import DraggableElement from './DraggableElement.vue';
 
-const cn = bem("vue-handler-wrapper");
+const cn = bem('vue-handler-wrapper');
 
-const HORIZONTAL_DIRECTIONS = ["east", "west", null];
-const VERTICAL_DIRECTIONS = ["south", "north", null];
+const HORIZONTAL_DIRECTIONS = ['east', 'west', null];
+const VERTICAL_DIRECTIONS = ['south', 'north', null];
 
 export default {
-  name: "handler-wrapper",
-  components: {
-    DraggableElement
-  },
-  props: {
-    horizontalPosition: {
-      type: String
-    },
-    verticalPosition: {
-      type: String
-    },
-    classname: {
-      type: String
-    }
-  },
-  computed: {
-    classnames() {
-      let defaultClassname;
-      if (this.horizontalPosition || this.verticalPosition) {
-        const position = directionNames(
-          this.horizontalPosition,
-          this.verticalPosition
-        );
-        defaultClassname = classnames(this.classname, cn({ [position.classname]: true }));
-      } else {
-        defaultClassname = classnames(this.classname, cn());
-      }
-      return {
-        default: defaultClassname,
-        draggable: cn('draggable')
-      }
-    }
-  }
+	name: 'HandlerWrapper',
+	components: {
+		DraggableElement
+	},
+	props: {
+		horizontalPosition: {
+			type: String
+		},
+		verticalPosition: {
+			type: String
+		},
+		classname: {
+			type: String
+		}
+	},
+	computed: {
+		classnames() {
+			let defaultClassname;
+			if (this.horizontalPosition || this.verticalPosition) {
+				const position = directionNames(
+					this.horizontalPosition,
+					this.verticalPosition
+				);
+				defaultClassname = classnames(this.classname, cn({ [position.classname]: true }));
+			} else {
+				defaultClassname = classnames(this.classname, cn());
+			}
+			return {
+				default: defaultClassname,
+				draggable: cn('draggable')
+			}
+		}
+	}
 };
 </script>
 
 <template>
   <div :class="classnames.default">
-    <DraggableElement 
+    <DraggableElement
       :class="classnames.draggable"
-      @drag="$emit('drag', $event)" 
+      @drag="$emit('drag', $event)"
       @leave="$emit('leave')"
       @enter="$emit('enter')"
     >
-	    <slot></slot>
+      <slot />
     </DraggableElement>
   </div>
 </template>

@@ -13,7 +13,7 @@ function fitConditions(directions, coordinates, restrictions, coefficient, image
 		width: Infinity,
 		height: Infinity
 	}
-	
+
 	// Break right border
 	if (Math.floor(coordinates.left + coordinates.width + coefficient * directions.right) > imageSize.width) {
 		maxResize.width = Math.min(maxResize.width, imageSize.width - (coordinates.left + coordinates.width))
@@ -69,7 +69,7 @@ function fitConditions(directions, coordinates, restrictions, coefficient, image
 		} else if (directions.right + directions.left) {
 			multiplier = maxResize.width / ((directions.right + directions.left) * coefficient)
 		}
-		
+
 		if (maxResize.height !== Infinity || maxResize.width !== Infinity) {
 			ALL_DIRECTIONS.forEach(direction => {
 				result[direction] *= multiplier
@@ -180,7 +180,7 @@ export function resize (coordinates, restrictions, imageSize, coefficient, aspec
 
 	// 3. Third step: check if desired box with correct aspect ratios break some limits and fit to this conditions
 	directions = fitConditions(directions, actualCoordinates, restrictions, coefficient, imageSize, ratioBroken);
-	
+
 	return {
 		width: coordinates.width + coefficient * (directions.right + directions.left),
 		height: coordinates.height + coefficient * (directions.top + directions.bottom),

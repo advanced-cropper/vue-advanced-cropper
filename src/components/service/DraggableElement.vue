@@ -1,31 +1,31 @@
 <script>
-import bem from "easy-bem";
-import draggable from "../../mixins/draggable";
+import bem from 'easy-bem';
+import draggable from '../../mixins/draggable';
 import classnames from 'classnames';
 
-const cn = bem("vue-draggable-element");
+const cn = bem('vue-draggable-element');
 
 export default {
-  name: "draggable-element",
-  mixins: [draggable],
-  props: {
-    classname: {
-      type: String
-    }
-  },
+	name: 'DraggableElement',
+	mixins: [draggable],
+	props: {
+		classname: {
+			type: String
+		}
+	},
 };
 </script>
 
 <template>
-  <div 
-	ref="draggable"
-	@touchstart="this.onTouchStart"
-  @mousedown="this.onMouseDown"
-	@mouseover="this.onMouseOver"
-	@mouseleave="this.onMouseLeave"
-	:class="classname"
+  <div
+    ref="draggable"
+    :class="classname"
+    @touchstart="onTouchStart"
+    @mousedown="onMouseDown"
+    @mouseover="onMouseOver"
+    @mouseleave="onMouseLeave"
   >
-	<slot></slot>
+    <slot />
   </div>
 </template>
 

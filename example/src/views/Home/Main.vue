@@ -2,7 +2,11 @@
   <div class="home">
     <div class="presentation">
       <div class="container container--centered">
-        <img class="presentation__logo" src="../../assets/home/logo.svg" alt="">
+        <img
+          class="presentation__logo"
+          src="../../assets/home/logo.svg"
+          alt=""
+        >
         <div class="presentation__title-wrapper">
           <h1 class="presentation__title">
             Advanced Cropper
@@ -15,7 +19,10 @@
           The really flexible cropper that gives you opportunity to create almost any cropper that you desire
         </div>
         <div class="presentation__buttons">
-          <a class="presentation__button" href="http://github.com/Norserium/vue-advanced-cropper/">
+          <a
+            class="presentation__button"
+            href="http://github.com/Norserium/vue-advanced-cropper/"
+          >
             <home-button
               :icon="require('../../assets/home/github.svg')"
               text="Github"
@@ -23,24 +30,29 @@
               action
             />
           </a>
-          <a class="presentation__button" href="">
+          <a
+            class="presentation__button"
+            href=""
+          >
             <home-button
               :icon="require('../../assets/home/npm.svg')"
               text="NPM"
               caption="Library / Publishing"
             />
           </a>
-
         </div>
       </div>
       <div class="presentation__border">
-        <img  src="../../assets/home/presentation-bottom-border.svg" alt="">
+        <img
+          src="../../assets/home/presentation-bottom-border.svg"
+          alt=""
+        >
       </div>
     </div>
 
     <div class="demo-section">
       <div class="container container--centered">
-        <Cropper 
+        <Cropper
           :src="require('../../assets/test.jpeg')"
           classname="demo-cropper"
           image-classname="demo-cropper__image"
@@ -56,13 +68,16 @@
             handlersClassnames: {
               default: 'demo-cropper__handler',
               hover: 'demo-cropper__handler--hover',
-            } 
+            }
           }"
           @change="change"
         />
       </div>
       <div class="section-border section-border--hide-mobile">
-        <img  src="../../assets/home/gray-bottom-border.svg" alt="">
+        <img
+          src="../../assets/home/gray-bottom-border.svg"
+          alt=""
+        >
       </div>
     </div>
 
@@ -109,9 +124,11 @@
         </div>
       </div>
       <div class="section-border">
-        <img  src="../../assets/home/white-bottom-border.svg" alt="">
+        <img
+          src="../../assets/home/white-bottom-border.svg"
+          alt=""
+        >
       </div>
-
     </div>
 
     <div class="concept-section">
@@ -121,21 +138,21 @@
         </h1>
         <div class="row">
           <p>
-            The goal of this library to give a developer opportunity create any cropper 
-            easily and effortless. To achieve it the croper is divided to two parts: 
+            The goal of this library to give a developer opportunity create any cropper
+            easily and effortless. To achieve it the croper is divided to two parts:
             broadly customizable <b>cropper</b> and arbitrary component <b>stencil</b>.
           </p>
         </div>
-        
+
         <h2 class="subtitle">
           What is cropper?
         </h2>
 
         <div class="row">
           <div class="col">
-             <div class="example-cropper">
-              <img :src="require('../../assets/home/example-cropper.svg')"/>
-             </div>
+            <div class="example-cropper">
+              <img :src="require('../../assets/home/example-cropper.svg')">
+            </div>
           </div>
           <div class="col">
             <p>
@@ -152,25 +169,25 @@
             </ul>
           </div>
         </div>
-       
+
         <h2 class="subtitle">
           What is stencil?
         </h2>
 
         <div class="row">
           <p>
-            Cropper operates the abstract box that represents current cropped area. 
-            But it just abstract couple of coordinates, to visualize the cropped area and 
+            Cropper operates the abstract box that represents current cropped area.
+            But it just abstract couple of coordinates, to visualize the cropped area and
             give the possibility to interact with cropper there is a <b>stencil</b> component.
           </p>
         </div>
 
-        <div class="shift"></div>
+        <div class="shift" />
 
         <div class="row">
           <div class="col">
             <div class="example-stencil">
-              <img :src="require('../../assets/home/example-stencil.svg')"/>
+              <img :src="require('../../assets/home/example-stencil.svg')">
             </div>
           </div>
           <div class="col">
@@ -196,12 +213,12 @@
         <div class="row">
           <div class="col">
             <div class="example-event">
-              <img :src="require('../../assets/home/resize-event.svg')"/>
+              <img :src="require('../../assets/home/resize-event.svg')">
             </div>
           </div>
           <div class="col">
             <div class="example-event">
-              <img :src="require('../../assets/home/move-event.svg')"/>
+              <img :src="require('../../assets/home/move-event.svg')">
             </div>
           </div>
         </div>
@@ -214,7 +231,7 @@
 
         <div class="row">
           <div class="example-stencil-elements">
-            <img :src="require('../../assets/home/example-stencil-elements.svg')"/>
+            <img :src="require('../../assets/home/example-stencil-elements.svg')">
           </div>
         </div>
 
@@ -224,7 +241,7 @@
           </p>
         </div>
 
-        <pre class="source-code"><code class="language-js">{{stencilExample}}</code></pre>
+        <pre class="source-code"><code class="language-js">{{ stencilExample }}</code></pre>
 
         <div class="row">
           <p>
@@ -235,17 +252,15 @@
         <div class="row">
           <div class="col">
             <Example>
-              <CircleExample/> 
-            </Example>            
+              <CircleExample />
+            </Example>
           </div>
           <div class="col">
             <Example>
-              <CommonExample/> 
-            </Example>            
+              <CommonExample />
+            </Example>
           </div>
         </div>
-
-
       </div>
     </div>
   </div>
@@ -576,37 +591,29 @@
 }
 </style>
 
-
-
 <script>
-import HelloWorld from "@/components/HelloWorld.vue";
-import HomeButton from "@/components/HomeButton.vue";
-import Example from "@/components/Example.vue";
-import CircleExample from "./Examples/CircleExample/Example.vue";
-import CommonExample from "./Examples/CommonExample/Example.vue";
-import Cropper from "vue-advanced-cropper";
+import HelloWorld from '@/components/HelloWorld.vue';
+import HomeButton from '@/components/HomeButton.vue';
+import Example from '@/components/Example.vue';
+import CircleExample from './Examples/CircleExample/Example.vue';
+import CommonExample from './Examples/CommonExample/Example.vue';
+import Cropper from 'vue-advanced-cropper';
 
 export default {
-  name: "home",
-  components: {
-    HelloWorld,
-    HomeButton,
-    Example,
-    Cropper,
-    CommonExample,
-    CircleExample
-  },
-  methods: {
-    change(coordinates) {
-      //console.log("CHANGE!", coordinates)
-    }
-  },
-  data() {
-    return {
-      stencilExample: `\<script\>
+	name: 'Home',
+	components: {
+		HomeButton,
+		Example,
+		Cropper,
+		CommonExample,
+		CircleExample
+	},
+	data() {
+		return {
+			stencilExample: `\<script\>
 import {
-  PreviewImage, 
-  BoundingBox, 
+  PreviewImage,
+  BoundingBox,
   MoveableArea
 } from 'vue-advanced-cropper/service';
 
@@ -620,7 +627,7 @@ export default {
     'img',
     // Coordinates of box relative to original image size
     'height', 'width', 'left', 'top',
-    // Stencil size desired by cropper 
+    // Stencil size desired by cropper
     'stencilHeight', 'stencilWidth',
     // Aspect ratios
     'aspectRatio', 'minAspectRatio', 'maxAspectRatio',
@@ -646,9 +653,9 @@ export default {
   <div class="my-stencil">
     <BoundingBox @resize="onResize">
       <MoveableArea @move="onMove">
-        <PreviewImage 
+        <PreviewImage
           :img="img"
-          :previewWidth="stencilWidth" 
+          :previewWidth="stencilWidth"
           :previewHeight="stencilHeight"
           :width="width"
           :height="height"
@@ -656,10 +663,15 @@ export default {
           :top="top"
         />
       </MoveableArea>
-    </BoundingBox>    
+    </BoundingBox>
   </div>
 </template>`
-    };
-  }
+		};
+	},
+	methods: {
+		change(coordinates) {
+			//console.log("CHANGE!", coordinates)
+		}
+	}
 };
 </script>

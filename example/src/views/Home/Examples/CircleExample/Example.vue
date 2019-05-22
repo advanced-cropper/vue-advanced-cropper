@@ -1,27 +1,25 @@
 <template>
-	<Cropper 
-		classname="circle-example"
-		:src="require('./assets/image.jpg')"
-		:stencil-component="this.stencil"
-		@change="change"
-	/>
+  <Cropper
+    classname="circle-example"
+    :src="require('./assets/image.jpg')"
+    :stencil-component="stencil"
+  />
 </template>
 
 <script>
-import Cropper from "vue-advanced-cropper";
-import CircleStencil from "./CircleStencil";
+import Cropper from 'vue-advanced-cropper';
+import CircleStencil from './CircleStencil';
 
 export default {
-  name: 'circle-example',
-  components: {
-	  Cropper,
-	  CircleStencil
-  },
-  data() {
+	name: 'CircleExample',
+	components: {
+	  Cropper
+	},
+	data() {
 	  return {
 		  stencil: CircleStencil
 	  }
-  }
+	}
 }
 </script>
 

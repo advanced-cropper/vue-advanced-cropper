@@ -20,7 +20,7 @@ const testPlugin = {
 }
 
 export default {
-	input: 'src/Cropper.vue',
+	input: 'src/index.js',
 	output: [
 		{
 			file: pkg.main,

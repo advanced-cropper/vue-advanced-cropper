@@ -1,24 +1,24 @@
 {
-	"parser": "babel-eslint",
 	"extends": [
-		"standard"
+		"plugin:vue/recommended"
 	],
 	"env": {
-		"es6": true
+		"node": true
+	},
+	"parserOptions": {
+		"parser": "babel-eslint"
 	},
 	"plugins": [
-		"react",
-		"eslint-plugin-import"
+		"vue"
 	],
-	"parserOptions": {
-		"sourceType": "module"
-	},
 	"rules": {
 		"space-before-function-parent": 0,
+		"quotes": [2, "single"],
 		"indent": [
 			2,
 			"tab"
 		],
-		"no-tabs": 0
+		"no-tabs": "off",
+		"vue/require-default-prop": "off"
 	}
 }

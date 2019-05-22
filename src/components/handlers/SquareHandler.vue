@@ -1,62 +1,62 @@
 <script>
-import classnames from "classnames";
-import bem from "easy-bem";
-import draggable from "../../mixins/draggable.js";
-import { HandlerWrapper } from "../service";
+import classnames from 'classnames';
+import bem from 'easy-bem';
+import draggable from '../../mixins/draggable.js';
+import { HandlerWrapper } from '../service';
 
-const cn = bem("vue-square-handler");
+const cn = bem('vue-square-handler');
 
 export default {
-  name: "SquareHandler",
-  components: {
-    HandlerWrapper
-  },
-  props: {
-    classname: {
-      type: String
-    },
-    hoverClassname: {
-      type: String
-    },
-    horizontalPosition: {
-      type: String
-    },
-    verticalPosition: {
-      type: String
-    }
-  },
-  computed: {
-    classnames() {
-      return {
-        default: classnames(
-          cn({ [this.position]: true }),
-          this.classname,
-          this.hover && this.hoverClassname
-        )
-      };
-    }
-  },
-  methods: {
-    onDrag(dragEvent) {
-      this.$emit("drag", dragEvent);
-    },
-    onEnter() {
-      this.hover = true;
-    },
-    onLeave() {
-      this.hover = false;
-    }
-  }
+	name: 'SquareHandler',
+	components: {
+		HandlerWrapper
+	},
+	props: {
+		classname: {
+			type: String
+		},
+		hoverClassname: {
+			type: String
+		},
+		horizontalPosition: {
+			type: String
+		},
+		verticalPosition: {
+			type: String
+		}
+	},
+	computed: {
+		classnames() {
+			return {
+				default: classnames(
+					cn({ [this.position]: true }),
+					this.classname,
+					this.hover && this.hoverClassname
+				)
+			};
+		}
+	},
+	methods: {
+		onDrag(dragEvent) {
+			this.$emit('drag', dragEvent);
+		},
+		onEnter() {
+			this.hover = true;
+		},
+		onLeave() {
+			this.hover = false;
+		}
+	}
 };
 </script>
 
 <template>
-  <HandlerWrapper 
-    @drag="this.onDrag"
-    :verticalPosition="verticalPosition"
-    :horizontalPosition="horizontalPosition"
+  <HandlerWrapper
+    :vertical-position="verticalPosition"
+    :horizontal-position="horizontalPosition"
+    @drag="onDrag"
   >
-    <div :class="classnames.default"></div>
+    <div :class="classnames.default" />
   </HandlerWrapper>
 </template>
 

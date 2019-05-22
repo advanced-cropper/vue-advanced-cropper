@@ -1,36 +1,35 @@
 <script>
-import classnames from "classnames";
-import bem from "easy-bem";
-import draggable from "../../mixins/draggable.js";
+import classnames from 'classnames';
+import bem from 'easy-bem';
+import draggable from '../../mixins/draggable.js';
 
-const cn = bem("vue-circle-handler");
+const cn = bem('vue-circle-handler');
 
 export default {
-  name: "CircleHandler",
-  mixins: [draggable],
-  props: {
-    classname: {
-      type: String
-    }
-  },
-  computed: {
-    classnames() {
-      return {
-        default: classnames(cn(), this.classname)
-      };
-    }
-  }
+	name: 'CircleHandler',
+	mixins: [draggable],
+	props: {
+		classname: {
+			type: String
+		}
+	},
+	computed: {
+		classnames() {
+			return {
+				default: classnames(cn(), this.classname)
+			};
+		}
+	}
 };
 </script>
 
 <template>
-  <div 
-    ref="draggable" 
-    :class="classnames.default" 
-    @touchstart="this.onTouchStart"
-    @mousedown="this.onMouseDown"
-  >
-  </div>
+  <div
+    ref="draggable"
+    :class="classnames.default"
+    @touchstart="onTouchStart"
+    @mousedown="onMouseDown"
+  />
 </template>
 
 <style lang="scss">
