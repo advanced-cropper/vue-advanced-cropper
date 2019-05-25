@@ -1,12 +1,9 @@
 {
 	"extends": [
-		"plugin:vue/recommended"
+		"plugin:vue/essential"
 	],
 	"env": {
 		"node": true
-	},
-	"parserOptions": {
-		"parser": "babel-eslint"
 	},
 	"plugins": [
 		"vue"

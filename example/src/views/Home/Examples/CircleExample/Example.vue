@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import Cropper from 'vue-advanced-cropper';
+import {Cropper} from 'vue-advanced-cropper';
 import CircleStencil from './CircleStencil';
 
 export default {

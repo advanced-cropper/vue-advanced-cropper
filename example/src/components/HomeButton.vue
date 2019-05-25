@@ -1,23 +1,26 @@
 <template>
-  	<div :class="b({action: this.action})">
-		<div :class="b('icon-part')">
-			<img :src="this.icon" :class="b('icon')"/>
-		</div>
-		<div :class="b('text-part')">
-			<div :class="b('text')">
-				{{ this.text }}
-			</div>
-			<div :class="b('caption')">
-				{{ this.caption }}
-			</div>
-		</div>
-	</div>
+  <div :class="b({action: this.action})">
+    <div :class="b('icon-part')">
+      <img
+        :src="this.icon"
+        :class="b('icon')"
+      >
+    </div>
+    <div :class="b('text-part')">
+      <div :class="b('text')">
+        {{ this.text }}
+      </div>
+      <div :class="b('caption')">
+        {{ this.caption }}
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
 export default {
-  name: 'home-button',
-  props: {
+	name: 'HomeButton',
+	props: {
 	  icon: {
 		  type: String,
 		  required: true
@@ -33,7 +36,7 @@ export default {
 		  type: Boolean,
 		  default: false
 	  },
-  }
+	}
 }
 </script>
 

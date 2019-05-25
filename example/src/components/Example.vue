@@ -1,20 +1,26 @@
 <template>
-  	<div :class="b()">
-		<a :class="b('code-link')" :href="href">
-			<img :src="require('../assets/components/source.svg')" alt="">
-		</a>
-		<slot></slot>
-	</div>
+  <div :class="b()">
+    <a
+      :class="b('code-link')"
+      :href="href"
+    >
+      <img
+        :src="require('../assets/components/source.svg')"
+        alt=""
+      >
+    </a>
+    <slot />
+  </div>
 </template>
 
 <script>
 export default {
-  name: "example",
-  props: {
-    href: {
-      type: String
-    }
-  }
+	name: 'Example',
+	props: {
+		href: {
+			type: String
+		}
+	}
 };
 </script>
 

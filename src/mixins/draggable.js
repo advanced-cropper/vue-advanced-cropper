@@ -1,13 +1,13 @@
 import { DragEvent } from '../utils/events'
 
 export default {
-	created () {
+	beforeMount() {
 		window.addEventListener('mouseup', this.onMouseUp, { passive: false })
 		window.addEventListener('mousemove', this.onMouseMove, { passive: false })
 		window.addEventListener('touchmove', this.onTouchMove, { passive: false })
 		window.addEventListener('touchend', this.onTouchEnd, { passive: false })
 	},
-	destroyed () {
+	beforeDestroy() {
 		window.removeEventListener('mouseup', this.onMouseUp)
 		window.removeEventListener('mousemove', this.onMouseMove)
 		window.removeEventListener('touchmove', this.onTouchMove)

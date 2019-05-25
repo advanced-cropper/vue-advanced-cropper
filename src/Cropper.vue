@@ -195,11 +195,11 @@ export default {
 			this.debounce
 		);
 	},
-	created() {
+	beforeMount() {
 		window.addEventListener('resize', this.refreshImage, false);
 		window.addEventListener('orientationchange', this.refreshImage, false);
 	},
-	destroyed() {
+	beforeDestroy() {
 		window.removeEventListener('resize', this.refreshImage);
 		window.removeEventListener('orientationchange', this.refreshImage);
 	},

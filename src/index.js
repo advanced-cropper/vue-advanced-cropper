@@ -37,7 +37,7 @@ export {
 	DefaultLine
 } from './components/lines'
 
-export default Cropper
+export { default as Cropper } from './Cropper.vue'
 
 Vue.component('cropper', Cropper)
 Vue.component('circle-stencil', CircleStencil)

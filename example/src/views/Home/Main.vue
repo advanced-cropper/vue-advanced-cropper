@@ -597,7 +597,7 @@ import HomeButton from '@/components/HomeButton.vue';
 import Example from '@/components/Example.vue';
 import CircleExample from './Examples/CircleExample/Example.vue';
 import CommonExample from './Examples/CommonExample/Example.vue';
-import Cropper from 'vue-advanced-cropper';
+import {Cropper} from 'vue-advanced-cropper';
 
 export default {
 	name: 'Home',
