@@ -19,7 +19,7 @@
 
 <script>
 export default {
-	name: 'HomeButton',
+	name: 'home-button',
 	props: {
 	  icon: {
 		  type: String,
