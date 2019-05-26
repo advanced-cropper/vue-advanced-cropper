@@ -667,11 +667,6 @@ export default {
   </div>
 </template>`
 		};
-	},
-	methods: {
-		change(coordinates) {
-			//console.log("CHANGE!", coordinates)
-		}
 	}
 };
 </script>

@@ -346,8 +346,6 @@ export default {
 				this.boundarySize.width = cropper.clientWidth;
 				this.boundarySize.height = cropper.clientHeight;
 
-				console.log('!', this.imageSize.width, this.imageSize.height, this.boundarySize.width, this.boundarySize.height)
-
 				Vue.nextTick(() => {
 					const { height, width } = this.areaSize(cropper, image);
 					if (height) {

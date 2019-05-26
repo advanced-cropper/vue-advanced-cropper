@@ -24,9 +24,6 @@ function fitConditions(directions, coordinates, restrictions, coefficient, image
 		}
 	}
 
-	console.log({ratioBroken, width: coordinates.width + coefficient * (directions.left + directions.right), height: coordinates.height + coefficient * (directions.top + directions.bottom)})
-
-
 	// Break right border
 	if (Math.floor(coordinates.left + coordinates.width + coefficient * directions.right) > imageSize.width) {
 		maxResize.width = Math.min(maxResize.width, imageSize.width - (coordinates.left + coordinates.width))
@@ -89,8 +86,6 @@ function fitConditions(directions, coordinates, restrictions, coefficient, image
 			})
 		}
 	}
-
-	console.log({ratioBroken, maxResize, width: coordinates.width + coefficient * (directions.left + directions.right), height: coordinates.height + coefficient * (directions.top + directions.bottom)})
 
 	return result;
 }
