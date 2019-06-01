@@ -325,8 +325,8 @@ export default {
 				imageSize,
 				coefficient,
 				new MoveEvent(null, {
-					left: (coordinates.left - defaultPosition.left) / coefficient,
-					top: (coordinates.top - defaultPosition.top) / coefficient
+					left: (defaultPosition.left - coordinates.left) / coefficient,
+					top: (defaultPosition.top - coordinates.top) / coefficient
 				})
 			);
 
@@ -390,8 +390,8 @@ export default {
       :style="areaStyle"
     >
       <component
-        :is="stencilComponent"
         ref="stencil"
+        :is="stencilComponent"
         :img="src"
         :left="coordinates.left"
         :top="coordinates.top"

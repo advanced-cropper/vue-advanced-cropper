@@ -7,7 +7,7 @@ import { LineWrapper } from '../service';
 const cn = bem('vue-default-line');
 
 export default {
-	name: 'DefaultLine',
+	name: 'SimpleLine',
 	components: {
 		LineWrapper
 	},
@@ -67,7 +67,7 @@ export default {
 .vue-default-line {
   background: none;
   transition: border 0.5s;
-  border-color: transparent;
+  border-color: rgba(white, 0.1);
   border-width: 0px;
   border-style: solid;
 

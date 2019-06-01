@@ -99,11 +99,10 @@ export default {
 		lineNodes() {
 			const lines = [];
 			this.points.forEach(point => {
-				if (!point.horizontalDirection || !point.verticalDirection) {
+				if ((!point.horizontalDirection || !point.verticalDirection) && this.lines[point.name]) {
 					lines.push({
 						name: point.name,
 						component: this.lineComponent,
-						visible: !!this.lines[point.name],
 						classname: classnames(
 							this.classnames.lines.default,
 							this.classnames.lines[point.name]
@@ -119,18 +118,19 @@ export default {
 		handlerNodes() {
 			const handlers = [];
 			this.points.forEach(point => {
-				handlers.push({
-					name: point.name,
-					component: this.handlerComponent,
-					visible: !!this.handlers[point.name],
-					classname: classnames(
-						this.classnames.handlers.default,
-						this.classnames.handlers[point.name]
-					),
-					hoverClassname: this.classnames.handlers.hover,
-					verticalDirection: point.verticalDirection,
-					horizontalDirection: point.horizontalDirection
-				});
+				if (this.handlers[point.name]) {
+					handlers.push({
+						name: point.name,
+						component: this.handlerComponent,
+						classname: classnames(
+							this.classnames.handlers.default,
+							this.classnames.handlers[point.name]
+						),
+						hoverClassname: this.classnames.handlers.hover,
+						verticalDirection: point.verticalDirection,
+						horizontalDirection: point.horizontalDirection
+					});
+				}
 			});
 			return handlers;
 		}
@@ -208,7 +208,6 @@ export default {
       <component
         :is="line.component"
         v-for="line in lineNodes"
-        v-if="line.visible"
         :key="line.name"
         :classname="line.classname"
         :hover-classname="line.hoverClassname"
@@ -220,7 +219,6 @@ export default {
       <component
         :is="handler.component"
         v-for="handler in handlerNodes"
-        v-if="handler.visible"
         :key="handler.name"
         :classname="handler.classname"
         :hover-classname="handler.hoverClassname"

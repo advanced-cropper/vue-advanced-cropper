@@ -2,20 +2,18 @@ import Vue from 'vue'
 import Cropper from './Cropper.vue'
 
 import {
-	CircleStencil,
 	RectangleStencil
 } from './components/stencils'
 
 import {
-	SquareHandler
+	SimpleHandler
 } from './components/handlers'
 
 import {
-	DefaultLine
+	SimpleLine
 } from './components/lines'
 
 export {
-	PreviewCanvas,
 	PreviewImage,
 	DraggableArea,
 	BoundingBox,
@@ -25,22 +23,20 @@ export {
 } from './components/service'
 
 export {
-	CircleStencil,
 	RectangleStencil
 } from './components/stencils'
 
 export {
-	SquareHandler
+	SimpleHandler
 } from './components/handlers'
 
 export {
-	DefaultLine
+	SimpleLine
 } from './components/lines'
 
 export { default as Cropper } from './Cropper.vue'
 
 Vue.component('cropper', Cropper)
-Vue.component('circle-stencil', CircleStencil)
 Vue.component('rectangle-stencil', RectangleStencil)
-Vue.component('rectangle-handler', SquareHandler)
-Vue.component('default-line', DefaultLine)
+Vue.component('simple-handler', SimpleHandler)
+Vue.component('simple-line', SimpleLine)

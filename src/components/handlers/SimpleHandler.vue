@@ -7,7 +7,7 @@ import { HandlerWrapper } from '../service';
 const cn = bem('vue-square-handler');
 
 export default {
-	name: 'SquareHandler',
+	name: 'SimpleHandler',
 	components: {
 		HandlerWrapper
 	},
