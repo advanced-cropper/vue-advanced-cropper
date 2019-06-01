@@ -4,9 +4,10 @@ import external from 'rollup-plugin-peer-deps-external';
 import postcss from 'rollup-plugin-postcss';
 import resolve from 'rollup-plugin-node-resolve';
 import url from 'rollup-plugin-url';
-import sass from 'rollup-plugin-sass';
 import Vue from 'rollup-plugin-vue';
 import css from 'rollup-plugin-merge-and-inject-css'
+import { sizeSnapshot } from 'rollup-plugin-size-snapshot';
+import visualizer from 'rollup-plugin-visualizer';
 import pkg from './package.json';
 
 export default {
@@ -40,5 +41,9 @@ export default {
 		}),
 		resolve(),
 		commonjs(),
+		sizeSnapshot(),
+		visualizer({
+			filename: './dist/stats.html',
+		})
 	]
 }
