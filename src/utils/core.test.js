@@ -1,54 +1,54 @@
 const {resize, move} = require('./core')
 const {ResizeEvent, MoveEvent} = require('./events')
 
+const EPSILON = 1;
+const SMALL_EPSILON = 0.01;
 const MAX_IMAGE_SIZE = 4096;
+
 let seed = 1;
 const random = () => {
 	const x = Math.sin(seed++) * 10000;
 	return x - Math.floor(x);
 }
 
-const areas = {
-	square: {
-		width: 100,
-		height: 100
-	},
-	long: {
-		width: 150,
-		height: 50
-	},
-	tall: {
-		width: 50,
-		height: 150
-	}
-}
 
-const restrictions = {
-	default: {
-		minHeight: 20,
-		maxHeight: 100,
-		minWidth: 20,
-		maxWidth: 100
-	},
-	tall: {
-		minHeight: 20,
-		maxHeight: 80,
-		minWidth: 20,
-		maxWidth: 30
-	},
-	long: {
-		minHeight: 20,
-		maxHeight: 30,
-		minWidth: 20,
-		maxWidth: 80
-	}
-}
+test('should fit to conditions (randomized tests)', () => {
+	for(let i = 0; i < 1000; i++){
 
-const coefficients = {
-	small: 0.25,
-	equal: 1,
-	big: 5
-}
+		const conditions = generateConditions();
+		const {
+			coordinates, restrictions, imageSize, coefficient, aspectRatio, resizeEvent
+		} = conditions
+		const result = resize(coordinates, restrictions, imageSize, coefficient, aspectRatio, resizeEvent)
+		const report = JSON.stringify({i, ...conditions, result})
+
+		const leftBorder = -EPSILON
+		const rightBorder = imageSize.width + EPSILON
+		const topBorder = -EPSILON
+		const bottomBorder = imageSize.height + EPSILON
+		const maxHeight = restrictions.maxHeight + EPSILON
+		const maxWidth = restrictions.maxWidth + EPSILON
+		const minHeight = restrictions.minHeight - EPSILON
+		const minWidth = restrictions.minWidth - EPSILON
+		const minAspectRatio = aspectRatio.minimum - SMALL_EPSILON
+		const maxAspectRatio = aspectRatio.maximum + SMALL_EPSILON
+
+	  	expect(result.width, report).toBeGreaterThanOrEqual(minWidth);
+		expect(result.height, report).toBeGreaterThanOrEqual(minHeight);
+		expect(result.width, report).toBeLessThanOrEqual(maxWidth);
+		expect(result.height, report).toBeLessThanOrEqual(maxHeight);
+
+	    expect(result.left, report).toBeGreaterThanOrEqual(leftBorder);
+		expect(result.left + result.width, report).toBeLessThanOrEqual(rightBorder);
+
+		expect(result.top, report).toBeGreaterThanOrEqual(topBorder);
+		expect(result.top + result.height, report).toBeLessThanOrEqual(bottomBorder);
+
+	    expect(result.width / result.height, report).toBeLessThanOrEqual(maxAspectRatio);
+	    expect(result.width / result.height, report).toBeGreaterThanOrEqual(minAspectRatio);
+	}
+
+});
 
 function generateConditions() {
 	const imageSize = {
@@ -63,58 +63,25 @@ function generateConditions() {
 	coordinates.height =  Math.floor((imageSize.height - coordinates.top) * random())
 
 	const aspectRatio = {
-		minimum: Math.max(coordinates.width / coordinates.height, 2 * random()),
+		minimum: Math.min(coordinates.width / coordinates.height, 2 * random()),
 	}
-	aspectRatio.maximum = Math.max(aspectRatio.minimum, 2 * random())
+	aspectRatio.maximum = Math.max(coordinates.width / coordinates.height, 2 * random())
 	return {
 		coordinates,
 		restrictions: {
-			minHeight: 100 * (coordinates.height * random()) / imageSize.height,
-			minWidth: 100 * (coordinates.width * random()) / imageSize.width,
-			maxHeight: 100 * (coordinates.height + (imageSize.height - coordinates.height) * random()) / imageSize.height,
-			maxWidth: 100 * (coordinates.width + (imageSize.width - coordinates.width) * random()) / imageSize.width,
+			minHeight: (coordinates.height * random()),
+			minWidth: (coordinates.width * random()),
+			maxHeight: (coordinates.height + (imageSize.height - coordinates.height) * random()),
+			maxWidth: (coordinates.width + (imageSize.width - coordinates.width) * random()),
 		},
 		imageSize,
 		coefficient: 10 * random(),
 		aspectRatio,
 		resizeEvent: new ResizeEvent({}, {
-			left: random() * imageSize.width,
-			right: random() * imageSize.width,
-			top: random() * imageSize.height,
-			bottom: random() * imageSize.height,
+			left: (1 - 2*random()) * imageSize.width,
+			right: (1 - 2*random()) * imageSize.width,
+			top: (1 - 2*random()) * imageSize.height,
+			bottom: (1 - 2*random()) * imageSize.height,
 		})
 	}
 }
-
-test('should fit to conditions (randomized tests)', () => {
-	for(let i = 0; i < 1000; i++){
-
-		const conditions = generateConditions();
-		const {
-			coordinates, restrictions, imageSize, coefficient, aspectRatio, resizeEvent
-		} = conditions
-		const result = resize(coordinates, restrictions, imageSize, coefficient, aspectRatio, resizeEvent)
-		const report = JSON.stringify({i, ...conditions, result})
-
-		const leftBorder = 0
-		const rightBorder = imageSize.width + 1
-		const topBorder = 0
-		const bottomBorder = imageSize.height + 1
-		const maxHeight = imageSize.height / 100 * restrictions.maxHeight + 1
-		const maxWidth = imageSize.width / 100 * restrictions.maxWidth + 1
-		const minHeight = imageSize.height / 100 * restrictions.minHeight - 1
-		const minWidth = imageSize.width / 100 * restrictions.minWidth -+ 1
-
-	  	expect(result.width, report).toBeGreaterThan(minWidth);
-		expect(result.height, report).toBeGreaterThan(minHeight);
-		expect(result.width, report).toBeLessThan(maxWidth);
-		expect(result.height, report).toBeLessThan(maxHeight);
-
-	    expect(result.left, report).toBeGreaterThan(leftBorder);
-		expect(result.left + result.width, report).toBeLessThan(rightBorder);
-
-		expect(result.top, report).toBeGreaterThan(topBorder);
-	    expect(result.top + result.height, report).toBeLessThan(bottomBorder);
-	}
-
-});

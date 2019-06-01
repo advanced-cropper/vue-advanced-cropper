@@ -4,90 +4,137 @@ import {
 	ALL_DIRECTIONS
 } from './constants'
 
-function fitConditions(directions, coordinates, restrictions, coefficient, imageSize, ratioBroken) {
+function fitConditions(oldDirections, coordinates, restrictions, coefficient, imageSize, ratioBroken) {
+
+	//console.log(coordinates, restrictions)
 	const { minHeight, minWidth, maxHeight, maxWidth } = restrictions
+	const directions = {...oldDirections}
+
 	const currentWidth = coordinates.width + coefficient * (directions.left + directions.right)
 	const currentHeight = coordinates.height + coefficient * (directions.top + directions.bottom)
 
-	let maxResize = {
+
+	if (currentWidth < 0) {
+		directions.left = 0;
+		directions.right = -coordinates.width
+	}
+
+	if (currentHeight < 0) {
+		directions.top = 0;
+		directions.bottom = -coordinates.height
+	}
+
+	const maxMultiplier = {
 		width: Infinity,
 		height: Infinity
 	}
 
-	// tmeporary solution
-	if (currentWidth < 0 || currentHeight < 0) {
-		return {
-			left: 0,
-			right: 0,
-			top: 0,
-			bottom: 0
+	if (directions.right + directions.left) {
+		// Break right border
+		if (Math.floor(coordinates.left + coordinates.width + coefficient * directions.right) > imageSize.width) {
+			//console.log('Break right border', maxMultiplier)
+
+			maxMultiplier.width = Math.min(
+				maxMultiplier.width,
+				Math.abs((imageSize.width - (coordinates.left + coordinates.width)) / (coefficient * directions.right))
+			)
+		}
+		// Break left border
+		if (coordinates.left - coefficient * directions.left < 0) {
+			//console.log('Break lefft border', maxMultiplier)
+
+			maxMultiplier.width = Math.min(
+				maxMultiplier.width,
+				Math.abs((coordinates.left) / (coefficient * directions.left))
+			)
+		}
+
+		// Break min width
+		if (currentWidth < minWidth) {
+			//console.log('Break min width', maxMultiplier)
+
+
+			maxMultiplier.width = Math.min(
+				maxMultiplier.width,
+				Math.abs((coordinates.width - minWidth) / ((directions.right + directions.left) * coefficient))
+			)
+		}
+		// Break max width
+		if (currentWidth > maxWidth) {
+			//console.log('Break max width', maxMultiplier)
+			maxMultiplier.width = Math.min(
+				maxMultiplier.width,
+				Math.abs((maxWidth - coordinates.width) / ((directions.right + directions.left) * coefficient))
+			)
 		}
 	}
 
-	// Break right border
-	if (Math.floor(coordinates.left + coordinates.width + coefficient * directions.right) > imageSize.width) {
-		maxResize.width = Math.min(maxResize.width, imageSize.width - (coordinates.left + coordinates.width))
-	}
-	// Break left border
-	if (coordinates.left - coefficient * directions.left < 0) {
-		maxResize.width = Math.min(maxResize.width, coordinates.left)
-	}
-	// Break min width
-	if (currentWidth < minWidth) {
-		maxResize.width = Math.min(maxResize.width, minWidth - coordinates.width)
-	}
-	// Break max width
-	if (currentWidth > maxWidth) {
-		maxResize.width = Math.min(maxResize.width, maxWidth - coordinates.width)
-	}
-	// Break bottom border
-	if (Math.floor(coordinates.top + coordinates.height + coefficient * directions.bottom) > imageSize.height) {
-		maxResize.height = Math.min(maxResize.height, imageSize.height - (coordinates.top + coordinates.height))
-	}
-	// Break top border
-	if (coordinates.top - coefficient * directions.top < 0) {
-		maxResize.height = Math.min(maxResize.height, coordinates.top)
-	}
-	// Break min height
-	if (currentHeight < minHeight) {
-		maxResize.height = Math.min(maxResize.height, minHeight - coordinates.height)
-	}
-	// Break max height
-	if (currentHeight > maxHeight) {
-		maxResize.height = Math.min(maxResize.height, maxHeight - coordinates.height)
+	if (directions.top + directions.bottom) {
+		// Break bottom border
+		if (Math.floor(coordinates.top + coordinates.height + coefficient * directions.bottom) > imageSize.height) {
+			//console.log('Break bottom border', maxMultiplier)
+			maxMultiplier.height = Math.min(
+				maxMultiplier.height,
+				Math.abs((imageSize.height - (coordinates.top + coordinates.height)) / (coefficient * directions.bottom))
+			)
+		}
+		// Break top border
+		if (coordinates.top - coefficient * directions.top < 0) {
+			//console.log('Break top border', maxMultiplier)
+
+			maxMultiplier.height = Math.min(
+				maxMultiplier.height,
+				Math.abs((coordinates.top) / (coefficient * directions.top))
+			)
+		}
+		// Break min height
+		if (currentHeight < minHeight) {
+			//console.log('Break  min height', maxMultiplier)
+
+			maxMultiplier.height = Math.min(
+				maxMultiplier.height,
+				Math.abs((coordinates.height - minHeight) / ((directions.top + directions.bottom) * coefficient))
+			)
+		}
+		// Break max height
+		if (currentHeight > maxHeight) {
+			//console.log('Break  max height', maxMultiplier,maxHeight - coordinates.height,(directions.top + directions.bottom) * coefficient )
+			maxMultiplier.height = Math.min(
+				maxMultiplier.height,
+				Math.abs((maxHeight - coordinates.height) / ((directions.top + directions.bottom) * coefficient))
+			)
+		}
 	}
 
-	const result = {...directions}
+	//console.log('>>>', maxMultiplier, directions, coefficient, currentWidth)
 
 	if (!ratioBroken) {
-		if (maxResize.width !== Infinity && (directions.right + directions.left)) {
-			const multiplier = maxResize.width / ((directions.right + directions.left) * coefficient)
+		if (maxMultiplier.width !== Infinity) {
 			HORIZONTAL_DIRECTIONS.forEach(direction => {
-				result[direction] *= multiplier
+				directions[direction] *= maxMultiplier.width
 			})
 		}
-		if (maxResize.height !== Infinity && (directions.bottom + directions.top)) {
-			const multiplier = maxResize.height / ((directions.bottom + directions.top) * coefficient)
+		if (maxMultiplier.height !== Infinity) {
 			VERTICAL_DIRECTIONS.forEach(direction => {
-				result[direction] *= multiplier
+				directions[direction] *= maxMultiplier.height
 			})
 		}
 	} else {
 		let multiplier
-		if (Math.abs(maxResize.height) < Math.abs(maxResize.width) && (directions.bottom + directions.top)) {
-			multiplier = maxResize.height / ((directions.bottom + directions.top) * coefficient)
+		if (maxMultiplier.height < maxMultiplier.width) {
+			multiplier = maxMultiplier.height
 		} else if (directions.right + directions.left) {
-			multiplier = maxResize.width / ((directions.right + directions.left) * coefficient)
+			multiplier = maxMultiplier.width
 		}
 
-		if (maxResize.height !== Infinity || maxResize.width !== Infinity) {
+		if (maxMultiplier.height !== Infinity || maxMultiplier.width !== Infinity) {
 			ALL_DIRECTIONS.forEach(direction => {
-				result[direction] *= multiplier
+				directions[direction] *= multiplier
 			})
 		}
 	}
 
-	return result;
+	return directions;
 }
 
 export function resize (coordinates, restrictions, imageSize, coefficient, aspectRatio, resizeEvent) {
