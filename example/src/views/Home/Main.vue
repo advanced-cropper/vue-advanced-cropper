@@ -241,7 +241,7 @@
           </p>
         </div>
 
-        <pre class="source-code"><code class="language-js">{{ stencilExample }}</code></pre>
+        <prism language="js">{{ stencilExample }}</prism>
 
         <div class="row">
           <p>
@@ -598,6 +598,7 @@ import Example from '@/components/Example.vue';
 import CircleExample from './Examples/CircleExample/Example.vue';
 import CommonExample from './Examples/CommonExample/Example.vue';
 import {Cropper} from 'vue-advanced-cropper';
+import Prism from 'vue-prism-component'
 
 export default {
 	name: 'Home',
@@ -606,7 +607,8 @@ export default {
 		Example,
 		Cropper,
 		CommonExample,
-		CircleExample
+		CircleExample,
+		Prism
 	},
 	data() {
 		return {

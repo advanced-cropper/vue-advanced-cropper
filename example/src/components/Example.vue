@@ -15,7 +15,7 @@
 
 <script>
 export default {
-	name: 'Example',
+	name: 'example',
 	props: {
 		href: {
 			type: String
@@ -41,7 +41,7 @@ export default {
     justify-content: center;
     right: 0;
     top: 0;
-    background: $vue-color;
+    background: rgba($vue-color,0.9);
     width: 50px;
     height: 47px;
     padding-bottom: 3px;

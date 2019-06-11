@@ -6,22 +6,32 @@ import {
 
 function fitConditions(oldDirections, coordinates, restrictions, coefficient, imageSize, ratioBroken) {
 
-	//console.log(coordinates, restrictions)
 	const { minHeight, minWidth, maxHeight, maxWidth } = restrictions
 	const directions = {...oldDirections}
 
 	const currentWidth = coordinates.width + coefficient * (directions.left + directions.right)
 	const currentHeight = coordinates.height + coefficient * (directions.top + directions.bottom)
 
-
 	if (currentWidth < 0) {
-		directions.left = 0;
-		directions.right = -coordinates.width
+		if (directions.left < 0 && directions.right < 0) {
+			directions.left -= currentWidth / (coefficient * directions.left)
+			directions.right -= currentWidth / (coefficient * directions.right)
+		} else if (directions.left < 0) {
+			directions.left -= currentWidth / coefficient
+		} else if (directions.right < 0) {
+			directions.right -= currentWidth / coefficient
+		}
 	}
 
 	if (currentHeight < 0) {
-		directions.top = 0;
-		directions.bottom = -coordinates.height
+		if (directions.top < 0 && directions.bottom < 0) {
+			directions.top = currentHeight / (coefficient * directions.top)
+			directions.bottom = currentHeight / (coefficient * directions.bottom)
+		} else if (directions.top < 0) {
+			directions.top = currentHeight
+		} else if (directions.bottom < 0) {
+			directions.bottom = currentHeight
+		}
 	}
 
 	const maxMultiplier = {
@@ -32,8 +42,6 @@ function fitConditions(oldDirections, coordinates, restrictions, coefficient, im
 	if (directions.right + directions.left) {
 		// Break right border
 		if (Math.floor(coordinates.left + coordinates.width + coefficient * directions.right) > imageSize.width) {
-			//console.log('Break right border', maxMultiplier)
-
 			maxMultiplier.width = Math.min(
 				maxMultiplier.width,
 				Math.abs((imageSize.width - (coordinates.left + coordinates.width)) / (coefficient * directions.right))
@@ -41,8 +49,6 @@ function fitConditions(oldDirections, coordinates, restrictions, coefficient, im
 		}
 		// Break left border
 		if (coordinates.left - coefficient * directions.left < 0) {
-			//console.log('Break lefft border', maxMultiplier)
-
 			maxMultiplier.width = Math.min(
 				maxMultiplier.width,
 				Math.abs((coordinates.left) / (coefficient * directions.left))
@@ -51,9 +57,6 @@ function fitConditions(oldDirections, coordinates, restrictions, coefficient, im
 
 		// Break min width
 		if (currentWidth < minWidth) {
-			//console.log('Break min width', maxMultiplier)
-
-
 			maxMultiplier.width = Math.min(
 				maxMultiplier.width,
 				Math.abs((coordinates.width - minWidth) / ((directions.right + directions.left) * coefficient))
@@ -61,7 +64,6 @@ function fitConditions(oldDirections, coordinates, restrictions, coefficient, im
 		}
 		// Break max width
 		if (currentWidth > maxWidth) {
-			//console.log('Break max width', maxMultiplier)
 			maxMultiplier.width = Math.min(
 				maxMultiplier.width,
 				Math.abs((maxWidth - coordinates.width) / ((directions.right + directions.left) * coefficient))
@@ -72,7 +74,6 @@ function fitConditions(oldDirections, coordinates, restrictions, coefficient, im
 	if (directions.top + directions.bottom) {
 		// Break bottom border
 		if (Math.floor(coordinates.top + coordinates.height + coefficient * directions.bottom) > imageSize.height) {
-			//console.log('Break bottom border', maxMultiplier)
 			maxMultiplier.height = Math.min(
 				maxMultiplier.height,
 				Math.abs((imageSize.height - (coordinates.top + coordinates.height)) / (coefficient * directions.bottom))
@@ -80,8 +81,6 @@ function fitConditions(oldDirections, coordinates, restrictions, coefficient, im
 		}
 		// Break top border
 		if (coordinates.top - coefficient * directions.top < 0) {
-			//console.log('Break top border', maxMultiplier)
-
 			maxMultiplier.height = Math.min(
 				maxMultiplier.height,
 				Math.abs((coordinates.top) / (coefficient * directions.top))
@@ -89,7 +88,6 @@ function fitConditions(oldDirections, coordinates, restrictions, coefficient, im
 		}
 		// Break min height
 		if (currentHeight < minHeight) {
-			//console.log('Break  min height', maxMultiplier)
 
 			maxMultiplier.height = Math.min(
 				maxMultiplier.height,
@@ -98,7 +96,6 @@ function fitConditions(oldDirections, coordinates, restrictions, coefficient, im
 		}
 		// Break max height
 		if (currentHeight > maxHeight) {
-			//console.log('Break  max height', maxMultiplier,maxHeight - coordinates.height,(directions.top + directions.bottom) * coefficient )
 			maxMultiplier.height = Math.min(
 				maxMultiplier.height,
 				Math.abs((maxHeight - coordinates.height) / ((directions.top + directions.bottom) * coefficient))
@@ -106,7 +103,6 @@ function fitConditions(oldDirections, coordinates, restrictions, coefficient, im
 		}
 	}
 
-	//console.log('>>>', maxMultiplier, directions, coefficient, currentWidth)
 
 	if (!ratioBroken) {
 		if (maxMultiplier.width !== Infinity) {
