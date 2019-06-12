@@ -2,6 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import cn from 'easy-bem'
+import Prism from 'vue-prism-component'
 
 const bemPlugin = {
 	install () {
@@ -21,6 +22,8 @@ const bemPlugin = {
 		})
 	}
 }
+
+Vue.component('prism', Prism)
 
 Vue.use(bemPlugin)
 Vue.config.productionTip = false

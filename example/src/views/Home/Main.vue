@@ -53,7 +53,7 @@
     <div class="demo-section">
       <div class="container container--centered">
         <Cropper
-          :src="require('../../assets/test.jpeg')"
+          :src="require('../../assets/home/photo.jpeg')"
           classname="demo-cropper"
           image-classname="demo-cropper__image"
           :min-width="20"
@@ -293,6 +293,9 @@
       );
       bottom: 0;
       position: absolute;
+    }
+    &__logo {
+      min-height: 135px;
     }
 
     &__title {
@@ -598,7 +601,6 @@ import Example from '@/components/Example.vue';
 import CircleExample from './Examples/CircleExample/Example.vue';
 import CommonExample from './Examples/CommonExample/Example.vue';
 import {Cropper} from 'vue-advanced-cropper';
-import Prism from 'vue-prism-component'
 
 export default {
 	name: 'Home',
@@ -608,7 +610,6 @@ export default {
 		Cropper,
 		CommonExample,
 		CircleExample,
-		Prism
 	},
 	data() {
 		return {

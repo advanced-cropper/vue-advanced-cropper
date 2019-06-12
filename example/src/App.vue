@@ -10,7 +10,7 @@
         </a>
       </div>
       <div class="navigation__sections">
-        <router-link class="navigation__link" active-class="navigation__link--active" to="/" exact="true">
+        <router-link class="navigation__link" active-class="navigation__link--active" to="/" :exact="true">
           Home
         </router-link>
         <router-link class="navigation__link" active-class="navigation__link--active" to="/docs">
