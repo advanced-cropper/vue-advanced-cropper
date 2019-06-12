@@ -1,16 +1,16 @@
 <template>
-  <div :class="b({action: this.action})">
-    <div :class="b('icon-part')">
+  <div :class="`home-button ${action ? 'home-button--action' : ''}`">
+    <div class="home-button__icon-part">
       <img
         :src="this.icon"
-        :class="b('icon')"
+        class="home-button__icon"
       >
     </div>
-    <div :class="b('text-part')">
-      <div :class="b('text')">
+    <div class="home-button__text-part">
+      <div class="home-button__text">
         {{ this.text }}
       </div>
-      <div :class="b('caption')">
+      <div class="home-button__caption">
         {{ this.caption }}
       </div>
     </div>
@@ -40,7 +40,6 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
 @import "../styles/constants";
 

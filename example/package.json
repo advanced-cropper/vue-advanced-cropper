@@ -3,20 +3,22 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build"
+    "start": "vuepress dev docs",
+    "build": "vuepress build docs"
   },
   "dependencies": {
     "core-js": "^2.6.5",
     "easy-bem": "^1.0.1",
     "vue": "^2.6.6",
-    "vue-advanced-cropper": "file:..",
-    "vue-router": "^3.0.1"
+    "vue-advanced-cropper": "file:.."
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.5.0",
     "@vue/cli-service": "^3.5.0",
-    "vue-template-compiler": "^2.5.21"
+    "node-sass": "^4.12.0",
+    "sass-loader": "^7.1.0",
+    "vue-template-compiler": "^2.5.21",
+    "vuepress": "1.0.1"
   },
   "postcss": {
     "plugins": {

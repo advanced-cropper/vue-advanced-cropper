@@ -1,11 +1,29 @@
 <template>
-  <div class="home">
+  <div class="home-page">
+		<div class="navigation">
+			<div class="navigation__frameworks">
+				<a class="navigation__link navigation__link--active" href="/">
+					Vue
+				</a>
+				<a class="navigation__link" href="/">
+					React
+				</a>
+			</div>
+			<div class="navigation__sections">
+				<a class="navigation__link navigation__link--active"  href="/#">
+					Home
+				</a>
+				<a class="navigation__link"  href="/guide">
+					Docs
+				</a>
+			</div>
+		</div>
     <div class="presentation">
+
       <div class="container container--centered">
         <img
           class="presentation__logo"
-          src="../../assets/home/logo.svg"
-          alt=""
+          src="../assets/home/logo.svg"
         >
         <div class="presentation__title-wrapper">
           <h1 class="presentation__title">
@@ -24,7 +42,7 @@
             href="http://github.com/Norserium/vue-advanced-cropper/"
           >
             <home-button
-              :icon="require('../../assets/home/github.svg')"
+              :icon="require('../assets/home/github.svg')"
               text="Github"
               caption="Sources / Development"
               action
@@ -35,7 +53,7 @@
             href=""
           >
             <home-button
-              :icon="require('../../assets/home/npm.svg')"
+              :icon="require('../assets/home/npm.svg')"
               text="NPM"
               caption="Library / Publishing"
             />
@@ -44,7 +62,7 @@
       </div>
       <div class="presentation__border">
         <img
-          src="../../assets/home/presentation-bottom-border.svg"
+          src="../assets/home/presentation-bottom-border.svg"
           alt=""
         >
       </div>
@@ -53,7 +71,7 @@
     <div class="demo-section">
       <div class="container container--centered">
         <Cropper
-          :src="require('../../assets/home/photo.jpeg')"
+          :src="require('../assets/home/photo.jpeg')"
           classname="demo-cropper"
           image-classname="demo-cropper__image"
           :min-width="20"
@@ -74,10 +92,7 @@
         />
       </div>
       <div class="section-border section-border--hide-mobile">
-        <img
-          src="../../assets/home/gray-bottom-border.svg"
-          alt=""
-        >
+        <img src="../assets/home/gray-bottom-border.svg">
       </div>
     </div>
 
@@ -125,7 +140,7 @@
       </div>
       <div class="section-border">
         <img
-          src="../../assets/home/white-bottom-border.svg"
+          src="../assets/home/white-bottom-border.svg"
           alt=""
         >
       </div>
@@ -151,7 +166,7 @@
         <div class="row">
           <div class="col">
             <div class="example-cropper">
-              <img :src="require('../../assets/home/example-cropper.svg')">
+              <img :src="require('../assets/home/example-cropper.svg')">
             </div>
           </div>
           <div class="col">
@@ -187,7 +202,7 @@
         <div class="row">
           <div class="col">
             <div class="example-stencil">
-              <img :src="require('../../assets/home/example-stencil.svg')">
+              <img :src="require('../assets/home/example-stencil.svg')">
             </div>
           </div>
           <div class="col">
@@ -213,12 +228,12 @@
         <div class="row">
           <div class="col">
             <div class="example-event">
-              <img :src="require('../../assets/home/resize-event.svg')">
+              <img :src="require('../assets/home/resize-event.svg')">
             </div>
           </div>
           <div class="col">
             <div class="example-event">
-              <img :src="require('../../assets/home/move-event.svg')">
+              <img :src="require('../assets/home/move-event.svg')">
             </div>
           </div>
         </div>
@@ -231,7 +246,7 @@
 
         <div class="row">
           <div class="example-stencil-elements">
-            <img :src="require('../../assets/home/example-stencil-elements.svg')">
+            <img :src="require('../assets/home/example-stencil-elements.svg')">
           </div>
         </div>
 
@@ -241,7 +256,9 @@
           </p>
         </div>
 
-        <prism language="js">{{ stencilExample }}</prism>
+        <div>
+					<Content slot-key="custom-stencil"/>
+				</div>
 
         <div class="row">
           <p>
@@ -251,30 +268,79 @@
 
         <div class="row">
           <div class="col">
-            <Example>
+            <ExampleWrapper>
               <CircleExample />
-            </Example>
+            </ExampleWrapper>
           </div>
           <div class="col">
-            <Example>
+            <ExampleWrapper>
               <CommonExample />
-            </Example>
+            </ExampleWrapper>
           </div>
         </div>
       </div>
     </div>
+			<div class="footer">
+				<div class="footer__center-block">
+				<img
+					class="footer__logo"
+					:src="require('../assets/footer/logo.svg')"
+				>
+				<div class="footer__contacts">
+					<div class="footer__name">
+						Norserium
+					</div>
+					<a href="mailto:norserium@gmail.com" class="footer__email">
+						norserium@gmail.com
+					</a>
+				</div>
+				</div>
+			</div>
   </div>
 </template>
 
 <style lang="scss">
-@import "../../styles/constants";
-@import "../../styles/grid";
+@import "../styles/constants";
+@import "../styles/grid";
+@import "../styles/fonts";
+@import "../styles/normalize";
 
 
-.home {
-  padding-bottom: 40px;
+.home-page {
+	position: relative;
+	.navigation {
+		position: absolute;
+		width: 100%;
+		top: 0;
+		left: 50%;
+		transform: translateX(-50%);
+		color: white;
+		display: flex;
+		height: 77px;
+		align-items: center;
+		z-index: 1;
+		padding: 0.7rem 1.5rem;
+		&__sections {
+			margin-left: auto;
+		}
+		&__link {
+			color: white;
+			text-decoration: none;
+			opacity: 0.5;
+			&--active {
+				opacity: 1;
+			}
+			&:not(:last-child) {
+				margin-right: 40px;
+			}
+			&:last-child {
+				margin-right: 1.5rem;
+			}
+		}
+	}
+
   .presentation {
-    background: url("../../assets/home/background.png");
+    background: url("../assets/home/background.png");
     background-size: auto 100%;
     background-color: $vue-color;
     background-size: cover;
@@ -365,21 +431,17 @@
 
   .demo-section {
     position: relative;
-    background: url("../../assets/home/demo-background.png");
+    background: url("../assets/home/demo-background.png");
     background-size: auto 100%;
     background-color: #0d0d0d;
     width: 100%;
     padding-top: 125px;
     padding-bottom: 125px;
     transition: padding 0.5s, border 0.5s;
-    //border-top: solid 5px transparent;
-    //border-bottom: solid 5px transparent;
     @media (max-width: $screen-xs) {
       transition: padding 0.5s, border 0.5s 0.1s;
       padding-top: 5%;
       padding-bottom: 5%;
-      //border-top: solid 5px #2A9264;
-      //border-bottom: solid 5px #F2F2F2;
     }
   }
 
@@ -590,14 +652,59 @@
     font-size: 30px;
     color: #8f8f8f;
     font-weight: 600;
-  }
+	}
+
+	.footer {
+		position: relative;
+		overflow: hidden;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: $footer-height;
+		margin-top: $footer-margin;
+		&:after {
+			content: url("../assets/footer/background.svg");
+			position: absolute;
+			left: 50%;
+			transform: translateX(-50%);
+		}
+		&__logo {
+			margin-right: 19px;
+		}
+		&__center-block {
+			display: flex;
+			align-items: center;
+			margin-top: 30px;
+			z-index: 1;
+		}
+		&__code-link {
+			cursor: pointer;
+			position: absolute;
+			z-index: 1;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			right: 0;
+			top: 0;
+			background: rgba($vue-color, 0.9);
+			width: 50px;
+			height: 47px;
+			padding-bottom: 3px;
+		}
+		&__email {
+			color: #9d9d9d;
+		}
+		&__name {
+			font-weight: bold;
+		}
+	}
 }
 </style>
 
 <script>
-import HelloWorld from '@/components/HelloWorld.vue';
-import HomeButton from '@/components/HomeButton.vue';
-import Example from '@/components/Example.vue';
+import ExampleWrapper from './ExampleWrapper.vue';
+import Footer from './Footer';
+import HomeButton from './HomeButton';
 import CircleExample from './Examples/CircleExample/Example.vue';
 import CommonExample from './Examples/CommonExample/Example.vue';
 import {Cropper} from 'vue-advanced-cropper';
@@ -606,70 +713,12 @@ export default {
 	name: 'Home',
 	components: {
 		HomeButton,
-		Example,
+		ExampleWrapper,
 		Cropper,
 		CommonExample,
 		CircleExample,
-	},
-	data() {
-		return {
-			stencilExample: `\<script\>
-import {
-  PreviewImage,
-  BoundingBox,
-  MoveableArea
-} from 'vue-advanced-cropper/service';
-
-export default {
-  name: "MyStencil",
-  components: {
-    PreviewImage, BoundingBox, MoveableArea
-  },
-  props: [
-    // Image src
-    'img',
-    // Coordinates of box relative to original image size
-    'height', 'width', 'left', 'top',
-    // Stencil size desired by cropper
-    'stencilHeight', 'stencilWidth',
-    // Aspect ratios
-    'aspectRatio', 'minAspectRatio', 'maxAspectRatio',
-  ],
-  methods: {
-    onMove(moveEvent) {
-      this.$emit('move', moveEvent)
-    },
-    onResize(resizeEvent) {
-      this.$emit('resize', resizeEvent)
-    },
-    aspectRatios() {
-      return {
-          minimum: this.aspectRatio || this.minAspectRatio,
-          maximum: this.aspectRatio || this.maxAspectRatio,
-        }
-    }
-  },
-};
-\<\/script\>
-
-<template>
-  <div class="my-stencil">
-    <BoundingBox @resize="onResize">
-      <MoveableArea @move="onMove">
-        <PreviewImage
-          :img="img"
-          :previewWidth="stencilWidth"
-          :previewHeight="stencilHeight"
-          :width="width"
-          :height="height"
-          :left="left"
-          :top="top"
-        />
-      </MoveableArea>
-    </BoundingBox>
-  </div>
-</template>`
-		};
 	}
 };
 </script>
+
+<style src="prismjs/themes/prism-tomorrow.css"></style>

@@ -1,13 +1,10 @@
 <template>
-  <div :class="b()">
+  <div class="example-wrapper">
     <a
-      :class="b('code-link')"
+      class="example-wrapper__code-link"
       :href="href"
     >
-      <img
-        :src="require('../assets/components/source.svg')"
-        alt=""
-      >
+      <img :src="require('../assets/components/source.svg')">
     </a>
     <slot />
   </div>
@@ -15,7 +12,7 @@
 
 <script>
 export default {
-	name: 'example',
+	name: 'example-wrapper',
 	props: {
 		href: {
 			type: String
@@ -28,7 +25,7 @@ export default {
 <style lang="scss">
 @import "../styles/constants";
 
-.example {
+.example-wrapper {
   border-top: solid 3px $vue-color;
   position: relative;
   overflow: hidden;
