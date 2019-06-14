@@ -6,7 +6,9 @@
 	display: flex;
 	align-items center;
 	padding: 0.7rem 1.5rem !important;
-
+	.icon.outbound {
+		display: none !important;
+	}
 	.sidebar-button
 		position: relative
 		top 0
@@ -25,10 +27,11 @@
 		position: relative !important;
 		margin-left: auto;
 		top: 0 !important
+		right: 0 !important;
 .nav-item a
 	border-bottom: none !important;
 .nav-item
-	margin-left: 40px !important;
+	margin-left: 20px !important;
 .navbar
 	.nav-link
 		font-size 16px !important
@@ -38,6 +41,8 @@
 	.nav-links a.router-link-active
 		opacity: 1
 
+
+
 @font-face {
     font-family: 'ArBerkley';
     src: url('/fonts/ARBERKLEY.woff2') format('woff2'),
@@ -45,3 +50,4 @@
     font-weight: 100;
     font-style: normal;
 }
+

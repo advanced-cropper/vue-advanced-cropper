@@ -5,14 +5,15 @@ module.exports = {
 				search: false,
         nav: [
             { text: 'Home', link: '/' },
-            { text: 'Docs', link: '/guide/' },
+            { text: 'Docs', link: '/introduction/getting-started.html' },
+            { text: 'Github', link: 'http://github.com/Norserium/vue-advanced-cropper/' },
         ],
         sidebar: [
             {
-              title: 'Counter',
+              title: 'Introduction',
               collapsable: false,
               children: [
-                '/counter/counter-app'
+								'/introduction/getting-started',
               ]
             },
             {

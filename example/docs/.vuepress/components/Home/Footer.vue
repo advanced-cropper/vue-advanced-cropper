@@ -3,7 +3,7 @@
 		<div class="footer__center-block">
 		<img
 			class="footer__logo"
-			:src="require('../assets/footer/logo.svg')"
+			:src="require('../../assets/footer/logo.svg')"
 		>
 		<div class="footer__contacts">
 			<div class="footer__name">
@@ -18,9 +18,9 @@
 </template>
 
 <style lang="scss">
-@import "../styles/grid";
-@import "../styles/fonts";
-@import "../styles/normalize";
+@import "../../styles/grid";
+@import "../../styles/fonts";
+@import "../../styles/normalize";
 
 .footer {
   position: relative;
@@ -31,7 +31,7 @@
   height: $footer-height;
   margin-top: $footer-margin;
   &:before {
-    content: url("../assets/footer/background.svg");
+    content: url("../../assets/footer/background.svg");
     position: absolute;
     left: 50%;
     transform: translateX(-50%);

@@ -4,7 +4,7 @@
       class="example-wrapper__code-link"
       :href="href"
     >
-      <img :src="require('../assets/components/source.svg')">
+      <img :src="require('../../assets/components/source.svg')">
     </a>
     <slot />
   </div>
@@ -23,7 +23,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
-@import "../styles/constants";
+@import "../../styles/constants";
 
 .example-wrapper {
   border-top: solid 3px $vue-color;

@@ -41,7 +41,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import "../styles/constants";
+@import "../../styles/constants";
 
 .home-button {
   border-radius: 5px;

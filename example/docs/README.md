@@ -1,6 +1,6 @@
 ---
 home: true
-layout: Home
+layout: home
 ---
 
 ::: slot custom-stencil

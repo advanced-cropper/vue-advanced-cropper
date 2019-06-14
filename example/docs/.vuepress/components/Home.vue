@@ -5,16 +5,22 @@
 				<a class="navigation__link navigation__link--active" href="/">
 					Vue
 				</a>
-				<a class="navigation__link" href="/">
+				<span class="navigation__link navigation__link--blocked" href="/">
 					React
-				</a>
+					<span class="tooltip">
+						I'm going to port this library to the end of 2019
+					</span>
+				</span>
 			</div>
 			<div class="navigation__sections">
 				<a class="navigation__link navigation__link--active"  href="/#">
 					Home
 				</a>
-				<a class="navigation__link"  href="/guide">
+				<a class="navigation__link"  href="/introduction/getting-started.html">
 					Docs
+				</a>
+				<a class="navigation__link"  href="http://github.com/Norserium/vue-advanced-cropper/" target="_blank">
+					Github
 				</a>
 			</div>
 		</div>
@@ -36,29 +42,23 @@
         <div class="presentation__subtitle">
           The really flexible cropper that gives you opportunity to create almost any cropper that you desire
         </div>
-        <div class="presentation__buttons">
-          <a
-            class="presentation__button"
-            href="http://github.com/Norserium/vue-advanced-cropper/"
-          >
-            <home-button
-              :icon="require('../assets/home/github.svg')"
-              text="Github"
-              caption="Sources / Development"
-              action
-            />
-          </a>
-          <a
-            class="presentation__button"
-            href=""
-          >
-            <home-button
-              :icon="require('../assets/home/npm.svg')"
-              text="NPM"
-              caption="Library / Publishing"
-            />
-          </a>
-        </div>
+
+        <div class="presentation__install">
+					{{
+						manager === 'npm' ? 'npm install -S vue-advanced-cropper' : 'yarn add vue-advanced-cropper'
+					}}
+					<div class="presentation__package-managers">
+						<span @click="manager = 'yarn'":class="`presentation__package-manager ${manager === 'yarn' ? 'presentation__package-manager--active' : ''}`">
+							yarn
+						</span>
+						/
+						<span @click="manager = 'npm'" :class="`presentation__package-manager ${manager === 'npm' ? 'presentation__package-manager--active' : ''}`">
+							npm
+						</span>
+					</div>
+				</div>
+
+
       </div>
       <div class="presentation__border">
         <img
@@ -88,7 +88,6 @@
               hover: 'demo-cropper__handler--hover',
             }
           }"
-          @change="change"
         />
       </div>
       <div class="section-border section-border--hide-mobile">
@@ -330,11 +329,22 @@
 			&--active {
 				opacity: 1;
 			}
-			&:not(:last-child) {
-				margin-right: 40px;
+			&--blocked {
+				cursor: not-allowed;
+				position: relative;
+				.tooltip {
+					left: 50%;
+					transform: translateX(-50%);
+				}
 			}
-			&:last-child {
-				margin-right: 1.5rem;
+			&:hover, &:focus {
+				.tooltip {
+					opacity: 1;
+				}
+			}
+
+			&:not(:last-child) {
+				margin-right: 20px;
 			}
 		}
 	}
@@ -344,9 +354,15 @@
     background-size: auto 100%;
     background-color: $vue-color;
     background-size: cover;
-    padding-top: 104px;
+    padding-top: 85px;
+		padding-bottom: 0;
     color: white;
     position: relative;
+		transition: padding 0.5s;
+
+		@media (max-width: $screen-sm) {
+			padding-top: 110px;
+		}
 
     &:before {
       content: "";
@@ -359,7 +375,52 @@
       );
       bottom: 0;
       position: absolute;
-    }
+		}
+
+		&__package-managers {
+			display: block;
+			position: absolute;
+			top: 3px;
+			right: 25px;
+			color: white;
+			opacity: 0.25;
+		}
+
+		&__package-manager {
+			font-size: 12px;
+			cursor: pointer;
+			&--active {
+				font-weight: bold;
+			}
+		}
+		&__github {
+			display: flex;
+			align-items: center;
+		}
+
+		&__install {
+			background: #117448;
+			padding: 25px;
+			padding-left: 35px;
+			box-shadow: inset 3px 3px 7px rgba(black, 0.1);
+			position: relative;
+			margin-top: 30px;
+			margin-bottom: 30px;
+			font-size: 15px;
+			transition: margin 0.5s;
+			&:before {
+				content: "$";
+				opacity: 0.5;
+				position: absolute;
+				top: 50%;
+				transform: translateY(-50%);
+				left: 20px;
+			}
+			@media (max-width: $screen-sm) {
+				margin-bottom: 50px;
+			}
+		}
+
     &__logo {
       min-height: 135px;
     }
@@ -387,11 +448,10 @@
       line-height: 32px;
     }
     &__buttons {
-      width: 412px;
       display: flex;
       justify-content: space-between;
-      margin-top: 50px;
-      margin-bottom: 50px;
+      margin-top: 25px;
+      margin-bottom: 0px;
       @media (max-width: $screen-xs) {
         width: 100%;
         display: block;
@@ -634,6 +694,7 @@
     margin-bottom: 40px;
     margin-top: 40px;
     font-weight: normal;
+		border-bottom: none;
 
     &:after {
       content: "";
@@ -652,6 +713,7 @@
     font-size: 30px;
     color: #8f8f8f;
     font-weight: 600;
+		border-bottom: none;
 	}
 
 	.footer {
@@ -698,25 +760,69 @@
 			font-weight: bold;
 		}
 	}
+	.tooltip {
+		display: block;
+		font-size: 13px;
+		width: 140px;
+		text-align: center;
+		background: rgba(black, 0.7);
+		position: absolute;
+		transform: translate3d(5px, 54px, 0px);
+		top: 30px;
+		will-change: transform;
+		margin-top: 5px;
+		color: #fff;
+		padding: 6px 10px;
+		border-radius: 3px;
+		z-index: 100;
+		box-shadow: 2px 2px 3px rgba(0,0,0,0.4);
+		opacity: 0;
+		transition: opacity 0.5s 0.25s;
+		&:after {
+			content: '';
+			width: 0;
+			height: 0;
+			border-style: solid;
+			position: absolute;
+			margin: 5px;
+			border-width: 0 5px 5px 5px;
+			border-bottom-color: rgba(#000, 0.7);
+			border-top-color: transparent;
+			border-left-color: transparent;
+			border-right-color: transparent;
+			top: -4px;
+			margin-top: 0;
+			margin-bottom: 0;
+			left: 50%;
+			transform: translateX(-50%);
+		}
+	}
 }
+
 </style>
 
 <script>
-import ExampleWrapper from './ExampleWrapper.vue';
-import Footer from './Footer';
-import HomeButton from './HomeButton';
-import CircleExample from './Examples/CircleExample/Example.vue';
-import CommonExample from './Examples/CommonExample/Example.vue';
+import Vue from 'vue';
+import ExampleWrapper from './Home/ExampleWrapper.vue';
+import Footer from './Home/Footer';
+import HomeButton from './Home/HomeButton';
+import CircleExample from './Home/Examples/CircleExample/Example.vue';
+import CommonExample from './Home/Examples/CommonExample/Example.vue';
 import {Cropper} from 'vue-advanced-cropper';
 
 export default {
-	name: 'Home',
+	name: 'home',
 	components: {
 		HomeButton,
 		ExampleWrapper,
 		Cropper,
 		CommonExample,
 		CircleExample,
+	},
+	data() {
+		return {
+			manager: 'npm'
+		}
 	}
 };
 </script>
