@@ -258,7 +258,5 @@ export default {
       cursor: w-resize;
     }
   }
-  &__handler {
-  }
 }
 </style>

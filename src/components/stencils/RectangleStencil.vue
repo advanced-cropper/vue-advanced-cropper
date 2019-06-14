@@ -166,7 +166,6 @@ export default {
 <style lang="scss">
 .vue-rectangle-stencil {
   position: absolute;
-  background: rgba(red, 0.1);
   height: 100%;
   width: 100%;
   cursor: move;

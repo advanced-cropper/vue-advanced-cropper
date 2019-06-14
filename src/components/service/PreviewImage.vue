@@ -37,6 +37,39 @@ export default {
 			required: true
 		}
 	},
+	data() {
+		return {
+			imageSize: {
+				width: 0,
+				height: 0
+			}
+		}
+	},
+	mounted() {
+		this.onChangeImage();
+	},
+	methods: {
+		refreshImage() {
+			const image = this.$refs.image;
+			this.imageSize.height = image.naturalHeight;
+			this.imageSize.width = image.naturalWidth;
+		},
+		onChangeImage() {
+			const image = this.$refs.image;
+			if (image.complete) {
+				this.refreshImage();
+			} else {
+				image.addEventListener('load', () => {
+					this.refreshImage();
+				});
+			}
+		},
+	},
+	watch: {
+		img() {
+			this.onChangeImage();
+		}
+	},
 	computed: {
 		classnames() {
 			return {
@@ -51,10 +84,9 @@ export default {
 			}
 		},
 		imageStyle() {
-			const image = this.$refs.image;
 			const coefficient = this.previewHeight / this.height;
-			const height = image ? image.naturalHeight * coefficient : 0
-			const width = image ? image.naturalWidth * coefficient : 0
+			const height = this.imageSize.height * coefficient
+			const width = this.imageSize.width * coefficient
 			return {
 				width: `${width}px`,
 				height: `${height}px`,
@@ -87,6 +119,9 @@ export default {
     &__image {
     	pointer-events: none;
       position: absolute;
+			// Workaround to prevent bugs at the websites with max-width
+			// rule applited to img (Vuepress for example)
+			max-width: unset !important;
     }
   }
 </style>

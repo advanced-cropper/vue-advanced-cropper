@@ -189,22 +189,31 @@ export default {
 		}
 	},
 	mounted() {
-		this.onChangeImage();
 		this.debouncedUpdateCoordinates = debounce(
 			this.updateCoordinates,
 			this.debounce
 		);
+		this.onChangeImage();
 	},
-	beforeMount() {
+	created() {
 		window.addEventListener('resize', this.refreshImage, false);
 		window.addEventListener('orientationchange', this.refreshImage, false);
 	},
-	beforeDestroy() {
+	destroyed() {
 		window.removeEventListener('resize', this.refreshImage);
 		window.removeEventListener('orientationchange', this.refreshImage);
 	},
+	watch: {
+		src() {
+			this.onChangeImage();
+		}
+	},
 	methods: {
 		updateCanvas(coordinates) {
+			// This function can be asynchronously called because it's debounced
+			// Therefore there is workaround to prevent processing after the component was unmounted
+			if (!this.$refs.canvas) return
+
 			const canvas = this.$refs.canvas;
 			canvas.width = coordinates.width;
 			canvas.height = coordinates.height;
@@ -241,7 +250,11 @@ export default {
 				this.refreshImage().then(this.resetCoordinates);
 			} else {
 				image.addEventListener('load', () => {
-					this.refreshImage().then(this.resetCoordinates);
+					// After loading image the current component can be unmounted
+					// Therefore there is a workaround to prevent processing the following code
+					if (this.$refs.image) {
+						this.refreshImage().then(this.resetCoordinates);
+					}
 				});
 			}
 		},
@@ -269,6 +282,10 @@ export default {
 			);
 		},
 		resetCoordinates() {
+			// This function can be asynchronously called after completion of refreshing image promise
+			// Therefore there is a workaround to prevent processing after the component was unmounted
+			if (!this.$refs.image) return
+
 			const cropper = this.$refs.cropper;
 			const image = this.$refs.image;
 			const imageSize = this.imageSize;
@@ -363,10 +380,8 @@ export default {
 				return this.$refs.stencil.aspectRatios();
 			} else {
 				return {
-					minimum:
-            this.stencilProps.aspectRatio || this.stencilProps.minAspectRatio,
-					maximum:
-            this.stencilProps.aspectRatio || this.stencilProps.maxAspectRatio
+					minimum: this.stencilProps.aspectRatio || this.stencilProps.minAspectRatio,
+					maximum: this.stencilProps.aspectRatio || this.stencilProps.maxAspectRatio
 				};
 			}
 		}
@@ -391,6 +406,7 @@ export default {
     >
       <component
         ref="stencil"
+	  	v-if="imageSize.width > 0 && imageSize.height > 0"
         :is="stencilComponent"
         :img="src"
         :left="coordinates.left"
