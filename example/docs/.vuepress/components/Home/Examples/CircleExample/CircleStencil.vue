@@ -4,17 +4,13 @@ import bem from 'easy-bem';
 import {
 	DraggableElement,
 	DraggableArea,
-	PreviewImage,
+	PreviewResult,
 } from 'vue-advanced-cropper';
-
-const BORDER_WIDTH = 2;
-
-const cn = bem('circle-stencil')
 
 export default {
 	name: 'CircleStencil',
 	components: {
-		PreviewImage,
+		PreviewResult,
 		DraggableArea,
 		DraggableElement
 	},
@@ -55,18 +51,13 @@ export default {
 			type: Number
 		}
 	},
-	data() {
-		return {
-			cn
-		}
-	},
 	computed: {
 		style() {
 			return {
 				width: `${this.stencilWidth}px`,
 				height: `${this.stencilHeight}px`,
-				left: `${this.stencilLeft - BORDER_WIDTH}px`,
-				top: `${this.stencilTop - BORDER_WIDTH}px`
+				left: `${this.stencilLeft}px`,
+				top: `${this.stencilTop}px`
 			};
 		}
 	},
@@ -105,11 +96,11 @@ export default {
 
 <template>
   <div
-    :class="cn()"
+    class="circle-stencil"
     :style="style"
   >
     <DraggableElement
-      :classname="cn('handler')"
+      classname="circle-stencil__handler"
       @drag="onHandlerMove"
     >
       <img
@@ -118,9 +109,9 @@ export default {
       >
     </DraggableElement>
     <DraggableArea @move="onMove">
-      <PreviewImage
+      <PreviewResult
         :img="img"
-        :classname="cn('preview')"
+        classname="circle-stencil__preview"
         :preview-width="stencilWidth"
         :preview-height="stencilHeight"
         :width="width"
@@ -138,8 +129,7 @@ export default {
   cursor: move;
   position: absolute;
   border: dashed 2px white;
-  box-sizing: content-box;
-
+	box-sizing: border-box;
   &__handler {
     position: absolute;
     right: 15%;

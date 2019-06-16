@@ -11,7 +11,7 @@ import {
   PreviewImage,
   BoundingBox,
   MoveableArea
-} from 'vue-advanced-cropper/service';
+} from 'vue-advanced-cropper';
 
 export default {
   name: "MyStencil",

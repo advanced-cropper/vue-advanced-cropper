@@ -1,9 +1,13 @@
 ---
 title: Getting started
-pageClass: custom
 ---
 
 # Getting started
+
+::: warning Warning!
+This library is in beta test stage. API can be changed in the future.
+:::
+
 ## Package installation
 To use the package you should install it with `npm` or `yarn`
 ```bash
@@ -24,8 +28,7 @@ After that [register](https://vuejs.org/v2/guide/components-registration.html) t
 ## Minimal working example
 
 The following example is demonstrating the using of cropper:
-```html
-<script>
+```js
 import Vue from 'vue'
 import { Cropper } from 'vue-advanced-cropper'
 
@@ -38,10 +41,9 @@ new Vue({
 		Cropper
 	}
 })
+```
 
-</script>
-
-<template>
+```html
 <div id="app">
   <cropper
 	classname="cropper"
@@ -51,19 +53,16 @@ new Vue({
 	}"
   ></cropper>
 </div>
-</template>
-
-<style>
-	/*
-		You should set the limits for cropper sizes or its container sizes
-	   	otherwise cropped image will try to fill all available space
-	 */
-	.cropper {
-		width: 100%;
-		height: 600px;
-		background: #DDD;
-	}
-</style>
+```
+``` css
+/*
+	Maybe you need to set the limits for the cropper sizes or its container sizes
+	otherwise a cropping image will try to fill all available space
+*/
+.cropper {
+	height: 600px;
+	background: #DDD;
+}
 ```
 
 <getting-started-example/>

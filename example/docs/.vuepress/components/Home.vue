@@ -153,7 +153,7 @@
         <div class="row">
           <p>
             The goal of this library to give a developer opportunity create any cropper
-            easily and effortless. To achieve it the croper is divided to two parts:
+            easily and effortless. To achieve it the cropper is divided to two parts:
             broadly customizable <b>cropper</b> and arbitrary component <b>stencil</b>.
           </p>
         </div>
@@ -170,9 +170,9 @@
           </div>
           <div class="col">
             <p>
-              <b>Cropper</b> is the root component of this library. It contains coordinates of current cropped area (left, top, width, height) relative to original image coordinates. This coordinates can be imagined like <b>box</b>.
+              <b>Cropper</b>
             </p>
-            <p>
+            <p>is the root component of this library. It contains coordinates of current cropped area (left, top, width, height) relative to original image coordinates. This coordinates can be imagined like <b>box</b>.
               It responsible for:
             </p>
             <ul>

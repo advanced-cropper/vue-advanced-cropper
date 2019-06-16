@@ -14,16 +14,35 @@ module.exports = {
               collapsable: false,
               children: [
 								'/introduction/getting-started',
+								'/introduction/concepts',
               ]
             },
             {
-              title: 'API Guide',
+              title: 'Tutorials',
               collapsable: false,
               children: [
-                  '/guide/guide',
-                  '/guide/api'
+                  '/tutorials/recipes',
+                  '/tutorials/customize-appearance',
               ]
-            }
+						},
+            {
+              title: 'Components',
+              collapsable: false,
+              children: [
+                  '/components/cropper',
+                  '/components/rectangle-stencil',
+                  '/components/circle-stencil',
+                  '/components/bounding-box',
+              ]
+						},
+            // {
+            //   title: 'Playground',
+            //   collapsable: true,
+            //   children: [
+            //       '/playground/playground',
+            //   ]
+						// },
+
           ]
     }
 }

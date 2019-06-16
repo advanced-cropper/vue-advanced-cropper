@@ -27,7 +27,6 @@ export default {
 
 <style>
 	.cropper {
-		width: 100%;
 		height: 600px;
 		background: #222;
 	}
