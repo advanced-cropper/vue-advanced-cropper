@@ -3,8 +3,6 @@ import bem from 'easy-bem';
 import draggable from '../../mixins/draggable';
 import classnames from 'classnames';
 
-const cn = bem('vue-draggable-element');
-
 export default {
 	name: 'DraggableElement',
 	mixins: [draggable],
@@ -28,9 +26,3 @@ export default {
     <slot />
   </div>
 </template>
-
-<style lang="scss">
-.vue-draggable-element {
-  position: relative;
-}
-</style>

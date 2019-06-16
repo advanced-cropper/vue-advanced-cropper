@@ -14,19 +14,9 @@ const cn = bem('vue-advanced-cropper');
 export default {
 	name: 'Cropper',
 	props: {
-		value: {
-			type: Object
-		},
 		src: {
-			type: String
-		},
-		disabled: {
-			type: Boolean,
-			default: false
-		},
-		canvas: {
-			type: Boolean,
-			default: true
+			type: String,
+			default: null
 		},
 		resizeAlgorithm: {
 			type: Function,
@@ -64,16 +54,6 @@ export default {
 			type: [Number, String],
 			default: 100
 		},
-		scaleable: {
-			type: Boolean,
-			default: true
-		},
-		scaleX: {
-			type: Boolean
-		},
-		scaleY: {
-			type: Boolean
-		},
 		stencilComponent: {
 			type: [Object, String],
 			default() {
@@ -86,25 +66,26 @@ export default {
 				return {};
 			}
 		},
-		disableDefaultClasses: {
-			type: Boolean,
-			default: false
-		},
 		classname: {
 			type: String
 		},
 		imageClassname: {
 			type: String
 		},
-		areaClass: {
+		areaClassname: {
 			type: String
 		},
-		stencilWrapperClass: {
+		backgroundClassname: {
 			type: String
 		},
 		debounce: {
 			type: Number,
 			default: 500
+		}
+	},
+	provide() {
+		return {
+			getArea: this.getArea
 		}
 	},
 	data() {
@@ -126,6 +107,9 @@ export default {
 		};
 	},
 	computed: {
+		imageUploaded() {
+			return this.imageSize.width > 0 && this.imageSize.height > 0
+		},
 		coefficient() {
 			return this.imageSize.width
 				? this.imageSize.width / this.boundarySize.width
@@ -136,10 +120,7 @@ export default {
 				cropper: classnames(cn(), this.classname),
 				image: classnames(cn('image'), this.imageClassname),
 				area: classnames(cn('area'), this.areaClassname),
-				stencilWrapper: classnames(
-					cn('stencil-wrapper'),
-					this.stencilWrapperClassname
-				)
+				background: classnames(cn('background'), this.backgroundClassname)
 			};
 		},
 		stencilCoordinates() {
@@ -166,18 +147,31 @@ export default {
 					: 'auto',
 				height: this.boundarySize.height
 					? `${this.boundarySize.height}px`
-					: 'auto'
+					: 'auto',
+				opacity: this.imageUploaded ? 1 : 0
 			};
 		},
 		imageStyle() {
-			return {
-				maxWidth: this.boundarySize.width
-					? `${this.boundarySize.width}px`
-					: 'auto',
-				maxHeight: this.boundarySize.height
-					? `${this.boundarySize.height}px`
-					: 'auto'
-			};
+
+			const result = {};
+
+			if (this.imageSize.width >= this.boundarySize.width) {
+				result.maxWidth = this.boundarySize.width ? `${this.boundarySize.width}px` : 'auto'
+			} else {
+				result.width = this.boundarySize.width ? `${this.boundarySize.width}px` : 'auto'
+			}
+
+			if (this.imageSize.height >= this.boundarySize.height) {
+				result.maxHeight = this.boundarySize.height ? `${this.boundarySize.height}px` : 'auto'
+			} else {
+				result.height = this.boundarySize.height ? `${this.boundarySize.height}px` : 'auto'
+			}
+
+			if (!((result.width || result.maxWidth) && (result.height || result.maxHeight))) {
+				result.opacity = 0
+			}
+
+			return result;
 		},
 		restrictions() {
 			return {
@@ -193,11 +187,11 @@ export default {
 			this.updateCoordinates,
 			this.debounce
 		);
-		this.onChangeImage();
-	},
-	created() {
-		window.addEventListener('resize', this.refreshImage, false);
-		window.addEventListener('orientationchange', this.refreshImage, false);
+		if (this.src) {
+			this.onChangeImage();
+		}
+		window.addEventListener('resize', this.refreshImage);
+		window.addEventListener('orientationchange', this.refreshImage);
 	},
 	destroyed() {
 		window.removeEventListener('resize', this.refreshImage);
@@ -205,10 +199,15 @@ export default {
 	},
 	watch: {
 		src() {
-			this.onChangeImage();
+			Vue.nextTick(() => {
+				this.onChangeImage();
+			})
 		}
 	},
 	methods: {
+		getArea() {
+			return this.$refs.area
+		},
 		updateCanvas(coordinates) {
 			// This function can be asynchronously called because it's debounced
 			// Therefore there is workaround to prevent processing after the component was unmounted
@@ -246,16 +245,18 @@ export default {
 		},
 		onChangeImage() {
 			const image = this.$refs.image;
-			if (image.complete) {
-				this.refreshImage().then(this.resetCoordinates);
-			} else {
-				image.addEventListener('load', () => {
-					// After loading image the current component can be unmounted
-					// Therefore there is a workaround to prevent processing the following code
-					if (this.$refs.image) {
-						this.refreshImage().then(this.resetCoordinates);
-					}
-				});
+			if (image) {
+				if (image.complete) {
+					this.refreshImage(true).then(this.resetCoordinates);
+				} else {
+					image.addEventListener('load', () => {
+						// After loading image the current component can be unmounted
+						// Therefore there is a workaround to prevent processing the following code
+						if (this.$refs.image) {
+							this.refreshImage(false).then(this.resetCoordinates);
+						}
+					});
+				}
 			}
 		},
 		onResize(resizeEvent) {
@@ -274,7 +275,6 @@ export default {
 			this.onChangeCoordinates(
 				this.moveAlgorithm(
 					this.coordinates,
-					this.restrictions,
 					this.imageSize,
 					this.coefficient,
 					moveEvent
@@ -338,7 +338,6 @@ export default {
 			);
 			coordinates = this.moveAlgorithm(
 				coordinates,
-				this.restrictions,
 				imageSize,
 				coefficient,
 				new MoveEvent(null, {
@@ -349,22 +348,22 @@ export default {
 
 			this.onChangeCoordinates(coordinates);
 		},
-		refreshImage() {
+		refreshImage(flag) {
 			const image = this.$refs.image;
-			image.style.maxHeight = 'initial';
-			image.style.maxWidth = 'initial';
+			image.style.maxHeight = 'none';
+			image.style.maxWidth = 'none';
 
 			return new Promise(resolve => {
 				const cropper = this.$refs.cropper;
-
+				const image = this.$refs.image;
 				this.imageSize.height = image.naturalHeight;
 				this.imageSize.width = image.naturalWidth;
 
 				this.boundarySize.width = cropper.clientWidth;
 				this.boundarySize.height = cropper.clientHeight;
-
 				Vue.nextTick(() => {
 					const { height, width } = this.areaSize(cropper, image);
+
 					if (height) {
 						this.boundarySize.height = height;
 					}
@@ -372,8 +371,10 @@ export default {
 						this.boundarySize.width = width;
 					}
 					resolve();
-				});
+				})
+
 			});
+
 		},
 		stencilAspectRatios() {
 			if (this.$refs.stencil.aspectRatios) {
@@ -394,19 +395,24 @@ export default {
     ref="cropper"
     :class="classes.cropper"
   >
+	<div
+	  :class="classes.background"
+    :style="areaStyle"
+	></div>
     <img
       ref="image"
       :src="src"
       :class="classes.image"
       :style="imageStyle"
-    >
+    />
     <div
       :class="classes.area"
       :style="areaStyle"
+	  	ref="area"
     >
       <component
         ref="stencil"
-	  	v-if="imageSize.width > 0 && imageSize.height > 0"
+	  		v-if="imageUploaded"
         :is="stencilComponent"
         :img="src"
         :left="coordinates.left"
@@ -438,18 +444,32 @@ export default {
   justify-content: center;
   overflow: visible;
   user-select: none;
-  -moz-user-select: none;
+  max-height: 100%;
+	max-width: 100%;
+	flex: 1 1 auto;
+
   &__image {
     opacity: 0.5;
     display: inline-block;
     max-height: 100%;
     max-width: 100%;
-    user-select: none;
+		user-select: none;
+		background: white;
   }
   &__area {
     position: absolute;
     left: 50%;
-    transform: translateX(-50%);
+		transform: translate(-50%, -50%);
+		transition: opacity 0.5s;
+		top: 50%;
+  }
+  &__background {
+		position: absolute;
+		background: black;
+		transition: opacity 0.5s;
+		top: 50%;
+    left: 50%;
+		transform: translate(-50%, -50%);
   }
   &__stencil-wrapper {
     position: absolute;

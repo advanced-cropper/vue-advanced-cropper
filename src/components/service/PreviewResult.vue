@@ -2,10 +2,10 @@
 import classnames from 'classnames';
 import bem from 'easy-bem';
 
-const cn = bem('vue-preview-image')
+const cn = bem('vue-preview-result')
 
 export default {
-	name: 'PreviewImage',
+	name: 'PreviewResult',
 	props: {
 		img: {
 			type: String
@@ -45,22 +45,18 @@ export default {
 			}
 		}
 	},
+	inject: ['getArea'],
 	mounted() {
 		this.onChangeImage();
 	},
 	methods: {
-		refreshImage() {
-			const image = this.$refs.image;
-			this.imageSize.height = image.naturalHeight;
-			this.imageSize.width = image.naturalWidth;
-		},
 		onChangeImage() {
 			const image = this.$refs.image;
 			if (image.complete) {
-				this.refreshImage();
+				this.$forceUpdate();
 			} else {
 				image.addEventListener('load', () => {
-					this.refreshImage();
+					this.$forceUpdate();
 				});
 			}
 		},
@@ -68,7 +64,36 @@ export default {
 	watch: {
 		img() {
 			this.onChangeImage();
+		},
+		'$props':{
+			handler (val, oldVal) {
+				this.$forceUpdate();
+			},
+			deep: true
 		}
+	},
+	updated() {
+		// Workaround to get the area element
+		const area = this.getArea()
+
+		const image = this.$refs.image
+		const wrapper = this.$refs.wrapper
+
+		const coefficient = this.previewHeight / this.height
+
+		const height = image.naturalHeight * coefficient
+		const width = image.naturalWidth * coefficient
+
+		const areaCoordinates = area.getBoundingClientRect()
+		const wrapperCoordinates = wrapper.getBoundingClientRect()
+
+		const left = areaCoordinates.left - wrapperCoordinates.left
+		const top = areaCoordinates.top - wrapperCoordinates.top
+
+		image.style.width = `${width}px`
+		image.style.height = `${height}px`
+		image.style.left = `${left}px`
+		image.style.top = `${top}px`
 	},
 	computed: {
 		classnames() {
@@ -77,23 +102,7 @@ export default {
 				image: classnames(cn('image'), this.imageClassname)
 			}
 		},
-		wrapperStyle() {
-			return {
-				width: `${this.previewWidth}px`,
-				height: `${this.previewHeight}px`,
-			}
-		},
-		imageStyle() {
-			const coefficient = this.previewHeight / this.height;
-			const height = this.imageSize.height * coefficient
-			const width = this.imageSize.width * coefficient
-			return {
-				width: `${width}px`,
-				height: `${height}px`,
-				left: `${-this.left*coefficient}px`,
-				top: `${-this.top*coefficient}px`
-			}
-		}
+
 	},
 };
 </script>
@@ -101,24 +110,28 @@ export default {
 <template>
   <div
     :class="classnames.default"
-    :style="wrapperStyle"
   >
-    <img
-      ref="image"
-      :src="img"
-      :class="classnames.image"
-      :style="imageStyle"
-    >
+	<div ref="wrapper">
+		<img
+		ref="image"
+		:src="img"
+		:class="classnames.image"
+		>
+	</div>
   </div>
 </template>
 
 <style lang="scss">
-  .vue-preview-image{
+  .vue-preview-result{
     overflow: hidden;
-		position: relative;
+		box-sizing: border-box;
+		position: absolute;
+		width: 100%;
+		height: 100%;
     &__image {
     	pointer-events: none;
       position: absolute;
+			user-select: none;
 			// Workaround to prevent bugs at the websites with max-width
 			// rule applited to img (Vuepress for example)
 			max-width: unset !important;

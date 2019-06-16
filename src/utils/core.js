@@ -243,9 +243,9 @@ export function resize (coordinates, restrictions, imageSize, coefficient, aspec
 	}
 }
 
-export function move (coordinates, restrictions, imageSize, coefficient, resizeEvent) {
+export function move (coordinates, imageSize, coefficient, moveEvent) {
 	const directions = {
-		...resizeEvent.directions
+		...moveEvent.directions
 	}
 
 	const newCoordinates = {

@@ -12,9 +12,6 @@ const VERTICAL_DIRECTIONS = ['south', 'north', null];
 export default {
 	name: 'BoundingBox',
 	props: {
-		img: {
-			type: String
-		},
 		classname: {
 			type: String
 		},
@@ -34,7 +31,7 @@ export default {
 			}
 		},
 		handlerComponent: {
-			type: [Object, String]
+			type: [Object, String],
 		},
 		handlersClassnames: {
 			type: Object,
@@ -54,7 +51,7 @@ export default {
 			}
 		},
 		lineComponent: {
-			type: [Object, String]
+			type: [Object, String],
 		},
 		linesClassnames: {
 			type: Object,
@@ -233,6 +230,8 @@ export default {
 <style lang="scss">
 .vue-bounding-box {
   position: relative;
+  height: 100%;
+  width: 100%;
   &__line {
     position: absolute;
     &--north {

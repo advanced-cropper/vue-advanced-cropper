@@ -5,10 +5,10 @@ import { PreviewResult, BoundingBox, DraggableArea } from '../service';
 import { SimpleHandler } from '../handlers';
 import { SimpleLine } from '../lines';
 
-const cn = bem('vue-rectangle-stencil');
+const cn = bem('vue-round-stencil');
 
 export default {
-	name: 'RectangleStencil',
+	name: 'RoundStencil',
 	components: {
 		PreviewResult,
 		BoundingBox,
@@ -16,14 +16,10 @@ export default {
 	},
 	props: {
 		img: {
-			type: String,
-			default: null
+			type: String
 		},
-		left: {
-			type: Number
-		},
-		top: {
-			type: Number
+		stencilClass: {
+			type: String
 		},
 		height: {
 			type: Number,
@@ -34,23 +30,39 @@ export default {
 			default: 0
 		},
 		stencilHeight: {
-			type: Number,
-			default: 0
+			type: Number
 		},
 		stencilWidth: {
-			type: Number,
-			default: 0
+			type: Number
 		},
 		stencilLeft: {
-			type: Number,
-			default: 0
+			type: Number
 		},
 		stencilTop: {
-			type: Number,
-			default: 0
+			type: Number
+		},
+		left: {
+			type: Number
+		},
+		top: {
+			type: Number
+		},
+		imageWidth: {
+			type: Number
+		},
+		imageHeight: {
+			type: Number
 		},
 		handlers: {
-			type: Object
+			type: Object,
+			default() {
+				return {
+					eastNorth: true,
+					westNorth: true,
+					westSouth: true,
+					eastSouth: true,
+				}
+			}
 		},
 		handlerComponent: {
 			type: [Object, String],
@@ -88,15 +100,6 @@ export default {
 		boundingBoxClassname: {
 			type: String
 		},
-		aspectRatio: {
-			type: [Number, String]
-		},
-		minAspectRatio: {
-			type: [Number, String]
-		},
-		maxAspectRatio: {
-			type: [Number, String]
-		}
 	},
 	methods: {
 		onMove(moveEvent) {
@@ -107,8 +110,8 @@ export default {
 		},
 		aspectRatios() {
 			return {
-				minimum: this.aspectRatio || this.minAspectRatio,
-				maximum: this.aspectRatio || this.maxAspectRatio
+				minimum: 1,
+				maximum: 1
 			};
 		}
 	},
@@ -116,7 +119,8 @@ export default {
 		classes() {
 			return {
 				stencil: classnames(cn(), this.classname),
-				preview: classnames(cn('preview'), this.previewClassname)
+				preview: classnames(cn('preview'), this.previewClassname),
+				boundingBox: classnames(cn('bounding-box'), this.boundingBox),
 			};
 		},
 		style() {
@@ -135,7 +139,7 @@ export default {
   <div :class="classes.stencil" :style="style">
     <BoundingBox
       @resize="onResize"
-      :classname="boundingBoxClassname"
+      :classname="classes.boundingBox"
       :handlers="handlers"
       :handlerComponent="handlerComponent"
       :handlersClassnames="handlersClassnames"
@@ -160,11 +164,21 @@ export default {
 </template>
 
 <style lang="scss">
-.vue-rectangle-stencil {
+.vue-round-stencil {
   position: absolute;
   height: 100%;
   width: 100%;
   box-sizing: content-box;
   cursor: move;
+  &__preview {
+	  border-radius: 50%;
+	  //position: absolute;
+  }
+  &__bounding-box {
+	//   border-radius: 50%;
+	//   position: relative;
+	//   height: 100%;
+	//   width: 100%;
+  }
 }
 </style>
