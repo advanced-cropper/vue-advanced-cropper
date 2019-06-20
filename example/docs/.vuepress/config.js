@@ -23,6 +23,16 @@ module.exports = {
               children: [
                   '/tutorials/recipes',
                   '/tutorials/customize-appearance',
+                  '/tutorials/custom-stencil',
+              ]
+						},
+            {
+              title: 'Events',
+              collapsable: false,
+              children: [
+								'/events/move-event',
+								'/events/resize-event',
+                '/events/drag-event',
               ]
 						},
             {

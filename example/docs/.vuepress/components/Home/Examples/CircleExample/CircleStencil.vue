@@ -1,6 +1,4 @@
 <script>
-import classnames from 'classnames';
-import bem from 'easy-bem';
 import {
 	DraggableElement,
 	DraggableArea,
@@ -18,46 +16,21 @@ export default {
 		img: {
 			type: String
 		},
-		height: {
-			type: Number,
-			default: 0
+		resultCoordinates: {
+			type: Object,
 		},
-		width: {
-			type: Number,
-			default: 0
+		stencilCoordinates: {
+			type: Object,
 		},
-		stencilHeight: {
-			type: Number
-		},
-		stencilWidth: {
-			type: Number
-		},
-		stencilLeft: {
-			type: Number
-		},
-		stencilTop: {
-			type: Number
-		},
-		left: {
-			type: Number
-		},
-		top: {
-			type: Number
-		},
-		imageWidth: {
-			type: Number
-		},
-		imageHeight: {
-			type: Number
-		}
 	},
 	computed: {
 		style() {
+			const { height, width, left, top } = this.stencilCoordinates;
 			return {
-				width: `${this.stencilWidth}px`,
-				height: `${this.stencilHeight}px`,
-				left: `${this.stencilLeft}px`,
-				top: `${this.stencilTop}px`
+				width: `${width}px`,
+				height: `${height}px`,
+				left: `${left}px`,
+				top: `${top}px`
 			};
 		}
 	},
@@ -66,21 +39,18 @@ export default {
 			this.$emit('move', moveEvent);
 		},
 		onHandlerMove(dragEvent) {
-			const { position, anchor, element } = dragEvent;
-			const { left, right, bottom, top } = element.getBoundingClientRect();
+			const shift = dragEvent.shift();
 
-			const widthResize = position.left - left - anchor.left
-			const heightResize = top - position.top + anchor.top
-
-			const resize = (widthResize + heightResize) / 2
+			const widthResize = shift.left
+			const heightResize = -shift.top
 
 			this.$emit('resize', {
 				nativeEvent: dragEvent.nativeEvent,
 				directions: {
-					left: resize,
-					right: resize,
-					top: resize,
-					bottom: resize,
+					left: widthResize,
+					right: widthResize,
+					top: heightResize,
+					bottom: heightResize,
 				}
 			});
 		},
@@ -105,19 +75,18 @@ export default {
     >
       <img
         :src="require('./assets/handler.svg')"
+      	class="circle-stencil__icon"
         alt=""
       >
     </DraggableElement>
     <DraggableArea @move="onMove">
       <PreviewResult
-        :img="img"
         classname="circle-stencil__preview"
-        :preview-width="stencilWidth"
-        :preview-height="stencilHeight"
-        :width="width"
-        :height="height"
-        :left="left"
-        :top="top"
+        :img="img"
+        :width="stencilCoordinates.width"
+        :height="stencilCoordinates.height"
+		    :coordinates="resultCoordinates"
+				:stencilCoordinates="stencilCoordinates"
       />
     </DraggableArea>
   </div>
@@ -130,6 +99,10 @@ export default {
   position: absolute;
   border: dashed 2px white;
 	box-sizing: border-box;
+	&__icon {
+		user-select: none;
+		pointer-events: none;
+	}
   &__handler {
     position: absolute;
     right: 15%;

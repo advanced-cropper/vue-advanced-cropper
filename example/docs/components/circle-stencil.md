@@ -4,11 +4,6 @@
 
 ## Props
 
-### `img`
-Default: `null`
-
-The link to cropping image or the image itself in base64 format
-
 ### `classname`
 
 The classname for root block of the stencil component. Probably you don't need to use it.
@@ -144,53 +139,19 @@ The time before `change` event will be emitted after moving or resizing stencil.
 You should not pass this props to stencil, they are passed by cropper itself
 :::
 
-### `height`
-Default: `0`
+### `img`
+Default: `null`
 
-The actual height of the cropped image (relative to original image size)
+The link to cropping image or the image itself in base64 format
 
+### `stencilCoordinates`
+It's the object with `left`, `right`, `height` and `width` fields, that represents desirable coordinates of stencil relative to visible area. In almost all cases you may use it as default coordinates for your absolute positioned stencil.
 
-### `width`
-Default: `0`
+### `resultCoordinates`
 
-The actual width ofthe cropped image (relative to original image size)
+It's the object with `left`, `right`, `height` and `width` fields, that represent the absolute coordinates of cropped area relative to original image size.
 
-
-### `left`
-Default: `0`
-
-The actual left position of the cropped image (relative to original image size)
-
-
-### `top`
-Default: `0`
-
-The actual top position of the cropped image (relative to original image size)
-
-
-### `stencilHeight`
-Default: `0`
-
-The actual height of the stencil
-
-
-### `stencilWidth`
-Default: `0`
-
-The current width of the stencil
-
-
-### `stencilLeft`
-Default: `0`
-
-The actual left position of the stencil
-
-
-### `stencilTop`
-Default: `0`
-
-The current top position of the stencil
-
+In other words, this coordinates defines a exact part of original image passed to `img` prop that is cropped now.
 
 
 

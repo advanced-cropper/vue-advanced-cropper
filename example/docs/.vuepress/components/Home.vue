@@ -8,7 +8,7 @@
 				<span class="navigation__link navigation__link--blocked" href="/">
 					React
 					<span class="tooltip">
-						I'm going to port this library to the end of 2019
+						I plan to port this library by the end of 2019
 					</span>
 				</span>
 			</div>

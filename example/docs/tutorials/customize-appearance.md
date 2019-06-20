@@ -24,7 +24,7 @@ You can apply different effects (for example blurring) to image by passing custo
 
 ### Background
 
-Background is literally background under image. By default it's black rectangle, but you are able to change, let's say, its color by passing class name to `backgroundClassname` prop.
+Background is literally background directly under image. By default it's black rectangle, but you are able to change, let's say, its color by passing class name to `backgroundClassname` prop.
 
 ## Stencil
 
