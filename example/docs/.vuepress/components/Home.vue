@@ -35,7 +35,7 @@
           <h1 class="presentation__title">
             Advanced Cropper
             <div class="presentation__version">
-              1.1
+              0.8
             </div>
           </h1>
         </div>

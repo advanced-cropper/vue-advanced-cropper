@@ -14,19 +14,19 @@ function fitConditions(oldDirections, coordinates, restrictions, coefficient, im
 
 	if (currentWidth < 0) {
 		if (directions.left < 0 && directions.right < 0) {
-			directions.left -= currentWidth / (coefficient * directions.left)
-			directions.right -= currentWidth / (coefficient * directions.right)
+			directions.left = currentWidth / (directions.left / directions.right)
+			directions.right = currentWidth / (directions.right / directions.left)
 		} else if (directions.left < 0) {
-			directions.left -= currentWidth / coefficient
+			directions.left = currentWidth / coefficient
 		} else if (directions.right < 0) {
-			directions.right -= currentWidth / coefficient
+			directions.right = currentWidth / coefficient
 		}
 	}
 
 	if (currentHeight < 0) {
 		if (directions.top < 0 && directions.bottom < 0) {
-			directions.top = currentHeight / (coefficient * directions.top)
-			directions.bottom = currentHeight / (coefficient * directions.bottom)
+			directions.top = currentHeight / (directions.top / directions.bottom)
+			directions.bottom = currentHeight / (directions.bottom / directions.top)
 		} else if (directions.top < 0) {
 			directions.top = currentHeight
 		} else if (directions.bottom < 0) {
