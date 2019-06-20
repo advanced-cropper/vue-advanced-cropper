@@ -3,6 +3,7 @@ import classnames from 'classnames';
 import bem from 'easy-bem';
 
 import { directionNames } from '../../utils/core.js';
+import { ResizeEvent } from '../../utils/events';
 
 const cn = bem('vue-bounding-box');
 
@@ -178,17 +179,20 @@ export default {
 				respectDirection = 'height';
 			}
 
-			this.$emit('resize', {
-				nativeEvent: dragEvent.nativeEvent,
+			this.$emit('resize', new ResizeEvent(
+				dragEvent.nativeEvent,
 				directions,
-				allowedDirections: {
-					left: horizontalDirection === 'west' || !horizontalDirection,
-					right: horizontalDirection === 'east' || !horizontalDirection,
-					bottom: verticalDirection === 'south' || !verticalDirection,
-					top: verticalDirection === 'north' || !verticalDirection
-				},
-				respectDirection
-			});
+				{
+					allowedDirections: {
+						left: horizontalDirection === 'west' || !horizontalDirection,
+						right: horizontalDirection === 'east' || !horizontalDirection,
+						bottom: verticalDirection === 'south' || !verticalDirection,
+						top: verticalDirection === 'north' || !verticalDirection
+					},
+					preserveAspectRatio: dragEvent.nativeEvent.shiftKey,
+					respectDirection
+				}
+			));
 		}
 	}
 };

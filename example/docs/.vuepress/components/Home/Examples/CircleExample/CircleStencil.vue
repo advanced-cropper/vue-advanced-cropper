@@ -3,6 +3,7 @@ import {
 	DraggableElement,
 	DraggableArea,
 	PreviewResult,
+	ResizeEvent
 } from 'vue-advanced-cropper';
 
 export default {
@@ -44,15 +45,15 @@ export default {
 			const widthResize = shift.left
 			const heightResize = -shift.top
 
-			this.$emit('resize', {
-				nativeEvent: dragEvent.nativeEvent,
-				directions: {
+			this.$emit('resize', new ResizeEvent(
+				dragEvent.nativeEvent,
+				{
 					left: widthResize,
 					right: widthResize,
 					top: heightResize,
 					bottom: heightResize,
 				}
-			});
+			));
 		},
 		aspectRatios() {
 			return {

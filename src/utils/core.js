@@ -139,13 +139,15 @@ export function resize (coordinates, restrictions, imageSize, coefficient, aspec
 		bottom: coordinates.top + coordinates.height
 	}
 
+	const params = resizeEvent.params || {}
+
 	let directions = {
 		...resizeEvent.directions
 	}
 
-	let respectDirection = resizeEvent.respectDirection
+	let respectDirection = params.respectDirection
 
-	const allowedDirections = resizeEvent.allowedDirections || {
+	const allowedDirections = params.allowedDirections || {
 		left: true,
 		right: true,
 		bottom: true,
@@ -158,14 +160,10 @@ export function resize (coordinates, restrictions, imageSize, coefficient, aspec
 		}
 	})
 
-	const event = resizeEvent.nativeEvent || {}
-
 	// Variables for readbility
 	const {
 		minHeight,
 		minWidth,
-		maxWidth,
-		maxHeight
 	} = restrictions
 
 	let currentWidth = actualCoordinates.width + coefficient * (directions.left + directions.right)
@@ -180,7 +178,7 @@ export function resize (coordinates, restrictions, imageSize, coefficient, aspec
 
 	// Checks ratio:
 	let ratioBroken = null
-	if (event.shiftKey) {
+	if (params.preserveAspectRatio) {
 		ratioBroken = actualCoordinates.width / actualCoordinates.height
 	} else if (aspectRatio.minimum && currentWidth / currentHeight < aspectRatio.minimum) {
 		ratioBroken = aspectRatio.minimum
