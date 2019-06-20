@@ -14,9 +14,10 @@ export class MoveEvent {
 }
 
 export class DragEvent {
-	constructor(nativeEvent, element, position, anchor) {
+	constructor(nativeEvent, element, position, previousPosition, anchor) {
 		this.nativeEvent = nativeEvent
 		this.position = position
+		this.previousPosition = previousPosition
 		this.element = element
 		this.anchor = anchor
 	}

@@ -8,8 +8,9 @@ The drag event is the event that emmits during dragging the different elements l
 
 This event is represented by `DragEvent` class instance that has four fields:
 - `nativeEvent` is the literally last native event related to this drag event
-- `position` is the last position of cursor / touch represented by object with `left` and `top` fields relative to window
 - `element` is the DOM element that was dragged
+- `position` is the last position of cursor / touch represented by object with `left` and `top` fields relative to window
+- `previousPosition` is the previos position of cursor / touch represented by object with `left` and `top` fields relative to window
 - `anchor` is the geometry coordinates of the point in the handler where touch was started, it is represented by object with `left`, `top`, `right` and `bottom` fields and constant during the current dragging period
 
 ![Overview](../.vuepress/assets/events/drag-event-overview.svg)

@@ -127,6 +127,10 @@ export default {
 							left: newTouches[0].clientX,
 							top: newTouches[0].clientY
 						},
+						{
+							left: this.touches[0].clientX,
+							top: this.touches[0].clientY,
+						},
 						this.anchor
 					))
 				}

@@ -81,7 +81,6 @@ export default {
 		img() {
 			Vue.nextTick(() => {
 				this.onChangeImage();
-				console.log('CHANGE')
 			})
 		}
 	},
