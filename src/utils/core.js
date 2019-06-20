@@ -41,10 +41,10 @@ function fitConditions(oldDirections, coordinates, restrictions, coefficient, im
 
 	if (directions.right + directions.left) {
 		// Break right border
-		if (Math.floor(coordinates.left + coordinates.width + coefficient * directions.right) > imageSize.width) {
+		if (Math.ceil(coordinates.left + coordinates.width + coefficient * directions.right) > imageSize.width) {
 			maxMultiplier.width = Math.min(
 				maxMultiplier.width,
-				Math.abs((imageSize.width - (coordinates.left + coordinates.width)) / (coefficient * directions.right))
+				Math.abs(Math.floor(imageSize.width - (coordinates.left + coordinates.width)) / (coefficient * directions.right))
 			)
 		}
 		// Break left border
@@ -73,10 +73,10 @@ function fitConditions(oldDirections, coordinates, restrictions, coefficient, im
 
 	if (directions.top + directions.bottom) {
 		// Break bottom border
-		if (Math.floor(coordinates.top + coordinates.height + coefficient * directions.bottom) > imageSize.height) {
+		if (Math.ceil(coordinates.top + coordinates.height + coefficient * directions.bottom) > imageSize.height) {
 			maxMultiplier.height = Math.min(
 				maxMultiplier.height,
-				Math.abs((imageSize.height - (coordinates.top + coordinates.height)) / (coefficient * directions.bottom))
+				Math.abs(Math.floor(imageSize.height - (coordinates.top + coordinates.height)) / (coefficient * directions.bottom))
 			)
 		}
 		// Break top border
@@ -88,7 +88,6 @@ function fitConditions(oldDirections, coordinates, restrictions, coefficient, im
 		}
 		// Break min height
 		if (currentHeight < minHeight) {
-
 			maxMultiplier.height = Math.min(
 				maxMultiplier.height,
 				Math.abs((coordinates.height - minHeight) / ((directions.top + directions.bottom) * coefficient))
