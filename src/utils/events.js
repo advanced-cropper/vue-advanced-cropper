@@ -1,9 +1,8 @@
 export class ResizeEvent {
-	constructor(nativeEvent, directions, allowedDirections, massPoint) {
+	constructor(nativeEvent, directions, params) {
 		this.nativeEvent = nativeEvent
 		this.directions = directions
-		this.allowedDirections = allowedDirections
-		this.massPoint = massPoint
+		this.params = params
 	}
 }
 
@@ -15,10 +14,19 @@ export class MoveEvent {
 }
 
 export class DragEvent {
-	constructor(nativeEvent, position, element, anchor) {
+	constructor(nativeEvent, element, position, anchor) {
 		this.nativeEvent = nativeEvent
 		this.position = position
 		this.element = element
 		this.anchor = anchor
+	}
+	shift() {
+		const { element, anchor, position } = this;
+		const { left, top } = element.getBoundingClientRect();
+
+		return {
+			left: position.left - left - anchor.left,
+			top: position.top - top - anchor.top
+		}
 	}
 }

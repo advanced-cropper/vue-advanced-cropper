@@ -19,35 +19,11 @@ export default {
 			type: String,
 			default: null
 		},
-		left: {
-			type: Number
+		resultCoordinates: {
+			type: Object,
 		},
-		top: {
-			type: Number
-		},
-		height: {
-			type: Number,
-			default: 0
-		},
-		width: {
-			type: Number,
-			default: 0
-		},
-		stencilHeight: {
-			type: Number,
-			default: 0
-		},
-		stencilWidth: {
-			type: Number,
-			default: 0
-		},
-		stencilLeft: {
-			type: Number,
-			default: 0
-		},
-		stencilTop: {
-			type: Number,
-			default: 0
+		stencilCoordinates: {
+			type: Object,
 		},
 		handlers: {
 			type: Object
@@ -116,15 +92,17 @@ export default {
 		classes() {
 			return {
 				stencil: classnames(cn(), this.classname),
-				preview: classnames(cn('preview'), this.previewClassname)
+				preview: classnames(cn('preview'), this.previewClassname),
+				boundingBox: classnames(cn('bounding-box'), this.boundingBoxClassname),
 			};
 		},
 		style() {
+			const { height, width, left, top } = this.stencilCoordinates;
 			return {
-				width: `${this.stencilWidth}px`,
-				height: `${this.stencilHeight}px`,
-				left: `${this.stencilLeft}px`,
-				top: `${this.stencilTop}px`
+				width: `${width}px`,
+				height: `${height}px`,
+				left: `${left}px`,
+				top: `${top}px`
 			};
 		}
 	}
@@ -135,7 +113,7 @@ export default {
   <div :class="classes.stencil" :style="style">
     <BoundingBox
       @resize="onResize"
-      :classname="boundingBoxClassname"
+      :classname="classes.boundingBox"
       :handlers="handlers"
       :handlerComponent="handlerComponent"
       :handlersClassnames="handlersClassnames"
@@ -147,12 +125,10 @@ export default {
         <PreviewResult
           :img="img"
           :classname="classes.preview"
-          :previewWidth="stencilWidth"
-          :previewHeight="stencilHeight"
-          :width="width"
-          :height="height"
-          :left="left"
-          :top="top"
+          :width="stencilCoordinates.width"
+          :height="stencilCoordinates.height"
+		  :coordinates="resultCoordinates"
+		  :stencilCoordinates="stencilCoordinates"
         />
       </DraggableArea>
     </BoundingBox>
@@ -164,7 +140,7 @@ export default {
   position: absolute;
   height: 100%;
   width: 100%;
-  box-sizing: content-box;
+  box-sizing: border-box;
   cursor: move;
 }
 </style>

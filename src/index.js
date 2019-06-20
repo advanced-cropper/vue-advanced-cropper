@@ -40,6 +40,12 @@ export {
 	PreviewImage
 } from './components/helpers'
 
+export {
+	ResizeEvent,
+	MoveEvent,
+	DragEvent
+} from './utils/events'
+
 export { default as Cropper } from './Cropper.vue'
 
 Vue.component('cropper', Cropper)

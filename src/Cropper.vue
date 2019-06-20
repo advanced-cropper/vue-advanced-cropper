@@ -85,7 +85,8 @@ export default {
 	},
 	provide() {
 		return {
-			getArea: this.getArea
+			getArea: this.getArea,
+			getStencil: this.getStencil,
 		}
 	},
 	data() {
@@ -120,6 +121,7 @@ export default {
 				cropper: classnames(cn(), this.classname),
 				image: classnames(cn('image'), this.imageClassname),
 				area: classnames(cn('area'), this.areaClassname),
+				stretcher: classnames(cn('stretcher')),
 				background: classnames(cn('background'), this.backgroundClassname)
 			};
 		},
@@ -152,22 +154,22 @@ export default {
 			};
 		},
 		imageStyle() {
-
 			const result = {};
 
-			if (this.imageSize.width >= this.boundarySize.width) {
-				result.maxWidth = this.boundarySize.width ? `${this.boundarySize.width}px` : 'auto'
+			if (this.imageSize.width > this.imageSize.height) {
+				result.width = '100%'
+				result.left = 0;
+				result.top = '50%'
+				result.transform = 'translateY(-50%)'
+
 			} else {
-				result.width = this.boundarySize.width ? `${this.boundarySize.width}px` : 'auto'
+				result.height = '100%'
+				result.top = 0
+				result.left = '50%'
+				result.transform = 'translateX(-50%)'
 			}
 
-			if (this.imageSize.height >= this.boundarySize.height) {
-				result.maxHeight = this.boundarySize.height ? `${this.boundarySize.height}px` : 'auto'
-			} else {
-				result.height = this.boundarySize.height ? `${this.boundarySize.height}px` : 'auto'
-			}
-
-			if (!((result.width || result.maxWidth) && (result.height || result.maxHeight))) {
+			if (!this.imageSize.width || !this.imageSize.height) {
 				result.opacity = 0
 			}
 
@@ -207,6 +209,9 @@ export default {
 	methods: {
 		getArea() {
 			return this.$refs.area
+		},
+		getStencil() {
+			return this.$refs.stencil
 		},
 		updateCanvas(coordinates) {
 			// This function can be asynchronously called because it's debounced
@@ -350,17 +355,33 @@ export default {
 		},
 		refreshImage(flag) {
 			const image = this.$refs.image;
-			image.style.maxHeight = 'none';
-			image.style.maxWidth = 'none';
+			const stretcher = this.$refs.stretcher;
+			const cropper = this.$refs.cropper;
+
+			const aspectRatio = image.naturalWidth / image.naturalHeight
+
+			if (image.naturalHeight > image.naturalWidth) {
+				stretcher.style.height = `${image.naturalHeight}px`
+				stretcher.style.width = `${stretcher.clientHeight * aspectRatio}px`
+				if (stretcher.clientWidth / stretcher.clientHeight !== aspectRatio) {
+					stretcher.style.height = `${stretcher.clientWidth / aspectRatio}px`
+				}
+
+			} else {
+				stretcher.style.width = `${image.naturalWidth}px`
+				stretcher.style.height = `${stretcher.clientWidth / aspectRatio }px`
+				if (stretcher.clientHeight / stretcher.clientWidth !== aspectRatio) {
+					stretcher.style.width = `${stretcher.clientHeight * aspectRatio}px`
+				}
+			}
 
 			return new Promise(resolve => {
 				const cropper = this.$refs.cropper;
 				const image = this.$refs.image;
+
 				this.imageSize.height = image.naturalHeight;
 				this.imageSize.width = image.naturalWidth;
 
-				this.boundarySize.width = cropper.clientWidth;
-				this.boundarySize.height = cropper.clientHeight;
 				Vue.nextTick(() => {
 					const { height, width } = this.areaSize(cropper, image);
 
@@ -399,30 +420,30 @@ export default {
 	  :class="classes.background"
     :style="areaStyle"
 	></div>
-    <img
-      ref="image"
-      :src="src"
-      :class="classes.image"
-      :style="imageStyle"
-    />
+		<div
+			ref="stretcher"
+			:class="classes.stretcher"
+		>
+		</div>
+
     <div
       :class="classes.area"
       :style="areaStyle"
 	  	ref="area"
     >
+			  <img
+				ref="image"
+				:src="src"
+				:class="classes.image"
+				:style="imageStyle"
+			/>
       <component
         ref="stencil"
 	  		v-if="imageUploaded"
         :is="stencilComponent"
         :img="src"
-        :left="coordinates.left"
-        :top="coordinates.top"
-        :width="coordinates.width"
-        :height="coordinates.height"
-        :stencil-width="stencilCoordinates.width"
-        :stencil-height="stencilCoordinates.height"
-        :stencil-left="stencilCoordinates.left"
-        :stencil-top="stencilCoordinates.top"
+        :result-coordinates="coordinates"
+        :stencil-coordinates="stencilCoordinates"
         v-bind="stencilProps"
         @resize="onResize"
         @move="onMove"
@@ -439,22 +460,22 @@ export default {
 .vue-advanced-cropper {
   text-align: center;
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: visible;
+  overflow: hidden;
   user-select: none;
-  max-height: 100%;
+	max-height: 100%;
 	max-width: 100%;
-	flex: 1 1 auto;
+
+	&__stretcher {
+		pointer-events: none;
+		position: relative;
+		max-width: 100%;
+		max-height: 100%;
+	}
 
   &__image {
     opacity: 0.5;
-    display: inline-block;
-    max-height: 100%;
-    max-width: 100%;
 		user-select: none;
-		background: white;
+		position: absolute;
   }
   &__area {
     position: absolute;

@@ -120,12 +120,14 @@ export default {
 			if (this.touches.length) {
 				if (this.touches.length === 1 && newTouches.length === 1) {
 					const element = this.$refs.draggable
-					this.$emit('drag', new DragEvent(event, {
-						left: newTouches[0].clientX,
-						top: newTouches[0].clientY
-					},
-					element,
-					this.anchor
+					this.$emit('drag', new DragEvent(
+						event,
+						element,
+						{
+							left: newTouches[0].clientX,
+							top: newTouches[0].clientY
+						},
+						this.anchor
 					))
 				}
 				this.touches = newTouches

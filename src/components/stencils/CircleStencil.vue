@@ -21,37 +21,11 @@ export default {
 		stencilClass: {
 			type: String
 		},
-		height: {
-			type: Number,
-			default: 0
+		resultCoordinates: {
+			type: Object,
 		},
-		width: {
-			type: Number,
-			default: 0
-		},
-		stencilHeight: {
-			type: Number
-		},
-		stencilWidth: {
-			type: Number
-		},
-		stencilLeft: {
-			type: Number
-		},
-		stencilTop: {
-			type: Number
-		},
-		left: {
-			type: Number
-		},
-		top: {
-			type: Number
-		},
-		imageWidth: {
-			type: Number
-		},
-		imageHeight: {
-			type: Number
+		stencilCoordinates: {
+			type: Object,
 		},
 		handlers: {
 			type: Object,
@@ -124,11 +98,12 @@ export default {
 			};
 		},
 		style() {
+			const { height, width, left, top } = this.stencilCoordinates;
 			return {
-				width: `${this.stencilWidth}px`,
-				height: `${this.stencilHeight}px`,
-				left: `${this.stencilLeft}px`,
-				top: `${this.stencilTop}px`
+				width: `${width}px`,
+				height: `${height}px`,
+				left: `${left}px`,
+				top: `${top}px`
 			};
 		}
 	}
@@ -151,12 +126,10 @@ export default {
         <PreviewResult
           :img="img"
           :classname="classes.preview"
-          :previewWidth="stencilWidth"
-          :previewHeight="stencilHeight"
-          :width="width"
-          :height="height"
-          :left="left"
-          :top="top"
+          :width="stencilCoordinates.width"
+          :height="stencilCoordinates.height"
+		  :coordinates="resultCoordinates"
+		  :stencilCoordinates="stencilCoordinates"
         />
       </DraggableArea>
     </BoundingBox>
@@ -172,13 +145,6 @@ export default {
   cursor: move;
   &__preview {
 	  border-radius: 50%;
-	  //position: absolute;
-  }
-  &__bounding-box {
-	//   border-radius: 50%;
-	//   position: relative;
-	//   height: 100%;
-	//   width: 100%;
   }
 }
 </style>

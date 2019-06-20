@@ -150,26 +150,25 @@ export default {
 	},
 	methods: {
 		onHandlerDrag(dragEvent, horizontalDirection, verticalDirection) {
-			const position = dragEvent.position;
-			const anchor = dragEvent.anchor;
+			const { element, anchor, position } = dragEvent;
+			const { left, top } = dragEvent.shift();
+
 			const directions = {
 				left: 0,
 				right: 0,
 				top: 0,
 				bottom: 0
 			};
-			const handler = dragEvent.element;
-			const { left, right, bottom, top } = handler.getBoundingClientRect();
 
 			if (horizontalDirection === 'west') {
-				directions.left += left - position.left + anchor.left;
+				directions.left -= left
 			} else if (horizontalDirection === 'east') {
-				directions.right += position.left - right + anchor.right;
+				directions.right += left
 			}
 			if (verticalDirection === 'north') {
-				directions.top += top - position.top + anchor.top;
+				directions.top -= top;
 			} else if (verticalDirection === 'south') {
-				directions.bottom += position.top - bottom + anchor.bottom;
+				directions.bottom += top
 			}
 
 			let respectDirection;
