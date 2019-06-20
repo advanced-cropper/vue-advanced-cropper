@@ -7,7 +7,7 @@ import {
 function fitConditions(oldDirections, coordinates, restrictions, coefficient, imageSize, ratioBroken) {
 
 	const { minHeight, minWidth, maxHeight, maxWidth } = restrictions
-	const directions = {...oldDirections}
+	const directions = { ...oldDirections }
 
 	const currentWidth = coordinates.width + coefficient * (directions.left + directions.right)
 	const currentHeight = coordinates.height + coefficient * (directions.top + directions.bottom)
@@ -325,5 +325,5 @@ export function directionNames (hDirection, vDirection) {
 		name = hDirection || vDirection
 		classname = hDirection || vDirection
 	}
-	return {name, classname}
+	return { name, classname }
 }

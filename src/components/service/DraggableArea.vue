@@ -2,7 +2,7 @@
 import classnames from 'classnames';
 import bem from 'easy-bem';
 
-import {ResizeEvent, MoveEvent} from '../../utils/events.js'
+import { ResizeEvent, MoveEvent } from '../../utils/events.js'
 
 const cn = bem('vue-draggable-container')
 
@@ -42,7 +42,7 @@ export default {
 							clientX: mean.clientX + touch.clientX / e.touches.length,
 							clientY: mean.clientY + touch.clientY / e.touches.length
 						}
-					}, {clientX: 0, clientY: 0}))
+					}, { clientX: 0, clientY: 0 }))
 				}
 				if (e.preventDefault) {
 					e.preventDefault()
@@ -91,7 +91,7 @@ export default {
 		},
 		initAnchor(touch) {
 			const container = this.$refs.container
-			const {left, top} = container.getBoundingClientRect()
+			const { left, top } = container.getBoundingClientRect()
 
 			this.anchor = {
 				x: touch.clientX - left,
@@ -103,7 +103,7 @@ export default {
 			if (this.touches.length) {
 				const container = this.$refs.container
 
-				const {left, top} = container.getBoundingClientRect()
+				const { left, top } = container.getBoundingClientRect()
 
 				const coordinates = {
 					width: this.width,

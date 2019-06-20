@@ -1,1 +1,1 @@
-export {default as SimpleHandler} from './SimpleHandler.vue'
+export { default as SimpleHandler } from './SimpleHandler.vue'

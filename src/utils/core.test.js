@@ -1,5 +1,5 @@
-const {resize, move} = require('./core')
-const {ResizeEvent, MoveEvent} = require('./events')
+const { resize, move } = require('./core')
+const { ResizeEvent, MoveEvent } = require('./events')
 
 const EPSILON = 1;
 const SMALL_EPSILON = 0.01;
@@ -11,7 +11,6 @@ const random = () => {
 	return x - Math.floor(x);
 }
 
-
 test('should fit to conditions (randomized tests)', () => {
 	for(let i = 0; i < 1000; i++){
 
@@ -20,7 +19,7 @@ test('should fit to conditions (randomized tests)', () => {
 			coordinates, restrictions, imageSize, coefficient, aspectRatio, resizeEvent
 		} = conditions
 		const result = resize(coordinates, restrictions, imageSize, coefficient, aspectRatio, resizeEvent)
-		const report = JSON.stringify({i, ...conditions, result})
+		const report = JSON.stringify({ i, ...conditions, result })
 
 		const leftBorder = -EPSILON
 		const rightBorder = imageSize.width + EPSILON
