@@ -23,7 +23,7 @@ The right approach to build a stencil resize algorithm is assuming that you don'
 
 ![Overview](../.vuepress/assets/events/drag-event-problem.svg)
 
-We should resize stencil in a such way that the mouse cursor will be in **the exactly same point** of handler where user started dragging. That's is what user anticipate.
+We should resize stencil in a such way that the mouse cursor will be in **the exactly same point** of handler where user ends dragging. That's is what he anticipates.
 
 But if we know only position the following result is the best result that we can ever get.
 

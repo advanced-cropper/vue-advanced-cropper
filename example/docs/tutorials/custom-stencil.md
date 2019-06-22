@@ -346,7 +346,7 @@ onHandlerMove(dragEvent) {
 
 #### Handling `dragEvent`
 
-The `dragEvents` is the instance of [DragEvent](/events/drag-event.html) class. We should resize our handler in a such way that the mouse cursor will be in **the exactly same point** of handler where user started dragging. That's is what user anticipate.
+The `dragEvents` is the instance of [DragEvent](/events/drag-event.html) class. We should resize our handler in a such way that the mouse cursor will be in **the exactly same point** of handler where user ends dragging. That's is what he anticipates.
 
 Fortunately, it has method `shift` that tells us the needed shift to achieve this task
 ```js

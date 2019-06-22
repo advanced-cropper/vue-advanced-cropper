@@ -15,17 +15,20 @@ This event is represented by `ResizeEvent` class instance that has two fields:
 
 ## Params
 
-`allowedDirections`
+### `allowedDirections`
+
 Default: `{left: true, right: true, top: true, bottom: true}`
 
 It's the only directions that will be resized. If the algorithm need to resize the stencil in directions that are not allowed to save, for example, aspect ratio, it will break resize process.
 
-`respectDirection`
+### `respectDirection`
+
 Accepted values: `height`, `width`
 
 The primary direction that will tried to saved by algorithm during resizing stencil. By default it's `height` if height of stencil is more than its width and `width` otherwise.
 
-`preserveAspectRatio`
+### `preserveAspectRatio`
+
 Default: `false`
 
 The flag that tells cropper to save the current aspect ratio, even if the aspect ratio is not defined

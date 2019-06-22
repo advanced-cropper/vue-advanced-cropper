@@ -18,7 +18,7 @@ export default {
   <Cropper
 	:src="img"
 	classname="circle-cropper"
-	stencilComponent="round-stencil"
+	stencilComponent="circle-stencil"
 	:stencilProps="{
 		previewClassname: 'circle-cropper__preview'
 	}"

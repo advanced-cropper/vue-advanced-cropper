@@ -64,17 +64,17 @@ export default {
     // Aspect ratios
     'aspectRatio', 'minAspectRatio', 'maxAspectRatio',
 	],
-	computed: {
-		style() {
-			const { height, width, left, top } = this.stencilCoordinates;
-			return {
-				width: `${width}px`,
-				height: `${height}px`,
-				left: `${left}px`,
-				top: `${top}px`
-			};
-		}
-	}
+  computed: {
+    style() {
+      const { height, width, left, top } = this.stencilCoordinates;
+      return {
+        width: `${width}px`,
+        height: `${height}px`,
+        left: `${left}px`,
+        top: `${top}px`
+      };
+    }
+  },
   methods: {
     onMove(moveEvent) {
       this.$emit('move', moveEvent)

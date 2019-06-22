@@ -17,7 +17,7 @@ export default {
 <div class="customize-preview-example">
   <Cropper
 	:src="img"
-	stencilComponent="round-stencil"
+	stencilComponent="circle-stencil"
 	:stencilProps="{
 		previewClassname: 'preview'
 	}"

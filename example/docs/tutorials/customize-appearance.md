@@ -32,7 +32,7 @@ There may be numerous different stencils with different ways to customize them. 
 
 ![Internal structure](../.vuepress/assets/tutorials/stencil-structure.svg)
 
-To customize stencil you should pass props to `stencilProps` props as object (read [here](http://localhost:8080/tutorials/recipes.html#passing-props-to-a-stencil) in detail)
+To customize stencil you should pass props to `stencilProps` props as object (read [here](/tutorials/recipes.html#passing-props-to-a-stencil) in detail)
 
 ### Handler
 
@@ -144,7 +144,7 @@ The necessity to change preview appearance is pretty rare. But if you want to ch
 ```html
 <Cropper
 	:src="img"
-	stencilComponent="round-stencil"
+	stencilComponent="circle-stencil"
 	:stencilProps="{
 		previewClassname: 'preview'
 	}"
