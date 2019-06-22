@@ -37,6 +37,11 @@ new Vue({
 	data: {
 		img: 'https://images.pexels.com/photos/226746/pexels-photo-226746.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260'
 	},
+	methods: {
+		change({coordinates, canvas}) {
+			console.log(coordinates, canvas)
+		}
+	},
 	components: {
 		Cropper
 	}
@@ -51,6 +56,7 @@ new Vue({
 	:stencilProps="{
 		aspectRatio: 10/12
 	}"
+	@change="change"
   ></cropper>
 </div>
 ```

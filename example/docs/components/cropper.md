@@ -2,6 +2,12 @@
 
 [[toc]]
 
+## Events
+
+### `change`
+
+Cropper will emit `change` event on mounting, resizing the stencil, moving the stencil and changing the image.
+
 ## Props
 
 ### `src`

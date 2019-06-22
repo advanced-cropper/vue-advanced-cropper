@@ -306,9 +306,8 @@ export default {
 			<PreviewResult
 				classname="circle-stencil__preview"
 				:img="img"
-				:width="stencilCoordinates.width"
-				:height="stencilCoordinates.height"
-				:coordinates="resultCoordinates"
+				:stencilCoordinates="stencilCoordinates"
+				:resultCoordinates="resultCoordinates"
 			/>
 		</DraggableArea>
  	</div>
@@ -470,9 +469,8 @@ export default {
       <PreviewResult
         classname="circle-stencil__preview"
         :img="img"
-        :width="stencilCoordinates.width"
-        :height="stencilCoordinates.height"
-		    :coordinates="resultCoordinates"
+		:stencilCoordinates="stencilCoordinates"
+		:resultCoordinates="resultCoordinates"
       />
     </DraggableArea>
   </div>

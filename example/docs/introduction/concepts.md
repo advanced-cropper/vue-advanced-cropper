@@ -44,7 +44,7 @@ There are default customizable components from a box that allow you to create yo
 ```html
 <script>
 import {
-  PreviewImage,
+  PreviewResult,
   BoundingBox,
   MoveableArea
 } from 'vue-advanced-cropper';
@@ -52,18 +52,29 @@ import {
 export default {
   name: "MyStencil",
   components: {
-    PreviewImage, BoundingBox, MoveableArea
+    PreviewResult, BoundingBox, MoveableArea
   },
   props: [
     // Image src
     'img',
     // Coordinates of box relative to original image size
-    'height', 'width', 'left', 'top',
+    'resultCoordinates',
     // Stencil size desired by cropper
-    'stencilHeight', 'stencilWidth',
+    'stencilCoordinates',
     // Aspect ratios
     'aspectRatio', 'minAspectRatio', 'maxAspectRatio',
-  ],
+	],
+	computed: {
+		style() {
+			const { height, width, left, top } = this.stencilCoordinates;
+			return {
+				width: `${width}px`,
+				height: `${height}px`,
+				left: `${left}px`,
+				top: `${top}px`
+			};
+		}
+	}
   methods: {
     onMove(moveEvent) {
       this.$emit('move', moveEvent)
@@ -82,17 +93,14 @@ export default {
 </script>
 
 <template>
-  <div class="my-stencil">
+  <div class="my-stencil" :style="style">
     <BoundingBox @resize="onResize">
       <MoveableArea @move="onMove">
-        <PreviewImage
+        <PreviewResult
           :img="img"
-          :previewWidth="stencilWidth"
-          :previewHeight="stencilHeight"
-          :width="width"
-          :height="height"
-          :left="left"
-          :top="top"
+          :classname="classes.preview"
+		  		:resultCoordinates="resultCoordinates"
+		  		:stencilCoordinates="stencilCoordinates"
         />
       </MoveableArea>
     </BoundingBox>

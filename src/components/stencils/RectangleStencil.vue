@@ -125,9 +125,7 @@ export default {
         <PreviewResult
           :img="img"
           :classname="classes.preview"
-          :width="stencilCoordinates.width"
-          :height="stencilCoordinates.height"
-		  :coordinates="resultCoordinates"
+		  :resultCoordinates="resultCoordinates"
 		  :stencilCoordinates="stencilCoordinates"
         />
       </DraggableArea>

@@ -1,6 +1,7 @@
 module.exports = {
     title: 'Advanced Cropper',
-    description: "The documentation for Vue Advanced Cropper library",
+		description: "The documentation for Vue Advanced Cropper library",
+		base: '/vue-advanced-cropper/',
     themeConfig:{
 				search: false,
         nav: [

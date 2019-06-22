@@ -16,7 +16,7 @@
 				<a class="navigation__link navigation__link--active"  href="/#">
 					Home
 				</a>
-				<a class="navigation__link"  href="/introduction/getting-started.html">
+				<a class="navigation__link"  href="/vue-advanced-cropper/introduction/getting-started.html">
 					Docs
 				</a>
 				<a class="navigation__link"  href="http://github.com/Norserium/vue-advanced-cropper/" target="_blank">
@@ -57,8 +57,6 @@
 						</span>
 					</div>
 				</div>
-
-
       </div>
       <div class="presentation__border">
         <img

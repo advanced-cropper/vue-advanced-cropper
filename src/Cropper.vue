@@ -240,7 +240,7 @@ export default {
 			const stencil = this.$refs.stencil;
 			this.updateCanvas(coordinates);
 			this.$emit('change', {
-				coordinates: coordinates,
+				coordinates: { ...coordinates },
 				canvas: this.$refs.canvas
 			});
 		},
@@ -431,7 +431,8 @@ export default {
       :style="areaStyle"
 	  	ref="area"
     >
-			  <img
+			<img
+				crossOrigin='anonymous'
 				ref="image"
 				:src="src"
 				:class="classes.image"

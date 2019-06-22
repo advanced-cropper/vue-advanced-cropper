@@ -107,44 +107,6 @@ All available classnames are listed below
 }
 ```
 
-
-
-### `stencilProps`
-Default: `{}`
-
-The props that will be passed to the stencil component
-
-
-### `classname`
-Default: `''`
-
-The optional classname for the root cropper block
-
-
-
-### `imageClassname`
-Default: `''`
-
-The optional classname for the cropping image
-
-
-### `areaClassname`
-Default: `''`
-
-The optional classname for the area. Probably you should not use this prop.
-
-
-### `backgroundClassname`
-Default: `''`
-
-The optional classname for the background under the cropping image
-
-### `debounce`
-Default: `500`
-
-The time before `change` event will be emitted after moving or resizing stencil.
-
-
 ## Service props
 
 ::: danger Remember!

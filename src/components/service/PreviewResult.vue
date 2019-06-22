@@ -17,7 +17,7 @@ export default {
 		imageClassname: {
 			type: String,
 		},
-		coordinates: {
+		resultCoordinates: {
 			type: Object,
 			default() {
 				return {
@@ -39,14 +39,6 @@ export default {
 				}
 			}
 		},
-		width: {
-			type: Number,
-			required: true
-		},
-		height: {
-			type: Number,
-			required: true
-		}
 	},
 	data() {
 		return {
@@ -84,31 +76,6 @@ export default {
 			})
 		}
 	},
-	// updated() {
-	// 	// Workaround to get the area element
-	// 	const stencil = this.getStencil()
-
-	// 	const image = this.$refs.image
-	// 	const wrapper = this.$refs.wrapper
-
-	// 	const coefficient = this.height / this.coordinates.height
-
-	// 	const height = image.naturalHeight * coefficient
-	// 	const width = image.naturalWidth * coefficient
-
-
-	// 	const wrapperCoords = wrapper.getBoundingClientRect()
-	// 	const stencilCoords = stencil.$el.getBoundingClientRect()
-
-
-	// 	const leftShift = stencilCoords.width - wrapperCoords.width
-	// 	const topShift = stencilCoords.height - wrapperCoords.height
-
-	// 	image.style.width = `${width}px`
-	// 	image.style.height = `${height}px`
-	// 	image.style.left = `${-leftShift/2 -this.coordinates.left*coefficient}px`
-	// 	image.style.top = `${-topShift/2 -this.coordinates.top*coefficient}px`
-	// },
 	computed: {
 		classnames() {
 			return {
@@ -119,14 +86,14 @@ export default {
 		},
 		wrapperStyle() {
 			return {
-				width: `${this.width}px`,
-				height: `${this.height}px`,
-				left: `calc(50% - ${this.width/2}px)`,
-				top: `calc(50% - ${this.height/2}px)`,
+				width: `${this.stencilCoordinates.width}px`,
+				height: `${this.stencilCoordinates.height}px`,
+				left: `calc(50% - ${this.stencilCoordinates.width/2}px)`,
+				top: `calc(50% - ${this.stencilCoordinates.height/2}px)`,
 			}
 		},
 		imageStyle() {
-			const coefficient = this.height / this.coordinates.height;
+			const coefficient = this.stencilCoordinates.height / this.resultCoordinates.height;
 			const height = this.imageSize.height * coefficient
 			const width = this.imageSize.width * coefficient
 			return {
@@ -157,7 +124,7 @@ export default {
 
 <style lang="scss">
 .vue-preview-result{
-  overflow: hidden;
+  	overflow: hidden;
 	box-sizing: border-box;
 	position: absolute;
 	height: 100%;
@@ -169,10 +136,10 @@ export default {
   &__image {
     pointer-events: none;
     position: absolute;
-		user-select: none;
-		// Workaround to prevent bugs at the websites with max-width
-		// rule applited to img (Vuepress for example)
-		max-width: unset !important;
+	user-select: none;
+	// Workaround to prevent bugs at the websites with max-width
+	// rule applited to img (Vuepress for example)
+	max-width: unset !important;
   }
 }
 </style>

@@ -97,7 +97,7 @@ export default {
         :img="img"
         :width="stencilCoordinates.width"
         :height="stencilCoordinates.height"
-		    :coordinates="resultCoordinates"
+		    :resultCoordinates="resultCoordinates"
 				:stencilCoordinates="stencilCoordinates"
       />
     </DraggableArea>
