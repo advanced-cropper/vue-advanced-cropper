@@ -7,6 +7,7 @@ import url from 'rollup-plugin-url';
 import Vue from 'rollup-plugin-vue';
 import css from 'rollup-plugin-merge-and-inject-css'
 import pkg from './package.json';
+import minify from 'rollup-plugin-babel-minify';
 
 export default {
 	input: 'src/index.js',
@@ -20,6 +21,12 @@ export default {
 			file: pkg.module,
 			format: 'es',
 			sourcemap: true
+		},
+		{
+			file: pkg.umd,
+			format: 'umd',
+			sourcemap: true,
+			name: 'vue-advanced-cropper'
 		}
 	],
 	plugins: [
@@ -34,6 +41,7 @@ export default {
 			id: 'vue-advanced-cropper'
 		}),
 		url(),
+		minify(),
 		babel({
 			exclude: 'node_modules/**',
 		}),

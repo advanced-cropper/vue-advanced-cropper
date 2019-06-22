@@ -20,6 +20,8 @@ npm install --save vue-advanced-cropper
 yarn add vue-advanced-cropper
 ```
 
+If you would to use CDN read the corresponding [documentation section](https://norserium.github.io/vue-advanced-cropper/introduction/getting-started.html#using-cdn)
+
 ## Usage
 
 ```js

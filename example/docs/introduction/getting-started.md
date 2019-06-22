@@ -72,3 +72,18 @@ new Vue({
 ```
 
 <getting-started-example/>
+
+## Using CDN
+
+If you want to use the cropper without using, for example, different build systems you can use CDN link, but currently the support of this method is quite limited
+
+[https://unpkg.com/vue-advanced-cropper@latest/dist/index.umd.js](https://unpkg.com/vue-advanced-cropper@latest/dist/index.umd.js)
+
+The add somewhere in `head` the link to this script:
+```html
+<script src="https://unpkg.com/vue-advanced-cropper@latest/dist/index.umd.js" />
+```
+
+And you can use globally registered components: `cropper`, `circle-stencil`, `rectangle-stencil`, `simple-handler`, `simple-line`.
+
+<iframe width="100%" height="300" src="//jsfiddle.net/norserium/38u4v9nb/3/embedded/" allowfullscreen="allowfullscreen" allowpaymentrequest frameborder="0"></iframe>

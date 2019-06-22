@@ -50,6 +50,6 @@ export { default as Cropper } from './Cropper.vue'
 
 Vue.component('cropper', Cropper)
 Vue.component('rectangle-stencil', RectangleStencil)
-Vue.component('round-stencil', CircleStencil)
+Vue.component('circle-stencil', CircleStencil)
 Vue.component('simple-handler', SimpleHandler)
 Vue.component('simple-line', SimpleLine)
