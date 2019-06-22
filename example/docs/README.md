@@ -21,9 +21,9 @@ export default {
   props: [
     // Image src
     'img',
-    // Coordinates of box relative to original image size
+    // Coordinates of the box relative to original image size
     'resultCoordinates',
-    // Stencil size desired by cropper
+    // Stencil size desired by the cropper
     'stencilCoordinates',
     // Aspect ratios
     'aspectRatio', 'minAspectRatio', 'maxAspectRatio',
@@ -63,8 +63,8 @@ export default {
         <PreviewResult
           :img="img"
           :classname="classes.preview"
-		  		:resultCoordinates="resultCoordinates"
-		  		:stencilCoordinates="stencilCoordinates"
+          :resultCoordinates="resultCoordinates"
+          :stencilCoordinates="stencilCoordinates"
         />
       </MoveableArea>
     </BoundingBox>
