@@ -2,13 +2,13 @@
 
 > The advanced library that gives you opportunity to create your own croppers suited for any website design
 
+[Documentation / Examples](https://norserium.github.io/vue-advanced-cropper/).
+
 [![NPM](https://img.shields.io/npm/v/vue-advanced-cropper.svg)](https://www.npmjs.com/package/vue-advanced-cropper)
 
 > **WARNING**: This library is in beta test stage. API can be changed in the future.
 
 ![](https://github.com/norserium/vue-advanced-cropper/blob/master/example/readme/example.gif?raw=true)
-
-Try it yourself! Go to [demo website](https://norserium.github.io/vue-advanced-cropper/).
 
 ## Install
 
