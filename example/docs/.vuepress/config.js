@@ -2,6 +2,9 @@ module.exports = {
     title: 'Advanced Cropper',
 		description: "The documentation for Vue Advanced Cropper library",
 		base: '/vue-advanced-cropper/',
+    head: [
+			['link', { rel: 'icon', href: '/favicon.png' }],
+		],
     themeConfig:{
 				search: false,
         nav: [

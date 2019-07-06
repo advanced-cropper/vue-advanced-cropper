@@ -83,13 +83,15 @@ new Vue({
 				left: 0,
 				top: 0
 			},
-			canvas: null
+			image: null
 		}
 	}
 	methods: {
 		onChange({coordinates, canvas}) {
 			this.coordinates = coordinates
-			this.canvas = canvas
+			// You able to do different manipulations at a canvas
+			// but there we just get a cropped image
+			this.image = canvas.toDataURL()
 		}
 	},
 	components: {

@@ -46,15 +46,6 @@ export default {
 			const heightResize = -shift.top/2
 			const { height, width, left, top } = this.resultCoordinates;
 			const coefficient = width / this.stencilCoordinates.width
-			console.log({
-				width: width + coefficient * (widthResize + widthResize),
-				height: height + coefficient * (heightResize + heightResize),
-				left: left - coefficient * widthResize,
-				top: top - coefficient * heightResize
-			}, heightResize)
-
-
-
 
 			this.$emit('resize', new ResizeEvent(
 				dragEvent.nativeEvent,

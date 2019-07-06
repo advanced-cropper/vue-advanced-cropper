@@ -123,7 +123,7 @@ You are able to customize lines by the same three ways:
 - add custom line classnames (`linesClassnames`)
 - remove or add lines at one of four positions (`lines`)
 
-Line component by default is ([SimpleLine](/components/simple-line.html). Each line is a narrow block with applied border style. So to change the apperance of line you should change the border style.
+Line component by default is [SimpleLine](/components/simple-line.html). Each line is a narrow block with applied border style. So to change the apperance of line you should change the border style.
 
 The example is given below
 ```css

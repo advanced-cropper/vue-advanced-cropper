@@ -11,13 +11,13 @@ export default {
 				left: 0,
 				top: 0
 			},
-			canvas: null
+			image: null
 		}
 	},
 	methods: {
 		onChange({coordinates, canvas}) {
 			this.coordinates = coordinates
-			this.canvas = canvas
+			this.image = canvas.toDataURL()
 		}
 	},
 	components: {
@@ -30,10 +30,13 @@ export default {
 <div class="getting-result-example">
   <Cropper
 	:src="img"
+	:stencilProps="{
+		aspectRatio: 1
+	}"
 	@change="onChange"
   />
-  <div class="results">
-	  <p>Results:</p>
+  <div class="results" v-if="this.image">
+	  <p><b>Results:</b></p>
 	  <p>
 		  Width: {{ coordinates.width }}
 	  </p>
@@ -47,6 +50,9 @@ export default {
 		  Top: {{ coordinates.top }}
 	  </p>
   </div>
+  <div class="preview" v-if="this.image">
+	  <img :src="this.image" alt=""/>>
+  </div>
 </div>
 </template>
 
@@ -57,11 +63,24 @@ export default {
 			background: rgba(black, 0.8);
 			padding: 5px;
 			position: absolute;
-			right: 15px;
+			right: 122px;
 			bottom: 15px;
 			font-size: 10px;
 			color: white;
 			pointer-events: none;
+		}
+		.preview {
+			width: 107px;
+			height: 107px;
+			position: absolute;
+			right: 15px;
+			bottom: 15px;
+			opacity: 0.8;
+			pointer-events: none;
+			img {
+				width: 100%;
+				height: 100%;
+			}
 		}
 		p {
 			margin-top: 2px;
