@@ -14,23 +14,23 @@ function fitConditions(oldDirections, coordinates, restrictions, coefficient, im
 
 	if (currentWidth < 0) {
 		if (directions.left < 0 && directions.right < 0) {
-			directions.left = currentWidth / (directions.left / directions.right)
-			directions.right = currentWidth / (directions.right / directions.left)
+			directions.left = -(coordinates.width - minWidth) / (directions.left / directions.right)
+			directions.right = -(coordinates.width - minWidth) / (directions.right / directions.left)
 		} else if (directions.left < 0) {
-			directions.left = currentWidth / coefficient
+			directions.left = -(coordinates.width - minWidth) / coefficient
 		} else if (directions.right < 0) {
-			directions.right = currentWidth / coefficient
+			directions.right = -(coordinates.width - minWidth) / coefficient
 		}
 	}
 
 	if (currentHeight < 0) {
 		if (directions.top < 0 && directions.bottom < 0) {
-			directions.top = currentHeight / (directions.top / directions.bottom)
-			directions.bottom = currentHeight / (directions.bottom / directions.top)
+			directions.top = -(coordinates.height - minHeight) / (directions.top / directions.bottom)
+			directions.bottom = -(coordinates.height - minHeight) / (directions.bottom / directions.top)
 		} else if (directions.top < 0) {
-			directions.top = currentHeight
+			directions.top = -(coordinates.height - minHeight)
 		} else if (directions.bottom < 0) {
-			directions.bottom = currentHeight
+			directions.bottom = -(coordinates.height - minHeight)
 		}
 	}
 
@@ -102,7 +102,6 @@ function fitConditions(oldDirections, coordinates, restrictions, coefficient, im
 		}
 	}
 
-
 	if (!ratioBroken) {
 		if (maxMultiplier.width !== Infinity) {
 			HORIZONTAL_DIRECTIONS.forEach(direction => {
@@ -145,8 +144,6 @@ export function resize (coordinates, restrictions, imageSize, coefficient, aspec
 		...resizeEvent.directions
 	}
 
-	let respectDirection = params.respectDirection
-
 	const allowedDirections = params.allowedDirections || {
 		left: true,
 		right: true,
@@ -187,6 +184,7 @@ export function resize (coordinates, restrictions, imageSize, coefficient, aspec
 	}
 
 	if (ratioBroken) {
+		let { respectDirection } = params
 		if (!respectDirection) {
 			if (actualCoordinates.width > actualCoordinates.height) {
 				respectDirection = 'width'
@@ -194,7 +192,7 @@ export function resize (coordinates, restrictions, imageSize, coefficient, aspec
 				respectDirection = 'height'
 			}
 		}
-		if (currentWidth / ratioBroken >= minHeight && respectDirection === 'width') {
+		if (respectDirection === 'width') {
 			let overlapHeight = actualCoordinates.height - currentWidth / ratioBroken
 			if (allowedDirections.top && allowedDirections.bottom) {
 				directions.bottom = -overlapHeight / (2 * coefficient)
@@ -208,7 +206,7 @@ export function resize (coordinates, restrictions, imageSize, coefficient, aspec
 			} else if (allowedDirections.left) {
 				directions.left = 0
 			}
-		} else if (currentHeight * ratioBroken >= minWidth && respectDirection === 'height') {
+		} else if (respectDirection === 'height') {
 			let overlapWidth = actualCoordinates.width - currentHeight * ratioBroken
 			if (allowedDirections.left && allowedDirections.right) {
 				directions.left = -overlapWidth / (2 * coefficient)

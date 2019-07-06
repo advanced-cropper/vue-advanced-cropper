@@ -108,7 +108,7 @@ export default {
 		};
 	},
 	computed: {
-		imageUploaded() {
+		imageLoaded() {
 			return this.imageSize.width > 0 && this.imageSize.height > 0
 		},
 		coefficient() {
@@ -150,7 +150,7 @@ export default {
 				height: this.boundarySize.height
 					? `${this.boundarySize.height}px`
 					: 'auto',
-				opacity: this.imageUploaded ? 1 : 0
+				opacity: this.imageLoaded ? 1 : 0
 			};
 		},
 		imageStyle() {
@@ -252,13 +252,13 @@ export default {
 			const image = this.$refs.image;
 			if (image) {
 				if (image.complete) {
-					this.refreshImage(true).then(this.resetCoordinates);
+					this.refreshImage().then(this.resetCoordinates);
 				} else {
 					image.addEventListener('load', () => {
 						// After loading image the current component can be unmounted
 						// Therefore there is a workaround to prevent processing the following code
 						if (this.$refs.image) {
-							this.refreshImage(false).then(this.resetCoordinates);
+							this.refreshImage().then(this.resetCoordinates);
 						}
 					});
 				}
@@ -353,7 +353,7 @@ export default {
 
 			this.onChangeCoordinates(coordinates);
 		},
-		refreshImage(flag) {
+		refreshImage() {
 			const image = this.$refs.image;
 			const stretcher = this.$refs.stretcher;
 			const cropper = this.$refs.cropper;
@@ -425,7 +425,6 @@ export default {
 			:class="classes.stretcher"
 		>
 		</div>
-
     <div
       :class="classes.area"
       :style="areaStyle"
@@ -440,7 +439,7 @@ export default {
 			/>
       <component
         ref="stencil"
-	  		v-if="imageUploaded"
+	  		v-if="imageLoaded"
         :is="stencilComponent"
         :img="src"
         :result-coordinates="coordinates"
