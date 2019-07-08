@@ -207,6 +207,15 @@ export default {
 		}
 	},
 	methods: {
+		// External methods
+		getResult() {
+			this.updateCanvas(this.coordinates);
+			return {
+				coordinates: { ...this.coordinates },
+				canvas: this.$refs.canvas
+			}
+		},
+		// Internal methods
 		getArea() {
 			return this.$refs.area
 		},
@@ -246,7 +255,9 @@ export default {
 		},
 		onChangeCoordinates(newCoordinates) {
 			this.coordinates = newCoordinates;
-			this.debouncedUpdateCoordinates(newCoordinates);
+			if (this.$listeners && this.$listeners.change) {
+				this.debouncedUpdateCoordinates(newCoordinates);
+			}
 		},
 		onChangeImage() {
 			const image = this.$refs.image;

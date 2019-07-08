@@ -51,30 +51,31 @@ export default {
 	.upload-example {
 		margin-top: 20px;
 		margin-bottom: 20px;
-	}
-	.upload-example-cropper {
-		border: solid 1px #EEE;
-		height: 300px;
-		width: 100%;
+		.upload-example-cropper {
+			border: solid 1px #EEE;
+			height: 300px;
+			width: 100%;
+		}
+
+		.button-wrapper {
+			display: flex;
+			justify-content: center;
+			margin-top: 10px;
+		}
+
+		.button {
+			color: #3fb37f;
+			font-size: 16px;
+			cursor: pointer;
+		}
+
+		.button:hover {
+			font-weight: bold;
+		}
+
+		.button input {
+			display: none;
+		}
 	}
 
-	.button-wrapper {
-		display: flex;
-		justify-content: center;
-		margin-top: 10px;
-	}
-
-	.button {
-		color: #3fb37f;
-		font-size: 16px;
-		cursor: pointer;
-	}
-
-	.button:hover {
-		font-weight: bold;
-	}
-
-	.button input {
-		display: none;
-	}
 </style>

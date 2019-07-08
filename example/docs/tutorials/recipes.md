@@ -61,7 +61,9 @@ The list of available props varies from one stencil component to another. The pr
 
 ## Getting result
 
-You can't get the coordinates of stencil directly. Instead you should process `change` event.
+### First method
+
+You can get the coordinates of stencil and canvas with cropped image by processing `change` event.
 
 ::: tip
 Cropper will emit `change` event on mounting, resizing the stencil, moving the stencil and changing the image.
@@ -109,6 +111,56 @@ new Vue({
 </div>
 ```
 
+### Second method
+
+Also there is alternative to get the cropper result. You can call the cropper method `getResult` to get current stencil coordinates and canvas with cropped image.
+
+Click at the button **Crop Image** below to see this method in action
+<getting-result-second-example/>
+
+```js
+import Vue from 'vue'
+import { Cropper } from 'vue-advanced-cropper'
+
+new Vue({
+	el: '#app',
+	data() {
+		return {
+			coordinates: {
+				width: 0,
+				height: 0,
+				left: 0,
+				top: 0
+			},
+			image: null
+		}
+	}
+	methods: {
+		crop() {
+			const {coordinates, canvas} = this.$refs.cropper.getResult()
+			this.coordinates = coordinates
+			// You able to do different manipulations at a canvas
+			// but there we just get a cropped image
+			this.image = canvas.toDataURL()
+		}
+	},
+	components: {
+		Cropper
+	}
+})
+```
+
+```html
+<div id="app">
+  <Cropper
+		src="https://images.pexels.com/photos/580012/pexels-photo-580012.jpeg"
+		ref="cropper"
+  />
+  <button @click="crop">
+	Crop
+  </button>
+</div>
+```
 
 ## Upload image
 

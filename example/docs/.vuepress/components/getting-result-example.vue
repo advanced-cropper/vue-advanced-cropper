@@ -35,57 +35,65 @@ export default {
 	}"
 	@change="onChange"
   />
-  <div class="results" v-if="this.image">
-	  <p><b>Results:</b></p>
-	  <p>
-		  Width: {{ coordinates.width }}
-	  </p>
-	  <p>
-		  Height: {{ coordinates.height }}
-	  </p>
-	  <p>
-		  Left: {{ coordinates.left }}
-	  </p>
-	  <p>
-		  Top: {{ coordinates.top }}
-	  </p>
-  </div>
-  <div class="preview" v-if="this.image">
-	  <img :src="this.image" alt=""/>>
+  <div class="results-wrapper">
+	<div class="results" v-if="this.image">
+		<p><b>Results:</b></p>
+		<p>
+			Width: {{ coordinates.width }}
+		</p>
+		<p>
+			Height: {{ coordinates.height }}
+		</p>
+		<p>
+			Left: {{ coordinates.left }}
+		</p>
+		<p>
+			Top: {{ coordinates.top }}
+		</p>
+	</div>
+	<div class="preview" v-if="this.image">
+		<img :src="this.image" alt=""/>>
+	</div>
   </div>
 </div>
 </template>
 
 <style lang="scss">
-	.getting-result-example {
-		position: relative;
-		.results {
-			background: rgba(black, 0.8);
-			padding: 5px;
-			position: absolute;
-			right: 122px;
-			bottom: 15px;
-			font-size: 10px;
-			color: white;
-			pointer-events: none;
-		}
-		.preview {
-			width: 107px;
-			height: 107px;
-			position: absolute;
-			right: 15px;
-			bottom: 15px;
-			opacity: 0.8;
-			pointer-events: none;
-			img {
-				width: 100%;
-				height: 100%;
-			}
-		}
-		p {
-			margin-top: 2px;
-			margin-bottom: 2px;
+@import "../styles/grid";
+
+.getting-result-example {
+	position: relative;
+	.results-wrapper {
+		display: flex;
+		position: absolute;
+		right: 15px;
+		bottom: 15px;
+		border: dashed 1px rgba(white, 0.5);
+	}
+	.results {
+		background: rgba(black, 0.8);
+		padding: 5px;
+		font-size: 10px;
+		color: white;
+		pointer-events: none;
+		@media (max-width: $screen-sm) {
+			display: none;
 		}
 	}
+	.preview {
+		width: 107px;
+		height: 107px;
+		opacity: 0.8;
+		pointer-events: none;
+		img {
+			width: 100%;
+			height: 100%;
+		}
+	}
+	p {
+		margin-top: 2px;
+		margin-bottom: 2px;
+	}
+}
 
 </style>
