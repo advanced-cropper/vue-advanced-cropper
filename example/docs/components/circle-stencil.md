@@ -95,44 +95,6 @@ All available classnames are listed below
 }
 ```
 
-
-
-### `stencilProps`
-Default: `{}`
-
-The props that will be passed to the stencil component
-
-
-### `classname`
-Default: `''`
-
-The optional classname for the root cropper block
-
-
-
-### `imageClassname`
-Default: `''`
-
-The optional classname for the cropping image
-
-
-### `areaClassname`
-Default: `''`
-
-The optional classname for the area. Probably you should not use this prop.
-
-
-### `backgroundClassname`
-Default: `''`
-
-The optional classname for the background under the cropping image
-
-### `debounce`
-Default: `500`
-
-The time before `change` event will be emitted after moving or resizing stencil.
-
-
 ## Service props
 
 ::: danger Remember!
@@ -152,6 +114,3 @@ It's the object with `left`, `right`, `height` and `width` fields, that represen
 It's the object with `left`, `right`, `height` and `width` fields, that represent the absolute coordinates of cropped area relative to original image size.
 
 In other words, this coordinates defines a exact part of original image passed to `img` prop that is cropped now.
-
-
-
