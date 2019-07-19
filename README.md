@@ -112,3 +112,7 @@ new Vue({
 | lineComponent          | `String`,`Object`   | The handler component                                          |
 | lines                  | `Object`,           | The object of lines  that should be visible or hidden.         |
 | linesClassnames        | `Object`,           | The object of custom line classnames                           |
+
+## License
+
+The source code of this library is licensed under MIT, the documentation and photos are belong to their respective owners.
