@@ -53,7 +53,7 @@ new Vue({
   <cropper
 	classname="cropper"
 	:src="img"
-	:stencilProps="{
+	:stencil-props="{
 		aspectRatio: 10/12
 	}"
 	@change="change"
@@ -86,4 +86,4 @@ The add somewhere in `head` the link to this script:
 
 And you can use globally registered components: `cropper`, `circle-stencil`, `rectangle-stencil`, `simple-handler`, `simple-line`.
 
-<iframe width="100%" height="300" src="//jsfiddle.net/norserium/38u4v9nb/6/embedded/" allowfullscreen="allowfullscreen" allowpaymentrequest frameborder="0"></iframe>
+<iframe width="100%" height="300" src="//jsfiddle.net/norserium/38u4v9nb/8/embedded/" allowfullscreen="allowfullscreen" allowpaymentrequest frameborder="0"></iframe>

@@ -57,6 +57,19 @@ To pass any props to stencil pass them as object to `stencilProps` prop.
 />
 ```
 
+::: warning Notice!
+If you use cropper not in the vue single file components or template string you [should use](https://vuejs.org/v2/guide/components-props.html) kebab-case (hyphen-delimited) equivalent for `stencilProps`
+:::
+
+```html
+<cropper
+	:stencil-props="{
+		minAspectRatio: 8/8,
+		maxAspectRatio: 10/8
+	}"
+></cropper>
+```
+
 The list of available props varies from one stencil component to another. The props of default stencils are available at this site ([RectangleStencil](/components/rectangle-stencil.html), [CircleStencil](/components/circle-stencil.html))
 
 ## Getting result
