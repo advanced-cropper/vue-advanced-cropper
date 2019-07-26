@@ -161,7 +161,6 @@ export default {
 				result.left = 0;
 				result.top = '50%'
 				result.transform = 'translateY(-50%)'
-
 			} else {
 				result.height = '100%'
 				result.top = 0
