@@ -7,6 +7,11 @@ export default {
 			img: 'https://images.pexels.com/photos/226746/pexels-photo-226746.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260'
 		}
 	},
+	methods: {
+		change({coordinates, canvas}) {
+			console.log({coordinates, canvas})
+		}
+	},
 	components: {
 		Cropper
 	}
@@ -15,6 +20,13 @@ export default {
 
 <template>
 <div class="playground">
+	<div>
+		<Cropper
+			src="http://localhost:8000/adult-beautiful-beauty-413879.jpg"
+			:canvas="false"
+			@change="change"
+		/>
+	</div>
 	<div class="flex">
 		<div class="width-50p">
 			<Cropper

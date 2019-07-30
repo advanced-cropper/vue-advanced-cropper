@@ -6,6 +6,7 @@ import debounce from 'debounce';
 
 import { RectangleStencil } from './components/stencils';
 import { ResizeEvent, MoveEvent } from './utils/events';
+import { isCrossOriginURL } from './utils/core';
 
 import * as core from './utils/core';
 
@@ -81,6 +82,14 @@ export default {
 		debounce: {
 			type: Number,
 			default: 500
+		},
+		canvas: {
+			type: Boolean,
+			default: true
+		},
+		checkCrossOrigin: {
+			type: Boolean,
+			default: true
 		}
 	},
 	provide() {
@@ -94,6 +103,9 @@ export default {
 			boundarySize: {
 				width: null,
 				height: null
+			},
+			imageAttributes: {
+				crossOrigin: false
 			},
 			imageSize: {
 				width: null,
@@ -208,10 +220,16 @@ export default {
 	methods: {
 		// External methods
 		getResult() {
-			this.updateCanvas(this.coordinates);
-			return {
-				coordinates: { ...this.coordinates },
-				canvas: this.$refs.canvas
+			if (this.canvas) {
+				this.updateCanvas(this.coordinates);
+				return {
+					coordinates: { ...this.coordinates },
+					canvas: this.$refs.canvas
+				}
+			} else {
+				return {
+					coordinates: { ...this.coordinates },
+				}
 			}
 		},
 		// Internal methods
@@ -245,12 +263,7 @@ export default {
 			);
 		},
 		updateCoordinates(coordinates) {
-			const stencil = this.$refs.stencil;
-			this.updateCanvas(coordinates);
-			this.$emit('change', {
-				coordinates: { ...coordinates },
-				canvas: this.$refs.canvas
-			});
+			this.$emit('change', this.getResult());
 		},
 		onChangeCoordinates(newCoordinates) {
 			this.coordinates = newCoordinates;
@@ -260,6 +273,11 @@ export default {
 		},
 		onChangeImage() {
 			const image = this.$refs.image;
+			if (this.canvas && this.checkCrossOrigin === false) {
+				if (!/^data:/.test(this.src) && !/^blob:/.test(this.src) && !isCrossOriginURL(this.src)) {
+					this.imageAttributes.crossOrigin = 'anonymous';
+				}
+			}
 			if (image) {
 				if (image.complete) {
 					this.refreshImage().then(this.resetCoordinates);
@@ -426,23 +444,22 @@ export default {
     ref="cropper"
     :class="classes.cropper"
   >
-	<div
-	  :class="classes.background"
-    :style="areaStyle"
-	></div>
+		<div
+			:class="classes.background"
+			:style="areaStyle"
+		/>
 		<div
 			ref="stretcher"
 			:class="classes.stretcher"
-		>
-		</div>
+		/>
     <div
       :class="classes.area"
       :style="areaStyle"
 	  	ref="area"
     >
 			<img
-				crossOrigin='anonymous'
 				ref="image"
+				:crossOrigin='imageAttributes.crossOrigin'
 				:src="src"
 				:class="classes.image"
 				:style="imageStyle"
@@ -460,6 +477,7 @@ export default {
       />
       <canvas
         ref="canvas"
+		v-if="canvas"
         :style="{display:'none'}"
       />
     </div>

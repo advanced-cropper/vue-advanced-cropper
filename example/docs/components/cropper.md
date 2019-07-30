@@ -33,7 +33,6 @@ Default: `''`
 The optional classname for the root cropper block
 
 
-
 ### `imageClassname`
 Default: `''`
 
@@ -56,6 +55,10 @@ Default: `500`
 
 The time before `change` event will be emitted after moving or resizing stencil.
 
+### `canvas`
+Default: `true`
+
+This flag indicates if canvas should be used in cropper. If you need only the coordinates you should set `canvas = false` to get little optimization.
 
 ### `minWidth`
 Default: `10`

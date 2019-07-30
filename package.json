@@ -1,7 +1,7 @@
 {
   "name": "vue-advanced-cropper",
-  "version": "0.8.3",
-  "description": "The advanced library to create your own croppers suited fow any website design",
+  "version": "0.9.0",
+  "description": "The advanced library to create your own croppers suited for any website design",
   "author": "Norserium",
   "license": "MIT",
   "repository": "norserium/vue-advanced-cropper",
