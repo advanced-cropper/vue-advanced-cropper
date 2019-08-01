@@ -99,7 +99,7 @@ The static function that accepts `cropper` (DOM Element) and `image` (DOM Elemen
 ### `resizeAlgorithm`
 Default: `core.resize`
 
-The static function that accepts `coorditanes`, `restrictions`, `imageSize`, `coefficient`, `aspectRatio`, `resizeEvent` and returns the object.
+The static function that accepts `coordinates`, `restrictions`, `imageSize`, `coefficient`, `aspectRatio`, `resizeEvent` and returns the object.
 
 For example something like that
 ```js
@@ -114,7 +114,7 @@ For example something like that
 ### `moveAlgorithm`
 Default: `core.move`
 
-The static function that accepts `coorditanes`, `restrictions`, `imageSize`, `coefficient`, `moveEvent` and returns the object.
+The static function that accepts `coordinates`, `restrictions`, `imageSize`, `coefficient`, `moveEvent` and returns the object.
 
 For example something like that
 ```js
