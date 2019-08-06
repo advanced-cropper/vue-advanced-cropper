@@ -60,17 +60,20 @@ export default {
 		.button-wrapper {
 			display: flex;
 			justify-content: center;
-			margin-top: 10px;
+			margin-top: 17px;
 		}
 
 		.button {
-			color: #3fb37f;
+			color: white;
 			font-size: 16px;
+			padding: 10px 20px;
+			background: #3fb37f;
 			cursor: pointer;
+			transition: background 0.5s;
 		}
 
 		.button:hover {
-			font-weight: bold;
+			background: #38d890;
 		}
 
 		.button input {

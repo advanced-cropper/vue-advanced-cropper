@@ -4,7 +4,7 @@ import { RoundStencil, Cropper } from 'vue-advanced-cropper'
 export default {
 	data() {
 		return {
-			img: 'https://images.pexels.com/photos/267968/pexels-photo-267968.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'
+			img: 'https://images.pexels.com/photos/1642574/pexels-photo-1642574.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260'
 		}
 	},
 	components: {
@@ -16,11 +16,11 @@ export default {
 <template>
 <div class="customize-preview-example">
   <Cropper
-	:src="img"
-	stencilComponent="circle-stencil"
-	:stencilProps="{
-		previewClassname: 'preview'
-	}"
+		:src="img"
+		stencilComponent="circle-stencil"
+		:stencilProps="{
+			previewClassname: 'preview'
+		}"
   />
 </div>
 </template>
