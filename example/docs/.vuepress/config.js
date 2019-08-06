@@ -6,6 +6,9 @@ module.exports = {
 			['link', { rel: 'icon', href: '/favicon.png' }],
 		],
     themeConfig:{
+				repo: 'Norserium/vue-advanced-cropper',
+				docsDir: 'example/docs',
+				editLinks: true,
 				search: false,
         nav: [
             { text: 'Home', link: '/' },
@@ -49,14 +52,6 @@ module.exports = {
                   '/components/bounding-box',
               ]
 						},
-            // {
-            //   title: 'Playground',
-            //   collapsable: true,
-            //   children: [
-            //       '/playground/playground',
-            //   ]
-						// },
-
           ]
     }
 }
