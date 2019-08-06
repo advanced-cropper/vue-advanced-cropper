@@ -345,9 +345,9 @@ export function isCrossOriginURL(url) {
 	   return location.port || defaultPort(location.protocol||pageLocation.protocol);
 	}
 
-	return (!urlparts.protocol && !urlparts.host && !urlparts.port) ||
+	return !((!urlparts.protocol && !urlparts.host && !urlparts.port) ||
 			Boolean((urlparts.protocol  && (urlparts.protocol  == pageLocation.protocol)) &&
 				   (urlparts.host      && (urlparts.host      == pageLocation.host))     &&
 				   (urlparts.host      && (portOf(urlparts)   == portOf(pageLocation)))
-			);
+			));
 }

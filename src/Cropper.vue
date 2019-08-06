@@ -105,7 +105,8 @@ export default {
 				height: null
 			},
 			imageAttributes: {
-				crossOrigin: false
+				crossOrigin: false,
+				src: null
 			},
 			imageSize: {
 				width: null,
@@ -272,25 +273,28 @@ export default {
 			}
 		},
 		onChangeImage() {
-			const image = this.$refs.image;
-			if (this.canvas && this.checkCrossOrigin === false) {
-				if (!/^data:/.test(this.src) && !/^blob:/.test(this.src) && !isCrossOriginURL(this.src)) {
+			if (this.canvas && this.checkCrossOrigin) {
+				if (!/^data:/.test(this.src) && !/^blob:/.test(this.src) && isCrossOriginURL(this.src)) {
 					this.imageAttributes.crossOrigin = 'anonymous';
 				}
 			}
-			if (image) {
-				if (image.complete) {
-					this.refreshImage().then(this.resetCoordinates);
-				} else {
-					image.addEventListener('load', () => {
-						// After loading image the current component can be unmounted
-						// Therefore there is a workaround to prevent processing the following code
-						if (this.$refs.image) {
-							this.refreshImage().then(this.resetCoordinates);
-						}
-					});
+			this.imageAttributes.src = this.src
+			Vue.nextTick(() => {
+				const image = this.$refs.image;
+				if (image) {
+					if (image.complete) {
+						this.refreshImage().then(this.resetCoordinates);
+					} else {
+						image.addEventListener('load', () => {
+							// After loading image the current component can be unmounted
+							// Therefore there is a workaround to prevent processing the following code
+							if (this.$refs.image) {
+								this.refreshImage().then(this.resetCoordinates);
+							}
+						});
+					}
 				}
-			}
+			})
 		},
 		onResize(resizeEvent) {
 			this.onChangeCoordinates(
@@ -421,9 +425,7 @@ export default {
 					}
 					resolve();
 				})
-
 			});
-
 		},
 		stencilAspectRatios() {
 			if (this.$refs.stencil.aspectRatios) {
@@ -460,7 +462,7 @@ export default {
 			<img
 				ref="image"
 				:crossOrigin='imageAttributes.crossOrigin'
-				:src="src"
+				:src="imageAttributes.src"
 				:class="classes.image"
 				:style="imageStyle"
 			/>
@@ -477,7 +479,7 @@ export default {
       />
       <canvas
         ref="canvas"
-		v-if="canvas"
+				v-if="canvas"
         :style="{display:'none'}"
       />
     </div>
