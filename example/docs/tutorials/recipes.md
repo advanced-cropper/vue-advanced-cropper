@@ -266,6 +266,48 @@ new Vue({
 }
 ```
 
+## Custom restrictions
+
+There may be situations, where you need to set the minimum and maximim sizes, for example, in pixels, not by percents. In that situations you should redefine the `restrictions` functions by passing your custom function as [a corresponding prop](/components/cropper.html#restrictions)
+
+
+<custom-restrictions-example></custom-restrictions-example>
+
+```js
+import Vue from 'vue'
+import { Cropper } from 'vue-advanced-cropper'
+
+new Vue({
+	el: '#app',
+	methods: {
+		pixelsRestriction(minWidth, minHeight, maxWidth, maxHeight, imageWidth, imageHeight) {
+			return {
+				minWidth: minWidth,
+				minHeight: minHeight,
+				maxWidth: maxWidth,
+				maxHeight: maxHeight,
+			}
+		},
+	},
+	components: {
+		Cropper
+	}
+})
+```
+
+```html
+<div id="app">
+	<div class="custom-restrictions-example">
+		<Cropper
+			:src="image"
+			:restrictions="pixelsRestriction"
+			:minHeight="400"
+			:minWidth="400"
+		/>
+	</div>
+</div>
+```
+
 ## Blurred background
 
 <blurred-background-example></blurred-background-example>

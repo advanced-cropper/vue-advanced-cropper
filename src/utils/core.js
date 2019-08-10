@@ -293,11 +293,8 @@ export function defaultPosition (cropper, image, width, height, props) {
 	}
 }
 
-export function defaultSize (cropper, image, props) {
-	const maxWidth = props.maxWidth / 100 * image.naturalWidth
-	const maxHeight = props.maxHeight / 100 * image.naturalHeight
-	const minWidth = props.minWidth / 100 * image.naturalWidth
-	const minHeight = props.minHeight / 100 * image.naturalHeight
+export function defaultSize (cropper, image, restrictions, props) {
+	const { maxWidth, maxHeight, minWidth, minHeight } = restrictions
 
 	let newHeight, newWidth
 	if (maxHeight > maxWidth) {
@@ -342,12 +339,21 @@ export function isCrossOriginURL(url) {
 	}
 
 	const portOf = (location) => {
-	   return location.port || defaultPort(location.protocol||pageLocation.protocol);
+	   return location.port || defaultPort(location.protocol || pageLocation.protocol);
 	}
 
 	return !((!urlparts.protocol && !urlparts.host && !urlparts.port) ||
 			Boolean((urlparts.protocol  && (urlparts.protocol  == pageLocation.protocol)) &&
-				   (urlparts.host      && (urlparts.host      == pageLocation.host))     &&
-				   (urlparts.host      && (portOf(urlparts)   == portOf(pageLocation)))
+				   (urlparts.host       && (urlparts.host      == pageLocation.host))     &&
+				   (urlparts.host       && (portOf(urlparts)   == portOf(pageLocation)))
 			));
+}
+
+export function percentRestrictions(minWidth, minHeight, maxWidth, maxHeight, imageWidth, imageHeight) {
+	return {
+		minWidth: minWidth / 100 * imageWidth,
+		minHeight: minHeight / 100 * imageHeight,
+		maxWidth: maxWidth ? maxWidth / 100 * imageWidth : imageWidth,
+		maxHeight: maxHeight ? maxHeight / 100 * imageHeight : imageHeight,
+	}
 }

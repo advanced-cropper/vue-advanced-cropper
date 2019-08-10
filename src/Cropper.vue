@@ -39,6 +39,10 @@ export default {
 			type: Function,
 			default: core.areaSize
 		},
+		restrictions: {
+			type: Function,
+			default: core.percentRestrictions
+		},
 		minWidth: {
 			type: [Number, String],
 			default: 10
@@ -49,11 +53,9 @@ export default {
 		},
 		maxWidth: {
 			type: [Number, String],
-			default: 100
 		},
 		maxHeight: {
 			type: [Number, String],
-			default: 100
 		},
 		stencilComponent: {
 			type: [Object, String],
@@ -117,6 +119,10 @@ export default {
 				top: 0,
 				width: 0,
 				height: 0
+			},
+			frozenDirections: {
+				width: false,
+				height: false,
 			}
 		};
 	},
@@ -187,13 +193,47 @@ export default {
 
 			return result;
 		},
-		restrictions() {
-			return {
-				minHeight: this.imageSize.height * this.minHeight / 100,
-				minWidth: this.imageSize.width * this.minWidth / 100,
-				maxHeight: this.imageSize.height * this.maxHeight / 100,
-				maxWidth: this.imageSize.width * this.maxWidth / 100
-			};
+		stencilRestrictions() {
+			const restrictions = this.restrictions(
+				Number(this.minWidth),
+				Number(this.minHeight),
+				Number(this.maxWidth),
+				Number(this.maxHeight),
+				this.imageSize.width,
+				this.imageSize.height,
+			);
+
+			if (this.minWidth > this.imageSize.width) {
+				console.warn(`Warning: minimum width (${restrictions.minWidth}px) greater that the image width (${this.imageSize.width}px). It is set equal to the image width and width resizing was blocked`)
+				restrictions.minWidth = this.imageSize.width
+				restrictions.widthFrozen = true
+			}
+			if (this.minHeight > this.imageSize.height) {
+				console.warn(`Warning: minimum height (${restrictions.minHeight}px) greater that the image height (${this.imageSize.height}px). It is set equal to the image height and height resizing was blocked`)
+				restrictions.minHeight = this.imageSize.height
+				restrictions.heightFrozen = true
+			}
+
+			if (restrictions.minWidth > restrictions.maxWidth) {
+				console.warn(`Warning: maximum width (${restrictions.maxWidth}px) fewer that the minimum width (${restrictions.minWidth}px). It is set equal to the minimum width and width resizing was blocked`)
+				restrictions.maxWidth = restrictions.minWidth
+				restrictions.widthFrozen = true
+			}
+
+			if (restrictions.minHeight > restrictions.maxHeight) {
+				console.warn(`Warning: maximum height (${restrictions.maxHeight}px) fewer that the minimum height (${restrictions.minHeight}px). It is set equal to the minimum height and height resizing was blocked`)
+				restrictions.maxHeight = restrictions.minHeight
+				restrictions.heightFrozen = true
+			}
+
+			if (!restrictions.maxWidth || restrictions.maxWidth > this.imageSize.width) {
+				restrictions.maxWidth = this.imageSize.width
+			}
+			if (!restrictions.maxHeight || restrictions.maxHeight > this.imageSize.height) {
+				restrictions.maxHeight = this.imageSize.height
+			}
+
+			return restrictions
 		}
 	},
 	mounted() {
@@ -216,7 +256,19 @@ export default {
 			Vue.nextTick(() => {
 				this.onChangeImage();
 			})
-		}
+		},
+		minWidth() {
+			this.resetCoordinates()
+		},
+		maxWidth() {
+			this.resetCoordinates()
+		},
+		minHeight() {
+			this.resetCoordinates()
+		},
+		maxHeight() {
+			this.resetCoordinates()
+		},
 	},
 	methods: {
 		// External methods
@@ -297,10 +349,18 @@ export default {
 			})
 		},
 		onResize(resizeEvent) {
+			if (this.frozenDirections.width) {
+				resizeEvent.directions.left = 0
+				resizeEvent.directions.right = 0
+			}
+			if (this.frozenDirections.height) {
+				resizeEvent.directions.top = 0
+				resizeEvent.directions.bottom = 0
+			}
 			this.onChangeCoordinates(
 				this.resizeAlgorithm(
 					this.coordinates,
-					this.restrictions,
+					this.stencilRestrictions,
 					this.imageSize,
 					this.coefficient,
 					this.stencilAspectRatios(),
@@ -326,13 +386,21 @@ export default {
 			const cropper = this.$refs.cropper;
 			const image = this.$refs.image;
 			const imageSize = this.imageSize;
-			const { minWidth, minHeight, maxWidth, maxHeight } = this.restrictions;
+			const { minWidth, minHeight, maxWidth, maxHeight, widthFrozen, heightFrozen } = this.stencilRestrictions;
 			const aspectRatio = this.stencilAspectRatios();
 			const coefficient = this.coefficient;
 
+			// Freeze height or width if there was problems while setting stencil restrictions
+			this.frozenDirections.width = Boolean(widthFrozen)
+			this.frozenDirections.height = Boolean(heightFrozen)
+
 			let coordinates = {};
 
-			if (minWidth * aspectRatio.minimum < minHeight) {
+			if (!aspectRatio.minimum && !aspectRatio.maximum) {
+				coordinates.height = maxHeight
+				coordinates.width = maxWidth
+			}
+			else if (minWidth * aspectRatio.minimum < minHeight) {
 				coordinates.height = minHeight;
 				coordinates.width = aspectRatio.maximum
 					? minHeight * aspectRatio.maximum
@@ -351,10 +419,15 @@ export default {
 			coordinates.left = imageSize.width / 2 - coordinates.width / 2;
 			coordinates.top = imageSize.height / 2 - coordinates.height / 2;
 
-			const defaultSize = this.defaultSize(cropper, image, this.$props);
+			const defaultSize = this.defaultSize(cropper, image, this.stencilRestrictions, this.$props);
+
+			if (defaultSize.width < minWidth || defaultSize.height < minHeight || defaultSize.width > maxWidth || defaultSize.height > maxHeight) {
+				console.warn('Warning: default size breaking size restrictions. Check your defaultSize function')
+			}
+
 			coordinates = this.resizeAlgorithm(
 				coordinates,
-				this.restrictions,
+				this.stencilRestrictions,
 				imageSize,
 				coefficient,
 				aspectRatio,

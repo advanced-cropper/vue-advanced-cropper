@@ -88,6 +88,7 @@ new Vue({
 | maxHeight              | `String`, `Number` | The maximum height of the stencil (percents)                   | `10`
 | defaultSize            | `Function`         | The function that returns the default size of the stencil      | `core.defaultSize`
 | defaultPosition        | `Function`         | The function that returns the default position of the stencil  | `core.defaultPosition`
+| restrictions           | `Function`         | The function that returns the restrictions object              | `core.percentRestrictions`
 | areaSize               | `Function`         | The function that determines the area size                     | `core.areaSize`
 | resizeAlgorithm        | `Function`         | The function that determines the resize algorithm              | `core.resize`
 | moveAlgorithm          | `Function`         | The function that determines the move algorithm                | `core.move`

@@ -4,7 +4,7 @@ import { RoundStencil, Cropper } from 'vue-advanced-cropper'
 export default {
 	data() {
 		return {
-			img: 'https://images.pexels.com/photos/1254140/pexels-photo-1254140.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'
+			img: 'https://images.unsplash.com/photo-1485178575877-1a13bf489dfe?ixlib=rb-1.2.1&auto=format&fit=crop&w=991&q=80'
 		}
 	},
 	components: {

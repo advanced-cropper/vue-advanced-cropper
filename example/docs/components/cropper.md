@@ -70,7 +70,6 @@ Default: `10`
 
 The minimum height of the stencil in percents
 
-
 ### `maxWidth`
 Default: `100`
 
@@ -95,6 +94,21 @@ The static function that accepts `cropper` (DOM Element), `image` (DOM Element),
 Default: `core.areaSize`
 
 The static function that accepts `cropper` (DOM Element) and `image` (DOM Element) and return the object with `height` and `width` fields, i.e. width and height of the area.
+
+### restrictions
+Default: `core.resize`
+
+The static function that accepts `minWidth`, `minHeight`, `maxWidth`, `maxHeight`, `imageWidth`, `imageHeight` and returns the object.
+
+For example something like that
+```js
+{
+	maxWidth: 2048,
+	maxHeight: 2048,
+	minWidth: 256,
+	minHeight: 256
+}
+```
 
 ### `resizeAlgorithm`
 Default: `core.resize`

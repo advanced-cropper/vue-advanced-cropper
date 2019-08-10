@@ -4,7 +4,7 @@ import { Cropper } from 'vue-advanced-cropper'
 export default {
 	data() {
 		return {
-			img: 'https://images.pexels.com/photos/1647378/pexels-photo-1647378.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+			img: 'https://images.pexels.com/photos/2737393/pexels-photo-2737393.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260',
 			coordinates: {
 				width: 0,
 				height: 0,
