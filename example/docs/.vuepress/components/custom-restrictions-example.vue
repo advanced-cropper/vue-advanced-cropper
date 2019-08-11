@@ -62,6 +62,7 @@ export default {
 			:maxWidth="limitations.maxWidth"
 			:minHeight="limitations.minHeight"
 			:minWidth="limitations.minWidth"
+			checkOrientation
 			@change="onCrop"
 		/>
 		<div class="panel">

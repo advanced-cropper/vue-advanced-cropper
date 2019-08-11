@@ -16,8 +16,7 @@ export default {
 	},
 	props: {
 		img: {
-			type: String,
-			default: null
+			type: Object
 		},
 		resultCoordinates: {
 			type: Object,

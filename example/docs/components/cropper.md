@@ -60,6 +60,11 @@ Default: `true`
 
 This flag indicates if canvas should be used in cropper. If you need only the coordinates you should set `canvas = false` to get little optimization.
 
+### `checkOrientation`
+Default: `true`
+
+The flag that indicates if EXIF orientation should be checked
+
 ### `minWidth`
 Default: `10`
 

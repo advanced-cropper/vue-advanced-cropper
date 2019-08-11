@@ -11,10 +11,7 @@
 	"rules": {
 		"space-before-function-parent": 0,
 		"quotes": [2, "single"],
-		"indent": [
-			2,
-			"tab"
-		],
+		"indent": [2,"tab"],
 		"no-tabs": "off",
 		"vue/require-default-prop": "off",
 		"object-curly-spacing": ["error", "always", {

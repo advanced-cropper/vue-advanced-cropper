@@ -3,7 +3,6 @@ import classnames from 'classnames';
 import bem from 'easy-bem';
 import Vue from 'vue';
 import debounce from 'debounce';
-
 import { RectangleStencil } from './components/stencils';
 import { ResizeEvent, MoveEvent } from './utils/events';
 import { isCrossOriginURL } from './utils/core';
@@ -92,12 +91,10 @@ export default {
 		checkCrossOrigin: {
 			type: Boolean,
 			default: true
-		}
-	},
-	provide() {
-		return {
-			getArea: this.getArea,
-			getStencil: this.getStencil,
+		},
+		checkOrientation: {
+			type: Boolean,
+			default: true
 		}
 	},
 	data() {
@@ -109,6 +106,11 @@ export default {
 			imageAttributes: {
 				crossOrigin: false,
 				src: null
+			},
+			imageTransforms: {
+				rotate: null,
+				scaleX: null,
+				scaleY: null
 			},
 			imageSize: {
 				width: null,
@@ -173,18 +175,20 @@ export default {
 			};
 		},
 		imageStyle() {
-			const result = {};
+			const result = {
+				left: '50%',
+				top: '50%',
+				transform: 'translate(-50%, -50%)' + core.getStyleTransforms(this.imageTransforms)
+			};
 
-			if (this.imageSize.width > this.imageSize.height) {
-				result.width = '100%'
-				result.left = 0;
-				result.top = '50%'
-				result.transform = 'translateY(-50%)'
+			const flipped = this.imageTransforms.flipped
+
+			if (flipped) {
+				result.width = this.areaStyle.height
+				result.height = this.areaStyle.width
 			} else {
-				result.height = '100%'
-				result.top = 0
-				result.left = '50%'
-				result.transform = 'translateX(-50%)'
+				result.width = this.areaStyle.width
+				result.height = this.areaStyle.height
 			}
 
 			if (!this.imageSize.width || !this.imageSize.height) {
@@ -297,14 +301,18 @@ export default {
 			// Therefore there is workaround to prevent processing after the component was unmounted
 			if (!this.$refs.canvas) return
 
+			const image = this.$refs.image
+			const { scaleX, scaleY, rotate, flipped } = this.imageTransforms
+			const source = this.checkOrientation ? core.prepareSource(this.$refs.sourceCanvas, image, this.imageTransforms) : image
+
 			const canvas = this.$refs.canvas;
 			canvas.width = coordinates.width;
 			canvas.height = coordinates.height;
 
 			const ctx = canvas.getContext('2d');
-			const image = this.$refs.image;
+
 			ctx.drawImage(
-				image,
+				source,
 				coordinates.left,
 				coordinates.top,
 				coordinates.width,
@@ -330,7 +338,15 @@ export default {
 					this.imageAttributes.crossOrigin = 'anonymous';
 				}
 			}
+			if (this.checkOrientation) {
+				core.parseImage(this.src).then(this.onParseImage)
+			} else {
+				this.onParseImage()
+			}
+		},
+		onParseImage(orientation) {
 			this.imageAttributes.src = this.src
+			this.imageTransforms = core.getImageTransforms(orientation)
 			Vue.nextTick(() => {
 				const image = this.$refs.image;
 				if (image) {
@@ -444,6 +460,8 @@ export default {
 				image,
 				coordinates.width,
 				coordinates.height,
+				this.imageSize.width,
+				this.imageSize.height,
 				this.$props
 			);
 			coordinates = this.moveAlgorithm(
@@ -455,7 +473,6 @@ export default {
 					top: (defaultPosition.top - coordinates.top) / coefficient
 				})
 			);
-
 			this.onChangeCoordinates(coordinates);
 		},
 		refreshImage() {
@@ -463,17 +480,25 @@ export default {
 			const stretcher = this.$refs.stretcher;
 			const cropper = this.$refs.cropper;
 
-			const aspectRatio = image.naturalWidth / image.naturalHeight
+			if (this.imageTransforms.flipped) {
+				this.imageSize.height = image.naturalWidth;
+				this.imageSize.width = image.naturalHeight;
+			} else {
+				this.imageSize.height = image.naturalHeight;
+				this.imageSize.width = image.naturalWidth;
+			}
 
-			if (image.naturalHeight > image.naturalWidth) {
-				stretcher.style.height = `${image.naturalHeight}px`
+			const aspectRatio = this.imageSize.width / this.imageSize.height
+
+			if (this.imageSize.height > this.imageSize.width) {
+				stretcher.style.height = `${this.imageSize.height}px`
 				stretcher.style.width = `${stretcher.clientHeight * aspectRatio}px`
 				if (stretcher.clientWidth / stretcher.clientHeight !== aspectRatio) {
 					stretcher.style.height = `${stretcher.clientWidth / aspectRatio}px`
 				}
 
 			} else {
-				stretcher.style.width = `${image.naturalWidth}px`
+				stretcher.style.width = `${this.imageSize.width}px`
 				stretcher.style.height = `${stretcher.clientWidth / aspectRatio }px`
 				if (stretcher.clientHeight / stretcher.clientWidth !== aspectRatio) {
 					stretcher.style.width = `${stretcher.clientHeight * aspectRatio}px`
@@ -484,12 +509,8 @@ export default {
 				const cropper = this.$refs.cropper;
 				const image = this.$refs.image;
 
-				this.imageSize.height = image.naturalHeight;
-				this.imageSize.width = image.naturalWidth;
-
 				Vue.nextTick(() => {
-					const { height, width } = this.areaSize(cropper, image);
-
+					const { height, width } = this.areaSize(cropper, image, this.imageSize.width, this.imageSize.height);
 					if (height) {
 						this.boundarySize.height = height;
 					}
@@ -516,55 +537,64 @@ export default {
 
 <template>
   <div
-    ref="cropper"
-    :class="classes.cropper"
+	ref="cropper"
+	:class="classes.cropper"
   >
-		<div
-			:class="classes.background"
-			:style="areaStyle"
+	<div
+		:class="classes.background"
+		:style="areaStyle"
+	/>
+	<div
+		ref="stretcher"
+		:class="classes.stretcher"
+	/>
+	<div
+		:class="classes.area"
+		:style="areaStyle"
+		ref="area"
+	>
+		<img
+			ref="image"
+			:crossOrigin='imageAttributes.crossOrigin'
+			:src="imageAttributes.src"
+			:class="classes.image"
+			:style="imageStyle"
 		/>
-		<div
-			ref="stretcher"
-			:class="classes.stretcher"
+	  	<component
+			ref="stencil"
+			v-if="imageLoaded"
+			:is="stencilComponent"
+			:img="{
+				src: imageAttributes.src,
+				size: imageSize,
+				transforms: imageTransforms
+			}"
+			:result-coordinates="coordinates"
+			:stencil-coordinates="stencilCoordinates"
+			v-bind="stencilProps"
+			@resize="onResize"
+			@move="onMove"
+	  	/>
+		<canvas
+			ref="canvas"
+			v-if="canvas"
+			:style="{display:'none'}"
 		/>
-    <div
-      :class="classes.area"
-      :style="areaStyle"
-	  	ref="area"
-    >
-			<img
-				ref="image"
-				:crossOrigin='imageAttributes.crossOrigin'
-				:src="imageAttributes.src"
-				:class="classes.image"
-				:style="imageStyle"
-			/>
-      <component
-        ref="stencil"
-	  		v-if="imageLoaded"
-        :is="stencilComponent"
-        :img="src"
-        :result-coordinates="coordinates"
-        :stencil-coordinates="stencilCoordinates"
-        v-bind="stencilProps"
-        @resize="onResize"
-        @move="onMove"
-      />
-      <canvas
-        ref="canvas"
-				v-if="canvas"
-        :style="{display:'none'}"
-      />
-    </div>
+		<canvas
+			ref="sourceCanvas"
+			v-if="canvas"
+			:style="{display:'none'}"
+		/>
+	</div>
   </div>
 </template>
 
 <style lang="scss">
 .vue-advanced-cropper {
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-  user-select: none;
+	text-align: center;
+	position: relative;
+	overflow: hidden;
+	user-select: none;
 	max-height: 100%;
 	max-width: 100%;
 
@@ -576,27 +606,31 @@ export default {
 	}
 
   &__image {
-    opacity: 0.5;
-		user-select: none;
-		position: absolute;
+	opacity: 0.5;
+	user-select: none;
+	position: absolute;
+	transform-origin: center;
+	// Workaround to prevent bugs at the websites with max-width
+	// rule applied to img (Vuepress for example)
+	max-width: unset !important;
   }
   &__area {
-    position: absolute;
-    left: 50%;
-		transform: translate(-50%, -50%);
-		transition: opacity 0.5s;
-		top: 50%;
+	position: absolute;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	transition: opacity 0.5s;
+	top: 50%;
   }
   &__background {
-		position: absolute;
-		background: black;
-		transition: opacity 0.5s;
-		top: 50%;
-    left: 50%;
-		transform: translate(-50%, -50%);
+	position: absolute;
+	background: black;
+	transition: opacity 0.5s;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
   }
   &__stencil-wrapper {
-    position: absolute;
+	position: absolute;
   }
 }
 </style>

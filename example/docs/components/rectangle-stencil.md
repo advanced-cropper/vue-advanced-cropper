@@ -114,9 +114,9 @@ You should not pass this props to stencil, they are passed by cropper itself
 :::
 
 ### `img`
-Default: `null`
+Default: `{}`
 
-The link to cropping image or the image itself in base64 format
+The object with information about the image
 
 ### `stencilCoordinates`
 It's the object with `left`, `right`, `height` and `width` fields, that represents desirable coordinates of stencil relative to visible area. In almost all cases you may use it as default coordinates for your absolute positioned stencil.

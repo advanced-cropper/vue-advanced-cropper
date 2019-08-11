@@ -69,7 +69,7 @@ export default {
 	name: 'CircleStencil',
 	props: {
 		img: {
-			type: String
+			type: Object
 		},
 		resultCoordinates: {
 			type: Object,
@@ -107,7 +107,7 @@ export default {
 	name: 'CircleStencil',
 	props: {
 		img: {
-			type: String
+			type: Object
 		},
 		resultCoordinates: {
 			type: Object,
@@ -166,7 +166,7 @@ export default {
 	},
 	props: {
 		img: {
-			type: String
+			type: Object
 		},
 		resultCoordinates: {
 			type: Object,
@@ -263,7 +263,7 @@ export default {
 	},
 	props: {
 		img: {
-			type: String
+			type: Object
 		},
 		resultCoordinates: {
 			type: Object,
@@ -401,7 +401,7 @@ export default {
 	},
 	props: {
 		img: {
-			type: String
+			type: Object
 		},
 		resultCoordinates: {
 			type: Object,

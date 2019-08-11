@@ -15,7 +15,7 @@ export default {
 	},
 	props: {
 		img: {
-			type: String
+			type: Object
 		},
 		resultCoordinates: {
 			type: Object,
@@ -88,8 +88,8 @@ export default {
         :img="img"
         :width="stencilCoordinates.width"
         :height="stencilCoordinates.height"
-		    :resultCoordinates="resultCoordinates"
-				:stencilCoordinates="stencilCoordinates"
+		:resultCoordinates="resultCoordinates"
+		:stencilCoordinates="stencilCoordinates"
       />
     </DraggableArea>
   </div>

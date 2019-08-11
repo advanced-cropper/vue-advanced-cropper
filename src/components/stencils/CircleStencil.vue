@@ -16,7 +16,7 @@ export default {
 	},
 	props: {
 		img: {
-			type: String
+			type: Object
 		},
 		stencilClass: {
 			type: String

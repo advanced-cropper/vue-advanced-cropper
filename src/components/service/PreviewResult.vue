@@ -2,6 +2,7 @@
 import classnames from 'classnames';
 import Vue from 'vue';
 import bem from 'easy-bem';
+import { getStyleTransforms } from '../../utils/core'
 
 const cn = bem('vue-preview-result')
 
@@ -9,7 +10,7 @@ export default {
 	name: 'PreviewResult',
 	props: {
 		img: {
-			type: String
+			type: Object,
 		},
 		classname: {
 			type: String,
@@ -40,42 +41,6 @@ export default {
 			}
 		},
 	},
-	data() {
-		return {
-			imageSize: {
-				width: 0,
-				height: 0
-			}
-		}
-	},
-	inject: ['getArea', 'getStencil'],
-	mounted() {
-		this.onChangeImage();
-	},
-	methods: {
-		refreshImage() {
-			const image = this.$refs.image;
-			this.imageSize.height = image.naturalHeight;
-			this.imageSize.width = image.naturalWidth;
-		},
-		onChangeImage() {
-			const image = this.$refs.image;
-			if (image.complete) {
-				this.refreshImage();
-			} else {
-				image.addEventListener('load', () => {
-					this.refreshImage();
-				});
-			}
-		},
-	},
-	watch: {
-		img() {
-			Vue.nextTick(() => {
-				this.onChangeImage();
-			})
-		}
-	},
 	computed: {
 		classnames() {
 			return {
@@ -93,38 +58,54 @@ export default {
 			}
 		},
 		imageStyle() {
+			const imageTransforms = this.img.transforms
+			const imageWidth = this.img.size.width
+			const imageHeight = this.img.size.height
 			const coefficient = this.stencilCoordinates.height / this.resultCoordinates.height;
-			const height = this.imageSize.height * coefficient
-			const width = this.imageSize.width * coefficient
-			return {
+			const height = imageHeight * coefficient
+			const width = imageWidth * coefficient
+			const flipped = imageTransforms.flipped
+
+			const result = {
 				width: `${width}px`,
-				height: `${height}px`,
-				left: `${-this.stencilCoordinates.left}px`,
-				top: `${-this.stencilCoordinates.top}px`
+				height: `${height}px`
 			}
+			if (flipped) {
+				result.width = `${height}px`
+				result.height = `${width}px`
+				result.left = `${-this.stencilCoordinates.left - (height - width)/2}px`
+				result.top = `${-this.stencilCoordinates.top - (width - height)/2}px`
+			} else {
+				result.width = `${width}px`
+				result.height = `${height}px`
+				result.left = `${-this.stencilCoordinates.left}px`
+				result.top = `${-this.stencilCoordinates.top}px`
+			}
+			result.transform = getStyleTransforms(imageTransforms)
+			return result
 		}
 	},
 };
 </script>
 
 <template>
-  <div
-    :class="classnames.default"
-  >
-	<div ref="wrapper" :class="classnames.wrapper" :style="wrapperStyle">
-		<img
-			ref="image"
-			:src="img"
-			:class="classnames.image"
-			:style="imageStyle"
-		>
+	<div
+		:class="classnames.default"
+	>
+		<div ref="wrapper" :class="classnames.wrapper" :style="wrapperStyle">
+			<img
+				ref="image"
+				:src="img.src"
+				:class="classnames.image"
+				:style="imageStyle"
+			/>
+		</div>
 	</div>
-  </div>
 </template>
 
 <style lang="scss">
 .vue-preview-result{
-  	overflow: hidden;
+	overflow: hidden;
 	box-sizing: border-box;
 	position: absolute;
 	height: 100%;
@@ -133,13 +114,14 @@ export default {
 		position: absolute;
 	}
 
-  &__image {
-    pointer-events: none;
-    position: absolute;
-	user-select: none;
-	// Workaround to prevent bugs at the websites with max-width
-	// rule applited to img (Vuepress for example)
-	max-width: unset !important;
-  }
+	&__image {
+		pointer-events: none;
+		position: absolute;
+		user-select: none;
+		transform-origin: center;
+		// Workaround to prevent bugs at the websites with max-width
+		// rule applied to img (Vuepress for example)
+		max-width: unset !important;
+	}
 }
 </style>

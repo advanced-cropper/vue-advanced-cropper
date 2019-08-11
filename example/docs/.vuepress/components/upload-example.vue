@@ -36,6 +36,7 @@ export default {
 	<div class="upload-example">
 		<Cropper
 			classname="upload-example-cropper"
+			checkOrientation
 			:src="image"
 		/>
 		<div class="button-wrapper">

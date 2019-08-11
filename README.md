@@ -86,6 +86,7 @@ new Vue({
 | minHeight              | `String`, `Number` | The minimum height of the stencil (percents)                   | `10`
 | maxWidth               | `String`, `Number` | The maximum width of the stencil (percents)                    | `10`
 | maxHeight              | `String`, `Number` | The maximum height of the stencil (percents)                   | `10`
+| checkOrientation       | `Boolean`          | The flag that indicates if EXIF orientation should be checked  | `true`
 | defaultSize            | `Function`         | The function that returns the default size of the stencil      | `core.defaultSize`
 | defaultPosition        | `Function`         | The function that returns the default position of the stencil  | `core.defaultPosition`
 | restrictions           | `Function`         | The function that returns the restrictions object              | `core.percentRestrictions`

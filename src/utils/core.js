@@ -266,9 +266,7 @@ export function move (coordinates, imageSize, coefficient, moveEvent) {
 	return newCoordinates
 }
 
-export function areaSize (cropper, image) {
-	const imageWidth = image.naturalWidth
-	const imageHeight = image.naturalHeight
+export function areaSize (cropper, image, imageWidth, imageHeight) {
 	const areaHeight = cropper.clientHeight
 	const areaWidth = cropper.clientWidth
 
@@ -286,14 +284,14 @@ export function areaSize (cropper, image) {
 	}
 }
 
-export function defaultPosition (cropper, image, width, height, props) {
+export function defaultPosition (cropper, image, stencilWidth, stencilHeight, imageWidth, imageHeight,  props) {
 	return {
-		left: image.naturalWidth / 2 - width / 2,
-		top: image.naturalHeight / 2 - height / 2
+		left: imageWidth / 2 - stencilWidth / 2,
+		top: imageHeight / 2 - stencilHeight / 2
 	}
 }
 
-export function defaultSize (cropper, image, restrictions, props) {
+export function defaultSize (cropper, image, restrictions, imageWidth, imageHeight, props) {
 	const { maxWidth, maxHeight, minWidth, minHeight } = restrictions
 
 	let newHeight, newWidth
@@ -357,3 +355,51 @@ export function percentRestrictions(minWidth, minHeight, maxWidth, maxHeight, im
 		maxHeight: maxHeight ? maxHeight / 100 * imageHeight : imageHeight,
 	}
 }
+
+export function prepareSource(canvas, image, { flipped, orientation }) {
+	const width = image.naturalWidth;
+	const height = image.naturalHeight;
+
+	const ctx = canvas.getContext('2d');
+	canvas.width = width;
+	canvas.height = height;
+
+	ctx.save();
+
+	if (flipped) {
+		canvas.width = height;
+		canvas.height = width;
+	}
+
+	// TODO: refactor this
+	if (orientation == 2) {
+		ctx.translate(width, 0);
+		ctx.scale(-1, 1);
+	} else if (orientation == 3) {
+		ctx.translate(width, height);
+		ctx.rotate(180 / 180 * Math.PI);
+	} else if (orientation == 4) {
+		ctx.translate(0, height);
+		ctx.scale(1, -1);
+	} else if (orientation == 5) {
+		ctx.rotate(90 / 180 * Math.PI);
+		ctx.scale(1, -1);
+	} else if (orientation == 6) {
+		ctx.rotate(90 / 180 * Math.PI);
+		ctx.translate(0, -height);
+	} else if (orientation == 7) {
+		ctx.rotate(270 / 180 * Math.PI);
+		ctx.translate(-width, height);
+		ctx.scale(1, -1);
+	} else if (orientation == 8) {
+		ctx.translate(0, width);
+		ctx.rotate(270 / 180 * Math.PI);
+	}
+
+	ctx.drawImage(image, 0, 0, width, height);
+	ctx.restore();
+
+	return canvas;
+}
+
+export { parseImage, getImageTransforms, getStyleTransforms } from './image'
