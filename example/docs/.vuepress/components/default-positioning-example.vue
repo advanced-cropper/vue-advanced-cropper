@@ -29,7 +29,6 @@ export default {
 
 <template>
 <Cropper
-	classname="cropper"
 	:src="img"
 	:defaultPosition="defaultPosition"
 	:defaultSize="defaultSize"
