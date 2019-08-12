@@ -55,9 +55,10 @@ export function parseImage(img) {
 	return new Promise((resolve) => {
 		getImageData(img)
 			.then(data => {
-				resolve(getOrientation(data))
+				resolve(data ? getOrientation(data) : { arrayBuffer: null, orientation: null })
 			})
-			.catch(() => {
+			.catch((error) => {
+				console.warn(error)
 				resolve({ arrayBuffer: null, orientation: null })
 			})
 	})
@@ -79,17 +80,16 @@ function getImageData(img) {
 					});
 				} else {
 					let http = new XMLHttpRequest();
-					http.onload = function () {
+					http.onreadystatechange = function () {
+						if (this.readyState != 4) return;
+
 						if (this.status == 200 || this.status === 0) {
-							resolve(http.response)
+							resolve(this.response)
 						} else {
-							throw 'Could not load image';
+							reject('Warning: could not load an image to parse its orientation');
 						}
 						http = null;
 					};
-					http.onerror = function(error) {
-						reject(error)
-					}
 					http.onprogress = function () {
 						// Abort the request directly if it not a JPEG image for better performance
 						if (http.getResponseHeader('content-type') !== 'image/jpeg') {
