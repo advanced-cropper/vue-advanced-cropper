@@ -308,6 +308,50 @@ new Vue({
 </div>
 ```
 
+## Default size and position
+
+Sometime you should set the default position and default size of cropper. For example, if you automatically detect an user face.
+
+<default-positioning-example></default-positioning-example>
+
+```js
+import Vue from 'vue'
+import { Cropper } from 'vue-advanced-cropper'
+
+new Vue({
+	el: '#app',
+	methods: {
+		defaultPosition() {
+			return {
+				left: 100,
+				top: 100
+			}
+		},
+		defaultSize() {
+			return {
+				width: 400,
+				height: 400,
+			}
+		}
+	}
+	components: {
+		Cropper
+	},
+})
+```
+
+
+```html
+<div id="app">
+	<Cropper
+		classname="cropper"
+		:src="https://images.unsplash.com/photo-1527199372136-dff50c10ea34?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80"
+		:defaultPosition="defaultPosition"
+		:defaultSize="defaultSize"
+	/>
+</div>
+```
+
 ## Blurred background
 
 <blurred-background-example></blurred-background-example>
