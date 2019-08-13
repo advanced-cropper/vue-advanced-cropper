@@ -1,28 +1,28 @@
 <script>
-import { RoundStencil, Cropper } from 'vue-advanced-cropper'
+import { RoundStencil, Cropper } from 'vue-advanced-cropper';
 
 export default {
+	components: {
+		Cropper,
+	},
 	data() {
 		return {
-			img: 'https://images.pexels.com/photos/1642574/pexels-photo-1642574.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260'
-		}
+			img: 'https://images.pexels.com/photos/1642574/pexels-photo-1642574.jpeg?h=1500&w=2520',
+		};
 	},
-	components: {
-		Cropper
-	}
-}
+};
 </script>
 
 <template>
-<div class="customize-preview-example">
-  <Cropper
-		:src="img"
-		stencilComponent="circle-stencil"
-		:stencilProps="{
-			previewClassname: 'preview'
-		}"
-  />
-</div>
+  <div class="customize-preview-example">
+    <Cropper
+      :src="img"
+      stencil-component="circle-stencil"
+      :stencil-props="{
+        previewClassname: 'preview'
+      }"
+    />
+  </div>
 </template>
 
 <style lang="scss">

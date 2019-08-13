@@ -1,7 +1,10 @@
 <script>
-import { RoundStencil, Cropper } from 'vue-advanced-cropper'
+import { RoundStencil, Cropper } from 'vue-advanced-cropper';
 
 export default {
+	components: {
+		Cropper,
+	},
 	data() {
 		return {
 			image: 'https://images.pexels.com/photos/1254140/pexels-photo-1254140.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
@@ -9,8 +12,8 @@ export default {
 				minWidth: 400,
 				minHeight: 400,
 			},
-			result: null
-		}
+			result: null,
+		};
 	},
 	methods: {
 		pixelsRestriction(minWidth, minHeight, maxWidth, maxHeight, imageWidth, imageHeight) {
@@ -19,84 +22,107 @@ export default {
 				minHeight: minHeight,
 				maxWidth: maxWidth || imageWidth,
 				maxHeight: maxHeight || imageHeight,
-			}
+			};
 		},
-		onCrop({canvas}) {
-			this.result = canvas.toDataURL()
+		onCrop({ canvas, }) {
+			this.result = canvas.toDataURL();
 		},
 		showImage() {
 			const newTab = window.open();
-			newTab.document.body.innerHTML = `<img src="${this.result}"></img>`
+			newTab.document.body.innerHTML = `<img src="${this.result}"></img>`;
 		},
 		uploadImage(event) {
 			// Reference to the DOM input element
-            var input = event.target;
-            // Ensure that you have a file before attempting to read it
-            if (input.files && input.files[0]) {
-                // create a new FileReader to read this image and convert to base64 format
-                var reader = new FileReader();
-                // Define a callback function to run, when FileReader finishes its job
-                reader.onload = (e) => {
-                    // Note: arrow function used here, so that "this.imageData" refers to the imageData of Vue component
-                    // Read image as base64 and set to imageData
-                    this.image = e.target.result;
-                }
-                // Start the reader job - read file as a data url (base64 format)
-                reader.readAsDataURL(input.files[0]);
-            }
-		}
+			var input = event.target;
+			// Ensure that you have a file before attempting to read it
+			if (input.files && input.files[0]) {
+				// create a new FileReader to read this image and convert to base64 format
+				var reader = new FileReader();
+				// Define a callback function to run, when FileReader finishes its job
+				reader.onload = (e) => {
+					// Note: arrow function used here, so that "this.imageData" refers to the imageData of Vue component
+					// Read image as base64 and set to imageData
+					this.image = e.target.result;
+				};
+				// Start the reader job - read file as a data url (base64 format)
+				reader.readAsDataURL(input.files[0]);
+			}
+		},
 	},
-	components: {
-		Cropper
-	}
-}
+};
 </script>
 
 <template>
-	<div class="custom-restrictions-example">
-		<Cropper
-			classname="custom-restrictions-cropper"
-			:src="image"
-			:restrictions="pixelsRestriction"
-			:maxHeight="limitations.maxHeight"
-			:maxWidth="limitations.maxWidth"
-			:minHeight="limitations.minHeight"
-			:minWidth="limitations.minWidth"
-			checkOrientation
-			@change="onCrop"
-		/>
-		<div class="panel">
-			<div class="panel__left">
-				<div class="input">
-					<span class="input__label" >Min width</span>
-					<input class="input__control" type="text" v-model="limitations.minWidth"></input>
-				</div>
-				<div class="input">
-					<span class="input__label" >Min height</span>
-					<input class="input__control" type="text" v-model="limitations.minHeight"></input>
-				</div>
-				<div class="input">
-					<span class="input__label" >Max width</span>
-					<input class="input__control" type="text" v-model="limitations.maxWidth"></input>
-				</div>
-				<div class="input">
-					<span class="input__label" >Max height</span>
-					<input class="input__control" type="text" v-model="limitations.maxHeight"></input>
-				</div>
-			</div>
-			<div class="panel__right">
-				<div class="button" @click="$refs.file.click()">
-					<input type="file" ref="file" @change="uploadImage($event)" accept="image/*">
-					Upload image
-				</div>
-				<div class="button" v-if="this.result" @click="showImage()">
-					Download result
-				</div>
-			</div>
-
-		</div>
-
-	</div>
+  <div class="custom-restrictions-example">
+    <Cropper
+      classname="custom-restrictions-cropper"
+      :src="image"
+      :restrictions="pixelsRestriction"
+      :max-height="limitations.maxHeight"
+      :max-width="limitations.maxWidth"
+      :min-height="limitations.minHeight"
+      :min-width="limitations.minWidth"
+      check-orientation
+      @change="onCrop"
+    />
+    <div class="panel">
+      <div class="panel__left">
+        <div class="input">
+          <span class="input__label">Min width</span>
+          <input
+            v-model="limitations.minWidth"
+            class="input__control"
+            type="text"
+          ></input>
+        </div>
+        <div class="input">
+          <span class="input__label">Min height</span>
+          <input
+            v-model="limitations.minHeight"
+            class="input__control"
+            type="text"
+          ></input>
+        </div>
+        <div class="input">
+          <span class="input__label">Max width</span>
+          <input
+            v-model="limitations.maxWidth"
+            class="input__control"
+            type="text"
+          ></input>
+        </div>
+        <div class="input">
+          <span class="input__label">Max height</span>
+          <input
+            v-model="limitations.maxHeight"
+            class="input__control"
+            type="text"
+          ></input>
+        </div>
+      </div>
+      <div class="panel__right">
+        <div
+          class="button"
+          @click="$refs.file.click()"
+        >
+          <input
+            ref="file"
+            type="file"
+            accept="image/*"
+            @change="uploadImage($event)"
+          >
+          Upload image
+        </div>
+        <div
+          v-if="this.result"
+          class="button"
+          @click="showImage()"
+        >
+          Download result
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style lang="scss">

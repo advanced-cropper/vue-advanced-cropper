@@ -1,42 +1,41 @@
 <script>
-import classnames from 'classnames';
 import bem from 'easy-bem';
-import draggable from '../../mixins/draggable.js';
+import classnames from 'classnames';
 import { LineWrapper } from '../service';
 
-const cn = bem('vue-default-line');
+const cn = bem('vue-simple-line');
 
 export default {
 	name: 'SimpleLine',
 	components: {
-		LineWrapper
+		LineWrapper,
 	},
 	props: {
 		classname: {
-			type: String
+			type: String,
 		},
 		hoverClassname: {
-			type: String
+			type: String,
 		},
 		position: {
-			type: String
-		}
+			type: String,
+		},
 	},
 	data() {
 		return {
-			hover: false
+			hover: false,
 		};
 	},
 	computed: {
 		classnames() {
 			return {
 				default: classnames(
-					cn({ [this.position]: true }),
+					cn({ [this.position]: true, }),
 					this.classname,
 					this.hover && this.hoverClassname
-				)
+				),
 			};
-		}
+		},
 	},
 	methods: {
 		onDrag(dragEvent) {
@@ -47,8 +46,8 @@ export default {
 		},
 		onLeave() {
 			this.hover = false;
-		}
-	}
+		},
+	},
 };
 </script>
 
@@ -64,11 +63,11 @@ export default {
 </template>
 
 <style lang="scss">
-.vue-default-line {
+.vue-simple-line {
   background: none;
   transition: border 0.5s;
   border-color: rgba(white, 0.3);
-  border-width: 0px;
+  border-width: 0;
   border-style: solid;
 
   &--south,

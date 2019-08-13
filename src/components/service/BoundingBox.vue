@@ -1,9 +1,8 @@
 <script>
-import classnames from 'classnames';
 import bem from 'easy-bem';
-
-import { directionNames } from '../../utils/core.js';
-import { ResizeEvent } from '../../utils/events';
+import classnames from 'classnames';
+import { directionNames } from '../../core/utils';
+import { ResizeEvent } from '../../core/events';
 
 const cn = bem('vue-bounding-box');
 
@@ -14,7 +13,7 @@ export default {
 	name: 'BoundingBox',
 	props: {
 		classname: {
-			type: String
+			type: String,
 		},
 		handlers: {
 			type: Object,
@@ -27,9 +26,9 @@ export default {
 					westSouth: true,
 					south: true,
 					eastSouth: true,
-					east: true
+					east: true,
 				};
-			}
+			},
 		},
 		handlerComponent: {
 			type: [Object, String],
@@ -38,7 +37,7 @@ export default {
 			type: Object,
 			default() {
 				return {};
-			}
+			},
 		},
 		lines: {
 			type: Object,
@@ -47,9 +46,9 @@ export default {
 					west: true,
 					north: true,
 					east: true,
-					south: true
+					south: true,
 				};
-			}
+			},
 		},
 		lineComponent: {
 			type: [Object, String],
@@ -58,26 +57,26 @@ export default {
 			type: Object,
 			default() {
 				return {};
-			}
-		}
+			},
+		},
 	},
 	data() {
 		const points = [];
 		HORIZONTAL_DIRECTIONS.forEach(hDirection => {
 			VERTICAL_DIRECTIONS.forEach(vDirection => {
 				if (hDirection !== vDirection) {
-					let { name, classname } = directionNames(hDirection, vDirection);
+					let { name, classname, } = directionNames(hDirection, vDirection);
 					points.push({
 						name,
 						classname,
 						verticalDirection: vDirection,
-						horizontalDirection: hDirection
+						horizontalDirection: hDirection,
 					});
 				}
 			});
 		});
 		return {
-			points
+			points,
 		};
 	},
 	computed: {
@@ -87,11 +86,11 @@ export default {
 
 			return {
 				default: classnames(
-					!this.disableDefaultClasses && cn(),
+					cn(),
 					this.classname
 				),
 				handlers,
-				lines
+				lines,
 			};
 		},
 		lineNodes() {
@@ -107,7 +106,7 @@ export default {
 						),
 						hoverClassname: this.classnames.lines.hover,
 						verticalDirection: point.verticalDirection,
-						horizontalDirection: point.horizontalDirection
+						horizontalDirection: point.horizontalDirection,
 					});
 				}
 			});
@@ -126,18 +125,18 @@ export default {
 						),
 						hoverClassname: this.classnames.handlers.hover,
 						verticalDirection: point.verticalDirection,
-						horizontalDirection: point.horizontalDirection
+						horizontalDirection: point.horizontalDirection,
 					});
 				}
 			});
 			return handlers;
-		}
+		},
 	},
 	beforeMount() {
-		window.addEventListener('mouseup', this.onMouseUp, { passive: false });
-		window.addEventListener('mousemove', this.onMouseMove, { passive: false });
-		window.addEventListener('touchmove', this.onTouchMove, { passive: false });
-		window.addEventListener('touchend', this.onTouchEnd, { passive: false });
+		window.addEventListener('mouseup', this.onMouseUp, { passive: false, });
+		window.addEventListener('mousemove', this.onMouseMove, { passive: false, });
+		window.addEventListener('touchmove', this.onTouchMove, { passive: false, });
+		window.addEventListener('touchend', this.onTouchEnd, { passive: false, });
 	},
 	beforeDestroy() {
 		window.removeEventListener('mouseup', this.onMouseUp);
@@ -151,25 +150,24 @@ export default {
 	},
 	methods: {
 		onHandlerDrag(dragEvent, horizontalDirection, verticalDirection) {
-			const { element, anchor, position } = dragEvent;
-			const { left, top } = dragEvent.shift();
+			const { left, top, } = dragEvent.shift();
 
 			const directions = {
 				left: 0,
 				right: 0,
 				top: 0,
-				bottom: 0
+				bottom: 0,
 			};
 
 			if (horizontalDirection === 'west') {
-				directions.left -= left
+				directions.left -= left;
 			} else if (horizontalDirection === 'east') {
-				directions.right += left
+				directions.right += left;
 			}
 			if (verticalDirection === 'north') {
 				directions.top -= top;
 			} else if (verticalDirection === 'south') {
-				directions.bottom += top
+				directions.bottom += top;
 			}
 
 			let respectDirection;
@@ -187,14 +185,14 @@ export default {
 						left: horizontalDirection === 'west' || !horizontalDirection,
 						right: horizontalDirection === 'east' || !horizontalDirection,
 						bottom: verticalDirection === 'south' || !verticalDirection,
-						top: verticalDirection === 'north' || !verticalDirection
+						top: verticalDirection === 'north' || !verticalDirection,
 					},
 					preserveAspectRatio: dragEvent.nativeEvent.shiftKey,
-					respectDirection
+					respectDirection,
 				}
 			));
-		}
-	}
+		},
+	},
 };
 </script>
 

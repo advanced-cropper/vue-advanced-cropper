@@ -12,12 +12,12 @@
 
 <script>
 export default {
-	name: 'example-wrapper',
+	name: 'ExampleWrapper',
 	props: {
 		href: {
-			type: String
-		}
-	}
+			type: String,
+		},
+	},
 };
 </script>
 

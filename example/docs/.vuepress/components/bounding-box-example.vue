@@ -1,34 +1,34 @@
 <script>
-import { BoundingBox, } from 'vue-advanced-cropper'
+import { BoundingBox } from 'vue-advanced-cropper';
 
 export default {
-	name: 'bounding-box-example',
+	name: 'BoundingBoxExample',
+	components: {
+		BoundingBox,
+	},
 	data() {
 		return {
-			img: 'https://images.pexels.com/photos/1254140/pexels-photo-1254140.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'
-		}
+			img: 'https://images.pexels.com/photos/1254140/pexels-photo-1254140.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+		};
 	},
-	components: {
-		BoundingBox
-	}
-}
+};
 </script>
 
 <template>
-<div class="bounding-box-example">
-  <BoundingBox
-	handlerComponent="simple-handler"
-	lineComponent="simple-line"
-	:linesClassnames="{
-		default: 'line'
-	}"
-	:handlersClassnames="{
-		default: 'handler'
-	}"
-  >
-	  <div class="box"></div>
-  </BoundingBox>
-</div>
+  <div class="bounding-box-example">
+    <BoundingBox
+      handler-component="simple-handler"
+      line-component="simple-line"
+      :lines-classnames="{
+        default: 'line'
+      }"
+      :handlers-classnames="{
+        default: 'handler'
+      }"
+    >
+      <div class="box" />
+    </BoundingBox>
+  </div>
 </template>
 
 <style lang="scss">

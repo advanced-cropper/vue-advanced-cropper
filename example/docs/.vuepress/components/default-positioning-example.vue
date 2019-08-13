@@ -1,37 +1,37 @@
 <script>
-import { Cropper } from 'vue-advanced-cropper'
+import { Cropper } from 'vue-advanced-cropper';
 
 export default {
+	components: {
+		Cropper,
+	},
 	data() {
 		return {
-			img: 'https://images.unsplash.com/photo-1527199372136-dff50c10ea34?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80'
-		}
-	},
-	components: {
-		Cropper
+			img: 'https://images.unsplash.com/photo-1527199372136-dff50c10ea34?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80',
+		};
 	},
 	methods: {
 		defaultPosition() {
 			return {
 				left: 100,
-				top: 100
-			}
+				top: 100,
+			};
 		},
 		defaultSize() {
 			return {
 				width: 400,
 				height: 400,
-			}
-		}
-	}
-}
+			};
+		},
+	},
+};
 </script>
 
 <template>
-<Cropper
-	:src="img"
-	:defaultPosition="defaultPosition"
-	:defaultSize="defaultSize"
-/>
+  <Cropper
+    :src="img"
+    :default-position="defaultPosition"
+    :default-size="defaultSize"
+  />
 </template>
 

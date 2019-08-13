@@ -1,7 +1,5 @@
 <script>
-import classnames from 'classnames';
 import bem from 'easy-bem';
-import { directionNames } from '../../utils/core.js';
 import DraggableElement from './DraggableElement.vue';
 
 const cn = bem('vue-line-wrapper');
@@ -9,19 +7,19 @@ const cn = bem('vue-line-wrapper');
 export default {
 	name: 'LineWrapper',
 	components: {
-		DraggableElement
+		DraggableElement,
 	},
 	props: {
 		position: {
 			type: String,
-			required: true
-		}
+			required: true,
+		},
 	},
 	computed: {
 		classname() {
-			return cn({ [this.position]: true });
-		}
-	}
+			return cn({ [this.position]: true, });
+		},
+	},
 };
 </script>
 

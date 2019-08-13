@@ -19,14 +19,14 @@
 </template>
 
 <script>
-import {Cropper} from 'vue-advanced-cropper';
+import { Cropper } from 'vue-advanced-cropper';
 
 export default {
 	name: 'CommonExample',
 	components: {
-	  Cropper
-	}
-}
+	  Cropper,
+	},
+};
 </script>
 
 <style lang="scss">

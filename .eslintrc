@@ -1,9 +1,11 @@
 {
 	"extends": [
-		"plugin:vue/essential"
+		"eslint:recommended",
+		"plugin:vue/recommended"
 	],
 	"env": {
-		"node": true
+		"node": true,
+		"jest": true
 	},
 	"plugins": [
 		"vue"
@@ -17,6 +19,10 @@
 		"object-curly-spacing": ["error", "always", {
 			"arraysInObjects": false,
 			"objectsInObjects": false
+		}],
+		"semi": ["error", "always"],
+		"no-console": ["error", {
+			"allow": ["warn", "error"],
 		}]
 	}
 }

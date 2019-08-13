@@ -1,7 +1,10 @@
 <script>
-import { Cropper } from 'vue-advanced-cropper'
+import { Cropper } from 'vue-advanced-cropper';
 
 export default {
+	components: {
+		Cropper,
+	},
 	data() {
 		return {
 			img: 'https://images.pexels.com/photos/2737393/pexels-photo-2737393.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260',
@@ -9,60 +12,69 @@ export default {
 				width: 0,
 				height: 0,
 				left: 0,
-				top: 0
+				top: 0,
 			},
-			image: null
-		}
+			image: null,
+		};
 	},
 	methods: {
 		crop() {
-			const {coordinates, canvas} = this.$refs.cropper.getResult()
-			this.coordinates = coordinates
+			const { coordinates, canvas, } = this.$refs.cropper.getResult();
+			this.coordinates = coordinates;
 			// You able to do different manipulations at a canvas
 			// but there we just get a cropped image
-			this.image = canvas.toDataURL()
-		}
+			this.image = canvas.toDataURL();
+		},
 	},
-	components: {
-		Cropper
-	}
-}
+};
 </script>
 
 <template>
-<div class="getting-result-second-example">
-	<Cropper
-		ref="cropper"
-		:src="img"
-		:stencilProps="{
-			aspectRatio: 1
-		}"
-	/>
-	<div class="results-wrapper">
-		<div class="results" v-if="this.image">
-			<p><b>Results:</b></p>
-			<p>
-				Width: {{ coordinates.width }}
-			</p>
-			<p>
-				Height: {{ coordinates.height }}
-			</p>
-			<p>
-				Left: {{ coordinates.left }}
-			</p>
-			<p>
-				Top: {{ coordinates.top }}
-			</p>
-		</div>
-		<div class="preview" v-if="this.image">
-			<img :src="this.image" alt=""/>>
-		</div>
-	</div>
+  <div class="getting-result-second-example">
+    <Cropper
+      ref="cropper"
+      :src="img"
+      :stencil-props="{
+        aspectRatio: 1
+      }"
+    />
+    <div class="results-wrapper">
+      <div
+        v-if="this.image"
+        class="results"
+      >
+        <p><b>Results:</b></p>
+        <p>
+          Width: {{ coordinates.width }}
+        </p>
+        <p>
+          Height: {{ coordinates.height }}
+        </p>
+        <p>
+          Left: {{ coordinates.left }}
+        </p>
+        <p>
+          Top: {{ coordinates.top }}
+        </p>
+      </div>
+      <div
+        v-if="this.image"
+        class="preview"
+      >
+        <img
+          :src="this.image"
+          alt=""
+        >>
+      </div>
+    </div>
 
-	<div class="button" @click="crop">
-		Crop Image
-	</div>
-</div>
+    <div
+      class="button"
+      @click="crop"
+    >
+      Crop Image
+    </div>
+  </div>
 </template>
 
 <style lang="scss">

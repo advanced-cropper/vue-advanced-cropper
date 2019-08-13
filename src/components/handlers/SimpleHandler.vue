@@ -1,7 +1,6 @@
 <script>
 import classnames from 'classnames';
 import bem from 'easy-bem';
-import draggable from '../../mixins/draggable.js';
 import { HandlerWrapper } from '../service';
 
 const cn = bem('vue-square-handler');
@@ -9,32 +8,32 @@ const cn = bem('vue-square-handler');
 export default {
 	name: 'SimpleHandler',
 	components: {
-		HandlerWrapper
+		HandlerWrapper,
 	},
 	props: {
 		classname: {
-			type: String
+			type: String,
 		},
 		hoverClassname: {
-			type: String
+			type: String,
 		},
 		horizontalPosition: {
-			type: String
+			type: String,
 		},
 		verticalPosition: {
-			type: String
-		}
+			type: String,
+		},
 	},
 	computed: {
 		classnames() {
 			return {
 				default: classnames(
-					cn({ [this.position]: true }),
+					cn({ [this.position]: true, }),
 					this.classname,
 					this.hover && this.hoverClassname
-				)
+				),
 			};
-		}
+		},
 	},
 	methods: {
 		onDrag(dragEvent) {
@@ -45,8 +44,8 @@ export default {
 		},
 		onLeave() {
 			this.hover = false;
-		}
-	}
+		},
+	},
 };
 </script>
 

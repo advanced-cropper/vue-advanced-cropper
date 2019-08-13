@@ -1,10 +1,9 @@
 <script>
-import classnames from 'classnames';
-import Vue from 'vue';
 import bem from 'easy-bem';
-import { getStyleTransforms } from '../../utils/core'
+import classnames from 'classnames';
+import { getStyleTransforms } from '../../core/image';
 
-const cn = bem('vue-preview-result')
+const cn = bem('vue-preview-result');
 
 export default {
 	name: 'PreviewResult',
@@ -25,9 +24,9 @@ export default {
 					width: 0,
 					height: 0,
 					left: 0,
-					top: 0
-				}
-			}
+					top: 0,
+				};
+			},
 		},
 		stencilCoordinates: {
 			type: Object,
@@ -36,9 +35,9 @@ export default {
 					width: 0,
 					height: 0,
 					left: 0,
-					top: 0
-				}
-			}
+					top: 0,
+				};
+			},
 		},
 	},
 	computed: {
@@ -46,8 +45,8 @@ export default {
 			return {
 				default: classnames(cn(), this.classname),
 				image: classnames(cn('image'), this.imageClassname),
-				wrapper: cn('wrapper')
-			}
+				wrapper: cn('wrapper'),
+			};
 		},
 		wrapperStyle() {
 			return {
@@ -55,52 +54,56 @@ export default {
 				height: `${this.stencilCoordinates.height}px`,
 				left: `calc(50% - ${this.stencilCoordinates.width/2}px)`,
 				top: `calc(50% - ${this.stencilCoordinates.height/2}px)`,
-			}
+			};
 		},
 		imageStyle() {
-			const imageTransforms = this.img.transforms
-			const imageWidth = this.img.size.width
-			const imageHeight = this.img.size.height
+			const imageTransforms = this.img.transforms;
+			const imageWidth = this.img.size.width;
+			const imageHeight = this.img.size.height;
 			const coefficient = this.stencilCoordinates.height / this.resultCoordinates.height;
-			const height = imageHeight * coefficient
-			const width = imageWidth * coefficient
-			const flipped = imageTransforms.flipped
+			const height = imageHeight * coefficient;
+			const width = imageWidth * coefficient;
+			const flipped = imageTransforms.flipped;
 
 			const result = {
 				width: `${width}px`,
-				height: `${height}px`
-			}
+				height: `${height}px`,
+			};
 			if (flipped) {
-				result.width = `${height}px`
-				result.height = `${width}px`
-				result.left = `${-this.stencilCoordinates.left - (height - width)/2}px`
-				result.top = `${-this.stencilCoordinates.top - (width - height)/2}px`
+				result.width = `${height}px`;
+				result.height = `${width}px`;
+				result.left = `${-this.stencilCoordinates.left - (height - width)/2}px`;
+				result.top = `${-this.stencilCoordinates.top - (width - height)/2}px`;
 			} else {
-				result.width = `${width}px`
-				result.height = `${height}px`
-				result.left = `${-this.stencilCoordinates.left}px`
-				result.top = `${-this.stencilCoordinates.top}px`
+				result.width = `${width}px`;
+				result.height = `${height}px`;
+				result.left = `${-this.stencilCoordinates.left}px`;
+				result.top = `${-this.stencilCoordinates.top}px`;
 			}
-			result.transform = getStyleTransforms(imageTransforms)
-			return result
-		}
+			result.transform = getStyleTransforms(imageTransforms);
+			return result;
+		},
 	},
 };
 </script>
 
 <template>
-	<div
-		:class="classnames.default"
-	>
-		<div ref="wrapper" :class="classnames.wrapper" :style="wrapperStyle">
-			<img
-				ref="image"
-				:src="img.src"
-				:class="classnames.image"
-				:style="imageStyle"
-			/>
-		</div>
-	</div>
+  <div
+    :class="classnames.default"
+  >
+    <div
+      ref="wrapper"
+      :class="classnames.wrapper"
+      :style="wrapperStyle"
+    >
+      <img
+        ref="image"
+        :src="img.src"
+        :class="classnames.image"
+        :style="imageStyle"
+      >
+    </div>
+  </div>
 </template>
 
 <style lang="scss">

@@ -1,15 +1,13 @@
 <script>
-import bem from 'easy-bem';
 import draggable from '../../mixins/draggable';
-import classnames from 'classnames';
 
 export default {
 	name: 'DraggableElement',
 	mixins: [draggable],
 	props: {
 		classname: {
-			type: String
-		}
+			type: String,
+		},
 	},
 };
 </script>

@@ -1,1 +1,1 @@
-export { default as SimpleLine } from './SimpleLine.vue'
+export { default as SimpleLine } from './SimpleLine.vue';

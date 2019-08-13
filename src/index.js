@@ -1,18 +1,18 @@
-import Vue from 'vue'
-import Cropper from './Cropper.vue'
+import Vue from 'vue';
+import Cropper from './Cropper.vue';
 
 import {
 	RectangleStencil,
-	CircleStencil,
-} from './components/stencils'
+	CircleStencil
+} from './components/stencils';
 
 import {
 	SimpleHandler
-} from './components/handlers'
+} from './components/handlers';
 
 import {
 	SimpleLine
-} from './components/lines'
+} from './components/lines';
 
 export {
 	PreviewResult,
@@ -21,35 +21,35 @@ export {
 	LineWrapper,
 	HandlerWrapper,
 	DraggableElement
-} from './components/service'
+} from './components/service';
 
 export {
 	RectangleStencil,
-	CircleStencil,
-} from './components/stencils'
+	CircleStencil
+} from './components/stencils';
 
 export {
 	SimpleHandler
-} from './components/handlers'
+} from './components/handlers';
 
 export {
 	SimpleLine
-} from './components/lines'
+} from './components/lines';
 
 export {
 	PreviewImage
-} from './components/helpers'
+} from './components/helpers';
 
 export {
 	ResizeEvent,
 	MoveEvent,
 	DragEvent
-} from './utils/events'
+} from './core/events';
 
-export { default as Cropper } from './Cropper.vue'
+export { default as Cropper } from './Cropper.vue';
 
-Vue.component('cropper', Cropper)
-Vue.component('rectangle-stencil', RectangleStencil)
-Vue.component('circle-stencil', CircleStencil)
-Vue.component('simple-handler', SimpleHandler)
-Vue.component('simple-line', SimpleLine)
+Vue.component('cropper', Cropper);
+Vue.component('rectangle-stencil', RectangleStencil);
+Vue.component('circle-stencil', CircleStencil);
+Vue.component('simple-handler', SimpleHandler);
+Vue.component('simple-line', SimpleLine);

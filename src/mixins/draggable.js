@@ -1,47 +1,47 @@
-import { DragEvent } from '../utils/events'
+import { DragEvent } from '../core/events';
 
 export default {
 	beforeMount() {
-		window.addEventListener('mouseup', this.onMouseUp, { passive: false })
-		window.addEventListener('mousemove', this.onMouseMove, { passive: false })
-		window.addEventListener('touchmove', this.onTouchMove, { passive: false })
-		window.addEventListener('touchend', this.onTouchEnd, { passive: false })
+		window.addEventListener('mouseup', this.onMouseUp, { passive: false, });
+		window.addEventListener('mousemove', this.onMouseMove, { passive: false, });
+		window.addEventListener('touchmove', this.onTouchMove, { passive: false, });
+		window.addEventListener('touchend', this.onTouchEnd, { passive: false, });
 	},
 	beforeDestroy() {
-		window.removeEventListener('mouseup', this.onMouseUp)
-		window.removeEventListener('mousemove', this.onMouseMove)
-		window.removeEventListener('touchmove', this.onTouchMove)
-		window.removeEventListener('touchend', this.onTouchEnd)
+		window.removeEventListener('mouseup', this.onMouseUp);
+		window.removeEventListener('mousemove', this.onMouseMove);
+		window.removeEventListener('touchmove', this.onTouchMove);
+		window.removeEventListener('touchend', this.onTouchEnd);
 	},
 	mounted () {
 		if (!this.$refs.draggable) {
 			throw new Error(
 				'You should add ref "draggable" to your root element to use draggable mixin'
-			)
+			);
 		}
-		this.touches = []
-		this.draggingAnchor = []
-		this.hovered = false
+		this.touches = [];
+		this.draggingAnchor = [];
+		this.hovered = false;
 	},
 	methods: {
 		onMouseOver () {
 			if (!this.hovered) {
-				this.hovered = true
-				this.$emit('enter')
+				this.hovered = true;
+				this.$emit('enter');
 			}
 		},
 		onMouseLeave () {
 			if (this.hovered) {
-				this.hovered = false
-				this.$emit('leave')
+				this.hovered = false;
+				this.$emit('leave');
 			}
 		},
 		onTouchStart (e) {
 			if (e.cancelable) {
-				this.touches = [...e.touches]
+				this.touches = [...e.touches];
 
 				if (!this.hovered) {
-					this.$emit('enter')
+					this.$emit('enter');
 				}
 
 				if (e.touches.length) {
@@ -50,30 +50,30 @@ export default {
 							(mean, touch) => {
 								return {
 									clientX: mean.clientX + touch.clientX / e.touches.length,
-									clientY: mean.clientY + touch.clientY / e.touches.length
-								}
+									clientY: mean.clientY + touch.clientY / e.touches.length,
+								};
 							},
-							{ clientX: 0, clientY: 0 }
+							{ clientX: 0, clientY: 0, }
 						)
-					)
+					);
 				}
 				if (e.preventDefault) {
-					e.preventDefault()
+					e.preventDefault();
 				}
-				e.stopPropagation()
+				e.stopPropagation();
 			}
 		},
-		onTouchEnd (e) {
-			this.processEnd()
+		onTouchEnd () {
+			this.processEnd();
 		},
 		onTouchMove (e) {
 			if (this.touches.length) {
-				this.processMove(e, e.touches)
+				this.processMove(e, e.touches);
 				if (e.preventDefault) {
-					e.preventDefault()
+					e.preventDefault();
 				}
 				if (e.stopPropagation) {
-					e.stopPropagation()
+					e.stopPropagation();
 				}
 			}
 		},
@@ -81,11 +81,11 @@ export default {
 			const touch = {
 				fake: true,
 				clientX: e.clientX,
-				clientY: e.clientY
-			}
-			this.touches = [touch]
-			this.initAnchor(touch)
-			e.stopPropagation()
+				clientY: e.clientY,
+			};
+			this.touches = [touch];
+			this.initAnchor(touch);
+			e.stopPropagation();
 		},
 		onMouseMove (e) {
 			if (this.touches.length) {
@@ -93,56 +93,56 @@ export default {
 					{
 						fake: true,
 						clientX: e.clientX,
-						clientY: e.clientY
+						clientY: e.clientY,
 					}
-				])
+				]);
 				if (e.preventDefault) {
-					e.preventDefault()
+					e.preventDefault();
 				}
 			}
 		},
-		onMouseUp (e) {
-			this.touches = []
+		onMouseUp () {
+			this.touches = [];
 		},
 		initAnchor (touch) {
-			const draggable = this.$refs.draggable
-			const { left, right, bottom, top } = draggable.getBoundingClientRect()
+			const draggable = this.$refs.draggable;
+			const { left, right, bottom, top, } = draggable.getBoundingClientRect();
 
 			this.anchor = {
 				left: touch.clientX - left,
 				top: touch.clientY - top,
 				bottom: bottom - touch.clientY,
-				right: right - touch.clientX
-			}
+				right: right - touch.clientX,
+			};
 		},
 		processMove (event, touches) {
-			const newTouches = [...touches]
+			const newTouches = [...touches];
 			if (this.touches.length) {
 				if (this.touches.length === 1 && newTouches.length === 1) {
-					const element = this.$refs.draggable
+					const element = this.$refs.draggable;
 					this.$emit('drag', new DragEvent(
 						event,
 						element,
 						{
 							left: newTouches[0].clientX,
-							top: newTouches[0].clientY
+							top: newTouches[0].clientY,
 						},
 						{
 							left: this.touches[0].clientX,
 							top: this.touches[0].clientY,
 						},
 						this.anchor
-					))
+					));
 				}
-				this.touches = newTouches
+				this.touches = newTouches;
 			}
 		},
 		processEnd () {
-			this.touches = []
+			this.touches = [];
 			if (this.hovered) {
-				this.$emit('leave')
-				this.hovered = false
+				this.$emit('leave');
+				this.hovered = false;
 			}
-		}
-	}
-}
+		},
+	},
+};

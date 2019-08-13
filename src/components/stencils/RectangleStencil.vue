@@ -12,11 +12,11 @@ export default {
 	components: {
 		PreviewResult,
 		BoundingBox,
-		DraggableArea
+		DraggableArea,
 	},
 	props: {
 		img: {
-			type: Object
+			type: Object,
 		},
 		resultCoordinates: {
 			type: Object,
@@ -25,53 +25,71 @@ export default {
 			type: Object,
 		},
 		handlers: {
-			type: Object
+			type: Object,
 		},
 		handlerComponent: {
 			type: [Object, String],
 			default() {
 				return SimpleHandler;
-			}
+			},
 		},
 		handlersClassnames: {
 			type: Object,
 			default() {
 				return {};
-			}
+			},
 		},
 		lines: {
-			type: Object
+			type: Object,
 		},
 		lineComponent: {
 			type: [Object, String],
 			default() {
 				return SimpleLine;
-			}
+			},
 		},
 		linesClassnames: {
 			type: Object,
 			default() {
 				return {};
-			}
+			},
 		},
 		classname: {
-			type: String
+			type: String,
 		},
 		previewClassname: {
-			type: String
+			type: String,
 		},
 		boundingBoxClassname: {
-			type: String
+			type: String,
 		},
 		aspectRatio: {
-			type: [Number, String]
+			type: [Number, String],
 		},
 		minAspectRatio: {
-			type: [Number, String]
+			type: [Number, String],
 		},
 		maxAspectRatio: {
-			type: [Number, String]
-		}
+			type: [Number, String],
+		},
+	},
+	computed: {
+		classes() {
+			return {
+				stencil: classnames(cn(), this.classname),
+				preview: classnames(cn('preview'), this.previewClassname),
+				boundingBox: classnames(cn('bounding-box'), this.boundingBoxClassname),
+			};
+		},
+		style() {
+			const { height, width, left, top, } = this.stencilCoordinates;
+			return {
+				width: `${width}px`,
+				height: `${height}px`,
+				left: `${left}px`,
+				top: `${top}px`,
+			};
+		},
 	},
 	methods: {
 		onMove(moveEvent) {
@@ -83,49 +101,34 @@ export default {
 		aspectRatios() {
 			return {
 				minimum: this.aspectRatio || this.minAspectRatio,
-				maximum: this.aspectRatio || this.maxAspectRatio
-			};
-		}
-	},
-	computed: {
-		classes() {
-			return {
-				stencil: classnames(cn(), this.classname),
-				preview: classnames(cn('preview'), this.previewClassname),
-				boundingBox: classnames(cn('bounding-box'), this.boundingBoxClassname),
+				maximum: this.aspectRatio || this.maxAspectRatio,
 			};
 		},
-		style() {
-			const { height, width, left, top } = this.stencilCoordinates;
-			return {
-				width: `${width}px`,
-				height: `${height}px`,
-				left: `${left}px`,
-				top: `${top}px`
-			};
-		}
-	}
+	},
 };
 </script>
 
 <template>
-  <div :class="classes.stencil" :style="style">
+  <div
+    :class="classes.stencil"
+    :style="style"
+  >
     <BoundingBox
-      @resize="onResize"
       :classname="classes.boundingBox"
       :handlers="handlers"
-      :handlerComponent="handlerComponent"
-      :handlersClassnames="handlersClassnames"
+      :handler-component="handlerComponent"
+      :handlers-classnames="handlersClassnames"
       :lines="lines"
-      :lineComponent="lineComponent"
-      :linesClassnames="linesClassnames"
+      :line-component="lineComponent"
+      :lines-classnames="linesClassnames"
+      @resize="onResize"
     >
       <DraggableArea @move="onMove">
         <PreviewResult
           :img="img"
           :classname="classes.preview"
-		  :resultCoordinates="resultCoordinates"
-		  :stencilCoordinates="stencilCoordinates"
+          :result-coordinates="resultCoordinates"
+          :stencil-coordinates="stencilCoordinates"
         />
       </DraggableArea>
     </BoundingBox>

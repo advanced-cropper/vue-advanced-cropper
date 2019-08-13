@@ -1,7 +1,55 @@
+import { XHR_DONE } from './constants';
+
+export function prepareSource(canvas, image, { flipped, orientation, }) {
+	const width = image.naturalWidth;
+	const height = image.naturalHeight;
+
+	const ctx = canvas.getContext('2d');
+	canvas.width = width;
+	canvas.height = height;
+
+	ctx.save();
+
+	if (flipped) {
+		canvas.width = height;
+		canvas.height = width;
+	}
+
+	// TODO: refactor this
+	if (orientation == 2) {
+		ctx.translate(width, 0);
+		ctx.scale(-1, 1);
+	} else if (orientation == 3) {
+		ctx.translate(width, height);
+		ctx.rotate(180 / 180 * Math.PI);
+	} else if (orientation == 4) {
+		ctx.translate(0, height);
+		ctx.scale(1, -1);
+	} else if (orientation == 5) {
+		ctx.rotate(90 / 180 * Math.PI);
+		ctx.scale(1, -1);
+	} else if (orientation == 6) {
+		ctx.rotate(90 / 180 * Math.PI);
+		ctx.translate(0, -height);
+	} else if (orientation == 7) {
+		ctx.rotate(270 / 180 * Math.PI);
+		ctx.translate(-width, height);
+		ctx.scale(1, -1);
+	} else if (orientation == 8) {
+		ctx.translate(0, width);
+		ctx.rotate(270 / 180 * Math.PI);
+	}
+
+	ctx.drawImage(image, 0, 0, width, height);
+	ctx.restore();
+
+	return canvas;
+}
+
 export function getImageTransforms(orientation) {
 	let result = {
-		orientation
-	}
+		orientation,
+	};
 	if (orientation) {
 		switch (orientation) {
 		case 2:
@@ -30,61 +78,64 @@ export function getImageTransforms(orientation) {
 		}
 	}
 	if (result.rotate === 90 || result.rotate === -90) {
-		result.flipped = true
+		result.flipped = true;
 	}
-	return result
+	return result;
 }
 
-export function getStyleTransforms({ rotate, scaleX, scaleY }) {
-	let transform = ''
+export function getStyleTransforms({ rotate, scaleX, scaleY, }) {
+	let transform = '';
 	if (rotate || scaleX || scaleY) {
 		if (rotate) {
-			transform += ` rotate(${rotate}deg) `
+			transform += ` rotate(${rotate}deg) `;
 		}
 		if (scaleX) {
-			transform += ` scaleX(${scaleX}) `
+			transform += ` scaleX(${scaleX}) `;
 		}
 		if (scaleY) {
-			transform += ` scaleY(${scaleY}) `
+			transform += ` scaleY(${scaleY}) `;
 		}
 	}
-	return transform
+	return transform;
 }
 
 export function parseImage(img) {
 	return new Promise((resolve) => {
 		getImageData(img)
 			.then(data => {
-				resolve(data ? getOrientation(data) : { arrayBuffer: null, orientation: null })
+				resolve(data ? getOrientation(data) : { arrayBuffer: null, orientation: null, });
 			})
 			.catch((error) => {
-				console.warn(error)
-				resolve({ arrayBuffer: null, orientation: null })
-			})
-	})
+				console.warn(error);
+				resolve({ arrayBuffer: null, orientation: null, });
+			});
+	});
 }
 
 function getImageData(img) {
 	return new Promise((resolve, reject) => {
 		try {
 			if (img) {
-				if (/^data\:/i.test(img)) { // Data URI
-					resolve(base64ToArrayBuffer(img))
-				} else if (/^blob\:/i.test(img)) { // Object URL
+				// Data URL
+				if (/^data:/i.test(img)) {
+					resolve(base64ToArrayBuffer(img));
+				// Blob
+				} else if (/^blob:/i.test(img)) {
 					const fileReader = new FileReader();
 					fileReader.onload = function (e) {
-						resolve(e.target.result)
+						resolve(e.target.result);
 					};
 					objectURLToBlob(img, function (blob) {
 						fileReader.readAsArrayBuffer(blob);
 					});
+				// Simple URL
 				} else {
 					let http = new XMLHttpRequest();
 					http.onreadystatechange = function () {
-						if (this.readyState != 4) return;
+						if (this.readyState !== XHR_DONE) return;
 
-						if (this.status == 200 || this.status === 0) {
-							resolve(this.response)
+						if (this.status === 200 || this.status === 0) {
+							resolve(this.response);
 						} else {
 							reject('Warning: could not load an image to parse its orientation');
 						}
@@ -93,28 +144,28 @@ function getImageData(img) {
 					http.onprogress = function () {
 						// Abort the request directly if it not a JPEG image for better performance
 						if (http.getResponseHeader('content-type') !== 'image/jpeg') {
-						  http.abort();
+							http.abort();
 						}
 					};
-					http.withCredentials  = false
+					http.withCredentials  = false;
 					http.open('GET', img, true);
 					http.responseType = 'arraybuffer';
 					http.send(null);
 				}
 			} else {
-				reject('Error: the image is empty')
+				reject('Error: the image is empty');
 			}
 		} catch (e) {
-			reject(e)
+			reject(e);
 		}
-	})
+	});
 }
 
 function objectURLToBlob(url, callback) {
 	const http = new XMLHttpRequest();
 	http.open('GET', url, true);
 	http.responseType = 'blob';
-	http.onload = function (e) {
+	http.onload = function () {
 		if (this.status == 200 || this.status === 0) {
 			callback(this.response);
 		}
@@ -123,7 +174,7 @@ function objectURLToBlob(url, callback) {
 }
 
 function base64ToArrayBuffer(base64) {
-	base64 = base64.replace(/^data\:([^\;]+)\;base64,/gmi, '');
+	base64 = base64.replace(/^data:([^;]+);base64,/gmi, '');
 	const binary = atob(base64);
 	const len = binary.length;
 	const buffer = new ArrayBuffer(len);

@@ -19,25 +19,25 @@
 
 <script>
 export default {
-	name: 'home-button',
+	name: 'HomeButton',
 	props: {
 	  icon: {
 		  type: String,
-		  required: true
+		  required: true,
 	  },
 	  text: {
 		  type: String,
-		  required: true
+		  required: true,
 	  },
 	  caption: {
-		  type: String
+		  type: String,
 	  },
 	  action: {
 		  type: Boolean,
-		  default: false
+		  default: false,
 	  },
-	}
-}
+	},
+};
 </script>
 
 <style lang="scss">

@@ -2,13 +2,13 @@
 import classnames from 'classnames';
 import bem from 'easy-bem';
 
-const cn = bem('vue-preview-image')
+const cn = bem('vue-preview-image');
 
 export default {
 	name: 'PreviewImage',
 	props: {
 		img: {
-			type: String
+			type: String,
 		},
 		classname: {
 			type: String,
@@ -30,20 +30,50 @@ export default {
 		},
 		previewWidth: {
 			type: Number,
-			required: true
+			required: true,
 		},
 		previewHeight: {
 			type: Number,
-			required: true
-		}
+			required: true,
+		},
 	},
 	data() {
 		return {
 			imageSize: {
 				width: 0,
-				height: 0
-			}
-		}
+				height: 0,
+			},
+		};
+	},
+	computed: {
+		classnames() {
+			return {
+				default: classnames(cn(), this.classname),
+				image: classnames(cn('image'), this.imageClassname),
+			};
+		},
+		wrapperStyle() {
+			return {
+				width: `${this.previewWidth}px`,
+				height: `${this.previewHeight}px`,
+			};
+		},
+		imageStyle() {
+			const coefficient = this.previewHeight / this.height;
+			const height = this.imageSize.height * coefficient;
+			const width = this.imageSize.width * coefficient;
+			return {
+				width: `${width}px`,
+				height: `${height}px`,
+				left: `${-this.left*coefficient}px`,
+				top: `${-this.top*coefficient}px`,
+			};
+		},
+	},
+	watch: {
+		img() {
+			this.onChangeImage();
+		},
 	},
 	mounted() {
 		this.onChangeImage();
@@ -65,36 +95,7 @@ export default {
 			}
 		},
 	},
-	watch: {
-		img() {
-			this.onChangeImage();
-		}
-	},
-	computed: {
-		classnames() {
-			return {
-				default: classnames(cn(), this.classname),
-				image: classnames(cn('image'), this.imageClassname)
-			}
-		},
-		wrapperStyle() {
-			return {
-				width: `${this.previewWidth}px`,
-				height: `${this.previewHeight}px`,
-			}
-		},
-		imageStyle() {
-			const coefficient = this.previewHeight / this.height;
-			const height = this.imageSize.height * coefficient
-			const width = this.imageSize.width * coefficient
-			return {
-				width: `${width}px`,
-				height: `${height}px`,
-				left: `${-this.left*coefficient}px`,
-				top: `${-this.top*coefficient}px`
-			}
-		}
-	},
+
 };
 </script>
 
@@ -115,13 +116,13 @@ export default {
 <style lang="scss">
   .vue-preview-image{
     overflow: hidden;
-		position: relative;
+	position: relative;
     &__image {
-    	pointer-events: none;
-      position: absolute;
-			// Workaround to prevent bugs at the websites with max-width
-			// rule applited to img (Vuepress for example)
-			max-width: unset !important;
+		pointer-events: none;
+		position: absolute;
+		// Workaround to prevent bugs at the websites with max-width
+		// rule applied to img (Vuepress for example)
+		max-width: unset !important;
     }
   }
 </style>

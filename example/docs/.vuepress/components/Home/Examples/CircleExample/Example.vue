@@ -7,20 +7,20 @@
 </template>
 
 <script>
-import {Cropper} from 'vue-advanced-cropper';
+import { Cropper } from 'vue-advanced-cropper';
 import CircleStencil from './CircleStencil';
 
 export default {
 	name: 'CircleExample',
 	components: {
-	  Cropper
+	  Cropper,
 	},
 	data() {
 	  return {
-		  stencil: CircleStencil
-	  }
-	}
-}
+		  stencil: CircleStencil,
+	  };
+	},
+};
 </script>
 
 <style lang="scss">

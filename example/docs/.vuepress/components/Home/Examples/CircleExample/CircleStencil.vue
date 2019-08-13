@@ -11,11 +11,11 @@ export default {
 	components: {
 		PreviewResult,
 		DraggableArea,
-		DraggableElement
+		DraggableElement,
 	},
 	props: {
 		img: {
-			type: Object
+			type: Object,
 		},
 		resultCoordinates: {
 			type: Object,
@@ -26,14 +26,14 @@ export default {
 	},
 	computed: {
 		style() {
-			const { height, width, left, top } = this.stencilCoordinates;
+			const { height, width, left, top, } = this.stencilCoordinates;
 			return {
 				width: `${width}px`,
 				height: `${height}px`,
 				left: `${left}px`,
-				top: `${top}px`
+				top: `${top}px`,
 			};
-		}
+		},
 	},
 	methods: {
 		onMove(moveEvent) {
@@ -42,10 +42,10 @@ export default {
 		onHandlerMove(dragEvent) {
 			const shift = dragEvent.shift();
 
-			const widthResize = shift.left/2
-			const heightResize = -shift.top/2
-			const { height, width, left, top } = this.resultCoordinates;
-			const coefficient = width / this.stencilCoordinates.width
+			const widthResize = shift.left/2;
+			const heightResize = -shift.top/2;
+			const { height, width, left, top, } = this.resultCoordinates;
+			const coefficient = width / this.stencilCoordinates.width;
 
 			this.$emit('resize', new ResizeEvent(
 				dragEvent.nativeEvent,
@@ -60,10 +60,10 @@ export default {
 		aspectRatios() {
 			return {
 				minimum: 1,
-				maximum: 1
+				maximum: 1,
 			};
-		}
-	}
+		},
+	},
 };
 </script>
 
@@ -78,7 +78,7 @@ export default {
     >
       <img
         :src="require('./assets/handler.svg')"
-      	class="circle-stencil__icon"
+        class="circle-stencil__icon"
         alt=""
       >
     </DraggableElement>
@@ -88,8 +88,8 @@ export default {
         :img="img"
         :width="stencilCoordinates.width"
         :height="stencilCoordinates.height"
-		:resultCoordinates="resultCoordinates"
-		:stencilCoordinates="stencilCoordinates"
+        :result-coordinates="resultCoordinates"
+        :stencil-coordinates="stencilCoordinates"
       />
     </DraggableArea>
   </div>

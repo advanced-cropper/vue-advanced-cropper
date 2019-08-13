@@ -4,10 +4,10 @@ import bem from 'easy-bem';
 import Vue from 'vue';
 import debounce from 'debounce';
 import { RectangleStencil } from './components/stencils';
-import { ResizeEvent, MoveEvent } from './utils/events';
-import { isCrossOriginURL } from './utils/core';
-
-import * as core from './utils/core';
+import { ResizeEvent, MoveEvent } from './core/events';
+import { isCrossOriginURL } from './core/utils';
+import { getImageTransforms, getStyleTransforms, prepareSource, parseImage } from './core/image';
+import * as algorithms from './core/algorithms';
 
 const cn = bem('vue-advanced-cropper');
 
@@ -16,39 +16,39 @@ export default {
 	props: {
 		src: {
 			type: String,
-			default: null
+			default: null,
 		},
 		resizeAlgorithm: {
 			type: Function,
-			default: core.resize
+			default: algorithms.resize,
 		},
 		moveAlgorithm: {
 			type: Function,
-			default: core.move
+			default: algorithms.move,
 		},
 		defaultSize: {
 			type: Function,
-			default: core.defaultSize
+			default: algorithms.defaultSize,
 		},
 		defaultPosition: {
 			type: Function,
-			default: core.defaultPosition
+			default: algorithms.defaultPosition,
 		},
 		areaSize: {
 			type: Function,
-			default: core.areaSize
+			default: algorithms.areaSize,
 		},
 		restrictions: {
 			type: Function,
-			default: core.percentRestrictions
+			default: algorithms.percentRestrictions,
 		},
 		minWidth: {
 			type: [Number, String],
-			default: 10
+			default: 10,
 		},
 		minHeight: {
 			type: [Number, String],
-			default: 10
+			default: 10,
 		},
 		maxWidth: {
 			type: [Number, String],
@@ -60,77 +60,77 @@ export default {
 			type: [Object, String],
 			default() {
 				return RectangleStencil;
-			}
+			},
 		},
 		stencilProps: {
 			type: Object,
 			default() {
 				return {};
-			}
+			},
 		},
 		classname: {
-			type: String
+			type: String,
 		},
 		imageClassname: {
-			type: String
+			type: String,
 		},
 		areaClassname: {
-			type: String
+			type: String,
 		},
 		backgroundClassname: {
-			type: String
+			type: String,
 		},
 		debounce: {
 			type: Number,
-			default: 500
+			default: 500,
 		},
 		canvas: {
 			type: Boolean,
-			default: true
+			default: true,
 		},
 		checkCrossOrigin: {
 			type: Boolean,
-			default: true
+			default: true,
 		},
 		checkOrientation: {
 			type: Boolean,
-			default: true
-		}
+			default: true,
+		},
 	},
 	data() {
 		return {
 			boundarySize: {
 				width: null,
-				height: null
+				height: null,
 			},
 			imageAttributes: {
 				crossOrigin: false,
-				src: null
+				src: null,
 			},
 			imageTransforms: {
 				rotate: null,
 				scaleX: null,
-				scaleY: null
+				scaleY: null,
 			},
 			imageSize: {
 				width: null,
-				height: null
+				height: null,
 			},
 			coordinates: {
 				left: 0,
 				top: 0,
 				width: 0,
-				height: 0
+				height: 0,
 			},
 			frozenDirections: {
 				width: false,
 				height: false,
-			}
+			},
 		};
 	},
 	computed: {
 		imageLoaded() {
-			return this.imageSize.width > 0 && this.imageSize.height > 0
+			return this.imageSize.width > 0 && this.imageSize.height > 0;
 		},
 		coefficient() {
 			return this.imageSize.width
@@ -143,16 +143,16 @@ export default {
 				image: classnames(cn('image'), this.imageClassname),
 				area: classnames(cn('area'), this.areaClassname),
 				stretcher: classnames(cn('stretcher')),
-				background: classnames(cn('background'), this.backgroundClassname)
+				background: classnames(cn('background'), this.backgroundClassname),
 			};
 		},
 		stencilCoordinates() {
-			const { width, height, left, top } = this.coordinates;
+			const { width, height, left, top, } = this.coordinates;
 			return {
 				width: width / this.coefficient,
 				height: height / this.coefficient,
 				left: left / this.coefficient,
-				top: top / this.coefficient
+				top: top / this.coefficient,
 			};
 		},
 		wrapperStyle() {
@@ -160,7 +160,7 @@ export default {
 				width: `${this.stencilCoordinates.width}px`,
 				height: `${this.stencilCoordinates.height}px`,
 				left: `${this.stencilCoordinates.left}px`,
-				top: `${this.stencilCoordinates.top}px`
+				top: `${this.stencilCoordinates.top}px`,
 			};
 		},
 		areaStyle() {
@@ -171,28 +171,28 @@ export default {
 				height: this.boundarySize.height
 					? `${this.boundarySize.height}px`
 					: 'auto',
-				opacity: this.imageLoaded ? 1 : 0
+				opacity: this.imageLoaded ? 1 : 0,
 			};
 		},
 		imageStyle() {
 			const result = {
 				left: '50%',
 				top: '50%',
-				transform: 'translate(-50%, -50%)' + core.getStyleTransforms(this.imageTransforms)
+				transform: 'translate(-50%, -50%)' + getStyleTransforms(this.imageTransforms),
 			};
 
-			const flipped = this.imageTransforms.flipped
+			const flipped = this.imageTransforms.flipped;
 
 			if (flipped) {
-				result.width = this.areaStyle.height
-				result.height = this.areaStyle.width
+				result.width = this.areaStyle.height;
+				result.height = this.areaStyle.width;
 			} else {
-				result.width = this.areaStyle.width
-				result.height = this.areaStyle.height
+				result.width = this.areaStyle.width;
+				result.height = this.areaStyle.height;
 			}
 
 			if (!this.imageSize.width || !this.imageSize.height) {
-				result.opacity = 0
+				result.opacity = 0;
 			}
 
 			return result;
@@ -204,45 +204,64 @@ export default {
 				Number(this.maxWidth),
 				Number(this.maxHeight),
 				this.imageSize.width,
-				this.imageSize.height,
+				this.imageSize.height
 			);
 
 			if (this.minWidth > this.imageSize.width) {
-				console.warn(`Warning: minimum width (${restrictions.minWidth}px) greater that the image width (${this.imageSize.width}px). It is set equal to the image width and width resizing was blocked`)
-				restrictions.minWidth = this.imageSize.width
-				restrictions.widthFrozen = true
+				console.warn(`Warning: minimum width (${restrictions.minWidth}px) greater that the image width (${this.imageSize.width}px). It is set equal to the image width and width resizing was blocked`);
+				restrictions.minWidth = this.imageSize.width;
+				restrictions.widthFrozen = true;
 			}
 			if (this.minHeight > this.imageSize.height) {
-				console.warn(`Warning: minimum height (${restrictions.minHeight}px) greater that the image height (${this.imageSize.height}px). It is set equal to the image height and height resizing was blocked`)
-				restrictions.minHeight = this.imageSize.height
-				restrictions.heightFrozen = true
+				console.warn(`Warning: minimum height (${restrictions.minHeight}px) greater that the image height (${this.imageSize.height}px). It is set equal to the image height and height resizing was blocked`);
+				restrictions.minHeight = this.imageSize.height;
+				restrictions.heightFrozen = true;
 			}
 
 			if (restrictions.minWidth > restrictions.maxWidth) {
-				console.warn(`Warning: maximum width (${restrictions.maxWidth}px) fewer that the minimum width (${restrictions.minWidth}px). It is set equal to the minimum width and width resizing was blocked`)
-				restrictions.maxWidth = restrictions.minWidth
-				restrictions.widthFrozen = true
+				console.warn(`Warning: maximum width (${restrictions.maxWidth}px) fewer that the minimum width (${restrictions.minWidth}px). It is set equal to the minimum width and width resizing was blocked`);
+				restrictions.maxWidth = restrictions.minWidth;
+				restrictions.widthFrozen = true;
 			}
 
 			if (restrictions.minHeight > restrictions.maxHeight) {
-				console.warn(`Warning: maximum height (${restrictions.maxHeight}px) fewer that the minimum height (${restrictions.minHeight}px). It is set equal to the minimum height and height resizing was blocked`)
-				restrictions.maxHeight = restrictions.minHeight
-				restrictions.heightFrozen = true
+				console.warn(`Warning: maximum height (${restrictions.maxHeight}px) fewer that the minimum height (${restrictions.minHeight}px). It is set equal to the minimum height and height resizing was blocked`);
+				restrictions.maxHeight = restrictions.minHeight;
+				restrictions.heightFrozen = true;
 			}
 
 			if (!restrictions.maxWidth || restrictions.maxWidth > this.imageSize.width) {
-				restrictions.maxWidth = this.imageSize.width
+				restrictions.maxWidth = this.imageSize.width;
 			}
 			if (!restrictions.maxHeight || restrictions.maxHeight > this.imageSize.height) {
-				restrictions.maxHeight = this.imageSize.height
+				restrictions.maxHeight = this.imageSize.height;
 			}
 
-			return restrictions
-		}
+			return restrictions;
+		},
+	},
+	watch: {
+		src() {
+			Vue.nextTick(() => {
+				this.onChangeImage();
+			});
+		},
+		minWidth() {
+			this.resetCoordinates();
+		},
+		maxWidth() {
+			this.resetCoordinates();
+		},
+		minHeight() {
+			this.resetCoordinates();
+		},
+		maxHeight() {
+			this.resetCoordinates();
+		},
 	},
 	mounted() {
-		this.debouncedUpdateCoordinates = debounce(
-			this.updateCoordinates,
+		this.debouncedUpdate = debounce(
+			this.update,
 			this.debounce
 		);
 		if (this.src) {
@@ -255,55 +274,35 @@ export default {
 		window.removeEventListener('resize', this.refreshImage);
 		window.removeEventListener('orientationchange', this.refreshImage);
 	},
-	watch: {
-		src() {
-			Vue.nextTick(() => {
-				this.onChangeImage();
-			})
-		},
-		minWidth() {
-			this.resetCoordinates()
-		},
-		maxWidth() {
-			this.resetCoordinates()
-		},
-		minHeight() {
-			this.resetCoordinates()
-		},
-		maxHeight() {
-			this.resetCoordinates()
-		},
-	},
 	methods: {
 		// External methods
 		getResult() {
 			if (this.canvas) {
 				this.updateCanvas(this.coordinates);
 				return {
-					coordinates: { ...this.coordinates },
-					canvas: this.$refs.canvas
-				}
+					coordinates: { ...this.coordinates, },
+					canvas: this.$refs.canvas,
+				};
 			} else {
 				return {
-					coordinates: { ...this.coordinates },
-				}
+					coordinates: { ...this.coordinates, },
+				};
 			}
 		},
 		// Internal methods
 		getArea() {
-			return this.$refs.area
+			return this.$refs.area;
 		},
 		getStencil() {
-			return this.$refs.stencil
+			return this.$refs.stencil;
 		},
 		updateCanvas(coordinates) {
 			// This function can be asynchronously called because it's debounced
 			// Therefore there is workaround to prevent processing after the component was unmounted
-			if (!this.$refs.canvas) return
+			if (!this.$refs.canvas) return;
 
-			const image = this.$refs.image
-			const { scaleX, scaleY, rotate, flipped } = this.imageTransforms
-			const source = this.checkOrientation ? core.prepareSource(this.$refs.sourceCanvas, image, this.imageTransforms) : image
+			const image = this.$refs.image;
+			const source = this.checkOrientation ? prepareSource(this.$refs.sourceCanvas, image, this.imageTransforms) : image;
 
 			const canvas = this.$refs.canvas;
 			canvas.width = coordinates.width;
@@ -323,13 +322,13 @@ export default {
 				coordinates.height
 			);
 		},
-		updateCoordinates(coordinates) {
+		update() {
 			this.$emit('change', this.getResult());
 		},
 		onChangeCoordinates(newCoordinates) {
 			this.coordinates = newCoordinates;
 			if (this.$listeners && this.$listeners.change) {
-				this.debouncedUpdateCoordinates(newCoordinates);
+				this.debouncedUpdate();
 			}
 		},
 		onChangeImage() {
@@ -339,14 +338,14 @@ export default {
 				}
 			}
 			if (this.checkOrientation) {
-				core.parseImage(this.src).then(this.onParseImage)
+				parseImage(this.src).then(this.onParseImage);
 			} else {
-				this.onParseImage()
+				this.onParseImage();
 			}
 		},
 		onParseImage(orientation) {
-			this.imageAttributes.src = this.src
-			this.imageTransforms = core.getImageTransforms(orientation)
+			this.imageAttributes.src = this.src;
+			this.imageTransforms = getImageTransforms(orientation);
 			Vue.nextTick(() => {
 				const image = this.$refs.image;
 				if (image) {
@@ -362,16 +361,16 @@ export default {
 						});
 					}
 				}
-			})
+			});
 		},
 		onResize(resizeEvent) {
 			if (this.frozenDirections.width) {
-				resizeEvent.directions.left = 0
-				resizeEvent.directions.right = 0
+				resizeEvent.directions.left = 0;
+				resizeEvent.directions.right = 0;
 			}
 			if (this.frozenDirections.height) {
-				resizeEvent.directions.top = 0
-				resizeEvent.directions.bottom = 0
+				resizeEvent.directions.top = 0;
+				resizeEvent.directions.bottom = 0;
 			}
 			this.onChangeCoordinates(
 				this.resizeAlgorithm(
@@ -397,24 +396,24 @@ export default {
 		resetCoordinates() {
 			// This function can be asynchronously called after completion of refreshing image promise
 			// Therefore there is a workaround to prevent processing after the component was unmounted
-			if (!this.$refs.image) return
+			if (!this.$refs.image) return;
 
 			const cropper = this.$refs.cropper;
 			const image = this.$refs.image;
 			const imageSize = this.imageSize;
-			const { minWidth, minHeight, maxWidth, maxHeight, widthFrozen, heightFrozen } = this.stencilRestrictions;
+			const { minWidth, minHeight, maxWidth, maxHeight, widthFrozen, heightFrozen, } = this.stencilRestrictions;
 			const aspectRatio = this.stencilAspectRatios();
 			const coefficient = this.coefficient;
 
 			// Freeze height or width if there was problems while setting stencil restrictions
-			this.frozenDirections.width = Boolean(widthFrozen)
-			this.frozenDirections.height = Boolean(heightFrozen)
+			this.frozenDirections.width = Boolean(widthFrozen);
+			this.frozenDirections.height = Boolean(heightFrozen);
 
 			let coordinates = {};
 
 			if (!aspectRatio.minimum && !aspectRatio.maximum) {
-				coordinates.height = maxHeight
-				coordinates.width = maxWidth
+				coordinates.height = maxHeight;
+				coordinates.width = maxWidth;
 			}
 			else if (minWidth * aspectRatio.minimum < minHeight) {
 				coordinates.height = minHeight;
@@ -429,7 +428,7 @@ export default {
 			}
 
 			if (coordinates.height < minHeight || coordinates.height > maxHeight) {
-				throw 'Current aspect ratio can\'t is uncompatible with minimum/maximum height and width settings. Can\'t setup default coordinates';
+				throw 'Error: current aspect ratio can\'t is incompatible with minimum/maximum height and width settings. Can\'t setup default coordinates';
 			}
 
 			coordinates.left = imageSize.width / 2 - coordinates.width / 2;
@@ -438,7 +437,7 @@ export default {
 			const defaultSize = this.defaultSize(cropper, image, this.stencilRestrictions, this.$props);
 
 			if (defaultSize.width < minWidth || defaultSize.height < minHeight || defaultSize.width > maxWidth || defaultSize.height > maxHeight) {
-				console.warn('Warning: default size breaking size restrictions. Check your defaultSize function')
+				console.warn('Warning: default size breaking size restrictions. Check your defaultSize function');
 			}
 
 			coordinates = this.resizeAlgorithm(
@@ -451,7 +450,7 @@ export default {
 					left: (defaultSize.width - coordinates.width) / (2 * coefficient),
 					right: (defaultSize.width - coordinates.width) / (2 * coefficient),
 					top: (defaultSize.height - coordinates.height) / (2 * coefficient),
-					bottom: (defaultSize.height - coordinates.height) / (2 * coefficient)
+					bottom: (defaultSize.height - coordinates.height) / (2 * coefficient),
 				})
 			);
 
@@ -470,7 +469,7 @@ export default {
 				coefficient,
 				new MoveEvent(null, {
 					left: (defaultPosition.left - coordinates.left) / coefficient,
-					top: (defaultPosition.top - coordinates.top) / coefficient
+					top: (defaultPosition.top - coordinates.top) / coefficient,
 				})
 			);
 			this.onChangeCoordinates(coordinates);
@@ -478,7 +477,6 @@ export default {
 		refreshImage() {
 			const image = this.$refs.image;
 			const stretcher = this.$refs.stretcher;
-			const cropper = this.$refs.cropper;
 
 			if (this.imageTransforms.flipped) {
 				this.imageSize.height = image.naturalWidth;
@@ -488,20 +486,20 @@ export default {
 				this.imageSize.width = image.naturalWidth;
 			}
 
-			const aspectRatio = this.imageSize.width / this.imageSize.height
+			const aspectRatio = this.imageSize.width / this.imageSize.height;
 
 			if (this.imageSize.height > this.imageSize.width) {
-				stretcher.style.height = `${this.imageSize.height}px`
-				stretcher.style.width = `${stretcher.clientHeight * aspectRatio}px`
+				stretcher.style.height = `${this.imageSize.height}px`;
+				stretcher.style.width = `${stretcher.clientHeight * aspectRatio}px`;
 				if (stretcher.clientWidth / stretcher.clientHeight !== aspectRatio) {
-					stretcher.style.height = `${stretcher.clientWidth / aspectRatio}px`
+					stretcher.style.height = `${stretcher.clientWidth / aspectRatio}px`;
 				}
 
 			} else {
-				stretcher.style.width = `${this.imageSize.width}px`
-				stretcher.style.height = `${stretcher.clientWidth / aspectRatio }px`
+				stretcher.style.width = `${this.imageSize.width}px`;
+				stretcher.style.height = `${stretcher.clientWidth / aspectRatio }px`;
 				if (stretcher.clientHeight / stretcher.clientWidth !== aspectRatio) {
-					stretcher.style.width = `${stretcher.clientHeight * aspectRatio}px`
+					stretcher.style.width = `${stretcher.clientHeight * aspectRatio}px`;
 				}
 			}
 
@@ -510,7 +508,7 @@ export default {
 				const image = this.$refs.image;
 
 				Vue.nextTick(() => {
-					const { height, width } = this.areaSize(cropper, image, this.imageSize.width, this.imageSize.height);
+					const { height, width, } = this.areaSize(cropper, image, this.imageSize.width, this.imageSize.height);
 					if (height) {
 						this.boundarySize.height = height;
 					}
@@ -518,7 +516,7 @@ export default {
 						this.boundarySize.width = width;
 					}
 					resolve();
-				})
+				});
 			});
 		},
 		stencilAspectRatios() {
@@ -527,65 +525,65 @@ export default {
 			} else {
 				return {
 					minimum: this.stencilProps.aspectRatio || this.stencilProps.minAspectRatio,
-					maximum: this.stencilProps.aspectRatio || this.stencilProps.maxAspectRatio
+					maximum: this.stencilProps.aspectRatio || this.stencilProps.maxAspectRatio,
 				};
 			}
-		}
-	}
+		},
+	},
 };
 </script>
 
 <template>
   <div
-	ref="cropper"
-	:class="classes.cropper"
+    ref="cropper"
+    :class="classes.cropper"
   >
-	<div
-		:class="classes.background"
-		:style="areaStyle"
-	/>
-	<div
-		ref="stretcher"
-		:class="classes.stretcher"
-	/>
-	<div
-		:class="classes.area"
-		:style="areaStyle"
-		ref="area"
-	>
-		<img
-			ref="image"
-			:crossOrigin='imageAttributes.crossOrigin'
-			:src="imageAttributes.src"
-			:class="classes.image"
-			:style="imageStyle"
-		/>
-	  	<component
-			ref="stencil"
-			v-if="imageLoaded"
-			:is="stencilComponent"
-			:img="{
-				src: imageAttributes.src,
-				size: imageSize,
-				transforms: imageTransforms
-			}"
-			:result-coordinates="coordinates"
-			:stencil-coordinates="stencilCoordinates"
-			v-bind="stencilProps"
-			@resize="onResize"
-			@move="onMove"
-	  	/>
-		<canvas
-			ref="canvas"
-			v-if="canvas"
-			:style="{display:'none'}"
-		/>
-		<canvas
-			ref="sourceCanvas"
-			v-if="canvas"
-			:style="{display:'none'}"
-		/>
-	</div>
+    <div
+      :class="classes.background"
+      :style="areaStyle"
+    />
+    <div
+      ref="stretcher"
+      :class="classes.stretcher"
+    />
+    <div
+      ref="area"
+      :class="classes.area"
+      :style="areaStyle"
+    >
+      <img
+        ref="image"
+        :crossOrigin="imageAttributes.crossOrigin"
+        :src="imageAttributes.src"
+        :class="classes.image"
+        :style="imageStyle"
+      >
+      <component
+        :is="stencilComponent"
+        v-if="imageLoaded"
+        ref="stencil"
+        :img="{
+          src: imageAttributes.src,
+          size: imageSize,
+          transforms: imageTransforms
+        }"
+        :result-coordinates="coordinates"
+        :stencil-coordinates="stencilCoordinates"
+        v-bind="stencilProps"
+        @resize="onResize"
+        @move="onMove"
+      />
+      <canvas
+        v-if="canvas"
+        ref="canvas"
+        :style="{display:'none'}"
+      />
+      <canvas
+        v-if="canvas"
+        ref="sourceCanvas"
+        :style="{display:'none'}"
+      />
+    </div>
   </div>
 </template>
 

@@ -5,21 +5,21 @@ import { PreviewResult, BoundingBox, DraggableArea } from '../service';
 import { SimpleHandler } from '../handlers';
 import { SimpleLine } from '../lines';
 
-const cn = bem('vue-round-stencil');
+const cn = bem('vue-circle-stencil');
 
 export default {
-	name: 'RoundStencil',
+	name: 'CircleStencil',
 	components: {
 		PreviewResult,
 		BoundingBox,
-		DraggableArea
+		DraggableArea,
 	},
 	props: {
 		img: {
-			type: Object
+			type: Object,
 		},
 		stencilClass: {
-			type: String
+			type: String,
 		},
 		resultCoordinates: {
 			type: Object,
@@ -35,44 +35,62 @@ export default {
 					westNorth: true,
 					westSouth: true,
 					eastSouth: true,
-				}
-			}
+				};
+			},
 		},
 		handlerComponent: {
 			type: [Object, String],
 			default() {
 				return SimpleHandler;
-			}
+			},
 		},
 		handlersClassnames: {
 			type: Object,
 			default() {
 				return {};
-			}
+			},
 		},
 		lines: {
-			type: Object
+			type: Object,
 		},
 		lineComponent: {
 			type: [Object, String],
 			default() {
 				return SimpleLine;
-			}
+			},
 		},
 		linesClassnames: {
 			type: Object,
 			default() {
 				return {};
-			}
+			},
 		},
 		classname: {
-			type: String
+			type: String,
 		},
 		previewClassname: {
-			type: String
+			type: String,
 		},
 		boundingBoxClassname: {
-			type: String
+			type: String,
+		},
+	},
+	computed: {
+		classes() {
+			return {
+				stencil: classnames(cn(), this.classname),
+				preview: classnames(cn('preview'), this.previewClassname),
+				boundingBox: classnames(cn('bounding-box'), this.boundingBox),
+			};
+		},
+		style() {
+			const { height, width, left, top, } = this.stencilCoordinates;
+			return {
+				width: `${width}px`,
+				height: `${height}px`,
+				left: `${left}px`,
+				top: `${top}px`,
+			};
 		},
 	},
 	methods: {
@@ -85,49 +103,34 @@ export default {
 		aspectRatios() {
 			return {
 				minimum: 1,
-				maximum: 1
-			};
-		}
-	},
-	computed: {
-		classes() {
-			return {
-				stencil: classnames(cn(), this.classname),
-				preview: classnames(cn('preview'), this.previewClassname),
-				boundingBox: classnames(cn('bounding-box'), this.boundingBox),
+				maximum: 1,
 			};
 		},
-		style() {
-			const { height, width, left, top } = this.stencilCoordinates;
-			return {
-				width: `${width}px`,
-				height: `${height}px`,
-				left: `${left}px`,
-				top: `${top}px`
-			};
-		}
-	}
+	},
 };
 </script>
 
 <template>
-  <div :class="classes.stencil" :style="style">
+  <div
+    :class="classes.stencil"
+    :style="style"
+  >
     <BoundingBox
-      @resize="onResize"
       :classname="classes.boundingBox"
       :handlers="handlers"
-      :handlerComponent="handlerComponent"
-      :handlersClassnames="handlersClassnames"
+      :handler-component="handlerComponent"
+      :handlers-classnames="handlersClassnames"
       :lines="lines"
-      :lineComponent="lineComponent"
-      :linesClassnames="linesClassnames"
+      :line-component="lineComponent"
+      :lines-classnames="linesClassnames"
+      @resize="onResize"
     >
       <DraggableArea @move="onMove">
         <PreviewResult
           :img="img"
           :classname="classes.preview"
-		  :resultCoordinates="resultCoordinates"
-		  :stencilCoordinates="stencilCoordinates"
+          :result-coordinates="resultCoordinates"
+          :stencil-coordinates="stencilCoordinates"
         />
       </DraggableArea>
     </BoundingBox>
@@ -135,14 +138,14 @@ export default {
 </template>
 
 <style lang="scss">
-.vue-round-stencil {
+.vue-circle-stencil {
   position: absolute;
   height: 100%;
   width: 100%;
   box-sizing: content-box;
   cursor: move;
   &__preview {
-	  border-radius: 50%;
+	border-radius: 50%;
   }
 }
 </style>

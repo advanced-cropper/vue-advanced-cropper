@@ -1,31 +1,46 @@
 <template>
   <div class="home-page">
-		<div class="navigation">
-			<div class="navigation__frameworks">
-				<a class="navigation__link navigation__link--active" href="/">
-					Vue
-				</a>
-				<span class="navigation__link navigation__link--blocked" href="/">
-					React
-					<span class="tooltip">
-						I plan to port this library by the end of 2019
-					</span>
-				</span>
-			</div>
-			<div class="navigation__sections">
-				<a class="navigation__link navigation__link--active"  href="/#">
-					Home
-				</a>
-				<a class="navigation__link"  href="/vue-advanced-cropper/introduction/getting-started.html">
-					Docs
-				</a>
-				<a class="navigation__link"  href="http://github.com/Norserium/vue-advanced-cropper/" target="_blank">
-					Github
-				</a>
-			</div>
-		</div>
+    <div class="navigation">
+      <div class="navigation__frameworks">
+        <a
+          class="navigation__link navigation__link--active"
+          href="/"
+        >
+          Vue
+        </a>
+        <span
+          class="navigation__link navigation__link--blocked"
+          href="/"
+        >
+          React
+          <span class="tooltip">
+            I plan to port this library after the end of beta testing Vue library
+          </span>
+        </span>
+      </div>
+      <div class="navigation__sections">
+        <a
+          class="navigation__link navigation__link--active"
+          href="/#"
+        >
+          Home
+        </a>
+        <a
+          class="navigation__link"
+          href="/vue-advanced-cropper/introduction/getting-started.html"
+        >
+          Docs
+        </a>
+        <a
+          class="navigation__link"
+          href="http://github.com/Norserium/vue-advanced-cropper/"
+          target="_blank"
+        >
+          Github
+        </a>
+      </div>
+    </div>
     <div class="presentation">
-
       <div class="container container--centered">
         <img
           class="presentation__logo"
@@ -35,7 +50,7 @@
           <h1 class="presentation__title">
             Advanced Cropper
             <div class="presentation__version">
-              0.8
+              0.10
             </div>
           </h1>
         </div>
@@ -44,19 +59,25 @@
         </div>
 
         <div class="presentation__install">
-					{{
-						manager === 'npm' ? 'npm install -S vue-advanced-cropper' : 'yarn add vue-advanced-cropper'
-					}}
-					<div class="presentation__package-managers">
-						<span @click="manager = 'yarn'":class="`presentation__package-manager ${manager === 'yarn' ? 'presentation__package-manager--active' : ''}`">
-							yarn
-						</span>
-						/
-						<span @click="manager = 'npm'" :class="`presentation__package-manager ${manager === 'npm' ? 'presentation__package-manager--active' : ''}`">
-							npm
-						</span>
-					</div>
-				</div>
+          {{
+            manager === 'npm' ? 'npm install -S vue-advanced-cropper' : 'yarn add vue-advanced-cropper'
+          }}
+          <div class="presentation__package-managers">
+            <span
+              :class="`presentation__package-manager ${manager === 'yarn' ? 'presentation__package-manager--active' : ''}`"
+              @click="manager = 'yarn'"
+            >
+              yarn
+            </span>
+            /
+            <span
+              :class="`presentation__package-manager ${manager === 'npm' ? 'presentation__package-manager--active' : ''}`"
+              @click="manager = 'npm'"
+            >
+              npm
+            </span>
+          </div>
+        </div>
       </div>
       <div class="presentation__border">
         <img
@@ -170,7 +191,8 @@
             <p>
               <b>Cropper</b>
             </p>
-            <p>is the root component of this library. It contains coordinates of current cropped area (left, top, width, height) relative to original image coordinates. This coordinates can be imagined like <b>box</b>.
+            <p>
+              is the root component of this library. It contains coordinates of current cropped area (left, top, width, height) relative to original image coordinates. This coordinates can be imagined like <b>box</b>.
               It responsible for:
             </p>
             <ul>
@@ -254,8 +276,8 @@
         </div>
 
         <div>
-					<Content slot-key="custom-stencil"/>
-				</div>
+          <Content slot-key="custom-stencil" />
+        </div>
 
         <div class="row">
           <p>
@@ -277,22 +299,25 @@
         </div>
       </div>
     </div>
-			<div class="footer">
-				<div class="footer__center-block">
-				<img
-					class="footer__logo"
-					:src="require('../assets/footer/logo.svg')"
-				>
-				<div class="footer__contacts">
-					<div class="footer__name">
-						Norserium
-					</div>
-					<a href="mailto:norserium@gmail.com" class="footer__email">
-						norserium@gmail.com
-					</a>
-				</div>
-				</div>
-			</div>
+    <div class="footer">
+      <div class="footer__center-block">
+        <img
+          class="footer__logo"
+          :src="require('../assets/footer/logo.svg')"
+        >
+        <div class="footer__contacts">
+          <div class="footer__name">
+            Norserium
+          </div>
+          <a
+            href="mailto:norserium@gmail.com"
+            class="footer__email"
+          >
+            norserium@gmail.com
+          </a>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -806,10 +831,10 @@ import Footer from './Home/Footer';
 import HomeButton from './Home/HomeButton';
 import CircleExample from './Home/Examples/CircleExample/Example.vue';
 import CommonExample from './Home/Examples/CommonExample/Example.vue';
-import {Cropper} from 'vue-advanced-cropper';
+import { Cropper } from 'vue-advanced-cropper';
 
 export default {
-	name: 'home',
+	name: 'Home',
 	components: {
 		HomeButton,
 		ExampleWrapper,
@@ -819,9 +844,9 @@ export default {
 	},
 	data() {
 		return {
-			manager: 'npm'
-		}
-	}
+			manager: 'npm',
+		};
+	},
 };
 </script>
 

@@ -1,29 +1,26 @@
 <script>
-import classnames from 'classnames';
 import bem from 'easy-bem';
-import { directionNames } from '../../utils/core.js';
+import classnames from 'classnames';
+import { directionNames } from '../../core/utils';
 import DraggableElement from './DraggableElement.vue';
 
 const cn = bem('vue-handler-wrapper');
 
-const HORIZONTAL_DIRECTIONS = ['east', 'west', null];
-const VERTICAL_DIRECTIONS = ['south', 'north', null];
-
 export default {
 	name: 'HandlerWrapper',
 	components: {
-		DraggableElement
+		DraggableElement,
 	},
 	props: {
 		horizontalPosition: {
-			type: String
+			type: String,
 		},
 		verticalPosition: {
-			type: String
+			type: String,
 		},
 		classname: {
-			type: String
-		}
+			type: String,
+		},
 	},
 	computed: {
 		classnames() {
@@ -33,16 +30,16 @@ export default {
 					this.horizontalPosition,
 					this.verticalPosition
 				);
-				defaultClassname = classnames(this.classname, cn({ [position.classname]: true }));
+				defaultClassname = classnames(this.classname, cn({ [position.classname]: true, }));
 			} else {
 				defaultClassname = classnames(this.classname, cn());
 			}
 			return {
 				default: defaultClassname,
-				draggable: cn('draggable')
-			}
-		}
-	}
+				draggable: cn('draggable'),
+			};
+		},
+	},
 };
 </script>
 

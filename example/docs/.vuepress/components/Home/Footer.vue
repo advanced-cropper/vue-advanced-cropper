@@ -1,20 +1,23 @@
 <template>
-	<div class="footer">
-		<div class="footer__center-block">
-		<img
-			class="footer__logo"
-			:src="require('../../assets/footer/logo.svg')"
-		>
-		<div class="footer__contacts">
-			<div class="footer__name">
-				Norserium
-			</div>
-			<a href="mailto:norserium@gmail.com" class="footer__email">
-				norserium@gmail.com
-			</a>
-		</div>
-		</div>
-	</div>
+  <div class="footer">
+    <div class="footer__center-block">
+      <img
+        class="footer__logo"
+        :src="require('../../assets/footer/logo.svg')"
+      >
+      <div class="footer__contacts">
+        <div class="footer__name">
+          Norserium
+        </div>
+        <a
+          href="mailto:norserium@gmail.com"
+          class="footer__email"
+        >
+          norserium@gmail.com
+        </a>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style lang="scss">
