@@ -11,6 +11,9 @@ export function directionNames (hDirection, vDirection) {
 }
 
 export function isCrossOriginURL(url) {
+	if (/^data:/.test(url) || /^blob:/.test(url)) {
+		return false;
+	}
 	const pageLocation = window.location;
 	const URL_HOST_PATTERN = /(\w+:)?(?:\/\/)([\w.-]+)?(?::(\d+))?\/?/;
 	const urlMatch = URL_HOST_PATTERN.exec(url) || [];
@@ -33,4 +36,9 @@ export function isCrossOriginURL(url) {
 									(urlparts.host      && (urlparts.host       == pageLocation.host))     &&
 									(urlparts.host      && (portOf(urlparts)    == portOf(pageLocation)))
 		));
+}
+
+export function addTimestamp(url) {
+	const timestamp = `timestamp=${(new Date()).getTime()}`;
+	return url + (url.indexOf('?') === -1 ? '?' : '&') + timestamp;
 }

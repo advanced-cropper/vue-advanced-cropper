@@ -7,7 +7,7 @@ export default {
 	},
 	data() {
 		return {
-			img: 'https://images.pexels.com/photos/245388/pexels-photo-245388.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+			img: 'https://images.unsplash.com/photo-1542571255-84471dc5581c?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=295&q=80',
 		};
 	},
 };

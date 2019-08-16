@@ -5,7 +5,7 @@ import Vue from 'vue';
 import debounce from 'debounce';
 import { RectangleStencil } from './components/stencils';
 import { ResizeEvent, MoveEvent } from './core/events';
-import { isCrossOriginURL } from './core/utils';
+import { isCrossOriginURL, addTimestamp } from './core/utils';
 import { getImageTransforms, getStyleTransforms, prepareSource, parseImage } from './core/image';
 import * as algorithms from './core/algorithms';
 
@@ -332,13 +332,12 @@ export default {
 			}
 		},
 		onChangeImage() {
-			if (this.canvas && this.checkCrossOrigin) {
-				if (!/^data:/.test(this.src) && !/^blob:/.test(this.src) && isCrossOriginURL(this.src)) {
-					this.imageAttributes.crossOrigin = 'anonymous';
-				}
+			const crossOrigin = isCrossOriginURL(this.src);
+			if (crossOrigin && this.canvas && this.checkCrossOrigin) {
+				this.imageAttributes.crossOrigin = 'anonymous';
 			}
 			if (this.checkOrientation) {
-				parseImage(this.src).then(this.onParseImage);
+				parseImage(crossOrigin ? addTimestamp(this.src) : this.src).then(this.onParseImage);
 			} else {
 				this.onParseImage();
 			}
