@@ -325,10 +325,14 @@ export default {
 		update() {
 			this.$emit('change', this.getResult());
 		},
-		onChangeCoordinates(newCoordinates) {
+		onChangeCoordinates(newCoordinates, debounce = true) {
 			this.coordinates = newCoordinates;
 			if (this.$listeners && this.$listeners.change) {
-				this.debouncedUpdate();
+				if (debounce) {
+					this.debouncedUpdate();
+				} else {
+					this.update();
+				}
 			}
 		},
 		onChangeImage() {
@@ -392,6 +396,106 @@ export default {
 				)
 			);
 		},
+		defaultCoordinates() {
+			const aspectRatio = this.stencilAspectRatios();
+			const { minWidth, minHeight, maxWidth, maxHeight } = this.stencilRestrictions;
+			const imageSize = this.imageSize;
+
+			let coordinates = {};
+			if (!aspectRatio.minimum && !aspectRatio.maximum) {
+				coordinates.height = minHeight;
+				coordinates.width = minWidth;
+			}
+			else {
+				let ranges = {
+					width: {
+						maximum: aspectRatio.minimum ? Math.min(maxHeight, minWidth / aspectRatio.minimum) : maxHeight,
+						minimum: aspectRatio.maximum ? Math.max(minHeight, minWidth / aspectRatio.maximum) : minHeight,
+					},
+					height: {
+						maximum: aspectRatio.maximum ? Math.min(maxWidth, minHeight * aspectRatio.maximum) : maxWidth,
+						minimum: aspectRatio.mininum ? Math.max(minWidth, minHeight * aspectRatio.mininum) : minWidth,
+					}
+				};
+				if (ranges.width.maximum >= ranges.width.minimum) {
+					coordinates.width = minWidth;
+					coordinates.height = ranges.width.minimum;
+				} else if (ranges.height.maximum >= ranges.height.minimum) {
+					coordinates.height = minHeight;
+					coordinates.width = ranges.height.minimum;
+				} else {
+					throw 'Error: current aspect ratio can\'t is incompatible with minimum/maximum height and width settings. Can\'t setup default coordinates';
+				}
+			}
+
+			coordinates.left = imageSize.width / 2 - coordinates.width / 2;
+			coordinates.top = imageSize.height / 2 - coordinates.height / 2;
+
+			return coordinates;
+		},
+		setCoordinates(transforms) {
+			const imageSize = this.imageSize;
+			const coefficient = this.coefficient;
+			const aspectRatio = this.stencilAspectRatios();
+
+			const moveAlgorithm = (prevCoordinates, newCoordinates) => {
+				return this.moveAlgorithm(
+					prevCoordinates,
+					imageSize,
+					coefficient,
+					new MoveEvent(null, {
+						left: (newCoordinates.left - prevCoordinates.left) / coefficient,
+						top: (newCoordinates.top - prevCoordinates.top) / coefficient,
+					})
+				);
+			};
+
+			const resizeAlgorithm = (prevCoordinates, newCoordinates) => {
+				let coordinates = this.defaultCoordinates();
+				coordinates = this.resizeAlgorithm(
+					coordinates,
+					this.stencilRestrictions,
+					imageSize,
+					coefficient,
+					aspectRatio,
+					new ResizeEvent(
+						null,
+						{
+							left: (newCoordinates.width - coordinates.width) / (2 * coefficient),
+							right: (newCoordinates.width - coordinates.width) / (2 * coefficient),
+							top: (newCoordinates.height - coordinates.height) / (2 * coefficient),
+							bottom: (newCoordinates.height - coordinates.height) / (2 * coefficient),
+						}
+					)
+				);
+				return moveAlgorithm(coordinates, { left: prevCoordinates.left, top: prevCoordinates.top });
+			};
+
+			let coordinates = this.coordinates;
+
+			if (!transforms.forEach) {
+				transforms = [transforms];
+			}
+
+			transforms.forEach(transform => {
+				let changes = {};
+				if (typeof transform === 'function') {
+					changes = transform({ ...coordinates }, this.imageSize);
+				} else {
+					changes = transform;
+				}
+				if (changes.width || changes.height) {
+					coordinates = resizeAlgorithm(coordinates, { ...coordinates, ...changes });
+				}
+				if (changes.left || changes.top) {
+					coordinates = moveAlgorithm(coordinates, { ...coordinates, ...changes });
+				}
+			});
+
+			this.onChangeCoordinates(coordinates, false);
+
+			return coordinates;
+		},
 		resetCoordinates() {
 			// This function can be asynchronously called after completion of refreshing image promise
 			// Therefore there is a workaround to prevent processing after the component was unmounted
@@ -399,79 +503,31 @@ export default {
 
 			const cropper = this.$refs.cropper;
 			const image = this.$refs.image;
-			const imageSize = this.imageSize;
 			const { minWidth, minHeight, maxWidth, maxHeight, widthFrozen, heightFrozen, } = this.stencilRestrictions;
-			const aspectRatio = this.stencilAspectRatios();
-			const coefficient = this.coefficient;
 
 			// Freeze height or width if there was problems while setting stencil restrictions
 			this.frozenDirections.width = Boolean(widthFrozen);
 			this.frozenDirections.height = Boolean(heightFrozen);
 
-			let coordinates = {};
-
-			if (!aspectRatio.minimum && !aspectRatio.maximum) {
-				coordinates.height = maxHeight;
-				coordinates.width = maxWidth;
-			}
-			else if (minWidth * aspectRatio.minimum < minHeight) {
-				coordinates.height = minHeight;
-				coordinates.width = aspectRatio.maximum
-					? minHeight * aspectRatio.maximum
-					: minWidth;
-			} else {
-				coordinates.width = minWidth;
-				coordinates.height = aspectRatio.minimum
-					? minWidth * aspectRatio.minimum
-					: minHeight;
-			}
-
-			if (coordinates.height < minHeight || coordinates.height > maxHeight) {
-				throw 'Error: current aspect ratio can\'t is incompatible with minimum/maximum height and width settings. Can\'t setup default coordinates';
-			}
-
-			coordinates.left = imageSize.width / 2 - coordinates.width / 2;
-			coordinates.top = imageSize.height / 2 - coordinates.height / 2;
-
 			const defaultSize = this.defaultSize(cropper, image, this.stencilRestrictions, this.$props);
-
 			if (defaultSize.width < minWidth || defaultSize.height < minHeight || defaultSize.width > maxWidth || defaultSize.height > maxHeight) {
 				console.warn('Warning: default size breaking size restrictions. Check your defaultSize function');
 			}
 
-			coordinates = this.resizeAlgorithm(
-				coordinates,
-				this.stencilRestrictions,
-				imageSize,
-				coefficient,
-				aspectRatio,
-				new ResizeEvent(null, {
-					left: (defaultSize.width - coordinates.width) / (2 * coefficient),
-					right: (defaultSize.width - coordinates.width) / (2 * coefficient),
-					top: (defaultSize.height - coordinates.height) / (2 * coefficient),
-					bottom: (defaultSize.height - coordinates.height) / (2 * coefficient),
+			this.setCoordinates([
+				defaultSize,
+				(coordinates) => ({
+					...this.defaultPosition(
+						cropper,
+						image,
+						coordinates.width,
+						coordinates.height,
+						this.imageSize.width,
+						this.imageSize.height,
+						this.$props
+					)
 				})
-			);
-
-			const defaultPosition = this.defaultPosition(
-				cropper,
-				image,
-				coordinates.width,
-				coordinates.height,
-				this.imageSize.width,
-				this.imageSize.height,
-				this.$props
-			);
-			coordinates = this.moveAlgorithm(
-				coordinates,
-				imageSize,
-				coefficient,
-				new MoveEvent(null, {
-					left: (defaultPosition.left - coordinates.left) / coefficient,
-					top: (defaultPosition.top - coordinates.top) / coefficient,
-				})
-			);
-			this.onChangeCoordinates(coordinates);
+			]);
 		},
 		refreshImage() {
 			const image = this.$refs.image;

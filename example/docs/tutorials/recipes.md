@@ -308,6 +308,114 @@ new Vue({
 </div>
 ```
 
+## Set coordinates
+
+Usually an user changes the coordinates of a stencil, but sometimes you need to set its coordinates programmatically. There is the special method to do it: [setCoordinates](/components/cropper.html#setcoordinates-transform). It applies your changes respect to existing limitation (aspect ratios, minimum size and etc.)
+
+<set-coordinates-example></set-coordinates-example>
+
+The minimal working example:
+
+```html
+<script>
+import { Cropper } from 'vue-advanced-cropper';
+
+export default {
+	components: {
+		Cropper,
+	},
+	methods: {
+		resize(width, height, left, top) {
+			this.$refs.cropper.setCoordinates({
+				width: width,
+				height: height,
+				left: left,
+				top: top
+			})
+		},
+	},
+};
+</script>
+```
+
+```html
+<div id="app">
+	<Cropper
+		ref="cropper"
+		:src="image"
+	/>
+</div>
+```
+
+### Arguments
+
+The only argument `transform` can be: `Object`, `Function` or `Array` that contains objects or function in the case if you need consequence transforms.
+
+#### `Object`
+
+If you just want to set the known coordinates you can pass object to `setCoordinates` method
+
+```js
+cropper.setCoordinates({
+	width: 32,
+	height: 42,
+	left: 102,
+	top: 74
+})
+```
+
+#### `Function`
+
+But mostly you need to set coordinates based at current coordinates or image size.
+
+1. Center stencil:
+```js
+cropper.setCoordinates((coordinates, imageSize) => ({
+	left: imageSize.width/2 - coordinates.width/2,
+	top: imageSize.height/2 - coordinates.height/2
+}))
+
+```
+2. Maximize stencil:
+```js
+cropper.setCoordinates((coordinates, imageSize) => ({
+	width: imageSize.width,
+	height: imageSize.height
+}))
+```
+
+#### `Array`
+
+Finally, there might be situations where you need to make consequence transforms. For example, resize stencil and then center it.
+
+That can appear to be superfluous, because you can set coordinates and size simultaneosly:
+```js
+cropper.setCoordinates((coordinates, imageSize) => ({
+	width: newWidth,
+	height: newHeight,
+	left: imageSize.width/2 - newWidth.width/2,
+	top: imageSize.height/2 - newHeight.height/2
+}))
+```
+
+But there is a catch, `setCoordinates` method respects limitations, so the new width might be different than `newWidth` in this example.
+
+So the right way is do multiple consequence transforms:
+```js
+cropper.setCoordinates([
+	(coordinates, imageSize) => ({
+		width: newWidth,
+		height: newHeight,
+	}),
+	// There will be coordinates after first transformation
+	(coordinates, imageSize) => ({
+		left: imageSize.width/2 - coordinates.width/2,
+		top: imageSize.height/2 - coordinates.height/2
+	}),
+])
+```
+
+
 ## Default size and position
 
 Sometime you should set the default position and default size of cropper. For example, if you automatically detect an user face.

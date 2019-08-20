@@ -8,6 +8,23 @@
 
 Cropper will emit `change` event on mounting, resizing the stencil, moving the stencil and changing the image.
 
+## Methods
+
+### `getResult()`
+Returns: current coordinates and canvas
+
+The static method that allow you to get the result of cropper programatically, instead of listen `change` event.
+
+It described [here](/tutorials/recipes.html#second-method).
+
+
+### `setCoordinates(transform)`
+Returns: new coordinates
+
+The static method that allow you to set the coordinates programatically. The transform argument can be: `Object`, `Function` or `Array` that contains objects or function in the case if you need consequence transforms.
+
+It described [here](/tutorials/recipes.html#second-method).
+
 ## Props
 
 ### `src`
