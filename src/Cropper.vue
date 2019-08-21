@@ -96,6 +96,10 @@ export default {
 			type: Boolean,
 			default: true,
 		},
+		transitionTime: {
+			type: Number,
+			default: 300
+		}
 	},
 	data() {
 		return {
@@ -103,6 +107,7 @@ export default {
 				width: null,
 				height: null,
 			},
+			imageLoaded: false,
 			imageAttributes: {
 				crossOrigin: false,
 				src: null,
@@ -129,9 +134,6 @@ export default {
 		};
 	},
 	computed: {
-		imageLoaded() {
-			return this.imageSize.width > 0 && this.imageSize.height > 0;
-		},
 		coefficient() {
 			return this.imageSize.width
 				? this.imageSize.width / this.boundarySize.width
@@ -172,6 +174,7 @@ export default {
 					? `${this.boundarySize.height}px`
 					: 'auto',
 				opacity: this.imageLoaded ? 1 : 0,
+				transition: `opacity ${this.transitionTime}ms`
 			};
 		},
 		imageStyle() {
@@ -184,15 +187,11 @@ export default {
 			const flipped = this.imageTransforms.flipped;
 
 			if (flipped) {
-				result.width = this.areaStyle.height;
-				result.height = this.areaStyle.width;
+				result.width = `${this.boundarySize.height}px`;
+				result.height = `${this.boundarySize.width}px`;
 			} else {
-				result.width = this.areaStyle.width;
-				result.height = this.areaStyle.height;
-			}
-
-			if (!this.imageSize.width || !this.imageSize.height) {
-				result.opacity = 0;
+				result.width = `${this.boundarySize.width}px`;
+				result.height = `${this.boundarySize.height}px`;
 			}
 
 			return result;
@@ -340,11 +339,14 @@ export default {
 			if (crossOrigin && this.canvas && this.checkCrossOrigin) {
 				this.imageAttributes.crossOrigin = 'anonymous';
 			}
-			if (this.checkOrientation) {
-				parseImage(crossOrigin ? addTimestamp(this.src) : this.src).then(this.onParseImage);
-			} else {
-				this.onParseImage();
-			}
+			this.imageLoaded = false;
+			setTimeout(() => {
+				if (this.checkOrientation) {
+					parseImage(crossOrigin ? addTimestamp(this.src) : this.src).then(this.onParseImage);
+				} else {
+					this.onParseImage();
+				}
+			}, this.transitionTime);
 		},
 		onParseImage(orientation) {
 			this.imageAttributes.src = this.src;
@@ -528,6 +530,7 @@ export default {
 					)
 				})
 			]);
+			this.imageLoaded = true;
 		},
 		refreshImage() {
 			const image = this.$refs.image;
@@ -615,7 +618,6 @@ export default {
       >
       <component
         :is="stencilComponent"
-        v-if="imageLoaded"
         ref="stencil"
         :img="{
           src: imageAttributes.src,
@@ -671,13 +673,11 @@ export default {
 	position: absolute;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	transition: opacity 0.5s;
 	top: 50%;
   }
   &__background {
 	position: absolute;
 	background: black;
-	transition: opacity 0.5s;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);

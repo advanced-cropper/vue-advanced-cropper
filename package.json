@@ -1,6 +1,6 @@
 {
 	"name": "vue-advanced-cropper",
-	"version": "0.12.0",
+	"version": "0.12.1",
 	"description": "The advanced library to create your own croppers suited for any website design",
 	"author": "Norserium",
 	"license": "MIT",
@@ -29,8 +29,8 @@
 		"predeploy": "cd example && npm install && npm run build",
 		"deploy": "gh-pages -d example/docs/.vuepress/dist",
 		"test": "cross-env NODE_ENV=test jest",
-		"lint": "eslint src/**/*.{js,vue} example/docs/.vuepress/**/*.{js,vue}",
-		"lint:fix": "eslint --fix src/**/*.{js,vue} example/docs/.vuepress/**/*.{js,vue} "
+		"lint": "eslint src/**/*.{js,vue}",
+		"lint:fix": "eslint --fix src/**/*.{js,vue}"
 	},
 	"peerDependencies": {
 		"vue": "^2.6.6"
@@ -88,13 +88,13 @@
 		"dist"
 	],
 	"lint-staged": {
-		"*.{js, jsx}": [
+		"*.{js,vue}": [
 			"eslint"
 		]
 	},
 	"husky": {
 		"hooks": {
-			"pre-commit": "lint-staged \"src/**/*.{js,vue} example/.vuepress/**/*.{js,vue}\""
+			"pre-commit": "lint-staged"
 		}
 	}
 }
