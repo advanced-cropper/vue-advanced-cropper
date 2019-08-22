@@ -10,8 +10,12 @@ export function directionNames (hDirection, vDirection) {
 	return { name, classname, };
 }
 
+export function isLocal(url) {
+	return /^data:/.test(url) || /^blob:/.test(url);
+}
+
 export function isCrossOriginURL(url) {
-	if (/^data:/.test(url) || /^blob:/.test(url)) {
+	if (isLocal(url)) {
 		return false;
 	}
 	const pageLocation = window.location;

@@ -5,8 +5,8 @@ import Vue from 'vue';
 import debounce from 'debounce';
 import { RectangleStencil } from './components/stencils';
 import { ResizeEvent, MoveEvent } from './core/events';
-import { isCrossOriginURL, addTimestamp } from './core/utils';
-import { getImageTransforms, getStyleTransforms, prepareSource, parseImage } from './core/image';
+import { isLocal, isCrossOriginURL, addTimestamp } from './core/utils';
+import { arrayBufferToDataURL, getImageTransforms, getStyleTransforms, prepareSource, parseImage } from './core/image';
 import * as algorithms from './core/algorithms';
 
 const cn = bem('vue-advanced-cropper');
@@ -335,21 +335,26 @@ export default {
 			}
 		},
 		onChangeImage() {
+			this.imageLoaded = false;
+
 			const crossOrigin = isCrossOriginURL(this.src);
 			if (crossOrigin && this.canvas && this.checkCrossOrigin) {
 				this.imageAttributes.crossOrigin = 'anonymous';
 			}
-			this.imageLoaded = false;
 			setTimeout(() => {
 				if (this.checkOrientation) {
 					parseImage(crossOrigin ? addTimestamp(this.src) : this.src).then(this.onParseImage);
 				} else {
-					this.onParseImage();
+					this.onParseImage({});
 				}
 			}, this.transitionTime);
 		},
-		onParseImage(orientation) {
-			this.imageAttributes.src = this.src;
+		onParseImage({ arrayBuffer, orientation }) {
+			if (arrayBuffer && orientation && isLocal(this.src)) {
+				this.imageAttributes.src = arrayBufferToDataURL(arrayBuffer);
+			} else {
+				this.imageAttributes.src = this.src;
+			}
 			this.imageTransforms = getImageTransforms(orientation);
 			Vue.nextTick(() => {
 				const image = this.$refs.image;

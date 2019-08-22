@@ -103,7 +103,10 @@ export function parseImage(img) {
 	return new Promise((resolve) => {
 		getImageData(img)
 			.then(data => {
-				resolve(data ? getOrientation(data) : { arrayBuffer: null, orientation: null, });
+				resolve(data ?
+					{ arrayBuffer: data, orientation: getOrientation(data) } :
+					{ arrayBuffer: null, orientation: null }
+				);
 			})
 			.catch((error) => {
 				console.warn(error);
@@ -194,59 +197,81 @@ function getStringFromCharCode(dataView, start, length) {
 }
 
 function getOrientation(arrayBuffer) {
-	const dataView = new DataView(arrayBuffer);
-	let length = dataView.byteLength;
-	let orientation;
-	let exifIDCode;
-	let tiffOffset;
-	let firstIFDOffset;
-	let littleEndian;
-	let endianness;
-	let app1Start;
-	let ifdStart;
-	let offset;
-	// Only handle JPEG image (start by 0xFFD8)
-	if (dataView.getUint8(0) === 0xFF && dataView.getUint8(1) === 0xD8) {
-		offset = 2;
-		while (offset < length) {
-			if (dataView.getUint8(offset) === 0xFF && dataView.getUint8(offset + 1) === 0xE1) {
-				app1Start = offset;
-				break;
+	try {
+		const dataView = new DataView(arrayBuffer);
+		let orientation;
+		let exifIDCode;
+		let tiffOffset;
+		let littleEndian;
+		let app1Start;
+		let ifdStart;
+		// Only handle JPEG image (start by 0xFFD8)
+		if (dataView.getUint8(0) === 0xFF && dataView.getUint8(1) === 0xD8) {
+			const length = dataView.byteLength;
+			let offset = 2;
+			while (offset + 1 < length) {
+				if (dataView.getUint8(offset) === 0xFF && dataView.getUint8(offset + 1) === 0xE1) {
+					app1Start = offset;
+					break;
+				}
+				offset++;
 			}
-			offset++;
 		}
-	}
-	if (app1Start) {
-		exifIDCode = app1Start + 4;
-		tiffOffset = app1Start + 10;
-		if (getStringFromCharCode(dataView, exifIDCode, 4) === 'Exif') {
-			endianness = dataView.getUint16(tiffOffset);
-			littleEndian = endianness === 0x4949;
+		if (app1Start) {
+			exifIDCode = app1Start + 4;
+			tiffOffset = app1Start + 10;
+			if (getStringFromCharCode(dataView, exifIDCode, 4) === 'Exif') {
+				const endianness = dataView.getUint16(tiffOffset);
 
-			if (littleEndian || endianness === 0x4D4D /* bigEndian */) {
-				if (dataView.getUint16(tiffOffset + 2, littleEndian) === 0x002A) {
-					firstIFDOffset = dataView.getUint32(tiffOffset + 4, littleEndian);
+				littleEndian = endianness === 0x4949;
 
-					if (firstIFDOffset >= 0x00000008) {
-						ifdStart = tiffOffset + firstIFDOffset;
+				if (littleEndian || endianness === 0x4D4D /* bigEndian */) {
+					if (dataView.getUint16(tiffOffset + 2, littleEndian) === 0x002A) {
+						const firstIFDOffset = dataView.getUint32(tiffOffset + 4, littleEndian);
+						if (firstIFDOffset >= 0x00000008) {
+							ifdStart = tiffOffset + firstIFDOffset;
+						}
 					}
 				}
 			}
 		}
-	}
-	if (ifdStart) {
-		length = dataView.getUint16(ifdStart, littleEndian);
+		if (ifdStart) {
+			const length = dataView.getUint16(ifdStart, littleEndian);
 
-		for (let i = 0; i < length; i++) {
-			offset = ifdStart + i * 12 + 2;
-			if (dataView.getUint16(offset, littleEndian) === 0x0112 /* Orientation */) {
-				// 8 is the offset of the current tag's value
-				offset += 8;
-				// Get the original orientation value
-				orientation = dataView.getUint16(offset, littleEndian);
-				break;
+			for (let i = 0; i < length; i++) {
+				let offset = ifdStart + (i * 12) + 2;
+				if (dataView.getUint16(offset, littleEndian) === 0x0112 /* Orientation */) {
+					// 8 is the offset of the current tag's value
+					offset += 8;
+					// Get the original orientation value
+					orientation = dataView.getUint16(offset, littleEndian);
+					// Override the orientation with its default value
+					dataView.setUint16(offset, 1, littleEndian);
+					break;
+				}
 			}
 		}
+		return orientation;
+	} catch (error) {
+		return null;
 	}
-	return orientation;
+}
+
+export function arrayBufferToDataURL(arrayBuffer) {
+	const chunks = [];
+
+	// Chunk Typed Array for better performance (#435)
+	const chunkSize = 8192;
+	let uint8 = new Uint8Array(arrayBuffer);
+
+	while (uint8.length > 0) {
+		const value = uint8.subarray(0, chunkSize);
+		chunks.push(String.fromCharCode.apply(
+			null,
+			Array.from ? Array.from(value) : Array.slice(value)
+		));
+		uint8 = uint8.subarray(chunkSize);
+	}
+
+	return `data:image/jpeg;base64,${btoa(chunks.join(''))}`;
 }
