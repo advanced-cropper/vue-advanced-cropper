@@ -234,12 +234,11 @@ export function resize (coordinates, restrictions, imageSize, coefficient, aspec
 
 	// 3. Third step: check if desired box with correct aspect ratios break some limits and fit to this conditions
 	directions = fitConditions(directions, actualCoordinates, restrictions, coefficient, imageSize, ratioBroken);
-
 	return {
-		width: coordinates.width + coefficient * (directions.right + directions.left),
-		height: coordinates.height + coefficient * (directions.top + directions.bottom),
-		left: coordinates.left - coefficient * directions.left,
-		top: coordinates.top - coefficient * directions.top,
+		width: coordinates.width + coefficient * (Math.round(directions.right) + Math.round(directions.left)),
+		height: coordinates.height + coefficient * (Math.round(directions.top) + Math.round(directions.bottom)),
+		left: coordinates.left - coefficient * Math.round(directions.left),
+		top: coordinates.top - coefficient * Math.round(directions.top),
 	};
 }
 
