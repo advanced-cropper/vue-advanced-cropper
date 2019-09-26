@@ -86,8 +86,6 @@ export default {
       <PreviewResult
         classname="circle-stencil__preview"
         :img="img"
-        :width="stencilCoordinates.width"
-        :height="stencilCoordinates.height"
         :result-coordinates="resultCoordinates"
         :stencil-coordinates="stencilCoordinates"
       />
