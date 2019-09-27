@@ -263,11 +263,16 @@ export default {
 			this.update,
 			this.debounce
 		);
-		if (this.src) {
-			this.onChangeImage();
-		}
 		window.addEventListener('resize', this.refreshImage);
 		window.addEventListener('orientationchange', this.refreshImage);
+		this.$refs.image.addEventListener('load', () => {
+			// After loading image the current component can be unmounted
+			// Therefore there is a workaround to prevent processing the following code
+			if (this.$refs.image) {
+				this.refreshImage().then(this.resetCoordinates);
+			}
+		});
+		this.onChangeImage();
 	},
 	destroyed() {
 		window.removeEventListener('resize', this.refreshImage);
@@ -276,7 +281,7 @@ export default {
 	methods: {
 		// External methods
 		getResult() {
-			if (this.canvas) {
+			if (this.canvas && this.src) {
 				this.updateCanvas(this.coordinates);
 				return {
 					coordinates: { ...this.coordinates, },
@@ -337,17 +342,26 @@ export default {
 		onChangeImage() {
 			this.imageLoaded = false;
 
-			const crossOrigin = isCrossOriginURL(this.src);
-			if (crossOrigin && this.canvas && this.checkCrossOrigin) {
-				this.imageAttributes.crossOrigin = 'anonymous';
-			}
-			setTimeout(() => {
-				if (this.checkOrientation) {
-					parseImage(crossOrigin ? addTimestamp(this.src) : this.src).then(this.onParseImage);
-				} else {
-					this.onParseImage({});
+			if (this.src) {
+				const crossOrigin = isCrossOriginURL(this.src);
+				if (crossOrigin && this.canvas && this.checkCrossOrigin) {
+					this.imageAttributes.crossOrigin = 'anonymous';
 				}
-			}, this.transitionTime);
+				setTimeout(() => {
+					if (this.checkOrientation) {
+						parseImage(crossOrigin ? addTimestamp(this.src) : this.src).then(this.onParseImage);
+					} else {
+						this.onParseImage({});
+					}
+				}, this.transitionTime);
+			} else {
+				this.onChangeCoordinates({
+					left: 0,
+					top: 0,
+					width: 0,
+					height: 0,
+				}, false);
+			}
 		},
 		onParseImage({ arrayBuffer, orientation }) {
 			if (arrayBuffer && orientation && isLocal(this.src)) {
@@ -358,18 +372,8 @@ export default {
 			this.imageTransforms = getImageTransforms(orientation);
 			Vue.nextTick(() => {
 				const image = this.$refs.image;
-				if (image) {
-					if (image.complete) {
-						this.refreshImage().then(this.resetCoordinates);
-					} else {
-						image.addEventListener('load', () => {
-							// After loading image the current component can be unmounted
-							// Therefore there is a workaround to prevent processing the following code
-							if (this.$refs.image) {
-								this.refreshImage().then(this.resetCoordinates);
-							}
-						});
-					}
+				if (image && image.complete) {
+					this.refreshImage().then(this.resetCoordinates);
 				}
 			});
 		},
