@@ -55,7 +55,7 @@
           </h1>
         </div>
         <div class="presentation__subtitle">
-          The really flexible cropper that gives you opportunity to create almost any cropper that you desire
+          The flexible cropper component that gives you the opportunity to create almost any cropper that you desire
         </div>
 
         <div class="presentation__install">
@@ -122,36 +122,36 @@
         <div class="row">
           <div class="feature">
             <div class="feature__title">
-              Fully customisable
+              Fully Customisable
             </div>
             <div class="feature__text">
-              On the one hand you able to customize almost every aspect of cropper, but on other you can use it from a box right now
+              Customise almost any aspect of the cropper component, or use it right out of the box.
             </div>
           </div>
           <div class="feature">
             <div class="feature__title">
-              Mobile support
+              Mobile Support
             </div>
             <div class="feature__text">
-              Cropper is created to support mobile devices just like desktop one, and supports touch events, cropper resizing and etc.
+              Vue Advanced Cropper supports desktop and mobile devices alike. Built in support for touch events, cropper resizing, etc.
             </div>
           </div>
         </div>
         <div class="row">
           <div class="feature">
             <div class="feature__title">
-              Canvas and coordinates
+              Canvas and Coordinates
             </div>
             <div class="feature__text">
-              Cropper can be used to get canvas with cropped area or just coordinates relative to original image to crop it at your server lately
+              This Cropper can be used to create a canvas with a cropped area or just coordinates relative to the original image to crop it server-side in the future.
             </div>
           </div>
           <div class="feature">
             <div class="feature__title">
-              Advanced features
+              Advanced Features
             </div>
             <div class="feature__text">
-              Set minimum and maximum aspect ratios, customizie minimum and maximum height and width (in percents of area) and etc.
+              Set minimum and maximum aspect ratios, customizie minimum and maximum height and width (in percents of area), etc.
             </div>
           </div>
         </div>
