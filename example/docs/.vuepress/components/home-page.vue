@@ -167,18 +167,18 @@
     <div class="concept-section">
       <div class="container container--narrow">
         <h1 class="title">
-          Concept
+          Concepts
         </h1>
         <div class="row">
           <p>
-            The goal of this library to give a developer opportunity create any cropper
-            easily and effortless. To achieve it the cropper is divided to two parts:
-            broadly customizable <b>cropper</b> and arbitrary component <b>stencil</b>.
+            The goal of this library to give developers an opportunity create any cropper component
+            easily and effortless. To achieve this goal, the cropper is divided into two main parts:
+            the broadly customizable <b>cropper</b> and the arbitrary component <b>stencil</b>.
           </p>
         </div>
 
         <h2 class="subtitle">
-          What is cropper?
+          What is the cropper?
         </h2>
 
         <div class="row">
@@ -192,27 +192,27 @@
               <b>Cropper</b>
             </p>
             <p>
-              is the root component of this library. It contains coordinates of current cropped area (left, top, width, height) relative to original image coordinates. This coordinates can be imagined like <b>box</b>.
-              It responsible for:
+              is the root component of this library. It contains the dimensions of the currently cropped area (left, top, width, height) relative to the original image dimensions. These dimensions can be imagined like a <b>box</b>.
+              that's responsible for:
             </p>
             <ul>
-              <li> resizing and moving box </li>
-              <li> displaying the cropping image and fitting it to container </li>
-              <li> setting default coordinates </li>
+              <li> resizing and moving the box </li>
+              <li> displaying the cropped image and fitting it to the container </li>
+              <li> setting default dimensions </li>
               <li> cropping canvas area </li>
             </ul>
           </div>
         </div>
 
         <h2 class="subtitle">
-          What is stencil?
+          What is the stencil?
         </h2>
 
         <div class="row">
           <p>
-            Cropper operates the abstract box that represents current cropped area.
-            But it just abstract couple of coordinates, to visualize the cropped area and
-            give the possibility to interact with cropper there is a <b>stencil</b> component.
+            The Cropper operates the abstract box that represents the currently cropped area,
+            but it only abstracts a couple of coordinates. Visualizing the cropped area and
+            giving the user the ability to interact with the cropper is what the <b>stencil</b> component is used for.
           </p>
         </div>
 
@@ -226,11 +226,11 @@
           </div>
           <div class="col">
             <p>
-              Stencil can be literally any arbitrary component, but to make sense there are some requirements to it:
+              The Stencil can literally be any arbitrary component, but in order for it to make sense there are some requirements:
             </p>
             <ul>
               <li> it should be inscibed to box is represented by coordinates (<b>width</b>, <b>height</b>, <b>left</b>, <b>top</b>) </li>
-              <li> if stencil has aspect ratios it should has <b>aspectRatios</b> method to inform the cropper resize algorithm about it (this method should return object with minimum and maximum aspect ratio values) </li>
+              <li> if the stencil has aspect ratios it should have an <b>aspectRatios</b> method to inform the cropper resize algorithm (this method should return an object with minimum and maximum aspect ratio values) </li>
               <li> it should emit <b>resize</b> and <b>move</b> events </li>
               <li> it should display the cropped part of a image </li>
             </ul>
@@ -239,7 +239,7 @@
 
         <div class="row">
           <p>
-            Resize and move events are very flexible and allow you to create almost any moving and especially resizng logic (read <a class="link">here</a> detaily)
+            Resize and move events are very flexible and allow you to create almost any moving and especially resizng logic (more details <a class="link">here</a>)
           </p>
         </div>
 
@@ -259,7 +259,7 @@
 
         <div class="row">
           <p>
-            The typical stencil components are represented below. They includes handlers that emit resize events, movable area that emits move event and cropped image preview
+            The typical stencil components are represented below. They include handlers that emit resize events, a movable area that emits move events, and a cropped image preview.
           </p>
         </div>
 
@@ -271,7 +271,7 @@
 
         <div class="row">
           <p>
-            There are default customizable components from a box that allow you to create your first cropper in five minutes.
+            There are default customizable components out of the box that allow you to create your first cropper component within five minutes.
           </p>
         </div>
 
@@ -281,7 +281,7 @@
 
         <div class="row">
           <p>
-            That’s almost all that you need to know. There are different stencils below as examples of different stencils that you can create
+            That’s pretty much all you need to know to get started. Below there are a couple different stencil examples to show what you can create.
           </p>
         </div>
 
