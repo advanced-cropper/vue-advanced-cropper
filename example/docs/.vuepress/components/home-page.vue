@@ -192,13 +192,13 @@
               <b>Cropper</b>
             </p>
             <p>
-              is the root component of this library. It contains the dimensions of the currently cropped area (left, top, width, height) relative to the original image dimensions. These dimensions can be imagined like a <b>box</b>.
+              is the root component of this library. It contains the coordinates of the currently cropped area (left, top, width, height) relative to the original image coordinates. These coordinates can be imagined like a <b>box</b>.
               that's responsible for:
             </p>
             <ul>
               <li> resizing and moving the box </li>
               <li> displaying the cropped image and fitting it to the container </li>
-              <li> setting default dimensions </li>
+              <li> setting default coordinates </li>
               <li> cropping canvas area </li>
             </ul>
           </div>
