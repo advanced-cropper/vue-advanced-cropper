@@ -111,6 +111,14 @@ function fitConditions(oldDirections, coordinates, restrictions, coefficient, im
 		}
 	}
 
+	// Prevent the incorrect resizing due  small values of max multipliers:
+	if (maxMultiplier.width < 10**(-1)) {
+		maxMultiplier.width = 0;
+	}
+	if (maxMultiplier.height < 10**(-1)) {
+		maxMultiplier.height = 0;
+	}
+
 	// If ratio is not broken, resize all directions independently
 	if (!ratioBroken) {
 		if (maxMultiplier.width !== Infinity) {
@@ -234,11 +242,12 @@ export function resize (coordinates, restrictions, imageSize, coefficient, aspec
 
 	// 3. Third step: check if desired box with correct aspect ratios break some limits and fit to this conditions
 	directions = fitConditions(directions, actualCoordinates, restrictions, coefficient, imageSize, ratioBroken);
+
 	return {
 		width: coordinates.width + coefficient * (Math.round(directions.right) + Math.round(directions.left)),
 		height: coordinates.height + coefficient * (Math.round(directions.top) + Math.round(directions.bottom)),
-		left: coordinates.left - coefficient * Math.round(directions.left),
-		top: coordinates.top - coefficient * Math.round(directions.top),
+		left: Math.max(0, coordinates.left - coefficient * Math.round(directions.left)),
+		top: Math.max(0, coordinates.top - coefficient * Math.round(directions.top)),
 	};
 }
 
