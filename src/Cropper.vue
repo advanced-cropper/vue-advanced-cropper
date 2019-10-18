@@ -435,7 +435,7 @@ export default {
 					coordinates.height = minHeight;
 					coordinates.width = ranges.height.minimum;
 				} else {
-					throw 'Error: current aspect ratio can\'t is incompatible with minimum/maximum height and width settings. Can\'t setup default coordinates';
+					throw 'Error: current aspect ratio is incompatible with minimum/maximum height and width settings. Can\'t setup default coordinates';
 				}
 			}
 
@@ -520,7 +520,7 @@ export default {
 			this.frozenDirections.width = Boolean(widthFrozen);
 			this.frozenDirections.height = Boolean(heightFrozen);
 
-			const defaultSize = this.defaultSize(cropper, image, this.stencilRestrictions, this.$props);
+			const defaultSize = this.defaultSize(cropper, image, this.stencilRestrictions, this.imageSize.width, this.imageSize.height, this.$props);
 			if (defaultSize.width < minWidth || defaultSize.height < minHeight || defaultSize.width > maxWidth || defaultSize.height > maxHeight) {
 				console.warn('Warning: default size breaking size restrictions. Check your defaultSize function');
 			}
