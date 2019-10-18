@@ -5,7 +5,7 @@ import external from 'rollup-plugin-peer-deps-external';
 import resolve from 'rollup-plugin-node-resolve';
 import url from 'rollup-plugin-url';
 import Vue from 'rollup-plugin-vue';
-import css from 'rollup-plugin-merge-and-inject-css'
+import css from 'rollup-plugin-merge-and-inject-css';
 import pkg from './package.json';
 import minify from 'rollup-plugin-babel-minify';
 
@@ -43,9 +43,10 @@ export default {
 		url(),
 		minify(),
 		babel({
-			exclude: 'node_modules/**',
+			exclude: '/node_modules/**',
+			extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.vue'],
 		}),
 		resolve(),
 		commonjs(),
 	]
-}
+};
