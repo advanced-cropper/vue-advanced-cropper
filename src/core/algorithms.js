@@ -150,7 +150,7 @@ function fitConditions(oldDirections, coordinates, restrictions, coefficient, im
 	return directions;
 }
 
-export function resize (coordinates, restrictions, imageSize, coefficient, aspectRatio, resizeEvent) {
+export function resize ({ coordinates, restrictions, imageSize, coefficient, aspectRatio, resizeEvent }) {
 	const actualCoordinates = {
 		...coordinates,
 		right: coordinates.left + coordinates.width,
@@ -251,7 +251,7 @@ export function resize (coordinates, restrictions, imageSize, coefficient, aspec
 	};
 }
 
-export function move (coordinates, imageSize, coefficient, moveEvent) {
+export function move ({ coordinates, imageSize, coefficient, moveEvent }) {
 	const directions = {
 		...moveEvent.directions,
 	};
@@ -279,7 +279,8 @@ export function move (coordinates, imageSize, coefficient, moveEvent) {
 	return newCoordinates;
 }
 
-export function areaSize (cropper, image, imageWidth, imageHeight) {
+// eslint-disable-next-line no-unused-vars
+export function areaSize ({ cropper, image, imageWidth, imageHeight }) {
 	const areaHeight = cropper.clientHeight;
 	const areaWidth = cropper.clientWidth;
 
@@ -298,7 +299,7 @@ export function areaSize (cropper, image, imageWidth, imageHeight) {
 }
 
 // eslint-disable-next-line no-unused-vars
-export function defaultPosition (cropper, image, stencilWidth, stencilHeight, imageWidth, imageHeight,  props) {
+export function defaultPosition ({ cropper, image, stencilWidth, stencilHeight, imageWidth, imageHeight,  props }) {
 	return {
 		left: imageWidth / 2 - stencilWidth / 2,
 		top: imageHeight / 2 - stencilHeight / 2,
@@ -306,9 +307,7 @@ export function defaultPosition (cropper, image, stencilWidth, stencilHeight, im
 }
 
 // eslint-disable-next-line no-unused-vars
-export function defaultSize (cropper, image, restrictions, imageWidth, imageHeight, props) {
-	const { maxWidth, maxHeight, minWidth, minHeight, } = restrictions;
-
+export function defaultSize ({ cropper, image, minWidth, minHeight, maxWidth, maxHeight, imageWidth, imageHeight, props }) {
 	let newHeight, newWidth;
 	if (maxHeight > maxWidth) {
 		newHeight = Math.max(minHeight, maxHeight * 0.8);
@@ -324,7 +323,7 @@ export function defaultSize (cropper, image, restrictions, imageWidth, imageHeig
 	};
 }
 
-export function percentRestrictions(minWidth, minHeight, maxWidth, maxHeight, imageWidth, imageHeight) {
+export function percentRestrictions({ minWidth, minHeight, maxWidth, maxHeight, imageWidth, imageHeight }) {
 	return {
 		minWidth: minWidth / 100 * imageWidth,
 		minHeight: minHeight / 100 * imageHeight,

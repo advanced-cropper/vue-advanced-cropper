@@ -105,59 +105,49 @@ The maximum height of the stencil in percents
 ### `defaultPosition`
 Default: `core.defaultPosition`
 
-The static function that accepts `cropper` (DOM Element), `image` (DOM Element), `stencilWidth`, `stencilHeight` (size of stencil) `imageWidth`,  `imageHeight` (size of image), and `props` (all cropper's props) and returns an object with `left` and `top` fields, i.e. default position of the stencil (relative to original image size)
+The static function that accepts the only argument, the object with following fields:
+- `cropper` (DOM Element)
+- `image` (DOM Element),
+- `stencilWidth`, `stencilHeight`
+- `imageWidth`, `imageHeight`
+- `props` (all cropper's props)
+
+It should return an object with `left` and `top` fields, i.e. default position of the stencil (relative to original image size)
 
 ### `defaultSize`
 Default: `core.defaultSize`
 
-The static function that accepts `cropper` (DOM Element), `image` (DOM Element), `restrictions` (object with `minWidth`, `minHeight`, `maxWidth`, `maxHeight` fields), `imageWidth`, `imageHeight` and `props` (all cropper's props) and returns an object with `height` and `width` fields, i.e. default size of the stencil (relative to original image size)
+The static function that accepts the only argument, the object with following fields:
+- `cropper` (DOM Element)
+- `image` (DOM Element),
+- `minWidth`, `minHeight`, `maxWidth`, `maxHeight`
+- `imageWidth`, `imageHeight`
+- `props` (all cropper's props)
+
+It should return an object with `height` and `width` fields, i.e. default size of the stencil (relative to original image size)
 
 ### `areaSize`
 Default: `core.areaSize`
 
-The static function that accepts `cropper` (DOM Element) and `image` (DOM Element) and return the object with `height` and `width` fields, i.e. width and height of the area.
+The static function that accepts the only argument, the object with following fields:
+- `cropper` (DOM Element)
+- `image` (DOM Element),
+
+It should return the object with `height` and `width` fields, i.e. width and height of the area.
 
 ### restrictions
-Default: `core.resize`
+Default: `core.pixelRestrictions`
 
-The static function that accepts `minWidth`, `minHeight`, `maxWidth`, `maxHeight`, `imageWidth`, `imageHeight` and returns the object.
+The static function that accepts the only argument, the object with following fields:
+- `minWidth`, `minHeight`, `maxWidth`, `maxHeight`
+- `imageWidth`, `imageHeight`
 
-For example something like that
+It should return the object with restrictions for stencil. For example something like this:
 ```js
 {
 	maxWidth: 2048,
 	maxHeight: 2048,
 	minWidth: 256,
 	minHeight: 256
-}
-```
-
-### `resizeAlgorithm`
-Default: `core.resize`
-
-The static function that accepts `coordinates`, `restrictions`, `imageSize`, `coefficient`, `aspectRatio`, `resizeEvent` and returns the object.
-
-For example something like that
-```js
-{
-	width: 42,
-	height: 12,
-	left: 0,
-	top: 0
-}
-```
-
-### `moveAlgorithm`
-Default: `core.move`
-
-The static function that accepts `coordinates`, `restrictions`, `imageSize`, `coefficient`, `moveEvent` and returns the object.
-
-For example something like that
-```js
-{
-	width: 42,
-	height: 12,
-	left: 5,
-	top: 5
 }
 ```

@@ -280,12 +280,12 @@ import { Cropper } from 'vue-advanced-cropper'
 new Vue({
 	el: '#app',
 	methods: {
-		pixelsRestriction(minWidth, minHeight, maxWidth, maxHeight, imageWidth, imageHeight) {
+		pixelsRestriction({minWidth, minHeight, maxWidth, maxHeight, imageWidth, imageHeight}) {
 			return {
 				minWidth: minWidth,
 				minHeight: minHeight,
-				maxWidth: maxWidth,
-				maxHeight: maxHeight,
+				maxWidth: Math.min(imageWidth, maxWidth),
+				maxHeight: Math.min(imageHeight, maxHeight),
 			}
 		},
 	},

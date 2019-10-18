@@ -16,12 +16,12 @@ export default {
 		};
 	},
 	methods: {
-		pixelsRestriction(minWidth, minHeight, maxWidth, maxHeight, imageWidth, imageHeight) {
+		pixelsRestriction({minWidth, minHeight, maxWidth, maxHeight, imageWidth, imageHeight}) {
 			return {
 				minWidth: minWidth,
 				minHeight: minHeight,
-				maxWidth: maxWidth || imageWidth,
-				maxHeight: maxHeight || imageHeight,
+				maxWidth: Math.min(imageWidth, maxWidth),
+				maxHeight: Math.min(imageHeight, maxHeight),
 			};
 		},
 		onCrop({ canvas, }) {

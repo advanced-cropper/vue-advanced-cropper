@@ -11,6 +11,24 @@ import * as algorithms from './core/algorithms';
 
 const cn = bem('vue-advanced-cropper');
 
+function migrateAlgorithm(f, name, transform) {
+	function fallback(params) {
+		console.warn(`The arguments will be passed to the prop '${name}' as an single object {${Object.keys(params).join(',')}} in the future releases. You should change the interface of your function.`);
+		return f(...transform(params));
+	}
+	return (params) => {
+		if (f.length > 1) {
+			return fallback(params);
+		} else {
+			try {
+				return f(params);
+			} catch (e) {
+				return fallback(params);
+			}
+		}
+	};
+}
+
 export default {
 	name: 'Cropper',
 	props: {
@@ -197,14 +215,17 @@ export default {
 			return result;
 		},
 		stencilRestrictions() {
-			const restrictions = this.restrictions(
-				Number(this.minWidth),
-				Number(this.minHeight),
-				Number(this.maxWidth),
-				Number(this.maxHeight),
-				this.imageSize.width,
-				this.imageSize.height
-			);
+			const restrictions = migrateAlgorithm(this.restrictions, 'restrictions', (args) => [
+				args.minWidth, args.minHeight, args.maxWidth, args.maxHeight, args.imageWidth, args.imageHeight
+			])({
+				minWidth: Number(this.minWidth),
+				minHeight: Number(this.minHeight),
+				maxWidth: Number(this.maxWidth),
+				maxHeight: Number(this.maxHeight),
+				imageWidth: this.imageSize.width,
+				imageHeight: this.imageSize.height,
+				props: this.$props
+			});
 
 			if (this.minWidth > this.imageSize.width) {
 				console.warn(`Warning: minimum width (${restrictions.minWidth}px) greater that the image width (${this.imageSize.width}px). It is set equal to the image width and width resizing was blocked`);
@@ -387,24 +408,24 @@ export default {
 				resizeEvent.directions.bottom = 0;
 			}
 			this.onChangeCoordinates(
-				this.resizeAlgorithm(
-					this.coordinates,
-					this.stencilRestrictions,
-					this.imageSize,
-					this.coefficient,
-					this.stencilAspectRatios(),
+				this.resizeAlgorithm({
+					coordinates: this.coordinates,
+					restrictions: this.stencilRestrictions,
+					imageSize: this.imageSize,
+					coefficient: this.coefficient,
+					aspectRatio: this.stencilAspectRatios(),
 					resizeEvent
-				)
+				})
 			);
 		},
 		onMove(moveEvent) {
 			this.onChangeCoordinates(
-				this.moveAlgorithm(
-					this.coordinates,
-					this.imageSize,
-					this.coefficient,
+				this.moveAlgorithm({
+					coordinates: this.coordinates,
+					imageSize: this.imageSize,
+					coefficient: this.coefficient,
 					moveEvent
-				)
+				})
 			);
 		},
 		defaultCoordinates() {
@@ -450,26 +471,26 @@ export default {
 			const aspectRatio = this.stencilAspectRatios();
 
 			const moveAlgorithm = (prevCoordinates, newCoordinates) => {
-				return this.moveAlgorithm(
-					prevCoordinates,
+				return this.moveAlgorithm({
+					coordinates: prevCoordinates,
 					imageSize,
 					coefficient,
-					new MoveEvent(null, {
+					moveEvent: new MoveEvent(null, {
 						left: (newCoordinates.left - prevCoordinates.left) / coefficient,
 						top: (newCoordinates.top - prevCoordinates.top) / coefficient,
 					})
-				);
+				});
 			};
 
 			const resizeAlgorithm = (prevCoordinates, newCoordinates) => {
 				let coordinates = this.defaultCoordinates();
-				coordinates = this.resizeAlgorithm(
+				coordinates = this.resizeAlgorithm({
 					coordinates,
-					this.stencilRestrictions,
+					restrictions: this.stencilRestrictions,
 					imageSize,
 					coefficient,
 					aspectRatio,
-					new ResizeEvent(
+					resizeEvent: new ResizeEvent(
 						null,
 						{
 							left: (newCoordinates.width - coordinates.width) / (2 * coefficient),
@@ -478,7 +499,7 @@ export default {
 							bottom: (newCoordinates.height - coordinates.height) / (2 * coefficient),
 						}
 					)
-				);
+				});
 				return moveAlgorithm(coordinates, { left: prevCoordinates.left, top: prevCoordinates.top });
 			};
 
@@ -520,7 +541,16 @@ export default {
 			this.frozenDirections.width = Boolean(widthFrozen);
 			this.frozenDirections.height = Boolean(heightFrozen);
 
-			const defaultSize = this.defaultSize(cropper, image, this.stencilRestrictions, this.imageSize.width, this.imageSize.height, this.$props);
+			const defaultSize = migrateAlgorithm(this.defaultSize, 'defaultSize', (args) => (
+				[args.cropper, args.image, { minWidth: args.minWidth, minHeight: args.minHeight, maxWidth: args.maxWidth, maxHeight: args.maxHeight }, args.imageWidth, args.imageHeight, args.props ]
+			))({
+				cropper,
+				image,
+				imageWidth: this.imageSize.width,
+				imageHeight: this.imageSize.height,
+				props: this.$props,
+				...this.stencilRestrictions,
+			});
 			if (defaultSize.width < minWidth || defaultSize.height < minHeight || defaultSize.width > maxWidth || defaultSize.height > maxHeight) {
 				console.warn('Warning: default size breaking size restrictions. Check your defaultSize function');
 			}
@@ -528,15 +558,17 @@ export default {
 			this.setCoordinates([
 				defaultSize,
 				(coordinates) => ({
-					...this.defaultPosition(
+					...migrateAlgorithm(this.defaultPosition, 'defaultPosition', (args) => (
+						[args.cropper, args.image, args.stencilWidth, args.stencilHeight, args.imageWidth, args.imageHeight, args.props]
+					))({
 						cropper,
 						image,
-						coordinates.width,
-						coordinates.height,
-						this.imageSize.width,
-						this.imageSize.height,
-						this.$props
-					)
+						stencilWidth: coordinates.width,
+						stencilHeight: coordinates.height,
+						imageWidth: this.imageSize.width,
+						imageHeight: this.imageSize.height,
+						props: this.$props
+					})
 				})
 			]);
 			this.imageLoaded = true;
@@ -575,7 +607,14 @@ export default {
 				const image = this.$refs.image;
 
 				Vue.nextTick(() => {
-					const { height, width, } = this.areaSize(cropper, image, this.imageSize.width, this.imageSize.height);
+					const { height, width, } = migrateAlgorithm(this.areaSize, 'areaSize', (args) => ([
+						args.cropper, args.image, args.imageWidth, args.imageHeight
+					]))({
+						cropper,
+						image,
+						imageWidth: this.imageSize.width,
+						imageHeight: this.imageSize.height
+					});
 					if (height) {
 						this.boundarySize.height = height;
 					}
