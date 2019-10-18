@@ -102,15 +102,15 @@ Default: `100`
 
 The maximum height of the stencil in percents
 
-### `defaultSize`
-Default: `core.defaultSize`
-
-The static function that accepts `cropper` (DOM Element), `image` (DOM Element) and `props` (all cropper's props) and return object with `height` and `width` fields, i.e. default size of the stencil (relative to original image size)
-
 ### `defaultPosition`
 Default: `core.defaultPosition`
 
-The static function that accepts `cropper` (DOM Element), `image` (DOM Element), `width`,  `height` (size of cropper), and `props` (all cropper's props) and return object with `left` and `top` fields, i.e. default position of the stencil (relative to original image size)
+The static function that accepts `cropper` (DOM Element), `image` (DOM Element), `stencilWidth`, `stencilHeight` (size of stencil) `imageWidth`,  `imageHeight` (size of image), and `props` (all cropper's props) and returns an object with `left` and `top` fields, i.e. default position of the stencil (relative to original image size)
+
+### `defaultSize`
+Default: `core.defaultSize`
+
+The static function that accepts `cropper` (DOM Element), `image` (DOM Element), `restrictions` (object with `minWidth`, `minHeight`, `maxWidth`, `maxHeight` fields), `imageWidth`, `imageHeight` and `props` (all cropper's props) and returns an object with `height` and `width` fields, i.e. default size of the stencil (relative to original image size)
 
 ### `areaSize`
 Default: `core.areaSize`
