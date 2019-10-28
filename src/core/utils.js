@@ -42,6 +42,10 @@ export function isCrossOriginURL(url) {
 		));
 }
 
+export function isUndefined(obj) {
+	return typeof obj === 'undefined';
+}
+
 export function addTimestamp(url) {
 	const timestamp = `timestamp=${(new Date()).getTime()}`;
 	return url + (url.indexOf('?') === -1 ? '?' : '&') + timestamp;

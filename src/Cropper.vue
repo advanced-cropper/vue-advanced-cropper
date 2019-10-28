@@ -5,7 +5,7 @@ import Vue from 'vue';
 import debounce from 'debounce';
 import { RectangleStencil } from './components/stencils';
 import { ResizeEvent, MoveEvent } from './core/events';
-import { isLocal, isCrossOriginURL, addTimestamp } from './core/utils';
+import { isLocal, isCrossOriginURL, isUndefined, addTimestamp } from './core/utils';
 import { arrayBufferToDataURL, getImageTransforms, getStyleTransforms, prepareSource, parseImage } from './core/image';
 import * as algorithms from './core/algorithms';
 
@@ -262,9 +262,7 @@ export default {
 	},
 	watch: {
 		src() {
-			Vue.nextTick(() => {
-				this.onChangeImage();
-			});
+			this.onChangeImage();
 		},
 		minWidth() {
 			this.resetCoordinates();
@@ -362,6 +360,7 @@ export default {
 		},
 		onChangeImage() {
 			this.imageLoaded = false;
+			this.delayedTransforms = null;
 
 			if (this.src) {
 				const crossOrigin = isCrossOriginURL(this.src);
@@ -466,6 +465,15 @@ export default {
 			return coordinates;
 		},
 		setCoordinates(transforms) {
+			Vue.nextTick(() => {
+				if (!this.imageLoaded) {
+					this.delayedTransforms = transforms;
+					return;
+				}
+				this.applyTransforms(transforms);
+			});
+		},
+		applyTransforms(transforms) {
 			const imageSize = this.imageSize;
 			const coefficient = this.coefficient;
 			const aspectRatio = this.stencilAspectRatios();
@@ -516,16 +524,15 @@ export default {
 				} else {
 					changes = transform;
 				}
-				if (changes.width || changes.height) {
+				if (!isUndefined(changes.width) || !isUndefined(changes.height)) {
 					coordinates = resizeAlgorithm(coordinates, { ...coordinates, ...changes });
 				}
-				if (changes.left || changes.top) {
+				if (!isUndefined(changes.left) || !isUndefined(changes.top)) {
 					coordinates = moveAlgorithm(coordinates, { ...coordinates, ...changes });
 				}
 			});
 
 			this.onChangeCoordinates(coordinates, false);
-
 			return coordinates;
 		},
 		resetCoordinates() {
@@ -551,11 +558,12 @@ export default {
 				props: this.$props,
 				...this.stencilRestrictions,
 			});
+
 			if (defaultSize.width < minWidth || defaultSize.height < minHeight || defaultSize.width > maxWidth || defaultSize.height > maxHeight) {
 				console.warn('Warning: default size breaking size restrictions. Check your defaultSize function');
 			}
 
-			this.setCoordinates([
+			const transforms = [
 				defaultSize,
 				(coordinates) => ({
 					...migrateAlgorithm(this.defaultPosition, 'defaultPosition', (args) => (
@@ -570,7 +578,14 @@ export default {
 						props: this.$props
 					})
 				})
-			]);
+			];
+
+			if (this.delayedTransforms) {
+				transforms.push(...Array.isArray(this.delayedTransforms) ? this.delayedTransforms : [this.delayedTransforms]);
+			}
+
+			this.applyTransforms(transforms);
+			this.delayedTransforms = null;
 			this.imageLoaded = true;
 		},
 		refreshImage() {
