@@ -11,6 +11,9 @@ export default {
 		};
 	},
 	methods: {
+		reset() {
+			this.image = null;
+		},
 		uploadImage(event) {
 			// Reference to the DOM input element
 			var input = event.target;
@@ -34,11 +37,16 @@ export default {
 
 <template>
   <div class="upload-example">
-    <Cropper
-      classname="upload-example-cropper"
-      check-orientation
-      :src="image"
-    />
+		<div class="cropper-wrapper">
+			<Cropper
+				classname="upload-example-cropper"
+				check-orientation
+				:src="image"
+			/>
+			<div class="reset-button" title="Reset Image" @click="reset()">
+				<img :src="require('../assets/icons/reset.svg')"/>
+			</div>
+		</div>
     <div class="button-wrapper">
       <span
         class="button"
@@ -60,10 +68,33 @@ export default {
 	.upload-example {
 		margin-top: 20px;
 		margin-bottom: 20px;
+
 		.upload-example-cropper {
 			border: solid 1px #EEE;
-			height: 300px;
+			min-height: 300px;
+			max-height: 500px;
 			width: 100%;
+		}
+
+		.cropper-wrapper {
+			position: relative;
+		}
+
+		.reset-button {
+			position: absolute;
+			right: 20px;
+			bottom: 20px;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			height: 42px;
+			width: 42px;
+			background: rgba(#3fb37f,0.7);
+			transition: background 0.5s;
+			&:hover {
+				background: #3fb37f;
+			}
 		}
 
 		.button-wrapper {
