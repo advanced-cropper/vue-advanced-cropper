@@ -21,6 +21,10 @@ export default {
 		classname: {
 			type: String,
 		},
+		disabled: {
+			type: Boolean,
+			default: false,
+		}
 	},
 	computed: {
 		classnames() {
@@ -30,9 +34,9 @@ export default {
 					this.horizontalPosition,
 					this.verticalPosition
 				);
-				defaultClassname = classnames(this.classname, cn({ [position.classname]: true, }));
+				defaultClassname = classnames(this.classname, cn({ [position.classname]: true, disabled: this.disabled }));
 			} else {
-				defaultClassname = classnames(this.classname, cn());
+				defaultClassname = classnames(this.classname, cn({ disabled: this.disabled }));
 			}
 			return {
 				default: defaultClassname,
@@ -47,6 +51,7 @@ export default {
   <div :class="classnames.default">
     <DraggableElement
       :class="classnames.draggable"
+      :disabled="disabled"
       @drag="$emit('drag', $event)"
       @leave="$emit('leave')"
       @enter="$emit('enter')"
@@ -106,6 +111,9 @@ export default {
     left: 0;
     top: 50%;
     cursor: w-resize;
+  }
+  &--disabled {
+    cursor: auto;
   }
 }
 </style>

@@ -59,12 +59,12 @@ export default {
   <div class="set-coordinates-example">
     <Cropper
 	  	ref="cropper"
-			classname="coodinates-cropper"
-			:stencil-props="{
-				minAspectRatio: 10/20,
-			}"
-      :src="image"
-			@change="updateSize"
+		classname="coodinates-cropper"
+      	:src="image"
+	    :stencil-props="{
+			minAspectRatio: 10/20,
+		}"
+		@change="updateSize"
     />
 		<div class="buttons">
 			<div class="button" title="Resize (x2)" @click="resize(2, 2)">
@@ -99,12 +99,10 @@ export default {
 	margin-bottom: 20px;
 	position: relative;
 	user-select: none;
-
 	.coodinates-cropper {
 		min-height: 400px;
 		background: black;
 	}
-
 	.size-info {
 		color: white;
 		position: absolute;
@@ -113,7 +111,6 @@ export default {
 		bottom: 10px;
 		opacity: 0.5;
 	}
-
 	.button {
 		background: rgba(black, 0.4);
 		display: flex;
@@ -128,14 +125,11 @@ export default {
 			background: black;
 		}
 	}
-
-
 	.buttons {
 		position: absolute;
 		left: 10px;
 		top: 50%;
 		transform: translateY(-50%);
 	}
-
 }
 </style>

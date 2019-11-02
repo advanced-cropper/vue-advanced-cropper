@@ -1,148 +1,153 @@
 import {
 	HORIZONTAL_DIRECTIONS,
 	VERTICAL_DIRECTIONS,
-	ALL_DIRECTIONS
+	ALL_DIRECTIONS,
 } from './constants';
+import { MoveEvent } from './events';
 
 
-function getCurrentWidth(actualCoordinates, directions, coefficient) {
-	return actualCoordinates.width + coefficient * (directions.left + directions.right);
+function getCurrentWidth(actualCoordinates, directions) {
+	return actualCoordinates.width + (directions.left + directions.right);
 }
 
-function getCurrentHeight(actualCoordinates, directions, coefficient) {
-	return actualCoordinates.height + coefficient * (directions.top + directions.bottom);
+function getCurrentHeight(actualCoordinates, directions) {
+	return actualCoordinates.height + (directions.top + directions.bottom);
 }
 
-function fitConditions(oldDirections, coordinates, restrictions, coefficient, imageSize, ratioBroken) {
+function getBrokenLimits(coordinates, directions, allowedArea) {
+	return {
+		left: ('left' in allowedArea) ? -Math.min(0, Math.ceil(coordinates.left - allowedArea.left) - directions.left) : 0,
+		top: ('top' in allowedArea) ? -Math.min(0, Math.ceil(coordinates.top - allowedArea.top) - directions.top) : 0,
+		bottom: ('bottom' in allowedArea) ? -Math.min(0, allowedArea.bottom - (coordinates.bottom + directions.bottom)) : 0,
+		right: ('right' in allowedArea) ? -Math.min(0, allowedArea.right - (coordinates.right + directions.right)) : 0,
+	};
+}
 
-	const { minHeight, minWidth, maxHeight, maxWidth, } = restrictions;
+function fitConditions({ directions: oldDirections, coordinates, restrictions, preserveAspectRatio, stopOnBreak, mode = 'crop', allowedArea = {}}) {
 	const directions = { ...oldDirections, };
 
-	const currentWidth = getCurrentWidth(coordinates, directions, coefficient);
-	const currentHeight = getCurrentHeight(coordinates, directions, coefficient);
+
+	let currentWidth = getCurrentWidth(coordinates, directions);
+	let currentHeight = getCurrentHeight(coordinates, directions);
 
 	if (currentWidth < 0) {
 		if (directions.left < 0 && directions.right < 0) {
-			directions.left = -(coordinates.width - minWidth) / (directions.left / directions.right);
-			directions.right = -(coordinates.width - minWidth) / (directions.right / directions.left);
+			directions.left = -(coordinates.width - restrictions.minWidth) / (directions.left / directions.right);
+			directions.right = -(coordinates.width - restrictions.minWidth) / (directions.right / directions.left);
 		} else if (directions.left < 0) {
-			directions.left = -(coordinates.width - minWidth) / coefficient;
+			directions.left = -(coordinates.width - restrictions.minWidth);
 		} else if (directions.right < 0) {
-			directions.right = -(coordinates.width - minWidth) / coefficient;
+			directions.right = -(coordinates.width - restrictions.minWidth);
 		}
 	}
 
 	if (currentHeight < 0) {
 		if (directions.top < 0 && directions.bottom < 0) {
-			directions.top = -(coordinates.height - minHeight) / (directions.top / directions.bottom);
-			directions.bottom = -(coordinates.height - minHeight) / (directions.bottom / directions.top);
+			directions.top = -(coordinates.height - restrictions.minHeight) / (directions.top / directions.bottom);
+			directions.bottom = -(coordinates.height - restrictions.minHeight) / (directions.bottom / directions.top);
 		} else if (directions.top < 0) {
-			directions.top = -(coordinates.height - minHeight);
+			directions.top = -(coordinates.height - restrictions.minHeight);
 		} else if (directions.bottom < 0) {
-			directions.bottom = -(coordinates.height - minHeight);
+			directions.bottom = -(coordinates.height - restrictions.minHeight);
 		}
 	}
 
-	const maxMultiplier = {
+	let breaks = getBrokenLimits(coordinates, directions, allowedArea);
+
+
+	if (mode === 'move') {
+		if (breaks.left > 0 && breaks.right === 0) {
+			directions.right += breaks.left;
+			directions.left -= breaks.left;
+		} else if (breaks.right > 0 && breaks.left === 0) {
+			directions.left += breaks.right;
+			directions.right -= breaks.right;
+		}
+
+		if (breaks.top > 0 && breaks.bottom === 0) {
+			directions.bottom += breaks.top;
+			directions.top -= breaks.top;
+		} else if (breaks.bottom > 0 && breaks.top === 0) {
+			directions.top += breaks.bottom;
+			directions.bottom -= breaks.bottom;
+		}
+
+		breaks = getBrokenLimits(coordinates, directions, allowedArea);
+	}
+
+	const maxResize = {
 		width: Infinity,
-		height: Infinity,
+		height: Infinity
 	};
 
-	if (directions.right + directions.left) {
-		// Break right border
-		if (Math.ceil(coordinates.left + coordinates.width + coefficient * directions.right) > imageSize.width) {
-			maxMultiplier.width = Math.min(
-				maxMultiplier.width,
-				Math.abs(Math.floor(imageSize.width - (coordinates.left + coordinates.width)) / (coefficient * directions.right))
-			);
+	ALL_DIRECTIONS.forEach(direction => {
+		if (breaks[direction] && directions[direction]) {
+			maxResize[direction] = Math.max(0, 1 - breaks[direction] / (directions[direction]));
+		} else {
+			maxResize[direction] = Infinity;
 		}
-		// Break left border
-		if (coordinates.left - coefficient * directions.left < 0) {
-			maxMultiplier.width = Math.min(
-				maxMultiplier.width,
-				Math.abs((coordinates.left) / (coefficient * directions.left))
-			);
-		}
+	});
 
-		// Break min width
-		if (currentWidth < minWidth) {
-			maxMultiplier.width = Math.min(
-				maxMultiplier.width,
-				Math.abs((coordinates.width - minWidth) / ((directions.right + directions.left) * coefficient))
-			);
-		}
-		// Break max width
-		if (currentWidth > maxWidth) {
-			maxMultiplier.width = Math.min(
-				maxMultiplier.width,
-				Math.abs((maxWidth - coordinates.width) / ((directions.right + directions.left) * coefficient))
-			);
-		}
-	}
 
-	if (directions.top + directions.bottom) {
-		// Break bottom border
-		if (Math.ceil(coordinates.top + coordinates.height + coefficient * directions.bottom) > imageSize.height) {
-			maxMultiplier.height = Math.min(
-				maxMultiplier.height,
-				Math.abs(Math.floor(imageSize.height - (coordinates.top + coordinates.height)) / (coefficient * directions.bottom))
-			);
-		}
-		// Break top border
-		if (coordinates.top - coefficient * directions.top < 0) {
-			maxMultiplier.height = Math.min(
-				maxMultiplier.height,
-				Math.abs((coordinates.top) / (coefficient * directions.top))
-			);
-		}
-		// Break min height
-		if (currentHeight < minHeight) {
-			maxMultiplier.height = Math.min(
-				maxMultiplier.height,
-				Math.abs((coordinates.height - minHeight) / ((directions.top + directions.bottom) * coefficient))
-			);
-		}
-		// Break max height
-		if (currentHeight > maxHeight) {
-			maxMultiplier.height = Math.min(
-				maxMultiplier.height,
-				Math.abs((maxHeight - coordinates.height) / ((directions.top + directions.bottom) * coefficient))
-			);
-		}
-	}
 
-	// Prevent the incorrect resizing due  small values of max multipliers:
-	if (maxMultiplier.width < 10**(-1)) {
-		maxMultiplier.width = 0;
-	}
-	if (maxMultiplier.height < 10**(-1)) {
-		maxMultiplier.height = 0;
-	}
-
-	// If ratio is not broken, resize all directions independently
-	if (!ratioBroken) {
-		if (maxMultiplier.width !== Infinity) {
-			HORIZONTAL_DIRECTIONS.forEach(direction => {
-				directions[direction] *= maxMultiplier.width;
-			});
-		}
-		if (maxMultiplier.height !== Infinity) {
-			VERTICAL_DIRECTIONS.forEach(direction => {
-				directions[direction] *= maxMultiplier.height;
-			});
-		}
-	// If ratio is broken, resize all directions same time to preserve restored aspect ratio
-	} else {
-		let multiplier;
-		if (maxMultiplier.height < maxMultiplier.width) {
-			multiplier = maxMultiplier.height;
-		} else if (directions.right + directions.left) {
-			multiplier = maxMultiplier.width;
-		}
-
-		if (maxMultiplier.height !== Infinity || maxMultiplier.width !== Infinity) {
+	if (preserveAspectRatio) {
+		const multiplier = Math.min(...ALL_DIRECTIONS.map(direction => maxResize[direction]));
+		if (multiplier !== Infinity) {
 			ALL_DIRECTIONS.forEach(direction => {
 				directions[direction] *= multiplier;
+			});
+		}
+	} else {
+		HORIZONTAL_DIRECTIONS.forEach(direction => {
+			const multiplier = stopOnBreak ? Math.min(maxResize.top, maxResize.bottom) : maxResize[direction];
+			if (multiplier !== Infinity) {
+				directions[direction] *= multiplier;
+			}
+		});
+		VERTICAL_DIRECTIONS.forEach(direction => {
+			const multiplier = stopOnBreak ? Math.min(maxResize.top, maxResize.bottom) : maxResize[direction];
+			if (multiplier !== Infinity) {
+				directions[direction] *= multiplier;
+			}
+		});
+	}
+
+	currentWidth = getCurrentWidth(coordinates, directions);
+	currentHeight = getCurrentHeight(coordinates, directions);
+
+	if (directions.right + directions.left) {
+		if (currentWidth > restrictions.maxWidth) {
+			maxResize.width = (restrictions.maxWidth - coordinates.width) / (directions.right + directions.left);
+		} else if (currentWidth < restrictions.minWidth) {
+			maxResize.width = (restrictions.minWidth - coordinates.width) / (directions.right + directions.left);
+		}
+	}
+
+	if (directions.bottom + directions.top) {
+		if (currentHeight > restrictions.maxHeight) {
+			maxResize.height = (restrictions.maxHeight - coordinates.height) / (directions.bottom + directions.top);
+		} else if (currentHeight < restrictions.minHeight) {
+			maxResize.height = (restrictions.minHeight - coordinates.height) / (directions.bottom + directions.top);
+		}
+	}
+
+	if (preserveAspectRatio) {
+		const multiplier = Math.min(maxResize.width, maxResize.height);
+		if (multiplier !== Infinity) {
+			ALL_DIRECTIONS.forEach(direction => {
+				directions[direction] *= multiplier;
+			});
+		}
+	}
+	else {
+		if (maxResize.width !== Infinity) {
+			HORIZONTAL_DIRECTIONS.forEach(direction => {
+				directions[direction] *= maxResize.width;
+			});
+		}
+		if (maxResize.height !== Infinity) {
+			VERTICAL_DIRECTIONS.forEach(direction => {
+				directions[direction] *= maxResize.height;
 			});
 		}
 	}
@@ -150,7 +155,21 @@ function fitConditions(oldDirections, coordinates, restrictions, coefficient, im
 	return directions;
 }
 
-export function resize ({ coordinates, restrictions, imageSize, coefficient, aspectRatio, resizeEvent }) {
+
+
+function getBrokenRatio(currentWidth, currentHeight, aspectRatio, actualCoordinates, preserveAspectRatio) {
+	let ratioBroken;
+	if (aspectRatio.minimum && currentWidth / currentHeight < aspectRatio.minimum) {
+		ratioBroken = aspectRatio.minimum;
+	} else if (aspectRatio.maximum && currentWidth / currentHeight > aspectRatio.maximum) {
+		ratioBroken = aspectRatio.maximum;
+	} else if (preserveAspectRatio) {
+		ratioBroken = actualCoordinates.width / actualCoordinates.height;
+	}
+	return ratioBroken;
+}
+
+export function resize ({ coordinates, restrictions, allowedArea, aspectRatio, resizeEvent }) {
 	const actualCoordinates = {
 		...coordinates,
 		right: coordinates.left + coordinates.width,
@@ -170,51 +189,41 @@ export function resize ({ coordinates, restrictions, imageSize, coefficient, asp
 		top: true,
 	};
 
-	Object.keys(allowedDirections).forEach(direction => {
+	ALL_DIRECTIONS.forEach(direction => {
 		if (!allowedDirections[direction]) {
 			directions[direction] = 0;
 		}
 	});
 
-	let currentWidth = getCurrentWidth(actualCoordinates, directions, coefficient);
-	let currentHeight = getCurrentHeight(actualCoordinates, directions, coefficient);
-
-	// 1. First step: fit desired box to existing limits to prevent unpredictable behaviour during aspect ratio fixing
-	directions = fitConditions(directions, actualCoordinates, restrictions, coefficient, imageSize);
+	// 1. First step: determine the safe and desired area
+	directions = fitConditions({ directions, restrictions, coordinates: actualCoordinates, allowedArea, stopOnBreak: params.stopOnBreak });
 
 	// 2. Second step: fix desired box to correspondent to aspect ratio
-	currentWidth = getCurrentWidth(actualCoordinates, directions, coefficient);
-	currentHeight = getCurrentHeight(actualCoordinates, directions, coefficient);
+	let currentWidth = getCurrentWidth(actualCoordinates, directions);
+	let currentHeight = getCurrentHeight(actualCoordinates, directions);
 
 	// Checks ratio:
-	let ratioBroken = null;
-	if (params.preserveAspectRatio) {
-		ratioBroken = actualCoordinates.width / actualCoordinates.height;
-	} else if (aspectRatio.minimum && currentWidth / currentHeight < aspectRatio.minimum) {
-		ratioBroken = aspectRatio.minimum;
-	} else if (aspectRatio.maximum && currentWidth / currentHeight > aspectRatio.maximum) {
-		ratioBroken = aspectRatio.maximum;
-	}
+	let ratioBroken = getBrokenRatio(currentWidth, currentHeight, aspectRatio, actualCoordinates, params.preserveAspectRatio);
 
 	if (ratioBroken) {
 		let { respectDirection, } = params;
 		if (!respectDirection) {
-			if (actualCoordinates.width > actualCoordinates.height) {
+			if (actualCoordinates.width >= actualCoordinates.height || ratioBroken == 1) {
 				respectDirection = 'width';
 			} else {
 				respectDirection = 'height';
 			}
 		}
 		if (respectDirection === 'width') {
-			let overlapHeight = actualCoordinates.height - currentWidth / ratioBroken;
-			if (allowedDirections.top && allowedDirections.bottom) {
-				directions.bottom = -overlapHeight / (2 * coefficient);
-				directions.top = -overlapHeight / (2 * coefficient);
-			} else if (allowedDirections.top) {
-				directions.top = -overlapHeight / coefficient;
+			let overlapHeight = currentWidth / ratioBroken - actualCoordinates.height;
+			if ((allowedDirections.top && allowedDirections.bottom)) {
+				directions.bottom = overlapHeight / 2;
+				directions.top = overlapHeight / 2;
 			} else if (allowedDirections.bottom) {
-				directions.bottom = -overlapHeight / coefficient;
-			} else if (allowedDirections.right) {
+				directions.bottom = overlapHeight;
+			} else if (allowedDirections.top) {
+				directions.top = overlapHeight;
+			}  else if (allowedDirections.right) {
 				directions.right = 0;
 			} else if (allowedDirections.left) {
 				directions.left = 0;
@@ -222,58 +231,75 @@ export function resize ({ coordinates, restrictions, imageSize, coefficient, asp
 		} else if (respectDirection === 'height') {
 			let overlapWidth = actualCoordinates.width - currentHeight * ratioBroken;
 			if (allowedDirections.left && allowedDirections.right) {
-				directions.left = -overlapWidth / (2 * coefficient);
-				directions.right = -overlapWidth / (2 * coefficient);
+				directions.left = -overlapWidth / 2;
+				directions.right = -overlapWidth / 2;
 			} else if (allowedDirections.left) {
-				directions.left = -overlapWidth / coefficient;
+				directions.left = -overlapWidth;
 			} else if (allowedDirections.right) {
-				directions.right = -overlapWidth / coefficient;
+				directions.right = -overlapWidth;
 			} else if (allowedDirections.top) {
 				directions.top = 0;
 			} else if (allowedDirections.bottom) {
 				directions.bottom = 0;
 			}
-		} else {
-			ALL_DIRECTIONS.forEach(direction => {
-				directions[direction] *= 0;
-			});
 		}
+		// 3. Third step: check if desired box with correct aspect ratios break some limits and fit to this conditions
+		directions = fitConditions({ directions, restrictions, coordinates: actualCoordinates, allowedArea, preserveAspectRatio: true, mode: params.compensate && !params.stopOnBreak ? 'move' : 'crop' });
 	}
 
-	// 3. Third step: check if desired box with correct aspect ratios break some limits and fit to this conditions
-	directions = fitConditions(directions, actualCoordinates, restrictions, coefficient, imageSize, ratioBroken);
+	// 4. Check if ratio broken (temporary):
+	currentWidth = getCurrentWidth(actualCoordinates, directions);
+	currentHeight = getCurrentHeight(actualCoordinates, directions);
+	ratioBroken = getBrokenRatio(currentWidth, currentHeight, aspectRatio, actualCoordinates, params.preserveAspectRatio);
+	if (Math.abs(ratioBroken - currentWidth/currentHeight) > 1e-3) {
+		console.error(`Something went wrong and ratio was broken: ${currentWidth/currentHeight} instead of ${ratioBroken}`);
+		ALL_DIRECTIONS.forEach(direction => {
+			if (!allowedDirections[direction]) {
+				directions[direction] = 0;
+			}
+		});
+	}
 
-	return {
-		width: coordinates.width + coefficient * (Math.round(directions.right) + Math.round(directions.left)),
-		height: coordinates.height + coefficient * (Math.round(directions.top) + Math.round(directions.bottom)),
-		left: Math.max(0, coordinates.left - coefficient * Math.round(directions.left)),
-		top: Math.max(0, coordinates.top - coefficient * Math.round(directions.top)),
-	};
+	return move({
+		coordinates: {
+			width: coordinates.width + directions.right + directions.left,
+			height: coordinates.height + directions.top + directions.bottom,
+			left: coordinates.left,
+			top: coordinates.top,
+		},
+		allowedArea,
+		moveEvent: new MoveEvent({}, {
+			left: -directions.left,
+			top: -directions.top,
+		})
+	});
 }
 
-export function move ({ coordinates, imageSize, coefficient, moveEvent }) {
+export function move ({ coordinates, allowedArea = {}, moveEvent }) {
+
 	const directions = {
 		...moveEvent.directions,
 	};
 
 	const newCoordinates = {
-		left: coordinates.left + coefficient * directions.left,
-		top: coordinates.top + coefficient * directions.top,
+		left: coordinates.left + directions.left,
+		top: coordinates.top + directions.top,
 		width: coordinates.width,
 		height: coordinates.height,
 	};
 
-	if (newCoordinates.left < 0) {
-		newCoordinates.left = 0;
+
+	if ('left' in allowedArea && newCoordinates.left < allowedArea.left) {
+		newCoordinates.left = allowedArea.left;
 	}
-	if (newCoordinates.left + newCoordinates.width > imageSize.width) {
-		newCoordinates.left = Math.max(0, imageSize.width - newCoordinates.width);
+	if ('right' in allowedArea && newCoordinates.left + newCoordinates.width > allowedArea.right) {
+		newCoordinates.left = Math.max(0, allowedArea.right - newCoordinates.width);
 	}
-	if (newCoordinates.top < 0) {
-		newCoordinates.top = 0;
+	if ('top' in allowedArea && newCoordinates.top < allowedArea.top) {
+		newCoordinates.top = allowedArea.top;
 	}
-	if (newCoordinates.top + newCoordinates.height > imageSize.height) {
-		newCoordinates.top = Math.max(0, imageSize.height - newCoordinates.height);
+	if ('bottom' in allowedArea && newCoordinates.top + newCoordinates.height > allowedArea.bottom) {
+		newCoordinates.top = Math.max(0, allowedArea.bottom - newCoordinates.height);
 	}
 
 	return newCoordinates;
@@ -307,15 +333,25 @@ export function defaultPosition ({ cropper, image, stencilWidth, stencilHeight, 
 }
 
 // eslint-disable-next-line no-unused-vars
-export function defaultSize ({ cropper, image, minWidth, minHeight, maxWidth, maxHeight, imageWidth, imageHeight, props }) {
+export function defaultSize ({ cropper, image, minWidth, minHeight, maxWidth, maxHeight, imageWidth, imageHeight, aspectRatio, props }) {
 	let newHeight, newWidth;
-	if (maxHeight > maxWidth) {
-		newHeight = Math.max(minHeight, maxHeight * 0.8);
-		newWidth = Math.max(minWidth, maxWidth * 0.8);
-	} else {
-		newWidth = Math.max(minWidth, maxWidth * 0.8);
-		newHeight = Math.max(minHeight, maxHeight * 0.8);
+	let areaWidth = imageWidth;
+	let areaHeight = imageHeight;
+
+	const ratio = imageWidth > imageHeight ? aspectRatio.maximum : aspectRatio.minimum;
+
+	if (imageWidth / imageHeight > aspectRatio.maximum || imageWidth / imageHeight < aspectRatio.minimum) {
+		if (ratio <= 1) {
+			areaHeight = imageHeight;
+			areaWidth = areaHeight * aspectRatio.maximum;
+		} else {
+			areaWidth = imageWidth;
+			areaHeight = areaWidth / aspectRatio.minimum;
+		}
 	}
+
+	newHeight = Math.min(maxHeight, Math.max(minHeight, areaHeight * 0.8));
+	newWidth = Math.min(maxWidth, Math.max(minWidth, areaWidth * 0.8));
 
 	return {
 		height: newHeight,
@@ -329,5 +365,196 @@ export function percentRestrictions({ minWidth, minHeight, maxWidth, maxHeight, 
 		minHeight: minHeight / 100 * imageHeight,
 		maxWidth: maxWidth ? maxWidth / 100 * imageWidth : imageWidth,
 		maxHeight: maxHeight ? maxHeight / 100 * imageHeight : imageHeight,
+	};
+}
+
+export function autoZoom({ coordinates, stencilCoordinates: originalStencilCoordinates, worldTransforms: originalWorldTransforms, coefficient, imageSize }) {
+	const worldTransforms = {
+		...originalWorldTransforms
+	};
+
+	const stencilCoordinates = {
+		width: worldTransforms.scale * coordinates.width / coefficient,
+		height: worldTransforms.scale * coordinates.height / coefficient,
+		left: originalStencilCoordinates.left,
+		top: originalStencilCoordinates.top,
+	};
+
+	worldTransforms.shift.left -= (coordinates.left * worldTransforms.scale + worldTransforms.shift.left) - originalStencilCoordinates.left * coefficient;
+	worldTransforms.shift.top -= (coordinates.top * worldTransforms.scale + worldTransforms.shift.top) - originalStencilCoordinates.top * coefficient;
+
+	// 1. Scale the image, if the stencil is too big
+	let multiplier = 1;
+	if (stencilCoordinates.width > imageSize.width / coefficient) {
+		multiplier = Math.min(multiplier, imageSize.width / coefficient / stencilCoordinates.width);
+	}
+	if (stencilCoordinates.height > imageSize.height / coefficient) {
+		multiplier = Math.min(multiplier, imageSize.height / coefficient / stencilCoordinates.height);
+	}
+
+	if (multiplier !== 1) {
+		worldTransforms.scale *= multiplier;
+		stencilCoordinates.left += stencilCoordinates.width * (1 - multiplier)/2;
+		stencilCoordinates.top += stencilCoordinates.height * (1 - multiplier)/2;
+		worldTransforms.shift.left = stencilCoordinates.left * coefficient - (coordinates.left) * worldTransforms.scale;
+		worldTransforms.shift.top = stencilCoordinates.top * coefficient - (coordinates.top) * worldTransforms.scale;
+		stencilCoordinates.width *= multiplier;
+		stencilCoordinates.height *= multiplier;
+	}
+
+	// 2. Move the stencil to prevent breaking borders
+	if (stencilCoordinates.left < 0) {
+		worldTransforms.shift.left -= stencilCoordinates.left * coefficient;
+		stencilCoordinates.left = 0;
+	}
+
+	if (stencilCoordinates.top < 0) {
+		worldTransforms.shift.top -= stencilCoordinates.top * coefficient;
+		stencilCoordinates.top = 0;
+	}
+
+	if (stencilCoordinates.left + stencilCoordinates.width > imageSize.width / coefficient) {
+		worldTransforms.shift.left -= (stencilCoordinates.left + stencilCoordinates.width) * coefficient - imageSize.width;
+		stencilCoordinates.left = imageSize.width / coefficient - stencilCoordinates.width;
+	}
+
+	if (stencilCoordinates.top + stencilCoordinates.height > imageSize.height / coefficient) {
+		worldTransforms.shift.top -= (stencilCoordinates.top + stencilCoordinates.height) * coefficient - imageSize.height;
+		stencilCoordinates.top = imageSize.height / coefficient - stencilCoordinates.height;
+	}
+
+	// 3. Move the image to prevent breaking borders:
+	const scaledImageSize = {
+		width: imageSize.width * worldTransforms.scale,
+		height: imageSize.height * worldTransforms.scale,
+	};
+
+	if (worldTransforms.shift.left > 0) {
+		stencilCoordinates.left -= worldTransforms.shift.left / coefficient;
+		worldTransforms.shift.left = 0;
+	}
+	if (worldTransforms.shift.left < imageSize.width - scaledImageSize.width) {
+		stencilCoordinates.left -= (worldTransforms.shift.left - (imageSize.width - scaledImageSize.width)) / coefficient;
+		worldTransforms.shift.left = imageSize.width - scaledImageSize.width;
+	}
+	if (worldTransforms.shift.top > 0) {
+		stencilCoordinates.top -= worldTransforms.shift.top / coefficient;
+		worldTransforms.shift.top = 0;
+	}
+	if (worldTransforms.shift.top < imageSize.height - scaledImageSize.height) {
+		stencilCoordinates.top -= (worldTransforms.shift.top - (imageSize.height - scaledImageSize.height)) / coefficient;
+		worldTransforms.shift.top = imageSize.height - scaledImageSize.height;
+	}
+
+	return {
+		stencilCoordinates,
+		worldTransforms
+	};
+}
+
+export function manipulateImage({ manipulateImageEvent, coordinates, stencilRestrictions, coefficient, stencilCoordinates, worldTransforms: originalWorldTransforms, imageSize, frozenDirections }) {
+	let { scale, move } = manipulateImageEvent;
+
+	const worldTransforms = { ...originalWorldTransforms };
+
+	const scaledImageSize = {
+		width: imageSize.width * worldTransforms.scale,
+		height: imageSize.height * worldTransforms.scale,
+	};
+
+	const imageShifts = {
+		left: move.left || 0,
+		top: move.top || 0,
+	};
+
+	let scaleImage = 1;
+	let scaleStencil = 1;
+
+	// If there is scaling then begin scale
+	if (!frozenDirections.width && !frozenDirections.height && Math.abs(scale.factor - 1) > 1e-3) {
+		const epsilon = Math.abs(1 - scaleImage) / 2;
+		const { maxWidth, maxHeight, minWidth, minHeight } = stencilRestrictions;
+
+		scaleImage = scale.factor;
+
+		// Determine allowed resize:
+		if (worldTransforms.scale / scaleImage < 1 + epsilon) {
+			scaleImage = worldTransforms.scale;
+		}
+
+		let width = coordinates.width * scaleImage;
+		let height = coordinates.height * scaleImage;
+
+		// Prevent breaking the restrictions
+		const breaks = {
+			minWidth: width < minWidth + epsilon,
+			minHeight: height < minHeight + epsilon,
+			maxWidth: width > maxWidth - epsilon,
+			maxHeight: height > maxHeight - epsilon,
+		};
+
+		if (breaks.minWidth) {
+			scaleImage = minWidth / coordinates.width;
+		}
+		if (breaks.minHeight) {
+			scaleImage = minHeight / coordinates.height;
+		}
+		if (breaks.maxHeight || breaks.maxWidth) {
+			let allowedImageScale = scaleImage;
+			if (breaks.maxWidth && breaks.maxHeight) {
+				allowedImageScale = Math.min(maxHeight / coordinates.height, coordinates.width);
+			} else if (breaks.maxHeight) {
+				allowedImageScale = maxHeight / coordinates.height;
+			} else if (breaks.maxWidth) {
+				allowedImageScale = maxWidth / coordinates.width;
+			}
+			scaleStencil = allowedImageScale / scaleImage;
+		}
+
+		const imageSizeChanges = {
+			width: scaledImageSize.width * (1 - 1/scaleImage),
+			height:  scaledImageSize.height * (1- 1/scaleImage),
+		};
+
+		imageShifts.left += imageSizeChanges.width * Math.abs((worldTransforms.shift.left - scale.center.left * coefficient) / scaledImageSize.width);
+		imageShifts.top += imageSizeChanges.height * Math.abs((worldTransforms.shift.top - scale.center.top * coefficient) / scaledImageSize.height);
+
+		scaledImageSize.width /= scaleImage;
+		scaledImageSize.height /= scaleImage;
+	}
+
+	// Process the moving:
+	if (Math.ceil(worldTransforms.shift.left + imageShifts.left) > 0) {
+		imageShifts.left = -worldTransforms.shift.left;
+	} else if (worldTransforms.shift.left + imageShifts.left < imageSize.width - scaledImageSize.width) {
+		imageShifts.left = imageSize.width - scaledImageSize.width  - worldTransforms.shift.left;
+	}
+
+	if (Math.ceil(worldTransforms.shift.top + imageShifts.top) > 0) {
+		imageShifts.top = -worldTransforms.shift.top;
+	} else if (worldTransforms.shift.top + imageShifts.top < imageSize.height - scaledImageSize.height) {
+		imageShifts.top = imageSize.height - scaledImageSize.height - worldTransforms.shift.top;
+	}
+
+	worldTransforms.shift.left += imageShifts.left;
+	worldTransforms.shift.top += imageShifts.top;
+	worldTransforms.scale = worldTransforms.scale / scaleImage;
+
+	const stencilResizeAmends = { left: 0, top: 0 };
+	if (imageSize.width !== coordinates.width) {
+		stencilResizeAmends.left = stencilCoordinates.width * (1 - scaleStencil) * (coordinates.left / (imageSize.width - coordinates.width));
+	}
+	if (imageSize.height !== coordinates.height) {
+		stencilResizeAmends.top = stencilCoordinates.height * (1 - scaleStencil) * (coordinates.top / (imageSize.height - coordinates.height));
+	}
+
+	return {
+		coordinates: {
+			width: coordinates.width * scaleImage * scaleStencil,
+			height: coordinates.height * scaleImage * scaleStencil,
+			left: (stencilCoordinates.left - worldTransforms.shift.left / coefficient + stencilResizeAmends.left) * coefficient / worldTransforms.scale,
+			top: (stencilCoordinates.top - worldTransforms.shift.top / coefficient + stencilResizeAmends.top) * coefficient / worldTransforms.scale,
+		},
+		worldTransforms
 	};
 }

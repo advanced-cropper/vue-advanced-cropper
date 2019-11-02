@@ -59,6 +59,10 @@ export default {
 				return {};
 			},
 		},
+		scalable: {
+			type: Boolean,
+			default: true
+		}
 	},
 	data() {
 		const points = [];
@@ -102,11 +106,13 @@ export default {
 						component: this.lineComponent,
 						classname: classnames(
 							this.classnames.lines.default,
-							this.classnames.lines[point.name]
+							this.classnames.lines[point.name],
+							!this.scalable && this.classnames.lines.disabled
 						),
 						hoverClassname: this.classnames.lines.hover,
 						verticalDirection: point.verticalDirection,
 						horizontalDirection: point.horizontalDirection,
+						disabled: !this.scalable
 					});
 				}
 			});
@@ -126,6 +132,7 @@ export default {
 						hoverClassname: this.classnames.handlers.hover,
 						verticalDirection: point.verticalDirection,
 						horizontalDirection: point.horizontalDirection,
+						disabled: !this.scalable
 					});
 				}
 			});
@@ -177,20 +184,22 @@ export default {
 				respectDirection = 'height';
 			}
 
-			this.$emit('resize', new ResizeEvent(
-				dragEvent.nativeEvent,
-				directions,
-				{
-					allowedDirections: {
-						left: horizontalDirection === 'west' || !horizontalDirection,
-						right: horizontalDirection === 'east' || !horizontalDirection,
-						bottom: verticalDirection === 'south' || !verticalDirection,
-						top: verticalDirection === 'north' || !verticalDirection,
-					},
-					preserveAspectRatio: dragEvent.nativeEvent.shiftKey,
-					respectDirection,
-				}
-			));
+			if (this.scalable) {
+				this.$emit('resize', new ResizeEvent(
+					dragEvent.nativeEvent,
+					directions,
+					{
+						allowedDirections: {
+							left: horizontalDirection === 'west' || !horizontalDirection,
+							right: horizontalDirection === 'east' || !horizontalDirection,
+							bottom: verticalDirection === 'south' || !verticalDirection,
+							top: verticalDirection === 'north' || !verticalDirection,
+						},
+						preserveAspectRatio: dragEvent.nativeEvent.shiftKey,
+						respectDirection,
+					}
+				));
+			}
 		},
 	},
 };
@@ -210,6 +219,7 @@ export default {
         :classname="line.classname"
         :hover-classname="line.hoverClassname"
         :position="line.name"
+        :disabled="line.disabled"
         @drag="onHandlerDrag($event, line.horizontalDirection, line.verticalDirection)"
       />
     </div>
@@ -222,6 +232,7 @@ export default {
         :hover-classname="handler.hoverClassname"
         :horizontal-position="handler.horizontalDirection"
         :vertical-position="handler.verticalDirection"
+        :disabled="handler.disabled"
         @drag="onHandlerDrag($event, handler.horizontalDirection, handler.verticalDirection)"
       />
     </div>
@@ -233,30 +244,5 @@ export default {
   position: relative;
   height: 100%;
   width: 100%;
-  &__line {
-    position: absolute;
-    &--north {
-      top: 0;
-      width: 100%;
-      cursor: n-resize;
-    }
-    &--east {
-      left: 100%;
-      top: 0;
-      height: 100%;
-      cursor: e-resize;
-    }
-    &--south {
-      top: 100%;
-      width: 100%;
-      cursor: s-resize;
-    }
-    &--west {
-      left: 0;
-      top: 0;
-      height: 100%;
-      cursor: w-resize;
-    }
-  }
 }
 </style>

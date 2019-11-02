@@ -4,3 +4,4 @@ export { default as BoundingBox } from './BoundingBox.vue';
 export { default as DraggableArea } from './DraggableArea.vue';
 export { default as PreviewResult } from './PreviewResult.vue';
 export { default as DraggableElement } from './DraggableElement.vue';
+export { default as CropperWrapper } from './CropperWrapper.vue';

@@ -1,13 +1,23 @@
 <script>
 import classnames from 'classnames';
 import bem from 'easy-bem';
-
-import { ResizeEvent, MoveEvent } from '../../core/events.js';
+import { distance } from '../../core/utils';
+import { MoveEvent } from '../../core/events.js';
 
 const cn = bem('vue-draggable-area');
 
 export default {
 	name: 'DraggableArea',
+	props: {
+		movable: {
+			type: Boolean,
+			default: true,
+		},
+		activationDistance: {
+			type: Number,
+			default: 10,
+		}
+	},
 	computed: {
 		classnames() {
 			return {
@@ -29,50 +39,51 @@ export default {
 	},
 	mounted() {
 		this.touches = [];
-		this.draggingAnchor = [];
+		this.touchStarted = false;
 	},
 	methods: {
 		onTouchStart(e) {
 			if (e.cancelable) {
-				this.touches = [...e.touches];
-
-				if (e.touches.length) {
-					this.initAnchor(this.touches.reduce((mean, touch) => {
-						return {
-							clientX: mean.clientX + touch.clientX / e.touches.length,
-							clientY: mean.clientY + touch.clientY / e.touches.length,
-						};
-					}, { clientX: 0, clientY: 0, }));
+				const shouldStartMove = this.movable && e.touches.length === 1;
+				if (shouldStartMove) {
+					this.touches = [...e.touches];
 				}
-				if (e.preventDefault) {
+				if (this.touchStarted || shouldStartMove) {
 					e.preventDefault();
-				}
-				e.stopPropagation();
-			}
-		},
-		onTouchEnd() {
-			this.processEnd();
-		},
-		onTouchMove(e) {
-			if (this.touches.length) {
-				this.processMove(e, e.touches);
-				if (e.preventDefault) {
-					e.preventDefault();
-				}
-				if (e.stopPropagation) {
 					e.stopPropagation();
 				}
 			}
 		},
+		onTouchEnd() {
+			this.touchStarted = false;
+			this.processEnd();
+		},
+		onTouchMove(e) {
+			if (this.touches.length >= 1) {
+				if (this.touchStarted) {
+					this.processMove(e, e.touches);
+					e.preventDefault();
+					e.stopPropagation();
+				} else if (distance({ x: this.touches[0].clientX, y: this.touches[0].clientY }, { x: e.touches[0].clientX, y: e.touches[0].clientY }) > this.activationDistance) {
+					this.initAnchor({
+						clientX: e.touches[0].clientX,
+						clientY: e.touches[0].clientY,
+					});
+					this.touchStarted = true;
+				}
+			}
+		},
 		onMouseDown(e) {
-			const touch = {
-				fake: true,
-				clientX: e.clientX,
-				clientY: e.clientY,
-			};
-			this.touches = [touch];
-			this.initAnchor(touch);
-			e.stopPropagation();
+			if (this.movable) {
+				const touch = {
+					fake: true,
+					clientX: e.clientX,
+					clientY: e.clientY,
+				};
+				this.touches = [touch];
+				this.initAnchor(touch);
+				e.stopPropagation();
+			}
 		},
 		onMouseMove(e) {
 			if (this.touches.length) {
@@ -84,6 +95,7 @@ export default {
 				if (e.preventDefault  && e.cancelable) {
 					e.preventDefault();
 				}
+				e.stopPropagation();
 			}
 		},
 		onMouseUp() {
@@ -102,58 +114,13 @@ export default {
 			const newTouches = [...touches];
 			if (this.touches.length) {
 				const container = this.$refs.container;
-
 				const { left, top, } = container.getBoundingClientRect();
-
 				if (this.touches.length === 1 && newTouches.length === 1) {
 					this.$emit('move', new MoveEvent(event, {
 						left: (newTouches[0].clientX - left - this.anchor.x),
 						top: (newTouches[0].clientY - top - this.anchor.y),
 					}));
-				} else if (this.touches.length > 1 && this.touches.length === newTouches.length) {
-					const vectors = newTouches.map((touch, index) => ({
-						x: touch.clientX - this.touches[index].clientX,
-						y: touch.clientY - this.touches[index].clientY,
-						position: {
-							clientX: touch.clientX,
-							clientY: touch.clientY,
-						},
-						length: Math.sqrt(
-							Math.pow(touch.clientX - this.touches[index].clientX, 2) + Math.pow(touch.clientY - this.touches[index].clientY, 2)
-						),
-					}));
-
-					const summaryShift = vectors.reduce((shift, vector) => shift + vector.length, 0);
-
-					const massPoint = {
-						left: vectors.reduce((value, vector, index) => value + (1 - vector.length / summaryShift) * newTouches[index].clientX, 0),
-						top: vectors.reduce((value, vector, index) => value + (1 - vector.length / summaryShift) * newTouches[index].clientY, 0),
-					};
-
-					let directions = {
-						top: 0,
-						bottom: 0,
-						left: 0,
-						right: 0,
-					};
-
-					vectors.forEach((vector, index) => {
-						if (vector.length / summaryShift > 0.25) {
-							if (newTouches[index].clientY > massPoint.top) {
-								directions.bottom += vector.y;
-							} else {
-								directions.top -= vector.y;
-							}
-							if (newTouches[index].clientX > massPoint.left) {
-								directions.right += vector.x;
-							} else {
-								directions.left -= vector.x;
-							}
-						}
-					});
-					this.$emit('resize', new ResizeEvent(event, directions));
 				}
-				this.touches = newTouches;
 			}
 		},
 		processEnd() {

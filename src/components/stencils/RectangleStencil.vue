@@ -72,11 +72,19 @@ export default {
 		maxAspectRatio: {
 			type: [Number, String],
 		},
+		movable: {
+			type: Boolean,
+			default: true,
+		},
+		scalable: {
+			type: Boolean,
+			default: true,
+		},
 	},
 	computed: {
 		classes() {
 			return {
-				stencil: classnames(cn(), this.classname),
+				stencil: classnames(cn({ movable: this.movable }), this.classname),
 				preview: classnames(cn('preview'), this.previewClassname),
 				boundingBox: classnames(cn('bounding-box'), this.boundingBoxClassname),
 			};
@@ -121,9 +129,13 @@ export default {
       :lines="lines"
       :line-component="lineComponent"
       :lines-classnames="linesClassnames"
+      :scalable="scalable"
       @resize="onResize"
     >
-      <DraggableArea @move="onMove">
+      <DraggableArea
+        :movable="movable"
+        @move="onMove"
+      >
         <PreviewResult
           :img="img"
           :classname="classes.preview"
@@ -141,6 +153,8 @@ export default {
   height: 100%;
   width: 100%;
   box-sizing: border-box;
-  cursor: move;
+  &--movable {
+    cursor: move;
+  }
 }
 </style>

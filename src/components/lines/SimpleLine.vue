@@ -20,6 +20,10 @@ export default {
 		position: {
 			type: String,
 		},
+		disabled: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	data() {
 		return {
@@ -30,7 +34,7 @@ export default {
 		classnames() {
 			return {
 				default: classnames(
-					cn({ [this.position]: true, }),
+					cn({ [this.position]: true }),
 					this.classname,
 					this.hover && this.hoverClassname
 				),
@@ -54,6 +58,7 @@ export default {
 <template>
   <LineWrapper
     :position="position"
+    :disabled="disabled"
     @enter="onEnter"
     @leave="onLeave"
     @drag="onDrag"

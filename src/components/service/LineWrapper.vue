@@ -14,10 +14,14 @@ export default {
 			type: String,
 			required: true,
 		},
+		disabled: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	computed: {
 		classname() {
-			return cn({ [this.position]: true, });
+			return cn({ [this.position]: true, disabled: this.disabled });
 		},
 	},
 };
@@ -26,6 +30,7 @@ export default {
 <template>
   <DraggableElement
     :class="classname"
+    :disabled="disabled"
     @drag="$emit('drag', $event)"
     @leave="$emit('leave')"
     @enter="$emit('enter')"
@@ -72,6 +77,9 @@ export default {
   &--west {
     left: 0;
     cursor: w-resize;
+  }
+  &--disabled {
+    cursor: auto;
   }
 }
 </style>

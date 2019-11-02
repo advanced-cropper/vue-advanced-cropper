@@ -23,6 +23,10 @@ export default {
 		verticalPosition: {
 			type: String,
 		},
+		disabled: {
+			type: Boolean,
+			default: false,
+		}
 	},
 	computed: {
 		classnames() {
@@ -53,6 +57,7 @@ export default {
   <HandlerWrapper
     :vertical-position="verticalPosition"
     :horizontal-position="horizontalPosition"
+    :disabled="disabled"
     @drag="onDrag"
   >
     <div :class="classnames.default" />

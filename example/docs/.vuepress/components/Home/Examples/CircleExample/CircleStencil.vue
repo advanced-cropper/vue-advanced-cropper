@@ -41,12 +41,9 @@ export default {
 		},
 		onHandlerMove(dragEvent) {
 			const shift = dragEvent.shift();
-
 			const widthResize = shift.left/2;
 			const heightResize = -shift.top/2;
 			const { height, width, left, top, } = this.resultCoordinates;
-			const coefficient = width / this.stencilCoordinates.width;
-
 			this.$emit('resize', new ResizeEvent(
 				dragEvent.nativeEvent,
 				{
@@ -54,8 +51,11 @@ export default {
 					right: widthResize,
 					top: heightResize,
 					bottom: heightResize,
+				},
+				{
+					compensate: true,
 				}
-			));
+			))
 		},
 		aspectRatios() {
 			return {

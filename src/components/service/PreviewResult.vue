@@ -60,25 +60,26 @@ export default {
 			const imageTransforms = this.img.transforms;
 			const imageWidth = this.img.size.width;
 			const imageHeight = this.img.size.height;
-			const coefficient = this.stencilCoordinates.height / this.resultCoordinates.height;
-			const height = imageHeight * coefficient;
-			const width = imageWidth * coefficient;
+			const coefficient = this.img.coefficient;
+			const height = imageHeight / coefficient;
+			const width = imageWidth / coefficient;
 			const flipped = imageTransforms.flipped;
 
 			const result = {
 				width: `${width}px`,
 				height: `${height}px`,
 			};
+
 			if (flipped) {
 				result.width = `${height}px`;
 				result.height = `${width}px`;
-				result.left = `${-this.stencilCoordinates.left - (height - width)/2}px`;
-				result.top = `${-this.stencilCoordinates.top - (width - height)/2}px`;
+				result.left = `${-this.stencilCoordinates.left - (height - width)/2 + imageTransforms.translateX}px`;
+				result.top = `${-this.stencilCoordinates.top - (width - height)/2 + imageTransforms.translateY}px`;
 			} else {
 				result.width = `${width}px`;
 				result.height = `${height}px`;
-				result.left = `${-this.stencilCoordinates.left}px`;
-				result.top = `${-this.stencilCoordinates.top}px`;
+				result.left = `${-this.stencilCoordinates.left + imageTransforms.translateX}px`;
+				result.top = `${-this.stencilCoordinates.top + imageTransforms.translateY}px`;
 			}
 			result.transform = getStyleTransforms(imageTransforms);
 			return result;

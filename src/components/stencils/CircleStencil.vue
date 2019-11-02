@@ -74,6 +74,14 @@ export default {
 		boundingBoxClassname: {
 			type: String,
 		},
+		movable: {
+			type: Boolean,
+			default: true,
+		},
+		scalable: {
+			type: Boolean,
+			default: true,
+		},
 	},
 	computed: {
 		classes() {
@@ -123,9 +131,13 @@ export default {
       :lines="lines"
       :line-component="lineComponent"
       :lines-classnames="linesClassnames"
+      :scalable="scalable"
       @resize="onResize"
     >
-      <DraggableArea @move="onMove">
+      <DraggableArea
+        :movable="movable"
+        @move="onMove"
+      >
         <PreviewResult
           :img="img"
           :classname="classes.preview"
