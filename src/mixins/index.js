@@ -1,1 +1,1 @@
-export { default as handler } from './handler.js';
+export { default as draggable } from './draggable.js';

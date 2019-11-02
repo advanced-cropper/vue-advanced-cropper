@@ -1,5 +1,14 @@
+export class ManipulateImageEvent {
+	constructor(nativeEvent, move = {}, scale = {}, params = {}) {
+		this.nativeEvent = nativeEvent;
+		this.move = move;
+		this.scale = scale;
+		this.params = params;
+	}
+}
+
 export class ResizeEvent {
-	constructor(nativeEvent, directions, params) {
+	constructor(nativeEvent, directions, params = {}) {
 		this.nativeEvent = nativeEvent;
 		this.directions = directions;
 		this.params = params;

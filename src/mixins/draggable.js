@@ -37,7 +37,7 @@ export default {
 			}
 		},
 		onTouchStart (e) {
-			if (e.cancelable) {
+			if (e.cancelable && !this.disabled && e.touches.length === 1) {
 				this.touches = [...e.touches];
 
 				if (!this.hovered) {
@@ -78,14 +78,16 @@ export default {
 			}
 		},
 		onMouseDown (e) {
-			const touch = {
-				fake: true,
-				clientX: e.clientX,
-				clientY: e.clientY,
-			};
-			this.touches = [touch];
-			this.initAnchor(touch);
-			e.stopPropagation();
+			if (!this.disabled) {
+				const touch = {
+					fake: true,
+					clientX: e.clientX,
+					clientY: e.clientY,
+				};
+				this.touches = [touch];
+				this.initAnchor(touch);
+				e.stopPropagation();
+			}
 		},
 		onMouseMove (e) {
 			if (this.touches.length) {

@@ -41,7 +41,9 @@ export default {
 			id: 'vue-advanced-cropper'
 		}),
 		url(),
-		minify(),
+		minify({
+			comments: false
+		}),
 		babel({
 			exclude: '/node_modules/**',
 			extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.vue'],

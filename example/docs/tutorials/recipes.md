@@ -308,6 +308,38 @@ new Vue({
 </div>
 ```
 
+
+## Fixed stencil
+
+There is the example of a fixed stencil below, that may be useful for mobile devices.
+<mobile-fixed-example></mobile-fixed-example>
+
+```html
+<script>
+import { Cropper } from 'vue-advanced-cropper';
+
+export default {
+	components: {
+		Cropper,
+	},
+};
+</script>
+```
+
+```html
+<div id="app">
+	<Cropper
+		src="https://images.unsplash.com/photo-1527137342181-19aab11a8ee8?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80"
+		:stencil-props="{
+		  handlers: {},
+		  movable: false,
+		  scalable: false,
+		  aspectRatio: 1,
+      }"
+	/>
+</div>
+```
+
 ## Set coordinates
 
 Usually an user changes the coordinates of a stencil, but sometimes you need to set its coordinates programmatically. There is the special method to do it: [setCoordinates](/components/cropper.html#setcoordinates-transform). It applies your changes respect to existing limitation (aspect ratios, minimum size and etc.)
