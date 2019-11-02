@@ -375,12 +375,7 @@ export default {
 					}
 				}, this.transitionTime);
 			} else {
-				this.onChangeCoordinates({
-					left: 0,
-					top: 0,
-					width: 0,
-					height: 0,
-				}, false);
+				this.clearImage();
 			}
 		},
 		onParseImage({ arrayBuffer, orientation }) {
@@ -588,57 +583,72 @@ export default {
 			this.delayedTransforms = null;
 			this.imageLoaded = true;
 		},
-		refreshImage() {
-			const image = this.$refs.image;
+		clearImage() {
 			const stretcher = this.$refs.stretcher;
-
-			if (this.imageTransforms.flipped) {
-				this.imageSize.height = image.naturalWidth;
-				this.imageSize.width = image.naturalHeight;
-			} else {
-				this.imageSize.height = image.naturalHeight;
-				this.imageSize.width = image.naturalWidth;
-			}
-
-			const aspectRatio = this.imageSize.width / this.imageSize.height;
-
-			if (this.imageSize.height > this.imageSize.width) {
-				stretcher.style.height = `${this.imageSize.height}px`;
-				stretcher.style.width = `${stretcher.clientHeight * aspectRatio}px`;
-				if (stretcher.clientWidth / stretcher.clientHeight !== aspectRatio) {
-					stretcher.style.height = `${stretcher.clientWidth / aspectRatio}px`;
-				}
-
-			} else {
-				stretcher.style.width = `${this.imageSize.width}px`;
-				stretcher.style.height = `${stretcher.clientWidth / aspectRatio }px`;
-				if (stretcher.clientHeight / stretcher.clientWidth !== aspectRatio) {
-					stretcher.style.width = `${stretcher.clientHeight * aspectRatio}px`;
-				}
-			}
-
-			return new Promise(resolve => {
-				const cropper = this.$refs.cropper;
+			this.imageLoaded = false;
+			this.onChangeCoordinates({
+				left: 0,
+				top: 0,
+				width: 0,
+				height: 0,
+			}, false);
+			setTimeout(() => {
+				stretcher.style.height = 'auto';
+				stretcher.style.width = 'auto';
+			}, this.transitionTime);
+		},
+		refreshImage() {
+			if (this.src) {
 				const image = this.$refs.image;
+				const stretcher = this.$refs.stretcher;
 
-				Vue.nextTick(() => {
-					const { height, width, } = migrateAlgorithm(this.areaSize, 'areaSize', (args) => ([
-						args.cropper, args.image, args.imageWidth, args.imageHeight
-					]))({
-						cropper,
-						image,
-						imageWidth: this.imageSize.width,
-						imageHeight: this.imageSize.height
+				if (this.imageTransforms.flipped) {
+					this.imageSize.height = image.naturalWidth;
+					this.imageSize.width = image.naturalHeight;
+				} else {
+					this.imageSize.height = image.naturalHeight;
+					this.imageSize.width = image.naturalWidth;
+				}
+
+				const aspectRatio = this.imageSize.width / this.imageSize.height;
+
+				if (this.imageSize.height > this.imageSize.width) {
+					stretcher.style.height = `${this.imageSize.height}px`;
+					stretcher.style.width = `${stretcher.clientHeight * aspectRatio}px`;
+					if (stretcher.clientWidth / stretcher.clientHeight !== aspectRatio) {
+						stretcher.style.height = `${stretcher.clientWidth / aspectRatio}px`;
+					}
+				} else {
+					stretcher.style.width = `${this.imageSize.width}px`;
+					stretcher.style.height = `${stretcher.clientWidth / aspectRatio }px`;
+					if (stretcher.clientHeight / stretcher.clientWidth !== aspectRatio) {
+						stretcher.style.width = `${stretcher.clientHeight * aspectRatio}px`;
+					}
+				}
+
+				return new Promise(resolve => {
+					const cropper = this.$refs.cropper;
+					const image = this.$refs.image;
+
+					Vue.nextTick(() => {
+						const { height, width, } = migrateAlgorithm(this.areaSize, 'areaSize', (args) => ([
+							args.cropper, args.image, args.imageWidth, args.imageHeight
+						]))({
+							cropper,
+							image,
+							imageWidth: this.imageSize.width,
+							imageHeight: this.imageSize.height
+						});
+						if (height) {
+							this.boundarySize.height = height;
+						}
+						if (width) {
+							this.boundarySize.width = width;
+						}
+						resolve();
 					});
-					if (height) {
-						this.boundarySize.height = height;
-					}
-					if (width) {
-						this.boundarySize.width = width;
-					}
-					resolve();
 				});
-			});
+			}
 		},
 		stencilAspectRatios() {
 			if (this.$refs.stencil.aspectRatios) {
