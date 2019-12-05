@@ -298,17 +298,23 @@ export default {
 			this.onChangeImage();
 		},
 		minWidth() {
-			this.resetCoordinates();
+			this.onPropsChange();
 		},
 		maxWidth() {
-			this.resetCoordinates();
+			this.onPropsChange();
 		},
 		minHeight() {
-			this.resetCoordinates();
+			this.onPropsChange();
 		},
 		maxHeight() {
-			this.resetCoordinates();
+			this.onPropsChange();
 		},
+		stencilProps(oldProps, newProps) {
+			const significantProps = ['aspectRatio', 'minAspectRatio', 'maxAspectRatio'];
+			if (significantProps.find(prop => oldProps[prop] !== newProps[prop])) {
+				Vue.nextTick(this.onPropsChange);
+			}
+		}
 	},
 	mounted() {
 		this.debouncedUpdate = debounce(
@@ -557,6 +563,9 @@ export default {
 				}
 				this.applyTransforms(transforms, autoZoom);
 			});
+		},
+		onPropsChange() {
+			this.applyTransforms(this.coordinates, true);
 		},
 		applyTransforms(transforms, autoZoom = false) {
 			const aspectRatio = this.stencilAspectRatios();
