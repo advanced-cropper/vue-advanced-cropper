@@ -102,6 +102,26 @@ Default: `100`
 
 The maximum height of the stencil in percents
 
+### `touchMove`
+Default: `true`
+
+The flag that indicates if image should be dragged by a touch
+
+### `touchResize`
+Default: `true`
+
+The flag that indicates if image should be resized by a pinch gesture
+
+### `mouseMove`
+Default: `true`
+
+The flag that indicates if image should be dragged by a mouse
+
+### `wheelResize`
+Default: `true`
+
+The flag that indicates if image should be resized by a mouse wheel
+
 ### `defaultPosition`
 Default: `core.defaultPosition`
 

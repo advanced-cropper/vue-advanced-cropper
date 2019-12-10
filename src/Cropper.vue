@@ -6,7 +6,7 @@ import debounce from 'debounce';
 import { RectangleStencil } from './components/stencils';
 import { CropperWrapper } from './components/service';
 import { ResizeEvent, MoveEvent } from './core/events';
-import { isLocal, isCrossOriginURL, isUndefined, addTimestamp } from './core/utils';
+import { isLocal, isCrossOriginURL, isUndefined, addTimestamp, getSettings } from './core/utils';
 import { arrayBufferToDataURL, getImageTransforms, getStyleTransforms, prepareSource, parseImage } from './core/image';
 import { ALL_DIRECTIONS } from './core/constants';
 import * as algorithms from './core/algorithms';
@@ -124,19 +124,19 @@ export default {
 			default: 300
 		},
 		wheelResize: {
-			type: Boolean,
+			type: [Boolean, Object],
 			default: true,
 		},
 		touchResize: {
-			type: Boolean,
+			type: [Boolean, Object],
 			default: true,
 		},
 		touchMove: {
-			type: Boolean,
+			type: [Boolean, Object],
 			default: true,
 		},
 		mouseMove: {
-			type: Boolean,
+			type: [Boolean, Object],
 			default: true,
 		},
 	},
@@ -186,6 +186,21 @@ export default {
 		};
 	},
 	computed: {
+		settings() {
+			const settings = {
+				touchResize: getSettings(this.touchResize),
+				touchMove: getSettings(this.touchMove),
+				mouseMove: getSettings(this.mouseMove),
+				wheelResize: getSettings(this.wheelResize, {
+					ratio: 0.1
+				}),
+			};
+			
+			// Disable some interactions for user convenience
+			settings.touchMove.enabled = settings.touchMove.enabled && this.worldTransforms.scale > 1;
+
+			return settings;
+		},
 		imageTransforms() {
 			return {
 				...this.basicImageTransforms,
@@ -813,10 +828,10 @@ export default {
     >
       <CropperWrapper
         :class="classes.cropperWrapper"
-        :wheel-resize="wheelResize"
-        :touch-resize="touchResize"
-        :touch-move="touchMove && worldTransforms.scale > 1"
-        :mouse-move="touchMove && worldTransforms.scale > 1"
+        :wheel-resize="settings.wheelResize"
+        :touch-resize="settings.touchResize"
+        :touch-move="settings.touchMove"
+        :mouse-move="settings.touchMove"
         @move="onManipulateImage"
         @resize="onManipulateImage"
       >

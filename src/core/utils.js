@@ -56,3 +56,18 @@ export function distance(firstPoint, secondPoint) {
 		Math.pow(firstPoint.x - secondPoint.x, 2) + Math.pow(firstPoint.y - secondPoint.y, 2)
 	);
 }
+
+export function getSettings(param, defaultParams = {}) {
+	if (typeof param === 'object' && param !== null) {
+		return {
+			enabled: true,
+			...defaultParams,
+			...param
+		};
+	} else {
+		return {
+			enabled: Boolean(param),
+			...defaultParams,
+		};
+	}
+}
