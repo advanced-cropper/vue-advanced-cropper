@@ -3,6 +3,7 @@ import {
 	VERTICAL_DIRECTIONS,
 	ALL_DIRECTIONS,
 } from './constants';
+
 import { MoveEvent } from './events';
 
 
@@ -30,6 +31,7 @@ function fitConditions({ directions: oldDirections, coordinates, restrictions, p
 	let currentWidth = getCurrentWidth(coordinates, directions);
 	let currentHeight = getCurrentHeight(coordinates, directions);
 
+	// Prevent strange resizes when the width or height of stencil becomes smaller than 0
 	if (currentWidth < 0) {
 		if (directions.left < 0 && directions.right < 0) {
 			directions.left = -(coordinates.width - restrictions.minWidth) / (directions.left / directions.right);
@@ -40,7 +42,6 @@ function fitConditions({ directions: oldDirections, coordinates, restrictions, p
 			directions.right = -(coordinates.width - restrictions.minWidth);
 		}
 	}
-
 	if (currentHeight < 0) {
 		if (directions.top < 0 && directions.bottom < 0) {
 			directions.top = -(coordinates.height - restrictions.minHeight) / (directions.top / directions.bottom);
@@ -52,8 +53,8 @@ function fitConditions({ directions: oldDirections, coordinates, restrictions, p
 		}
 	}
 
+	// Prevent breaking limits 
 	let breaks = getBrokenLimits(coordinates, directions, allowedArea);
-
 
 	if (mode === 'move') {
 		if (breaks.left > 0 && breaks.right === 0) {
@@ -87,8 +88,6 @@ function fitConditions({ directions: oldDirections, coordinates, restrictions, p
 			maxResize[direction] = Infinity;
 		}
 	});
-
-
 
 	if (preserveAspectRatio) {
 		const multiplier = Math.min(...ALL_DIRECTIONS.map(direction => maxResize[direction]));

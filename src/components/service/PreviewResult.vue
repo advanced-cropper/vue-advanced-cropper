@@ -17,17 +17,6 @@ export default {
 		imageClassname: {
 			type: String,
 		},
-		resultCoordinates: {
-			type: Object,
-			default() {
-				return {
-					width: 0,
-					height: 0,
-					left: 0,
-					top: 0,
-				};
-			},
-		},
 		stencilCoordinates: {
 			type: Object,
 			default() {
@@ -58,12 +47,10 @@ export default {
 		},
 		imageStyle() {
 			const imageTransforms = this.img.transforms;
-			const imageWidth = this.img.size.width;
-			const imageHeight = this.img.size.height;
-			const coefficient = this.img.coefficient;
-			const height = imageHeight / coefficient;
-			const width = imageWidth / coefficient;
 			const flipped = imageTransforms.flipped;
+			const coefficient = this.img.coefficient;
+			const height = this.img.size.height / coefficient;
+			const width = this.img.size.width / coefficient;
 
 			const result = {
 				width: `${width}px`,
@@ -76,8 +63,6 @@ export default {
 				result.left = `${-this.stencilCoordinates.left - (height - width)/2 + imageTransforms.translateX}px`;
 				result.top = `${-this.stencilCoordinates.top - (width - height)/2 + imageTransforms.translateY}px`;
 			} else {
-				result.width = `${width}px`;
-				result.height = `${height}px`;
 				result.left = `${-this.stencilCoordinates.left + imageTransforms.translateX}px`;
 				result.top = `${-this.stencilCoordinates.top + imageTransforms.translateY}px`;
 			}

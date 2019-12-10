@@ -36,7 +36,6 @@ export default {
 	},
 	mounted() {
 		this.touches = [];
-		this.draggingAnchor = [];
 	},
 	methods: {
 		onTouchStart(e) {
@@ -81,7 +80,6 @@ export default {
 					clientY: e.clientY,
 				};
 				this.touches = [touch];
-				this.initAnchor(touch);
 				e.stopPropagation();
 			}
 		},
@@ -100,20 +98,11 @@ export default {
 		onMouseUp() {
 			this.touches = [];
 		},
-		initAnchor(touch) {
-			const container = this.$refs.container;
-			const { left, top, } = container.getBoundingClientRect();
-
-			this.anchor = {
-				x: touch.clientX - left,
-				y: touch.clientY - top,
-			};
-		},
 		calculateGeometricProperties(touches) {
 			const container = this.$refs.container;
 			const { left, top } = container.getBoundingClientRect();
 
-			const centerMass = { left: 0,top: 0 };
+			const centerMass = { left: 0, top: 0 };
 			let spread = 0;
 
 			touches.forEach(touch => {

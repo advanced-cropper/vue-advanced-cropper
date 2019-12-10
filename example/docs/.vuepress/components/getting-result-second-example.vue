@@ -64,7 +64,7 @@ export default {
         <img
           :src="this.image"
           alt=""
-        >>
+        >
       </div>
     </div>
 

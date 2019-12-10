@@ -157,7 +157,7 @@ export default {
   box-sizing: content-box;
   cursor: move;
   &__preview {
-	border-radius: 50%;
+		border-radius: 50%;
   }
 }
 </style>

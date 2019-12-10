@@ -46,6 +46,10 @@ export function isUndefined(obj) {
 	return typeof obj === 'undefined';
 }
 
+export function isObject(obj) {
+	return typeof obj === 'object' && obj !== null;
+}
+
 export function addTimestamp(url) {
 	const timestamp = `timestamp=${(new Date()).getTime()}`;
 	return url + (url.indexOf('?') === -1 ? '?' : '&') + timestamp;
@@ -58,16 +62,12 @@ export function distance(firstPoint, secondPoint) {
 }
 
 export function getSettings(param, defaultParams = {}) {
-	if (typeof param === 'object' && param !== null) {
-		return {
-			enabled: true,
-			...defaultParams,
-			...param
-		};
-	} else {
-		return {
-			enabled: Boolean(param),
-			...defaultParams,
-		};
+	let result = {
+		enabled: Boolean(param),
+		...defaultParams
+	};
+	if (isObject(param)) {
+		result = { ...result, ...param };
 	}
+	return result;
 }

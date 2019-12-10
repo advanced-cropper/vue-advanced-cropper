@@ -153,7 +153,6 @@ export default {
 	},
 	mounted() {
 		this.touches = [];
-		this.draggingAnchor = [];
 	},
 	methods: {
 		onHandlerDrag(dragEvent, horizontalDirection, verticalDirection) {

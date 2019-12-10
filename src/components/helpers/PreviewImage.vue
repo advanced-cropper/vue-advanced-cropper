@@ -60,13 +60,11 @@ export default {
 		},
 		imageStyle() {
 			const coefficient = this.previewHeight / this.height;
-			const height = this.imageSize.height * coefficient;
-			const width = this.imageSize.width * coefficient;
 			return {
-				width: `${width}px`,
-				height: `${height}px`,
-				left: `${-this.left*coefficient}px`,
-				top: `${-this.top*coefficient}px`,
+				width: `${this.imageSize.width * coefficient}px`,
+				height: `${this.imageSize.height * coefficient}px`,
+				left: `${-this.left * coefficient}px`,
+				top: `${-this.top * coefficient}px`,
 			};
 		},
 	},
@@ -95,7 +93,6 @@ export default {
 			}
 		},
 	},
-
 };
 </script>
 
@@ -114,15 +111,15 @@ export default {
 </template>
 
 <style lang="scss">
-  .vue-preview-image{
+  .vue-preview-image {
     overflow: hidden;
-	position: relative;
+		position: relative;
     &__image {
-		pointer-events: none;
-		position: absolute;
-		// Workaround to prevent bugs at the websites with max-width
-		// rule applied to img (Vuepress for example)
-		max-width: unset !important;
+			pointer-events: none;
+			position: absolute;
+			// Workaround to prevent bugs at the websites with max-width
+			// rule applied to img (Vuepress for example)
+			max-width: unset !important;
     }
   }
 </style>
