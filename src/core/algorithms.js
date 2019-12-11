@@ -27,7 +27,6 @@ function getBrokenLimits(coordinates, directions, allowedArea) {
 function fitConditions({ directions: oldDirections, coordinates, restrictions, preserveAspectRatio, stopOnBreak, mode = 'crop', allowedArea = {}}) {
 	const directions = { ...oldDirections, };
 
-
 	let currentWidth = getCurrentWidth(coordinates, directions);
 	let currentHeight = getCurrentHeight(coordinates, directions);
 
@@ -360,8 +359,8 @@ export function defaultSize ({ cropper, image, minWidth, minHeight, maxWidth, ma
 
 export function percentRestrictions({ minWidth, minHeight, maxWidth, maxHeight, imageWidth, imageHeight }) {
 	return {
-		minWidth: minWidth / 100 * imageWidth,
-		minHeight: minHeight / 100 * imageHeight,
+		minWidth: minWidth ? minWidth / 100 * imageWidth : 0,
+		minHeight: minHeight? minHeight / 100 * imageHeight : 0,
 		maxWidth: maxWidth ? maxWidth / 100 * imageWidth : imageWidth,
 		maxHeight: maxHeight ? maxHeight / 100 * imageHeight : imageHeight,
 	};

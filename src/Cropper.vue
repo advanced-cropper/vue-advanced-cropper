@@ -8,7 +8,7 @@ import { CropperWrapper } from './components/service';
 import { ResizeEvent, MoveEvent } from './core/events';
 import { isLocal, isCrossOriginURL, isUndefined, addTimestamp, getSettings } from './core/utils';
 import { arrayBufferToDataURL, getImageTransforms, getStyleTransforms, prepareSource, parseImage } from './core/image';
-import { ALL_DIRECTIONS } from './core/constants';
+import { ALL_DIRECTIONS, MINIMAL_PERCENT_SIZE } from './core/constants';
 import * as algorithms from './core/algorithms';
 
 const cn = bem('vue-advanced-cropper');
@@ -67,11 +67,9 @@ export default {
 		},
 		minWidth: {
 			type: [Number, String],
-			default: 10,
 		},
 		minHeight: {
 			type: [Number, String],
-			default: 10,
 		},
 		maxWidth: {
 			type: [Number, String],
@@ -139,6 +137,10 @@ export default {
 			type: [Boolean, Object],
 			default: true,
 		},
+		imageRestriction: {
+			type: [String],
+			default: 'area',
+		}
 	},
 	data() {
 		return {
@@ -275,15 +277,17 @@ export default {
 				props: this.$props
 			});
 
-			if (this.minWidth > this.imageSize.width) {
-				console.warn(`Warning: minimum width (${restrictions.minWidth}px) greater that the image width (${this.imageSize.width}px). It is set equal to the image width and width resizing was blocked`);
-				restrictions.minWidth = this.imageSize.width;
-				restrictions.widthFrozen = true;
+			const minSize = Math.max(
+				MINIMAL_PERCENT_SIZE * this.imageSize.width / this.coefficient / this.worldTransforms.scale,
+				MINIMAL_PERCENT_SIZE * this.imageSize.height / this.coefficient / this.worldTransforms.scale,
+			);
+
+			if (restrictions.minWidth < minSize) {
+				restrictions.minWidth = Math.floor(minSize);
 			}
-			if (this.minHeight > this.imageSize.height) {
-				console.warn(`Warning: minimum height (${restrictions.minHeight}px) greater that the image height (${this.imageSize.height}px). It is set equal to the image height and height resizing was blocked`);
-				restrictions.minHeight = this.imageSize.height;
-				restrictions.heightFrozen = true;
+
+			if (restrictions.minHeight < minSize) {
+				restrictions.minHeight = Math.floor(minSize);
 			}
 
 			if (restrictions.minWidth > restrictions.maxWidth) {
@@ -298,11 +302,13 @@ export default {
 				restrictions.heightFrozen = true;
 			}
 
-			if (!restrictions.maxWidth || restrictions.maxWidth > this.imageSize.width) {
-				restrictions.maxWidth = this.imageSize.width;
-			}
-			if (!restrictions.maxHeight || restrictions.maxHeight > this.imageSize.height) {
-				restrictions.maxHeight = this.imageSize.height;
+			if (this.imageRestriction === 'area') {
+				if (!restrictions.maxWidth || (restrictions.maxWidth > this.imageSize.width)) {
+					restrictions.maxWidth = this.imageSize.width;
+				}
+				if (!restrictions.maxHeight || (restrictions.maxHeight > this.imageSize.height)) {
+					restrictions.maxHeight = this.imageSize.height;
+				}
 			}
 
 			return restrictions;
