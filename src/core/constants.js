@@ -9,3 +9,10 @@ export const IMAGE_RESTRICTIONS = ['area', 'stencil', 'none'];
 export const XHR_DONE = 4;
 
 export const MINIMAL_PERCENT_SIZE = 0.1;
+
+export const DEFAULT_COORDINATES = {
+	left: 0,
+	top: 0,
+	width: 0,
+	height: 0,
+};

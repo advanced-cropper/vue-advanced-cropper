@@ -8,7 +8,7 @@ import { CropperWrapper } from './components/service';
 import { ResizeEvent, MoveEvent } from './core/events';
 import { isLocal, isCrossOriginURL, isUndefined, addTimestamp, getSettings, parseNumber } from './core/utils';
 import { arrayBufferToDataURL, getImageTransforms, getStyleTransforms, prepareSource, parseImage } from './core/image';
-import { ALL_DIRECTIONS, MINIMAL_PERCENT_SIZE, IMAGE_RESTRICTIONS } from './core/constants';
+import { ALL_DIRECTIONS, MINIMAL_PERCENT_SIZE, IMAGE_RESTRICTIONS, DEFAULT_COORDINATES } from './core/constants';
 import * as algorithms from './core/algorithms';
 
 const cn = bem('vue-advanced-cropper');
@@ -169,17 +169,11 @@ export default {
 				width: null,
 				height: null,
 			},
-			coordinates: {
-				left: 0,
-				top: 0,
-				width: 0,
-				height: 0,
+			coordinates: { 
+				...DEFAULT_COORDINATES 
 			},
-			stencilCoordinates: {
-				left: 0,
-				top: 0,
-				width: 0,
-				height: 0,
+			stencilCoordinates: { 
+				...DEFAULT_COORDINATES 
 			},
 			frozenDirections: {
 				width: false,
@@ -362,11 +356,7 @@ export default {
 		window.addEventListener('resize', this.onResizeWindow);
 		window.addEventListener('orientationchange', this.onResizeWindow);
 		this.$refs.image.addEventListener('load', () => {
-			// After loading image the current component can be unmounted
-			// Therefore there is a workaround to prevent processing the following code
-			if (this.$refs.image) {
-				this.refreshImage().then(this.resetCoordinates);
-			}
+			this.onLoadImage();
 		});
 		this.onChangeImage();
 	},
@@ -485,6 +475,17 @@ export default {
 				this.clearImage();
 			}
 		},
+		onLoadImage() {
+			// After loading image the current component can be unmounted
+			// Therefore there is a workaround to prevent processing the following code
+			if (this.$refs.image && !this.imageLoaded) {
+				this.imageLoaded = true;
+				this.refreshImage().then(() => {
+					this.resetCoordinates();
+					this.$emit('ready');
+				});
+			}
+		},
 		onParseImage({ arrayBuffer, orientation }) {
 			if (arrayBuffer && orientation && isLocal(this.src)) {
 				this.imageAttributes.src = arrayBufferToDataURL(arrayBuffer);
@@ -495,7 +496,7 @@ export default {
 			Vue.nextTick(() => {
 				const image = this.$refs.image;
 				if (image && image.complete) {
-					this.refreshImage().then(this.resetCoordinates);
+					this.onLoadImage();
 				}
 			});
 		},
@@ -736,24 +737,22 @@ export default {
 			if (this.delayedTransforms) {
 				transforms.push(...Array.isArray(this.delayedTransforms) ? this.delayedTransforms : [this.delayedTransforms]);
 			}
-
 			this.resetWorldTransforms();
 			this.applyTransforms(transforms);
 			this.delayedTransforms = null;
-			this.imageLoaded = true;
 		},
 		clearImage() {
 			const stretcher = this.$refs.stretcher;
 			this.imageLoaded = false;
-			this.onChangeCoordinates({
-				left: 0,
-				top: 0,
-				width: 0,
-				height: 0,
-			}, false);
 			setTimeout(() => {
 				stretcher.style.height = 'auto';
 				stretcher.style.width = 'auto';
+				this.onChangeCoordinates({ ...DEFAULT_COORDINATES }, false);
+				this.updateStencilCoordinates({ ...DEFAULT_COORDINATES });
+				this.boundarySize = {
+					width: 0,
+					height: 0,
+				};
 			}, this.transitionTime);
 		},
 		refreshImage() {
