@@ -6,9 +6,9 @@ import debounce from 'debounce';
 import { RectangleStencil } from './components/stencils';
 import { CropperWrapper } from './components/service';
 import { ResizeEvent, MoveEvent } from './core/events';
-import { isLocal, isCrossOriginURL, isUndefined, addTimestamp, getSettings } from './core/utils';
+import { isLocal, isCrossOriginURL, isUndefined, addTimestamp, getSettings, parseNumber } from './core/utils';
 import { arrayBufferToDataURL, getImageTransforms, getStyleTransforms, prepareSource, parseImage } from './core/image';
-import { ALL_DIRECTIONS, MINIMAL_PERCENT_SIZE } from './core/constants';
+import { ALL_DIRECTIONS, MINIMAL_PERCENT_SIZE, IMAGE_RESTRICTIONS } from './core/constants';
 import * as algorithms from './core/algorithms';
 
 const cn = bem('vue-advanced-cropper');
@@ -40,6 +40,10 @@ export default {
 		src: {
 			type: String,
 			default: null,
+		},
+		allowedArea: {
+			type: Function,
+			default: algorithms.allowedArea,
 		},
 		resizeAlgorithm: {
 			type: Function,
@@ -140,6 +144,9 @@ export default {
 		imageRestriction: {
 			type: [String],
 			default: 'area',
+			validator(value) {
+				return IMAGE_RESTRICTIONS.indexOf(value) !== -1;
+			}
 		}
 	},
 	data() {
@@ -199,7 +206,7 @@ export default {
 			};
 			
 			// Disable some interactions for user convenience
-			settings.touchMove.enabled = settings.touchMove.enabled && this.worldTransforms.scale > 1;
+			settings.touchMove.enabled = settings.touchMove.enabled && (this.worldTransforms.scale !== 1 || this.imageRestriction === 'none');
 
 			return settings;
 		},
@@ -265,13 +272,20 @@ export default {
 			return result;
 		},
 		stencilRestrictions() {
+			const oldRestrictions = {
+				minWidth: !isUndefined(this.minWidth) ? this.minWidth : 0,
+				minHeight: !isUndefined(this.minHeight) ? this.minHeight : 0,
+				maxWidth: !isUndefined(this.maxWidth) ? this.maxWidth : Infinity,
+				maxHeight: !isUndefined(this.maxHeight) ? this.maxHeight : Infinity,
+			};
+
 			const restrictions = migrateAlgorithm(this.restrictions, 'restrictions', (args) => [
 				args.minWidth, args.minHeight, args.maxWidth, args.maxHeight, args.imageWidth, args.imageHeight
 			])({
-				minWidth: Number(this.minWidth),
-				minHeight: Number(this.minHeight),
-				maxWidth: Number(this.maxWidth),
-				maxHeight: Number(this.maxHeight),
+				minWidth: parseNumber(oldRestrictions.minWidth),
+				minHeight: parseNumber(oldRestrictions.minHeight),
+				maxWidth: parseNumber(oldRestrictions.maxWidth),
+				maxHeight: parseNumber(oldRestrictions.maxHeight),
 				imageWidth: this.imageSize.width,
 				imageHeight: this.imageSize.height,
 				props: this.$props
@@ -302,7 +316,7 @@ export default {
 				restrictions.heightFrozen = true;
 			}
 
-			if (this.imageRestriction === 'area') {
+			if (this.imageRestriction !== 'none') {
 				if (!restrictions.maxWidth || (restrictions.maxWidth > this.imageSize.width)) {
 					restrictions.maxWidth = this.imageSize.width;
 				}
@@ -329,6 +343,9 @@ export default {
 		},
 		maxHeight() {
 			this.onPropsChange();
+		},
+		imageRestriction() {
+			this.resetCoordinates();
 		},
 		stencilProps(oldProps, newProps) {
 			const significantProps = ['aspectRatio', 'minAspectRatio', 'maxAspectRatio'];
@@ -386,6 +403,7 @@ export default {
 				worldTransforms: this.worldTransforms,
 				coefficient: this.coefficient,
 				imageSize: this.imageSize,
+				allowedArea: this.getAllowedArea(true)
 			});
 
 			this.worldTransforms = worldTransforms;
@@ -497,7 +515,7 @@ export default {
 				this.resizeAlgorithm({
 					coordinates: this.coordinates,
 					restrictions: this.stencilRestrictions,
-					allowedArea: this.allowedArea(),
+					allowedArea: this.getAllowedArea(),
 					aspectRatio: this.stencilAspectRatios(),
 					resizeEvent
 				})
@@ -520,6 +538,9 @@ export default {
 				frozenDirections: this.frozenDirections,
 				stencilCoordinates: this.stencilCoordinates,
 				worldTransforms: this.worldTransforms,
+				allowedArea: this.getAllowedArea(true),
+				minScale: this.imageRestriction === 'none' ? MINIMAL_PERCENT_SIZE : 1,
+				fitImage: this.imageRestriction === 'area'
 			});
 			this.worldTransforms = worldTransforms;
 			this.onChangeCoordinates(coordinates);
@@ -532,7 +553,7 @@ export default {
 			this.onChangeCoordinates(
 				this.moveAlgorithm({
 					coordinates: this.coordinates,
-					allowedArea: this.allowedArea(),
+					allowedArea: this.getAllowedArea(),
 					moveEvent
 				})
 			);
@@ -590,12 +611,8 @@ export default {
 		},
 		applyTransforms(transforms, autoZoom = false) {
 			const aspectRatio = this.stencilAspectRatios();
-			const allowedArea = {
-				left: 0,
-				top: 0,
-				right: this.imageSize.width,
-				bottom: this.imageSize.height
-			};
+
+			const allowedArea = this.getAllowedArea(true);
 
 			const moveAlgorithm = (prevCoordinates, newCoordinates) => {
 				return this.moveAlgorithm({
@@ -649,7 +666,7 @@ export default {
 				}
 			});
 
-			if (autoZoom && this.worldTransforms.scale > 1) {
+			if (autoZoom) {
 				this.autoZoom(coordinates);
 			} else {
 				if (this.worldTransforms.scale > 1) {
@@ -791,13 +808,13 @@ export default {
 				}
 			});
 		},
-		allowedArea() {
-			return {
-				left: -this.worldTransforms.shift.left / this.worldTransforms.scale,
-				top: -this.worldTransforms.shift.top / this.worldTransforms.scale,
-				right: (this.boundarySize.width - this.worldTransforms.shift.left / this.coefficient) / this.worldTransforms.scale * this.coefficient,
-				bottom: (this.boundarySize.height - this.worldTransforms.shift.top / this.coefficient) / this.worldTransforms.scale * this.coefficient,
-			};
+		getAllowedArea(breakBoundaries) {
+			return this.allowedArea({
+				breakBoundaries,
+				imageSize: this.imageSize,
+				worldTransforms: this.worldTransforms,
+				imageRestriction: this.imageRestriction
+			});
 		},
 		stencilAspectRatios() {
 			if (this.$refs.stencil.aspectRatios) {

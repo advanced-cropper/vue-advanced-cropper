@@ -284,8 +284,8 @@ new Vue({
 			return {
 				minWidth: minWidth,
 				minHeight: minHeight,
-				maxWidth: Math.min(imageWidth, maxWidth),
-				maxHeight: Math.min(imageHeight, maxHeight),
+				maxWidth: maxWidth,
+				maxHeight: maxHeight,
 			}
 		},
 	},
@@ -339,6 +339,16 @@ export default {
 	/>
 </div>
 ```
+
+## Different image restrictions
+
+You are able to set different the restrictions of an image position by passing the following string to the `imageRestriction` prop:
+- `area` (default) prevents resizing and moving the image beyond the area
+- `stencil` prevents resizing and moving the image beyond the stencil
+- `none` allows free resizing and moving the image
+
+<image-restrictions-example></image-restrictions-example>
+
 
 ## Set coordinates
 

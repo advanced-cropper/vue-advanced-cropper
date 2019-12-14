@@ -71,3 +71,12 @@ export function getSettings(param, defaultParams = {}) {
 	}
 	return result;
 }
+
+export function parseNumber(number) {
+	const parsedNumber = Number(number);
+	if (Number.isNaN(parsedNumber)) {
+		return number;
+	} else {
+		return parsedNumber;
+	}
+}

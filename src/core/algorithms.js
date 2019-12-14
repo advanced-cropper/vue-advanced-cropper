@@ -4,8 +4,30 @@ import {
 	ALL_DIRECTIONS,
 } from './constants';
 
+import {
+	isUndefined
+} from './utils';
+
 import { MoveEvent } from './events';
 
+function allSides(coordinates) {
+	return {
+		left: coordinates.left,
+		top: coordinates.top,
+		right: coordinates.left + coordinates.width,
+		bottom: coordinates.top + coordinates.height,
+	};
+}
+
+function mainSide(side) {
+	if (side === 'right') {
+		return 'left';
+	} else if (side === 'bottom') {
+		return 'top';
+	} else if (side === 'left' || side === 'top') {
+		return side;
+	}
+}
 
 function getCurrentWidth(actualCoordinates, directions) {
 	return actualCoordinates.width + (directions.left + directions.right);
@@ -286,18 +308,17 @@ export function move ({ coordinates, allowedArea = {}, moveEvent }) {
 		height: coordinates.height,
 	};
 
-
 	if ('left' in allowedArea && newCoordinates.left < allowedArea.left) {
 		newCoordinates.left = allowedArea.left;
 	}
 	if ('right' in allowedArea && newCoordinates.left + newCoordinates.width > allowedArea.right) {
-		newCoordinates.left = Math.max(0, allowedArea.right - newCoordinates.width);
+		newCoordinates.left = allowedArea.right - newCoordinates.width;
 	}
 	if ('top' in allowedArea && newCoordinates.top < allowedArea.top) {
 		newCoordinates.top = allowedArea.top;
 	}
 	if ('bottom' in allowedArea && newCoordinates.top + newCoordinates.height > allowedArea.bottom) {
-		newCoordinates.top = Math.max(0, allowedArea.bottom - newCoordinates.height);
+		newCoordinates.top = allowedArea.bottom - newCoordinates.height;
 	}
 
 	return newCoordinates;
@@ -359,14 +380,16 @@ export function defaultSize ({ cropper, image, minWidth, minHeight, maxWidth, ma
 
 export function percentRestrictions({ minWidth, minHeight, maxWidth, maxHeight, imageWidth, imageHeight }) {
 	return {
-		minWidth: minWidth ? minWidth / 100 * imageWidth : 0,
-		minHeight: minHeight? minHeight / 100 * imageHeight : 0,
-		maxWidth: maxWidth ? maxWidth / 100 * imageWidth : imageWidth,
-		maxHeight: maxHeight ? maxHeight / 100 * imageHeight : imageHeight,
+		minWidth: minWidth / 100 * imageWidth,
+		minHeight: minHeight / 100 * imageHeight,
+		maxWidth: maxWidth / 100 * imageWidth,
+		maxHeight: maxHeight / 100 * imageHeight,
 	};
 }
 
-export function autoZoom({ coordinates, stencilCoordinates: originalStencilCoordinates, worldTransforms: originalWorldTransforms, coefficient, imageSize }) {
+// The main point of this feature is calculating the needed position of stencil and parameters of world transforms
+// Real coordinates don't changes here
+export function autoZoom({ coordinates, stencilCoordinates: originalStencilCoordinates, worldTransforms: originalWorldTransforms, coefficient, imageSize, allowedArea }) {
 	const worldTransforms = {
 		...originalWorldTransforms
 	};
@@ -427,22 +450,22 @@ export function autoZoom({ coordinates, stencilCoordinates: originalStencilCoord
 		height: imageSize.height * worldTransforms.scale,
 	};
 
-	if (worldTransforms.shift.left > 0) {
-		stencilCoordinates.left -= worldTransforms.shift.left / coefficient;
-		worldTransforms.shift.left = 0;
+	if (worldTransforms.shift.left > -allowedArea.left * worldTransforms.scale) {
+		stencilCoordinates.left -= (worldTransforms.shift.left + (allowedArea.left * worldTransforms.scale)) / coefficient;
+		worldTransforms.shift.left = -(allowedArea.left * worldTransforms.scale);
 	}
-	if (worldTransforms.shift.left < imageSize.width - scaledImageSize.width) {
-		stencilCoordinates.left -= (worldTransforms.shift.left - (imageSize.width - scaledImageSize.width)) / coefficient;
-		worldTransforms.shift.left = imageSize.width - scaledImageSize.width;
+	if (worldTransforms.shift.left < imageSize.width - scaledImageSize.width - (allowedArea.right - imageSize.width) * worldTransforms.scale) {
+		stencilCoordinates.left -= (worldTransforms.shift.left - (imageSize.width - scaledImageSize.width) + (allowedArea.right - imageSize.width) * worldTransforms.scale) / coefficient;
+		worldTransforms.shift.left = imageSize.width - scaledImageSize.width - (allowedArea.right - imageSize.width) * worldTransforms.scale; 
 	}
-	if (worldTransforms.shift.top > 0) {
-		stencilCoordinates.top -= worldTransforms.shift.top / coefficient;
-		worldTransforms.shift.top = 0;
+	if (worldTransforms.shift.top > -allowedArea.top * worldTransforms.scale) {
+		stencilCoordinates.top -= (worldTransforms.shift.top + (allowedArea.top * worldTransforms.scale)) / coefficient;
+		worldTransforms.shift.top = -allowedArea.top * worldTransforms.scale;
 	}
-	if (worldTransforms.shift.top < imageSize.height - scaledImageSize.height) {
-		stencilCoordinates.top -= (worldTransforms.shift.top - (imageSize.height - scaledImageSize.height)) / coefficient;
-		worldTransforms.shift.top = imageSize.height - scaledImageSize.height;
-	}
+	if (worldTransforms.shift.top < imageSize.height - scaledImageSize.height - (allowedArea.bottom - imageSize.height) * worldTransforms.scale) {
+		stencilCoordinates.top -= (worldTransforms.shift.top - (imageSize.height - scaledImageSize.height) + (allowedArea.bottom - imageSize.height) * worldTransforms.scale) / coefficient;
+		worldTransforms.shift.top = imageSize.height - scaledImageSize.height - (allowedArea.bottom - imageSize.height) * worldTransforms.scale; 
+	}	
 
 	return {
 		stencilCoordinates,
@@ -450,9 +473,8 @@ export function autoZoom({ coordinates, stencilCoordinates: originalStencilCoord
 	};
 }
 
-export function manipulateImage({ manipulateImageEvent, coordinates, stencilRestrictions, coefficient, stencilCoordinates, worldTransforms: originalWorldTransforms, imageSize, frozenDirections }) {
+export function manipulateImage({ manipulateImageEvent, coordinates, stencilRestrictions, coefficient, stencilCoordinates, worldTransforms: originalWorldTransforms, imageSize, frozenDirections, allowedArea, fitImage }) {
 	let { scale, move } = manipulateImageEvent;
-
 	const worldTransforms = { ...originalWorldTransforms };
 
 	const scaledImageSize = {
@@ -468,6 +490,11 @@ export function manipulateImage({ manipulateImageEvent, coordinates, stencilRest
 	let scaleImage = 1;
 	let scaleStencil = 1;
 
+	const minScale = !fitImage ? Math.max(
+		('left' in allowedArea && 'right' in allowedArea) ? stencilCoordinates.width * coefficient / (allowedArea.right - allowedArea.left) : 1e-2,
+		('top' in allowedArea && 'bottom' in allowedArea) ? stencilCoordinates.height * coefficient / (allowedArea.bottom - allowedArea.top) : 1e-2,
+	) : 1;
+
 	// If there is scaling then begin scale
 	if (!frozenDirections.width && !frozenDirections.height && Math.abs(scale.factor - 1) > 1e-3) {
 		const epsilon = Math.abs(1 - scaleImage) / 2;
@@ -476,8 +503,8 @@ export function manipulateImage({ manipulateImageEvent, coordinates, stencilRest
 		scaleImage = scale.factor;
 
 		// Determine allowed resize:
-		if (worldTransforms.scale / scaleImage < 1 + epsilon) {
-			scaleImage = worldTransforms.scale;
+		if (worldTransforms.scale / scaleImage < minScale + epsilon) {
+			scaleImage = worldTransforms.scale / minScale;
 		}
 
 		let width = coordinates.width * scaleImage;
@@ -506,12 +533,16 @@ export function manipulateImage({ manipulateImageEvent, coordinates, stencilRest
 			} else if (breaks.maxWidth) {
 				allowedImageScale = maxWidth / coordinates.width;
 			}
-			scaleStencil = allowedImageScale / scaleImage;
+			if (worldTransforms.scale * scaleImage >= 1) {
+				scaleStencil = allowedImageScale / scaleImage;
+			} else {
+				scaleImage = allowedImageScale;
+			}
 		}
 
 		const imageSizeChanges = {
 			width: scaledImageSize.width * (1 - 1/scaleImage),
-			height:  scaledImageSize.height * (1- 1/scaleImage),
+			height:  scaledImageSize.height * (1 - 1/scaleImage),
 		};
 
 		imageShifts.left += imageSizeChanges.width * Math.abs((worldTransforms.shift.left - scale.center.left * coefficient) / scaledImageSize.width);
@@ -521,28 +552,53 @@ export function manipulateImage({ manipulateImageEvent, coordinates, stencilRest
 		scaledImageSize.height /= scaleImage;
 	}
 
-	// Process the moving:
-	if (Math.ceil(worldTransforms.shift.left + imageShifts.left) > 0) {
-		imageShifts.left = -worldTransforms.shift.left;
-	} else if (worldTransforms.shift.left + imageShifts.left < imageSize.width - scaledImageSize.width) {
-		imageShifts.left = imageSize.width - scaledImageSize.width  - worldTransforms.shift.left;
-	}
+	worldTransforms.scale = worldTransforms.scale / scaleImage;
 
-	if (Math.ceil(worldTransforms.shift.top + imageShifts.top) > 0) {
-		imageShifts.top = -worldTransforms.shift.top;
-	} else if (worldTransforms.shift.top + imageShifts.top < imageSize.height - scaledImageSize.height) {
-		imageShifts.top = imageSize.height - scaledImageSize.height - worldTransforms.shift.top;
+	// If the image should not break area boundaries we should change coordinates so they don't break them
+	// otherwise we just prevent moving
+	if (fitImage) {
+		if (Math.ceil(worldTransforms.shift.left + imageShifts.left) > 0) {
+			imageShifts.left = -worldTransforms.shift.left;
+		} else if (worldTransforms.shift.left + imageShifts.left < imageSize.width - scaledImageSize.width) {
+			imageShifts.left = imageSize.width - scaledImageSize.width  - worldTransforms.shift.left;
+		}
+	
+		if (Math.ceil(worldTransforms.shift.top + imageShifts.top) > 0) {
+			imageShifts.top = -worldTransforms.shift.top;
+		} else if (worldTransforms.shift.top + imageShifts.top < imageSize.height - scaledImageSize.height) {
+			imageShifts.top = imageSize.height - scaledImageSize.height - worldTransforms.shift.top;
+		}
+	} else {
+		const breaks = {};
+		ALL_DIRECTIONS.forEach(side => {
+			if (side in allowedArea) {
+				breaks[side] = (worldTransforms.shift[mainSide(side)] + imageShifts[mainSide(side)]) + (allowedArea[side] * worldTransforms.scale - allSides(stencilCoordinates)[side] * coefficient);
+			} else {
+				breaks[side] = 0;
+			}
+		});
+
+		// Process the moving:
+		if (breaks.left > 0) {
+			imageShifts.left -= breaks.left;
+		} else if (breaks.right < 0) {
+			imageShifts.left -= breaks.right;
+		}
+		if (breaks.top > 0) {
+			imageShifts.top -= breaks.top;
+		} else if (breaks.bottom < 0) {
+			imageShifts.top -= breaks.bottom;
+		}
 	}
 
 	worldTransforms.shift.left += imageShifts.left;
 	worldTransforms.shift.top += imageShifts.top;
-	worldTransforms.scale = worldTransforms.scale / scaleImage;
 
 	const stencilResizeAmends = { left: 0, top: 0 };
-	if (imageSize.width !== coordinates.width) {
+	if (imageSize.width !== coordinates.width && worldTransforms.scale >= 1) {
 		stencilResizeAmends.left = stencilCoordinates.width * (1 - scaleStencil) * (coordinates.left / (imageSize.width - coordinates.width));
 	}
-	if (imageSize.height !== coordinates.height) {
+	if (imageSize.height !== coordinates.height && worldTransforms.scale >= 1) {
 		stencilResizeAmends.top = stencilCoordinates.height * (1 - scaleStencil) * (coordinates.top / (imageSize.height - coordinates.height));
 	}
 
@@ -555,4 +611,38 @@ export function manipulateImage({ manipulateImageEvent, coordinates, stencilRest
 		},
 		worldTransforms
 	};
+}
+
+export function allowedArea({ breakBoundaries, imageSize, worldTransforms, imageRestriction }) {
+	let limits = {};
+
+	if (imageRestriction !== 'none') {
+		limits = {
+			left: 0,
+			top: 0,
+			right: imageSize.width,
+			bottom: imageSize.height
+		};
+	}
+
+	if (!breakBoundaries) {
+		const boundaries = {
+			left: -worldTransforms.shift.left / worldTransforms.scale,
+			top: -worldTransforms.shift.top / worldTransforms.scale,
+			right: (imageSize.width - worldTransforms.shift.left) / worldTransforms.scale,
+			bottom: (imageSize.height - worldTransforms.shift.top) / worldTransforms.scale
+		};
+		ALL_DIRECTIONS.forEach(direction => {
+			if (!isUndefined(limits[direction])) {
+				if (direction === 'left' || direction === 'top') {
+					limits[direction] = Math.max(limits[direction], boundaries[direction]);
+				} else {
+					limits[direction] = Math.min(limits[direction], boundaries[direction]);
+				}
+			} else {
+				limits[direction] = boundaries[direction];
+			}
+		});
+	}
+	return limits;
 }

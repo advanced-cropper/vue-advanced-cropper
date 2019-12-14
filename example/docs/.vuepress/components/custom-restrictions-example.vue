@@ -20,8 +20,8 @@ export default {
 			return {
 				minWidth: minWidth,
 				minHeight: minHeight,
-				maxWidth: Math.min(imageWidth, maxWidth),
-				maxHeight: Math.min(imageHeight, maxHeight),
+				maxWidth: maxWidth,
+				maxHeight: maxHeight,
 			};
 		},
 		onCrop({ canvas, }) {
