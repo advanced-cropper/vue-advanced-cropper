@@ -15,17 +15,17 @@ export default {
 		{
 			file: pkg.main,
 			format: 'cjs',
-			sourcemap: true
+			sourcemap: process.env.NODE_ENV !== 'production'
 		},
 		{
 			file: pkg.module,
 			format: 'es',
-			sourcemap: true
+			sourcemap: process.env.NODE_ENV !== 'production'
 		},
 		{
 			file: pkg.umd,
 			format: 'umd',
-			sourcemap: true,
+			sourcemap: process.env.NODE_ENV !== 'production',
 			name: 'vue-advanced-cropper'
 		}
 	],
