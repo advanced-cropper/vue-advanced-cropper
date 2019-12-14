@@ -91,6 +91,7 @@ new Vue({
 | touchResize            | `Boolean`          | Check if image should be resized by a pinch gesture            | `true`
 | mouseMove              | `Boolean`          | Check if image should be dragged by a mouse                    | `true`
 | wheelResize            | `Boolean`          | Check if image should be resized by a mouse wheel              | `true`
+| imageRestriction       | `String`           | Set restrictions for image position ('area', 'stencil', 'none')| `core.move`
 | defaultSize            | `Function`         | The function that returns the default size of the stencil      | `core.defaultSize`
 | defaultPosition        | `Function`         | The function that returns the default position of the stencil  | `core.defaultPosition`
 | restrictions           | `Function`         | The function that returns the restrictions object              | `core.percentRestrictions`
@@ -101,6 +102,7 @@ new Vue({
 | Event                  | Description
 | ---------------------- | --------------------------------------------------------------
 | change                 | Invoked on changing of a stencil position / size, after mounting the component and on an image changing
+| ready                  | Invoked on completing of the image loading
 
 
 ## RectangleStencil

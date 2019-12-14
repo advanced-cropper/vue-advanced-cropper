@@ -8,6 +8,10 @@
 
 Cropper will emit `change` event on mounting, resizing the stencil, moving the stencil and changing the image.
 
+### `ready`
+
+Cropper will emit `ready` event when image is loaded.
+
 ## Methods
 
 ### `getResult()`
@@ -81,6 +85,14 @@ This flag indicates if canvas should be used in cropper. If you need only the co
 Default: `true`
 
 The flag that indicates if EXIF orientation should be checked
+
+### `imageRestriction`
+Default: `'area'`
+
+This parameter sets different restrictions of an image position:
+- `area` prevents resizing and moving the image beyond the area
+- `stencil` prevents resizing and moving the image beyond the stencil
+- `none` allows free resizing and moving the image
 
 ### `minWidth`
 Default: `10`
