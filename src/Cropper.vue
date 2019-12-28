@@ -169,11 +169,11 @@ export default {
 				width: null,
 				height: null,
 			},
-			coordinates: { 
-				...DEFAULT_COORDINATES 
+			coordinates: {
+				...DEFAULT_COORDINATES
 			},
-			stencilCoordinates: { 
-				...DEFAULT_COORDINATES 
+			stencilCoordinates: {
+				...DEFAULT_COORDINATES
 			},
 			frozenDirections: {
 				width: false,
@@ -198,7 +198,7 @@ export default {
 					ratio: 0.1
 				}),
 			};
-			
+
 			// Disable some interactions for user convenience
 			settings.touchMove.enabled = settings.touchMove.enabled && (this.worldTransforms.scale !== 1 || this.imageRestriction === 'none');
 
@@ -246,7 +246,8 @@ export default {
 					? `${this.boundarySize.height}px`
 					: 'auto',
 				opacity: this.imageLoaded ? 1 : 0,
-				transition: `opacity ${this.transitionTime}ms`
+				transition: `opacity ${this.transitionTime}ms`,
+				pointerEvents: this.imageLoaded ? 'all' : 'none',
 			};
 		},
 		imageStyle() {
