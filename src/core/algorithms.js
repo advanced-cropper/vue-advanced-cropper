@@ -74,7 +74,7 @@ function fitConditions({ directions: oldDirections, coordinates, restrictions, p
 		}
 	}
 
-	// Prevent breaking limits 
+	// Prevent breaking limits
 	let breaks = getBrokenLimits(coordinates, directions, allowedArea);
 
 	if (mode === 'move') {
@@ -456,7 +456,7 @@ export function autoZoom({ coordinates, stencilCoordinates: originalStencilCoord
 	}
 	if (worldTransforms.shift.left < imageSize.width - scaledImageSize.width - (allowedArea.right - imageSize.width) * worldTransforms.scale) {
 		stencilCoordinates.left -= (worldTransforms.shift.left - (imageSize.width - scaledImageSize.width) + (allowedArea.right - imageSize.width) * worldTransforms.scale) / coefficient;
-		worldTransforms.shift.left = imageSize.width - scaledImageSize.width - (allowedArea.right - imageSize.width) * worldTransforms.scale; 
+		worldTransforms.shift.left = imageSize.width - scaledImageSize.width - (allowedArea.right - imageSize.width) * worldTransforms.scale;
 	}
 	if (worldTransforms.shift.top > -allowedArea.top * worldTransforms.scale) {
 		stencilCoordinates.top -= (worldTransforms.shift.top + (allowedArea.top * worldTransforms.scale)) / coefficient;
@@ -464,8 +464,8 @@ export function autoZoom({ coordinates, stencilCoordinates: originalStencilCoord
 	}
 	if (worldTransforms.shift.top < imageSize.height - scaledImageSize.height - (allowedArea.bottom - imageSize.height) * worldTransforms.scale) {
 		stencilCoordinates.top -= (worldTransforms.shift.top - (imageSize.height - scaledImageSize.height) + (allowedArea.bottom - imageSize.height) * worldTransforms.scale) / coefficient;
-		worldTransforms.shift.top = imageSize.height - scaledImageSize.height - (allowedArea.bottom - imageSize.height) * worldTransforms.scale; 
-	}	
+		worldTransforms.shift.top = imageSize.height - scaledImageSize.height - (allowedArea.bottom - imageSize.height) * worldTransforms.scale;
+	}
 
 	return {
 		stencilCoordinates,
@@ -562,7 +562,7 @@ export function manipulateImage({ manipulateImageEvent, coordinates, stencilRest
 		} else if (worldTransforms.shift.left + imageShifts.left < imageSize.width - scaledImageSize.width) {
 			imageShifts.left = imageSize.width - scaledImageSize.width  - worldTransforms.shift.left;
 		}
-	
+
 		if (Math.ceil(worldTransforms.shift.top + imageShifts.top) > 0) {
 			imageShifts.top = -worldTransforms.shift.top;
 		} else if (worldTransforms.shift.top + imageShifts.top < imageSize.height - scaledImageSize.height) {
@@ -645,4 +645,32 @@ export function allowedArea({ breakBoundaries, imageSize, worldTransforms, image
 		});
 	}
 	return limits;
+}
+
+export function roundCoordinates({ coordinates, restrictions, allowedArea }) {
+	const roundedCoordinates = {
+		width: Math.round(coordinates.width),
+		height: Math.round(coordinates.height),
+		left: Math.round(coordinates.left),
+		top: Math.round(coordinates.top),
+	};
+
+	if (roundedCoordinates.width > restrictions.maxWidth) {
+		roundedCoordinates.width = Math.floor(coordinates.width);
+	} else if (roundedCoordinates.width < restrictions.minWidth) {
+		roundedCoordinates.width = Math.ceil(coordinates.width);
+	}
+	if (roundedCoordinates.height > restrictions.maxHeight) {
+		roundedCoordinates.height = Math.floor(coordinates.height);
+	} else if (roundedCoordinates.height < restrictions.minHeight) {
+		roundedCoordinates.height = Math.ceil(coordinates.height);
+	}
+	if (roundedCoordinates.left < allowedArea.left || roundedCoordinates.left + roundedCoordinates.width > allowedArea.right) {
+		roundedCoordinates.left = Math.floor(allowedArea.left);
+	}
+	if (roundedCoordinates.top < allowedArea.top || roundedCoordinates.top + roundedCoordinates.height > allowedArea.bottom) {
+		roundedCoordinates.top = Math.floor(allowedArea.top);
+	}
+
+	return roundedCoordinates;
 }

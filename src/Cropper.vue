@@ -142,11 +142,15 @@ export default {
 			default: true,
 		},
 		imageRestriction: {
-			type: [String],
+			type: String,
 			default: 'area',
 			validator(value) {
 				return IMAGE_RESTRICTIONS.indexOf(value) !== -1;
 			}
+		},
+		roundResult: {
+			type: Boolean,
+			default: true
 		}
 	},
 	data() {
@@ -368,19 +372,31 @@ export default {
 	methods: {
 		// External methods
 		getResult() {
+			const coordinates = this.prepareResult({ ...this.coordinates });
 			if (this.canvas && this.src) {
 				this.updateCanvas(this.coordinates);
 				return {
-					coordinates: { ...this.coordinates, },
+					coordinates,
 					canvas: this.$refs.canvas,
 				};
 			} else {
 				return {
-					coordinates: { ...this.coordinates, },
+					coordinates,
 				};
 			}
 		},
 		// Internal methods
+		prepareResult(coordinates) {
+			if (this.roundResult) {
+				return algorithms.roundCoordinates({
+					coordinates,
+					restrictions: this.restrictions,
+					allowedArea: this.getAllowedArea()
+				});
+			} else {
+				return coordinates;
+			}
+		},
 		getArea() {
 			return this.$refs.area;
 		},
