@@ -905,6 +905,7 @@ export default {
 	user-select: none;
 	max-height: 100%;
 	max-width: 100%;
+	direction: ltr;
 
 	&__stretcher {
 		pointer-events: none;
