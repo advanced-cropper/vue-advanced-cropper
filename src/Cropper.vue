@@ -271,6 +271,11 @@ export default {
 			return result;
 		},
 		stencilRestrictions() {
+			const minSize = Math.max(
+				MINIMAL_PERCENT_SIZE * this.imageSize.width / this.coefficient / this.worldTransforms.scale,
+				MINIMAL_PERCENT_SIZE * this.imageSize.height / this.coefficient / this.worldTransforms.scale,
+			);
+						
 			const oldRestrictions = {
 				minWidth: !isUndefined(this.minWidth) ? this.minWidth : 0,
 				minHeight: !isUndefined(this.minHeight) ? this.minHeight : 0,
@@ -290,16 +295,11 @@ export default {
 				props: this.$props
 			});
 
-			const minSize = Math.max(
-				MINIMAL_PERCENT_SIZE * this.imageSize.width / this.coefficient / this.worldTransforms.scale,
-				MINIMAL_PERCENT_SIZE * this.imageSize.height / this.coefficient / this.worldTransforms.scale,
-			);
-
-			if (restrictions.minWidth < minSize) {
+			if (isUndefined(restrictions.minWidth)) {
 				restrictions.minWidth = Math.floor(minSize);
 			}
 
-			if (restrictions.minHeight < minSize) {
+			if (isUndefined(restrictions.minHeight)) {
 				restrictions.minHeight = Math.floor(minSize);
 			}
 
@@ -731,7 +731,7 @@ export default {
 			});
 
 			if (defaultSize.width < minWidth || defaultSize.height < minHeight || defaultSize.width > maxWidth || defaultSize.height > maxHeight) {
-				console.warn('Warning: default size breaking size restrictions. Check your defaultSize function', defaultSize, this.stencilRestrictions);
+				console.warn('Warning: the default size breaks size restrictions. Check your defaultSize function', defaultSize, this.stencilRestrictions);
 			}
 
 			const transforms = [
