@@ -10,7 +10,11 @@ Cropper will emit `change` event on mounting, resizing the stencil, moving the s
 
 ### `ready`
 
-Cropper will emit `ready` event when image is loaded.
+Cropper will emit `ready` event when image is successfully loaded.
+
+### `error`
+
+Cropper will emit `error` event when image is unsuccessfully loaded.
 
 ## Methods
 

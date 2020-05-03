@@ -102,7 +102,8 @@ new Vue({
 | Event                  | Description
 | ---------------------- | --------------------------------------------------------------
 | change                 | Invoked on changing of a stencil position / size, after mounting the component and on an image changing
-| ready                  | Invoked on completing of the image loading
+| ready                  | Invoked on success of an image loading
+| error                  | Invoked on error of an image loading
 
 
 ## RectangleStencil

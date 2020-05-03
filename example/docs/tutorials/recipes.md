@@ -483,7 +483,7 @@ new Vue({
 				height: 400,
 			}
 		}
-	}
+	},
 	components: {
 		Cropper
 	},
@@ -501,6 +501,73 @@ new Vue({
 </div>
 ```
 
+## Events
+
+There are only there events now:
+- `ready` when image is changed and successfully loaded (including the initial loading)
+- `change` when stencil coordinates is changed (including the initial setting default coordinates)
+- `error`  when images was unsuccessfully loaded (including the initial loading)
+
+In the example below all this events are used to display the image loading indicator
+
+<events-example></events-example>
+
+
+```html
+<div>
+	<input v-model="img.src">
+	<div class="cropper-wrapper">
+		<img v-if="img.loading" class="cropper-wrapper__loading" src="./indicator.svg">
+		<Cropper
+			classname="cropper"
+			:src="img.src"
+			@ready="ready"
+			@error="error"
+			@change="change"
+		/>
+	</div>
+</div>
+```
+
+```js
+import Vue from 'vue'
+import { Cropper } from 'vue-advanced-cropper'
+
+new Vue({
+	el: '#app',
+	data() {
+		return {
+			img: {
+				src: 'https://images.pexels.com/photos/1055424/pexels-photo-1055424.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+				loading: true
+			}
+		};
+	},
+	watch: {
+		'img.src'(value) {
+			if (value) {
+				this.img.loading = true;
+			}
+		}
+	},
+	methods: {
+		change({ coordinates, canvas }) {
+			console.log('Coordinates was changed', coordinates, canvas);
+		},
+		error() {
+			console.log('There is error during image loading');
+			this.img.loading = false;
+		},
+		ready() {
+			console.log('Image is successfully loaded');
+			this.img.loading = false;
+		}
+	},
+	components: {
+		Cropper,
+	},
+})
+```
 ## Blurred background
 
 <blurred-background-example></blurred-background-example>

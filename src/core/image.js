@@ -99,18 +99,18 @@ export function getStyleTransforms({ rotate, scaleX, scaleY, }) {
 	return transform;
 }
 
-export function parseImage(img) {
+export function parseImage(src) {
 	return new Promise((resolve) => {
-		getImageData(img)
+		getImageData(src)
 			.then(data => {
 				resolve(data ?
-					{ arrayBuffer: data, orientation: getOrientation(data) } :
-					{ arrayBuffer: null, orientation: null }
+					{ source: src, arrayBuffer: data, orientation: getOrientation(data) } :
+					{ source: src, arrayBuffer: null, orientation: null }
 				);
 			})
 			.catch((error) => {
 				console.warn(error);
-				resolve({ arrayBuffer: null, orientation: null, });
+				resolve({ source: src, arrayBuffer: null, orientation: null, });
 			});
 	});
 }
