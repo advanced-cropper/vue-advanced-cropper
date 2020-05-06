@@ -42,7 +42,6 @@
 		<div class="cropper-wrapper">
 			<img class="cropper-wrapper__loading" src="../assets/tutorials/loading.svg" v-if="img.loading">
 			<Cropper
-				classname="cropper"
 				:src="img.src"
 				@ready="ready"
 				@error="error"
@@ -56,10 +55,8 @@
 	.events-example {
 		.cropper-wrapper {
 			position: relative;
-			border-radius: 10px;
 			background: #282C34;
 			overflow: hidden;
-			border: solid 1px #EEE;
 			min-height: 300px;
 		}
 		.cropper-wrapper__loading {
