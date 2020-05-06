@@ -202,6 +202,12 @@ export function resize ({ coordinates, restrictions, allowedArea, aspectRatio, r
 		...resizeEvent.directions,
 	};
 
+	const limitedRestrictions = {
+		...restrictions,
+		minWidth: Math.max(restrictions.minWidth, (allowedArea.right - allowedArea.left) * 0.1),
+		minHeight: Math.max(restrictions.minHeight, (allowedArea.bottom - allowedArea.top) * 0.1),
+	};
+
 	const allowedDirections = params.allowedDirections || {
 		left: true,
 		right: true,
@@ -216,7 +222,7 @@ export function resize ({ coordinates, restrictions, allowedArea, aspectRatio, r
 	});
 
 	// 1. First step: determine the safe and desired area
-	directions = fitConditions({ directions, restrictions, coordinates: actualCoordinates, allowedArea, stopOnBreak: params.stopOnBreak });
+	directions = fitConditions({ directions, restrictions: limitedRestrictions, coordinates: actualCoordinates, allowedArea, stopOnBreak: params.stopOnBreak });
 
 	// 2. Second step: fix desired box to correspondent to aspect ratio
 	let currentWidth = getCurrentWidth(actualCoordinates, directions);
@@ -264,7 +270,7 @@ export function resize ({ coordinates, restrictions, allowedArea, aspectRatio, r
 			}
 		}
 		// 3. Third step: check if desired box with correct aspect ratios break some limits and fit to this conditions
-		directions = fitConditions({ directions, restrictions, coordinates: actualCoordinates, allowedArea, preserveAspectRatio: true, mode: params.compensate && !params.stopOnBreak ? 'move' : 'crop' });
+		directions = fitConditions({ directions, restrictions: limitedRestrictions, coordinates: actualCoordinates, allowedArea, preserveAspectRatio: true, mode: params.compensate && !params.stopOnBreak ? 'move' : 'crop' });
 	}
 
 	// 4. Check if ratio broken (temporary):
