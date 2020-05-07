@@ -48,14 +48,11 @@
         >
         <div class="presentation__title-wrapper">
           <h1 class="presentation__title">
-            Advanced Cropper
-            <div class="presentation__version">
-              0.16
-            </div>
+	        Advanced Cropper
           </h1>
         </div>
         <div class="presentation__subtitle">
-          The flexible cropper component that gives you the opportunity to create almost any cropper that you desire
+          The flexible vue cropper component that gives you the opportunity to create almost any cropper that you desire
         </div>
 
         <div class="presentation__install">
