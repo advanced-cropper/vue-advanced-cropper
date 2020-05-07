@@ -41,6 +41,10 @@ export default {
 			type: String,
 			default: null,
 		},
+		bustCache: {
+			type: Boolean,
+			default: false,
+		},
 		allowedArea: {
 			type: Function,
 			default: algorithms.allowedArea,
@@ -120,6 +124,10 @@ export default {
 		checkOrientation: {
 			type: Boolean,
 			default: true,
+		},
+		crossOrigin: {
+			type: String,
+			default: 'anonymous'
 		},
 		transitionTime: {
 			type: Number,
@@ -483,10 +491,10 @@ export default {
 			if (this.src) {
 				const crossOrigin = isCrossOriginURL(this.src);
 				if (crossOrigin && this.canvas && this.checkCrossOrigin) {
-					this.imageAttributes.crossOrigin = 'anonymous';
+					this.imageAttributes.crossOrigin = this.crossOrigin;
 				}
 				setTimeout(() => {
-					const src = crossOrigin ? addTimestamp(this.src) : this.src;
+					const src = this.bustCache ? addTimestamp(this.src) : this.src;
 					if (this.checkOrientation) {
 						parseImage(src).then(this.onParseImage);
 					} else {
