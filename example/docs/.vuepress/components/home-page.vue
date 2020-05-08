@@ -52,7 +52,7 @@
           </h1>
         </div>
         <div class="presentation__subtitle">
-          The flexible vue cropper component that gives you the opportunity to create almost any cropper that you desire
+	        The flexible Vue cropper component that gives you the opportunity to create almost any cropper that you desire. Identically easy to use and customize.
         </div>
 
         <div class="presentation__install">
@@ -236,7 +236,7 @@
 
         <div class="row">
           <p>
-            Resize and move events are very flexible and allow you to create almost any moving and especially resizng logic (more details <a class="link">here</a>)
+            Resize and move events are very flexible and allow you to create almost any moving and especially resizng logic (more details <a class="link" href="/vue-advanced-cropper/events/move-event.html">here</a>)
           </p>
         </div>
 
@@ -309,6 +309,7 @@
           <a
             href="mailto:norserium@gmail.com"
             class="footer__email"
+            rel="nofollow"
           >
             norserium@gmail.com
           </a>
