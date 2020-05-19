@@ -137,7 +137,7 @@
         <div class="row">
           <div class="feature">
             <div class="feature__title">
-              Canvas and Coordinates
+              Canvas / Coordinates
             </div>
             <div class="feature__text">
               This Cropper can be used to create a canvas with a cropped area or just coordinates relative to the original image to crop it server-side in the future.
