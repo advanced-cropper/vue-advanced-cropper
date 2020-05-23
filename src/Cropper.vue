@@ -212,7 +212,7 @@ export default {
 			};
 
 			// Disable some interactions for user convenience
-			settings.touchMove.enabled = settings.touchMove.enabled && (this.worldTransforms.scale !== 1 || this.imageRestriction === 'none');
+			settings.touchMove.enabled = settings.touchMove.enabled && (this.worldTransforms.scale !== 1 || this.imageRestriction !== 'area');
 
 			return settings;
 		},

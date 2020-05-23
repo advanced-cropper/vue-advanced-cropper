@@ -23,6 +23,7 @@ export default {
 		  scalable: false,
 		  aspectRatio: 1,
       }"
+      image-restriction="stencil"
     />
   </div>
 </template>
