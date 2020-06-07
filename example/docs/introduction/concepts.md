@@ -46,13 +46,13 @@ There are default customizable components from a box that allow you to create yo
 import {
   PreviewResult,
   BoundingBox,
-  MoveableArea
+  DraggableArea
 } from 'vue-advanced-cropper';
 
 export default {
   name: "MyStencil",
   components: {
-    PreviewResult, BoundingBox, MoveableArea
+    PreviewResult, BoundingBox, DraggableArea
   },
   props: [
     // Image src
@@ -95,14 +95,14 @@ export default {
 <template>
   <div class="my-stencil" :style="style">
     <BoundingBox @resize="onResize">
-      <MoveableArea @move="onMove">
+      <DraggableArea @move="onMove">
         <PreviewResult
           :img="img"
           :classname="classes.preview"
           :resultCoordinates="resultCoordinates"
           :stencilCoordinates="stencilCoordinates"
         />
-      </MoveableArea>
+      </DraggableArea>
     </BoundingBox>
   </div>
 </template>
