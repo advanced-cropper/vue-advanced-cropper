@@ -1,5 +1,5 @@
 <script>
-import { RoundStencil, Cropper } from 'vue-advanced-cropper';
+import { Cropper } from 'vue-advanced-cropper';
 
 export default {
 	components: {
@@ -7,10 +7,10 @@ export default {
 	},
 	data() {
 		return {
-			image: 'https://images.pexels.com/photos/1254140/pexels-photo-1254140.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+			image: 'https://images.unsplash.com/photo-1494205577727-d32e58564756?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80',
 			limitations: {
-				minWidth: 400,
-				minHeight: 400,
+				minWidth: 200,
+				minHeight: 200,
 			},
 			result: null,
 		};
@@ -54,7 +54,7 @@ export default {
 
 <template>
   <div class="custom-restrictions-example">
-    <Cropper
+    <cropper
       classname="custom-restrictions-cropper"
       :src="image"
       :restrictions="pixelsRestriction"
@@ -131,29 +131,36 @@ export default {
 	margin-bottom: 20px;
 
 	.panel {
-		color: white;
+		border: solid 1px #DDD;
+		color: black;
 		display: flex;
 		padding: 20px;
-		background: #3fb37f;
+		background: rgb(250,250,250);
 		&__left {
 			width: 100%;
 			padding-right: 30px;
 		}
+		&__right {
+			display: flex;
+			align-items: stretch;
+			flex-direction: column;
+		}
 	}
 
 	.input {
-		margin-bottom: 3px;
+		margin-bottom: 8px;
 		&__control {
 			padding: 4px;
 			width: 100%;
-			border: none;
 			color: black;
 			font: inherit;
 			font-size: 15px;
+			border: solid 1px #AAA;
 		}
 		&__label {
 			display: block;
 			font-size: 11px;
+			margin-bottom: 3px;
 		}
 	}
 	.custom-restrictions-cropper {
@@ -165,7 +172,6 @@ export default {
 	.button {
 		width: 120px;
 		margin-top: 15px;
-		display: block;
 		color: white;
 		font-size: 16px;
 		padding: 17px 20px;
@@ -174,6 +180,10 @@ export default {
 		cursor: pointer;
 		transition: background 0.5s;
 		font-weight: normal;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		&:hover {
 			background: #26a069;
 			text-decoration: none !important;

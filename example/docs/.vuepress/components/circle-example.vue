@@ -1,5 +1,5 @@
 <script>
-import { RoundStencil, Cropper } from 'vue-advanced-cropper';
+import { CircleStencil, Cropper } from 'vue-advanced-cropper';
 
 export default {
 	components: {

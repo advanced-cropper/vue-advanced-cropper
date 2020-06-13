@@ -46,9 +46,9 @@ You are able to customize handle by the following ways:
 To change handler component just pass the name of globally registered handler component or handler component options object to `handlerComponent` prop.
 
 ```html
-<Cropper
+<cropper
 	:src="img"
-	:stencilProps="{
+	:stencil-props="{
 		handlerComponent: 'myHandler'
 	}"
 />
@@ -59,9 +59,9 @@ To change handler component just pass the name of globally registered handler co
 To add handler classnames you should pass an object to `handlersClassnames` prop. All available classnames are represented at the example below
 
 ```html
-<Cropper
+<cropper
 	:src="img"
-	:stencilProps="{
+	:stencil-props="{
 		handlersClassnames: {
 			default: 'handler',
 			hover: 'handler--hover',
@@ -82,7 +82,7 @@ Pay attention to `default` classname. If you want just change classname of a han
 ```html
 <Cropper
 	:src="img"
-	:stencilProps="{
+	:stencil-props="{
 		handlerClassnames: {
 			default: 'handler',
 		}
@@ -95,9 +95,9 @@ Pay attention to `default` classname. If you want just change classname of a han
 To change the list of handlers you should pass an object `handlers` to stencil props.
 
 ```html
-<Cropper
+<cropper
 	:src="img"
-	:stencilProps="{
+	:stencil-props="{
 		handlers: {
 			eastNorth: true,
 			north: false,
@@ -142,12 +142,12 @@ Currently there are problems with changing the line width.
 The necessity to change preview appearance is pretty rare. But if you want to change it you may pass custom classname to `previewClassname` prop.
 
 ```html
-<Cropper
+<cropper
 	:src="img"
-	stencilComponent="circle-stencil"
-	:stencilProps="{
+	:stencil-props="{
 		previewClassname: 'preview'
 	}"
+	stencil-component="circle-stencil"
 />
 ```
 ```css

@@ -99,8 +99,8 @@ export default {
         <PreviewResult
           :img="img"
           :classname="classes.preview"
-          :resultCoordinates="resultCoordinates"
-          :stencilCoordinates="stencilCoordinates"
+          :result-coordinates="resultCoordinates"
+          :stencil-coordinates="stencilCoordinates"
         />
       </DraggableArea>
     </BoundingBox>

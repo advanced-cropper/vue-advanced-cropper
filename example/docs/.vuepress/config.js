@@ -28,7 +28,8 @@ module.exports = {
 				title: 'Tutorials',
 				collapsable: false,
 				children: [
-					'/tutorials/recipes',
+					'/tutorials/basic-recipes',
+					'/tutorials/advanced-recipes',
 					'/tutorials/customize-appearance',
 					'/tutorials/custom-stencil'
 				],
