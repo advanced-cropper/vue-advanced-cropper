@@ -135,10 +135,10 @@ function getImageData(img) {
 				} else {
 					let http = new XMLHttpRequest();
 					http.onreadystatechange = function () {
-						if (this.readyState !== XHR_DONE) return;
+						if (http.readyState !== XHR_DONE) return;
 
-						if (this.status === 200 || this.status === 0) {
-							resolve(this.response);
+						if (http.status === 200 || http.status === 0) {
+							resolve(http.response);
 						} else {
 							reject('Warning: could not load an image to parse its orientation');
 						}
