@@ -21,9 +21,6 @@ export default {
 		stencilClass: {
 			type: String,
 		},
-		resultCoordinates: {
-			type: Object,
-		},
 		stencilCoordinates: {
 			type: Object,
 		},
@@ -141,7 +138,6 @@ export default {
         <PreviewResult
           :img="img"
           :classname="classes.preview"
-          :result-coordinates="resultCoordinates"
           :stencil-coordinates="stencilCoordinates"
         />
       </DraggableArea>

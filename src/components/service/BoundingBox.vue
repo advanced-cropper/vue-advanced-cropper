@@ -3,6 +3,7 @@ import bem from 'easy-bem';
 import classnames from 'classnames';
 import { directionNames } from '../../core/utils';
 import { ResizeEvent } from '../../core/events';
+import { SimpleHandler } from '../handlers';
 
 const cn = bem('vue-bounding-box');
 
@@ -32,6 +33,9 @@ export default {
 		},
 		handlerComponent: {
 			type: [Object, String],
+			default() {
+				return SimpleHandler;
+			},
 		},
 		handlersClassnames: {
 			type: Object,

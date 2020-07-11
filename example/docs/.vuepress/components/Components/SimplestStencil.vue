@@ -1,11 +1,3 @@
----
-home: true
-layout: home-page
----
-
-::: slot custom-stencil
-
-```html
 <script>
 	import {
 		PreviewResult,
@@ -66,5 +58,3 @@ layout: home-page
 		</BoundingBox>
 	</div>
 </template>
-```
-:::
