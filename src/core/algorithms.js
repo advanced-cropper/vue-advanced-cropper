@@ -204,8 +204,8 @@ export function resize ({ coordinates, restrictions, allowedArea, aspectRatio, r
 
 	const limitedRestrictions = {
 		...restrictions,
-		minWidth: Math.max(restrictions.minWidth, (allowedArea.right - allowedArea.left) * 0.1),
-		minHeight: Math.max(restrictions.minHeight, (allowedArea.bottom - allowedArea.top) * 0.1),
+		minWidth: Math.max(restrictions.minWidth, restrictions.minimum),
+		minHeight: Math.max(restrictions.minHeight, restrictions.minimum),
 	};
 
 	const allowedDirections = params.allowedDirections || {

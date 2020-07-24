@@ -332,6 +332,10 @@ export default {
 				}
 			}
 
+			// The magic number is the approximation of the handler size
+			// Temporary solution that should be improved in the future
+			restrictions.minimum = 20 * this.coefficient;
+
 			return restrictions;
 		},
 	},
