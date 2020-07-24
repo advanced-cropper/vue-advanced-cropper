@@ -117,8 +117,8 @@ export default {
 				const { left, top, } = container.getBoundingClientRect();
 				if (this.touches.length === 1 && newTouches.length === 1) {
 					this.$emit('move', new MoveEvent(event, {
-						left: (newTouches[0].clientX - left - this.anchor.x),
-						top: (newTouches[0].clientY - top - this.anchor.y),
+						left: (newTouches[0].clientX - (left + this.anchor.x)),
+						top: (newTouches[0].clientY - (top + this.anchor.y)),
 					}));
 				}
 			}

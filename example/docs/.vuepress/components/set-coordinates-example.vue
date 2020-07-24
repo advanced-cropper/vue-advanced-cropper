@@ -44,12 +44,21 @@ export default {
 			)
 		},
 		maximize() {
-			this.$refs.cropper.setCoordinates(
+			const { cropper } = this.$refs;
+			const center = {
+				left: cropper.coordinates.left + cropper.coordinates.width / 2,
+				top: cropper.coordinates.top + cropper.coordinates.height / 2,
+			};
+			cropper.setCoordinates([
 				(coordinates, imageSize) => ({
 					width: imageSize.width,
 					height: imageSize.height
 				}),
-			)
+				(coordinates, imageSize) => ({
+					left: center.left - coordinates.width/2,
+					top: center.top - coordinates.height/2
+				}),
+			])
 		},
 	},
 };

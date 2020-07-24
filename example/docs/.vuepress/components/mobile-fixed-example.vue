@@ -30,6 +30,9 @@ export default {
 
 <style lang="scss">
 	.mobile-fixed-example {
+		.vue-advanced-cropper {
+			height: 700px;
+		}
 
 	}
 </style>

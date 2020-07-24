@@ -60,11 +60,11 @@ export default {
 			if (flipped) {
 				result.width = `${height}px`;
 				result.height = `${width}px`;
-				result.left = `${-this.stencilCoordinates.left - (height - width)/2 + imageTransforms.translateX}px`;
-				result.top = `${-this.stencilCoordinates.top - (width - height)/2 + imageTransforms.translateY}px`;
+				result.left = `${-this.stencilCoordinates.left - imageTransforms.translateX - (height - width)/2}px`;
+				result.top = `${-this.stencilCoordinates.top - imageTransforms.translateY - (width - height)/2}px`;
 			} else {
-				result.left = `${-this.stencilCoordinates.left + imageTransforms.translateX}px`;
-				result.top = `${-this.stencilCoordinates.top + imageTransforms.translateY}px`;
+				result.left = `${-this.stencilCoordinates.left - imageTransforms.translateX}px`;
+				result.top = `${-this.stencilCoordinates.top - imageTransforms.translateY}px`;
 			}
 			result.transform = getStyleTransforms(imageTransforms);
 			return result;
