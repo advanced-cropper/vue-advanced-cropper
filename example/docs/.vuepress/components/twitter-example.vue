@@ -112,12 +112,12 @@
 					if (this.originalHeight < this.originalWidth) {
 						const minHeight = cropper.stencilRestrictions.minHeight;
 						cropper.zoom(
-							((1 - value) * this.originalHeight + minHeight) / ((1 - this.zoom) * this.originalHeight + minHeight)
+							((1 - this.zoom) * this.originalHeight + minHeight) / ((1 - value) * this.originalHeight + minHeight)
 						)
 					} else {
 						const minWidth = cropper.stencilRestrictions.minWidth;
 						cropper.zoom(
-							((1 - value) * this.originalWidth + minWidth) / ((1 - this.zoom) * this.originalWidth + minWidth)
+							((1 - this.zoom) * this.originalWidth + minWidth) / ((1 - value) * this.originalWidth + minWidth)
 						)
 					}
 				}
