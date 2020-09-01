@@ -5,7 +5,7 @@ import Vue from 'vue';
 import debounce from 'debounce';
 import { RectangleStencil } from './components/stencils';
 import { CropperWrapper } from './components/service';
-import { ResizeEvent, MoveEvent } from './core/events';
+import { ResizeEvent, MoveEvent, ManipulateImageEvent } from './core/events';
 import { isLocal, isCrossOriginURL, isUndefined, getSettings, parseNumber } from './core/utils';
 import { arrayBufferToDataURL, getImageTransforms, getStyleTransforms, prepareSource, parseImage } from './core/image';
 import { ALL_DIRECTIONS, MINIMAL_PERCENT_SIZE, IMAGE_RESTRICTIONS, DEFAULT_COORDINATES } from './core/constants';
@@ -43,6 +43,10 @@ export default {
 			type: Function,
 			default: algorithms.defaultBoundaries,
 		},
+		updateVisibleArea: {
+			type: Function,
+			default: algorithms.updateVisibleArea,
+		},
 		defaultVisibleArea: {
 			type: Function,
 			default: algorithms.defaultVisibleArea,
@@ -54,6 +58,14 @@ export default {
 		defaultPosition: {
 			type: Function,
 			default: algorithms.defaultPosition,
+		},
+		areaLimits: {
+			type: Function,
+			default: algorithms.areaLimits,
+		},
+		coordinatesLimits: {
+			type: Function,
+			default: algorithms.coordinatesLimits,
 		},
 		minWidth: {
 			type: [Number, String],
@@ -92,7 +104,7 @@ export default {
 			type: String,
 		},
 		debounce: {
-			type: Number,
+			type: [Boolean, Number],
 			default: 500,
 		},
 		canvas: {
@@ -274,6 +286,15 @@ export default {
 				props: this.$props
 			});
 
+			const coordinatesLimits = this.getCoordinatesLimits(false);
+
+			if ('left' in coordinatesLimits && 'right' in coordinatesLimits) {
+				restrictions.maxWidth = Math.min(restrictions.maxWidth, coordinatesLimits.right - coordinatesLimits.left);
+			}
+			if ('top' in coordinatesLimits && 'bottom' in coordinatesLimits) {
+				restrictions.maxHeight = Math.min(restrictions.maxHeight, coordinatesLimits.bottom - coordinatesLimits.top);
+			}
+
 			if (isUndefined(restrictions.minWidth)) {
 				restrictions.minWidth = Math.floor(minSize);
 			}
@@ -293,6 +314,8 @@ export default {
 				restrictions.maxHeight = restrictions.minHeight;
 				restrictions.heightFrozen = true;
 			}
+
+
 
 			if (this.imageRestriction !== 'none') {
 				const visibleAreaMaximum = algorithms.fitIn(this.visibleArea, this.imageSize);
@@ -384,13 +407,21 @@ export default {
 				};
 			}
 		},
+		zoom(factor, center) {
+			this.onManipulateImage(
+				new ManipulateImageEvent(null, {}, {
+					factor,
+					center
+				})
+			);
+		},
 		// Internal methods
 		prepareResult(coordinates) {
 			if (this.roundResult) {
 				return algorithms.roundCoordinates({
 					coordinates,
 					restrictions: this.restrictions,
-					allowedArea: this.getAllowedArea()
+					limits: this.getCoordinatesLimits(),
 				});
 			} else {
 				return coordinates;
@@ -406,10 +437,7 @@ export default {
 			const { visibleArea } = algorithms.autoZoom({
 				coordinates,
 				visibleArea: this.visibleArea,
-				allowedArea: this.getAllowedArea(true),
-				settings: {
-					imageRestriction: this.imageRestriction
-				}
+				limits: this.getAreaLimits(),
 			});
 
 			this.visibleArea = visibleArea;
@@ -464,7 +492,7 @@ export default {
 		onChangeCoordinates(newCoordinates, debounce = true) {
 			this.coordinates = newCoordinates;
 			if (this.$listeners && this.$listeners.change) {
-				if (debounce) {
+				if (debounce && this.debounce) {
 					this.debouncedUpdate();
 				} else {
 					this.update();
@@ -538,13 +566,13 @@ export default {
 				resizeEvent.directions.bottom = 0;
 			}
 			ALL_DIRECTIONS.forEach(direction => {
-				resizeEvent.directions[direction] /= this.coefficient;
+				resizeEvent.directions[direction] *= this.coefficient;
 			});
 			this.onChangeCoordinates(
 				this.resizeAlgorithm({
 					coordinates: this.coordinates,
+					limits: this.getCoordinatesLimits(),
 					restrictions: this.stencilRestrictions,
-					allowedArea: this.getAllowedArea(),
 					aspectRatio: this.stencilRatio(),
 					resizeEvent
 				})
@@ -566,10 +594,10 @@ export default {
 			const { visibleArea, coordinates } = algorithms.manipulateImage({
 				event,
 				coordinates: this.coordinates,
-				coefficient: this.coefficient,
-				stencilRestrictions: this.stencilRestrictions,
 				visibleArea: this.visibleArea,
-				allowedArea: this.getAllowedArea(true),
+				areaLimits: this.getAreaLimits(),
+				coordinatesLimits: this.getCoordinatesLimits(false),
+				restrictions: this.stencilRestrictions,
 				settings: {
 					frozenDirections: this.frozenDirections,
 					imageRestriction: this.imageRestriction,
@@ -583,13 +611,13 @@ export default {
 		},
 		onMove(moveEvent) {
 			ALL_DIRECTIONS.forEach(direction => {
-				moveEvent.directions[direction] /= this.coefficient;
+				moveEvent.directions[direction] *= this.coefficient;
 			});
 			this.onChangeCoordinates(
 				this.moveAlgorithm({
+					moveEvent,
 					coordinates: this.coordinates,
-					allowedArea: this.getAllowedArea(),
-					moveEvent
+					limits: this.getCoordinatesLimits(),
 				})
 			);
 			this.updateStencilCoordinates(this.coordinates);
@@ -608,12 +636,12 @@ export default {
 			this.applyTransforms(this.coordinates, true);
 		},
 		applyTransforms(transforms, autoZoom = false) {
-			const allowedArea = this.getAllowedArea(true);
+			const limits = this.getCoordinatesLimits(false);
 
 			const moveAlgorithm = (prevCoordinates, newCoordinates) => {
 				return this.moveAlgorithm({
 					coordinates: prevCoordinates,
-					allowedArea,
+					limits,
 					moveEvent: new MoveEvent(null, {
 						left: (newCoordinates.left - prevCoordinates.left),
 						top: (newCoordinates.top - prevCoordinates.top),
@@ -737,6 +765,21 @@ export default {
 				this.updateStencilCoordinates({ ...DEFAULT_COORDINATES });
 			}, this.transitionTime);
 		},
+		getAreaLimits() {
+			return this.areaLimits({
+				imageSize: this.imageSize,
+				visibleArea: this.visibleArea,
+				imageRestriction: this.imageRestriction
+			});
+		},
+		getCoordinatesLimits(insideArea = true) {
+			const limits =
+				this.coordinatesLimits({
+					imageSize: this.imageSize,
+					imageRestriction: this.imageRestriction
+				});
+			return insideArea ? algorithms.limitBy(limits, this.visibleArea) : limits;
+		},
 		refreshImage() {
 			return new Promise((resolve, reject) => {
 				const image = this.$refs.image;
@@ -762,14 +805,16 @@ export default {
 					Vue.nextTick(() => {
 						this.boundariesSize = this.boundaries({ cropper, imageSize: this.imageSize });
 
-						const visibleArea = algorithms.refreshVisibleArea({
+						const visibleArea = this.updateVisibleArea({
 							current: this.defaultVisibleArea({
 								imageSize: this.imageSize,
-								boundarySize: this.boundariesSize
+								boundariesSize: this.boundariesSize
 							}),
 							previous: this.visibleArea,
-							allowedArea: this.getAllowedArea(true),
-							imageRestriction: this.imageRestriction,
+							limits: this.getAreaLimits(),
+							coordinates: this.coordinates,
+							boundariesSize: this.boundariesSize,
+							imageSize: this.imageSize,
 						});
 
 						// If visible area was changed the coordinates should be adapted to this changes
@@ -778,8 +823,11 @@ export default {
 							coordinates: this.coordinates,
 							stencilRatio: this.stencilRatio(),
 							stencilRestrictions: this.stencilRestrictions,
-							allowedArea: this.getAllowedArea(true),
-							imageRestriction: this.imageRestriction
+							coordinatesLimits: this.coordinatesLimits({
+								visibleArea,
+								imageRestriction: this.imageRestriction,
+								imageSize: this.imageSize
+							}),
 						});
 
 						this.visibleArea = visibleArea;
@@ -792,7 +840,7 @@ export default {
 			});
 		},
 		getAllowedArea(breakBoundaries) {
-			return algorithms.allowedArea({
+			return algorithms.areaLimits({
 				breakBoundaries,
 				imageSize: this.imageSize,
 				visibleArea: this.visibleArea,

@@ -31,7 +31,8 @@ module.exports = {
 					'/tutorials/recipes',
 					'/tutorials/advanced-recipes',
 					'/tutorials/customize-appearance',
-					'/tutorials/custom-stencil'
+					'/tutorials/custom-stencil',
+					'/tutorials/showcase'
 				],
 			},
 			{

@@ -145,7 +145,7 @@ function isEmpty(object) {
 }
 
 
-export function roundCoordinates({ coordinates, restrictions, allowedArea }) {
+export function roundCoordinates({ coordinates, restrictions, limits }) {
 	const roundedCoordinates = {
 		width: Math.round(coordinates.width),
 		height: Math.round(coordinates.height),
@@ -163,11 +163,11 @@ export function roundCoordinates({ coordinates, restrictions, allowedArea }) {
 	} else if (roundedCoordinates.height < restrictions.minHeight) {
 		roundedCoordinates.height = Math.ceil(coordinates.height);
 	}
-	if (roundedCoordinates.left < allowedArea.left || roundedCoordinates.left + roundedCoordinates.width > allowedArea.right) {
-		roundedCoordinates.left = Math.floor(allowedArea.left);
+	if (roundedCoordinates.left < limits.left || roundedCoordinates.left + roundedCoordinates.width > limits.right) {
+		roundedCoordinates.left = Math.floor(limits.left);
 	}
-	if (roundedCoordinates.top < allowedArea.top || roundedCoordinates.top + roundedCoordinates.height > allowedArea.bottom) {
-		roundedCoordinates.top = Math.floor(allowedArea.top);
+	if (roundedCoordinates.top < limits.top || roundedCoordinates.top + roundedCoordinates.height > limits.bottom) {
+		roundedCoordinates.top = Math.floor(limits.top);
 	}
 
 	return roundedCoordinates;
@@ -188,7 +188,7 @@ function getIntersections(object, limits) {
 	return intersections;
 }
 
-function fitConditions({ directions,  coordinates, allowedArea = {}, restrictions, preserveRatio, compensate }) {
+function fitConditions({ directions,  coordinates, limits = {}, restrictions, preserveRatio, compensate }) {
 	const fixedDirections = { ...directions, };
 
 	let currentWidth = applyDirections(coordinates, fixedDirections).width;
@@ -217,7 +217,7 @@ function fitConditions({ directions,  coordinates, allowedArea = {}, restriction
 	}
 
 	// Prevent breaking limits
-	let breaks = getIntersections(applyDirections(coordinates, fixedDirections), allowedArea);
+	let breaks = getIntersections(applyDirections(coordinates, fixedDirections), limits);
 
 	if (compensate) {
 		if (breaks.left > 0 && breaks.right === 0) {
@@ -236,7 +236,7 @@ function fitConditions({ directions,  coordinates, allowedArea = {}, restriction
 			fixedDirections.bottom -= breaks.bottom;
 		}
 
-		breaks = getIntersections(applyDirections(coordinates, fixedDirections), allowedArea);
+		breaks = getIntersections(applyDirections(coordinates, fixedDirections), limits);
 	}
 
 	const maxResize = {
@@ -322,7 +322,7 @@ function getBrokenRatio(currentAspectRatio, aspectRatio) {
 	return ratioBroken;
 }
 
-export function resize ({ resizeEvent, coordinates, allowedArea, aspectRatio, restrictions }) {
+export function resize ({ resizeEvent, coordinates, limits, aspectRatio, restrictions }) {
 	const actualCoordinates = {
 		...coordinates,
 		right: coordinates.left + coordinates.width,
@@ -355,7 +355,7 @@ export function resize ({ resizeEvent, coordinates, allowedArea, aspectRatio, re
 	});
 
 	// 1. First step: determine the safe and desired area
-	directions = fitConditions({ coordinates: actualCoordinates, directions, restrictions: limitedRestrictions, allowedArea });
+	directions = fitConditions({ coordinates: actualCoordinates, directions, restrictions: limitedRestrictions, limits });
 
 	// 2. Second step: fix desired box to correspondent to aspect ratio
 	let currentWidth = applyDirections(actualCoordinates, directions).width;
@@ -403,7 +403,7 @@ export function resize ({ resizeEvent, coordinates, allowedArea, aspectRatio, re
 			}
 		}
 		// 3. Third step: check if desired box with correct aspect ratios break some limits and fit to this conditions
-		directions = fitConditions({ directions, restrictions: limitedRestrictions, coordinates: actualCoordinates, allowedArea, preserveRatio: true, compensate: params.compensate });
+		directions = fitConditions({ directions, restrictions: limitedRestrictions, coordinates: actualCoordinates, limits, preserveRatio: true, compensate: params.compensate });
 	}
 
 	// 4. Check if ratio broken (temporary):
@@ -426,7 +426,7 @@ export function resize ({ resizeEvent, coordinates, allowedArea, aspectRatio, re
 			left: coordinates.left,
 			top: coordinates.top,
 		},
-		allowedArea,
+		limits,
 		moveEvent: new MoveEvent({}, {
 			left: -directions.left,
 			top: -directions.top,
@@ -434,19 +434,19 @@ export function resize ({ resizeEvent, coordinates, allowedArea, aspectRatio, re
 	});
 }
 
-export function move ({ moveEvent, coordinates, allowedArea = {}}) {
+export function move ({ moveEvent, coordinates, limits = {}}) {
 	const movedCoordinates = applyMove(coordinates, moveEvent.directions);
 
 	return applyMove(
 		movedCoordinates,
-		fit(movedCoordinates, allowedArea)
+		fit(movedCoordinates, limits)
 	);
 }
 
 
 // The main point of this feature is calculating the needed position of stencil and parameters of world transforms
 // Real coordinates don't changes here
-export function autoZoom({ coordinates: originalCoordinates, visibleArea: originalVisibleArea, allowedArea, settings }) {
+export function autoZoom({ coordinates: originalCoordinates, visibleArea: originalVisibleArea, limits }) {
 	let visibleArea = { ...originalVisibleArea };
 	let coordinates = { ...originalCoordinates };
 
@@ -456,24 +456,23 @@ export function autoZoom({ coordinates: originalCoordinates, visibleArea: origin
 	const heightIntersections = intersections.bottom + intersections.top;
 
 	if (widthIntersections > heightIntersections) {
-		visibleArea = applyScale(visibleArea, Math.min((widthIntersections + visibleArea.width) / visibleArea.width, maxScale(visibleArea, allowedArea)));
+		visibleArea = applyScale(visibleArea, Math.min((widthIntersections + visibleArea.width) / visibleArea.width, maxScale(visibleArea, limits)));
 	} else {
-		visibleArea = applyScale(visibleArea, Math.min((heightIntersections + visibleArea.height) / visibleArea.height, maxScale(visibleArea, allowedArea)));
+		visibleArea = applyScale(visibleArea, Math.min((heightIntersections + visibleArea.height) / visibleArea.height, maxScale(visibleArea, limits)));
 	}
 
 	visibleArea = applyMove(visibleArea, inverseMove(
 		fit(coordinates, toLimits(visibleArea))
 	));
 
-	visibleArea = applyMove(visibleArea, fit(visibleArea, allowedArea));
+	visibleArea = applyMove(visibleArea, fit(visibleArea, limits));
 
 	return {
 		visibleArea
 	};
 }
 
-
-export function manipulateImage({ event, coordinates: originalCoordinates, visibleArea: originalVisibleArea, stencilRestrictions, allowedArea, settings }) {
+export function manipulateImage({ event, coordinates: originalCoordinates, visibleArea: originalVisibleArea, restrictions, areaLimits, coordinatesLimits, settings }) {
 	let { scale, move } = event;
 
 	let visibleArea = { ...originalVisibleArea };
@@ -492,16 +491,17 @@ export function manipulateImage({ event, coordinates: originalCoordinates, visib
 	const scaleRestrictions = {
 		stencil: {
 			minimum: Math.max(
-				stencilRestrictions.minWidth ? stencilRestrictions.minWidth / coordinates.width : 0,
-				stencilRestrictions.minHeight ? stencilRestrictions.minHeight / coordinates.height : 0
+				restrictions.minWidth ? restrictions.minWidth / coordinates.width : 0,
+				restrictions.minHeight ? restrictions.minHeight / coordinates.height : 0
 			),
 			maximum: Math.min(
-				stencilRestrictions.maxWidth ? stencilRestrictions.maxWidth / coordinates.width : Infinity,
-				stencilRestrictions.maxHeight ? stencilRestrictions.maxHeight / coordinates.height : Infinity,
+				restrictions.maxWidth ? restrictions.maxWidth / coordinates.width : Infinity,
+				restrictions.maxHeight ? restrictions.maxHeight / coordinates.height : Infinity,
+				maxScale(coordinates, coordinatesLimits),
 			),
 		},
 		area: {
-			maximum: maxScale(visibleArea, allowedArea),
+			maximum: maxScale(visibleArea, areaLimits),
 		}
 	};
 
@@ -527,23 +527,24 @@ export function manipulateImage({ event, coordinates: originalCoordinates, visib
 		bottom: originalVisibleArea.height + originalVisibleArea.top - (originalCoordinates.height + originalCoordinates.top)
 	};
 
-	// Move the area to fit to boundaries:
-	if (settings.imageRestriction === 'area') {
-		visibleArea = applyMove(visibleArea, fit(visibleArea, allowedArea));
-	} else if (settings.imageRestriction === 'stencil') {
-		visibleArea = applyMove(visibleArea, fit(visibleArea, {
-			left: allowedArea.left - relativeCoordinates.left * stencilScale,
-			top: allowedArea.top - relativeCoordinates.top * stencilScale,
-			bottom: allowedArea.bottom + relativeCoordinates.bottom * stencilScale,
-			right: allowedArea.right + relativeCoordinates.right * stencilScale,
-		}));
-	}
+	// Move the area to fit to area limits:
+	visibleArea = applyMove(visibleArea, fit(visibleArea, areaLimits));
+
+
+	// Move the area to fit to coordinates limits:
+	visibleArea = applyMove(visibleArea, fit(visibleArea, {
+		left: coordinatesLimits.left - relativeCoordinates.left * stencilScale,
+		top: coordinatesLimits.top - relativeCoordinates.top * stencilScale,
+		bottom: coordinatesLimits.bottom + relativeCoordinates.bottom * stencilScale,
+		right: coordinatesLimits.right + relativeCoordinates.right * stencilScale,
+	}));
 
 	// Set the same coordinates of stencil inside visible area
 	coordinates.width = coordinates.width * stencilScale;
 	coordinates.height = coordinates.height * stencilScale;
 	coordinates.left = visibleArea.left + relativeCoordinates.left * stencilScale;
 	coordinates.top = visibleArea.top + relativeCoordinates.top * stencilScale;
+
 
 	// Resize only area if stencil can't be resized and stencil resize is disabled
 	if (allowedScale && settings.stencil) {
@@ -556,7 +557,7 @@ export function manipulateImage({ event, coordinates: originalCoordinates, visib
 			visibleArea, areaScale, getCenter(coordinates),
 			Math.pow(scale.factor > 1 ? scaleRestrictions.area.maximum : coordinates.height / visibleArea.height, 2)
 		);
-		visibleArea = applyMove(visibleArea, fit(visibleArea, allowedArea));
+		visibleArea = applyMove(visibleArea, fit(visibleArea, areaLimits));
 	}
 
 	return {
@@ -623,15 +624,22 @@ export function approximatedSize({ width, height, aspectRatio, restrictions }) {
 
 // This function updates visible area with respect to current transformations and fits
 // coordinates to the new visible area
-export function refreshVisibleArea({ current, previous, imageRestriction, allowedArea }) {
+export function updateVisibleArea({ current, previous, limits, coordinates }) {
 	let visibleArea = { ...current };
 
 	if (previous.width && previous.height && !isEqual(current, previous)) {
 		// Adapt scale transformations
-		visibleArea = applyScale(visibleArea, Math.min(
-			previous.width / visibleArea.width,
-			maxScale(visibleArea, allowedArea)
-		));
+		if (previous.width > coordinates.width ) {
+			visibleArea = applyScale(visibleArea, Math.min(
+				previous.height / visibleArea.height,
+				maxScale(visibleArea, limits)
+			));
+		} else {
+			visibleArea = applyScale(visibleArea, Math.min(
+				previous.width / visibleArea.width,
+				maxScale(visibleArea, limits)
+			));
+		}
 
 		// Adapt move transformations
 		visibleArea = applyMove(visibleArea, diff(
@@ -639,16 +647,30 @@ export function refreshVisibleArea({ current, previous, imageRestriction, allowe
 			getCenter(visibleArea)
 		));
 
-		// Prevent the breaking limits
-		if (imageRestriction === 'area') {
-			visibleArea = applyMove(visibleArea, fit(visibleArea, allowedArea));
+		// Prevent the breaking of limits
+		visibleArea = applyMove(visibleArea, fit(visibleArea, limits));
+
+		const intersections = getIntersections(coordinates, toLimits(visibleArea));
+
+		if (intersections.left + intersections.right + intersections.top + intersections.bottom)  {
+			if (intersections.left + intersections.right > intersections.top + intersections.bottom) {
+				visibleArea = applyScale(visibleArea, Math.min(
+					(visibleArea.width + intersections.left + intersections.right) / visibleArea.width,
+					maxScale(visibleArea, limits)
+				));
+			} else {
+				visibleArea = applyScale(visibleArea, Math.min(
+					(visibleArea.width + intersections.top + intersections.bottom) / visibleArea.height,
+					maxScale(visibleArea, limits)
+				));
+			}
 		}
 	}
 
 	return visibleArea;
 }
 
-export function fitToVisibleArea({ visibleArea, coordinates: previousCoordinates, stencilRatio, stencilRestrictions, allowedArea }) {
+export function fitToVisibleArea({ visibleArea, coordinates: previousCoordinates, stencilRatio, stencilRestrictions, coordinatesLimits }) {
 	let coordinates = { ...previousCoordinates };
 	if (!isEmpty(coordinates)) {
 		coordinates = {
@@ -670,14 +692,14 @@ export function fitToVisibleArea({ visibleArea, coordinates: previousCoordinates
 			getCenter(previousCoordinates), getCenter(coordinates)
 		));
 
-		coordinates = applyMove(coordinates, fit(coordinates, toLimits(visibleArea)));
+		coordinates = applyMove(coordinates, fit(coordinates, toLimits(coordinatesLimits)));
 	}
 	return coordinates;
 }
 
-export function defaultVisibleArea({ imageSize, boundarySize }) {
+export function defaultVisibleArea({ imageSize, boundariesSize }) {
 	const imageRatio = imageSize.width / imageSize.height;
-	const boundaryRatio = boundarySize.width / boundarySize.height;
+	const boundaryRatio = boundariesSize.width / boundariesSize.height;
 
 	const areaProperties = {
 		height: imageRatio > boundaryRatio ? imageSize.height : imageSize.width / boundaryRatio,
@@ -724,12 +746,34 @@ export function defaultBoundaries ({ cropper, imageSize }) {
 	}
 
 	return {
-		width: areaWidth,
-		height: areaHeight,
+		width: currentWidth,
+		height: currentHeight,
 	};
 }
 
-export function allowedArea({ breakBoundaries, imageSize, visibleArea, imageRestriction }) {
+export function joinLimits(a, b) {
+	const limits = {};
+	ALL_DIRECTIONS.forEach(direction => {
+		if (!isUndefined(a[direction]) && !isUndefined(b[direction])) {
+			if (direction === 'left' || direction === 'top') {
+				limits[direction] = Math.max(a[direction], b[direction]);
+			} else {
+				limits[direction] = Math.min(a[direction], b[direction]);
+			}
+		} else if (b[direction]) {
+			limits[direction] = b[direction];
+		} else if (a[direction]) {
+			limits[direction] = a[direction];
+		}
+	});
+	return limits;
+}
+
+export function limitBy(limits, object) {
+	return joinLimits(limits, toLimits(object));
+}
+
+export function coordinatesLimits({ imageSize, imageRestriction }) {
 	let limits = {};
 
 	if (imageRestriction !== 'none') {
@@ -741,24 +785,23 @@ export function allowedArea({ breakBoundaries, imageSize, visibleArea, imageRest
 		};
 	}
 
-	if (!breakBoundaries) {
-		ALL_DIRECTIONS.forEach(direction => {
-			if (!isUndefined(limits[direction])) {
-				if (direction === 'left' || direction === 'top') {
-					limits[direction] = Math.max(limits[direction], toLimits(visibleArea)[direction]);
-				} else {
-					limits[direction] = Math.min(limits[direction], toLimits(visibleArea)[direction]);
-				}
-			} else {
-				limits[direction] = toLimits(visibleArea)[direction];
-			}
-		});
+	return limits;
+}
+
+export function areaLimits({ imageSize, imageRestriction }) {
+	let limits = {};
+
+	if (imageRestriction === 'area') {
+		limits = {
+			left: 0,
+			top: 0,
+			right: imageSize.width,
+			bottom: imageSize.height
+		};
 	}
 
 	return limits;
 }
-
-
 
 // eslint-disable-next-line no-unused-vars
 export function defaultPosition ({ cropper, image, stencilWidth, stencilHeight, imageWidth, imageHeight,  props }) {
