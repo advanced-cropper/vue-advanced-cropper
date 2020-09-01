@@ -9,7 +9,7 @@
 		data() {
 			return {
 				zoom: 0,
-				img: require('../assets/pictures/girl-in-hat.png'),
+				img: require('../assets/pictures/girl-in-hat.jpg'),
 				originalWidth: 0,
 				originalHeight: 0,
 			};

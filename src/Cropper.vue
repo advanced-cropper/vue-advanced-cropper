@@ -207,8 +207,8 @@ export default {
 				...this.basicImageTransforms,
 				scaleX: (this.basicImageTransforms.scaleX || 1),
 				scaleY: (this.basicImageTransforms.scaleY || 1),
-				translateX: (this.visibleArea.left + (this.imageSize.width - this.imageSize.width)/2) / this.coefficient,
-				translateY: (this.visibleArea.top + (this.imageSize.height - this.imageSize.height)/2) / this.coefficient,
+				translateX: (this.visibleArea.left) / this.coefficient,
+				translateY: (this.visibleArea.top) / this.coefficient,
 			};
 		},
 		coefficient() {
@@ -786,7 +786,7 @@ export default {
 					imageSize: this.imageSize,
 					imageRestriction: this.imageRestriction
 				});
-			return insideArea ? algorithms.limitBy(limits, this.visibleArea) : limits;
+			return insideArea ? algorithms.limitBy(limits, algorithms.toLimits(this.visibleArea)) : limits;
 		},
 		refreshImage() {
 			return new Promise((resolve, reject) => {
@@ -813,11 +813,19 @@ export default {
 					Vue.nextTick(() => {
 						this.boundariesSize = this.boundaries({ cropper, imageSize: this.imageSize });
 
+						const newArea = this.defaultVisibleArea({
+							imageSize: this.imageSize,
+							boundariesSize: this.boundariesSize
+						});
+
+						const boundariesRatio = this.boundariesSize.width / this.boundariesSize.height;
+
+						if (newArea.width / newArea.height !== boundariesRatio) {
+							newArea.height = newArea.width / boundariesRatio;
+						}
+
 						const visibleArea = this.updateVisibleArea({
-							current: this.defaultVisibleArea({
-								imageSize: this.imageSize,
-								boundariesSize: this.boundariesSize
-							}),
+							current: newArea,
 							previous: this.visibleArea,
 							limits: this.getAreaLimits(),
 							coordinates: this.coordinates,

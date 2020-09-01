@@ -287,6 +287,44 @@ export default {
 />
 ```
 
+## Default visible area
+
+Moreover, there are situations where you need to save, for example, previous visible area position. To implement
+it you can use `default-visible-area` prop.
+::: warning
+This feature is not published. It's still under the development.
+:::
+
+<default-visible-area-example></default-visible-area-example>
+
+```js
+import { Cropper } from 'vue-advanced-cropper';
+
+export default {
+	components: {
+		Cropper,
+	},
+	methods: {
+		defaultVisibleArea() {
+			return {
+				width: 500,
+				height: 500,
+				left: 100,
+				top: 100
+			};
+		},
+	}
+};
+```
+
+
+```html
+<cropper
+	:src="image"
+	:default-visible-area="defaultVisibleArea"
+/>
+```
+
 ## Events
 
 There are only there events now:

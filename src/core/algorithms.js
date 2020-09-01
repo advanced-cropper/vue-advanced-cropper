@@ -124,7 +124,7 @@ export function center(object, area) {
 	};
 }
 
-function toLimits(object) {
+export function toLimits(object) {
 	return {
 		left: object.left,
 		top: object.top,
@@ -775,6 +775,7 @@ export function limitBy(limits, object) {
 
 export function coordinatesLimits({ imageSize, imageRestriction }) {
 	let limits = {};
+
 
 	if (imageRestriction !== 'none') {
 		limits = {
