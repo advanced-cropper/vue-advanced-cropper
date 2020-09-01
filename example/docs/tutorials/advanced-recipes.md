@@ -186,6 +186,67 @@ cropper.setCoordinates([
 ])
 ```
 
+## Manipulate image
+
+
+There are two methods to manipulate visible area programmatically **move** and **scale**.
+
+::: warning
+This feature is not published. It's still under the development.
+:::
+
+<manipulate-image-example></manipulate-image-example>
+
+The minimal working example:
+
+```html
+<script>
+import { Cropper } from 'vue-advanced-cropper';
+
+export default {
+	components: {
+		Cropper,
+	},
+	methods: {
+		zoom() {
+			this.$refs.cropper.zoom(2);
+		},
+		move() {
+			this.$refs.cropper.move(100, 100)
+		}
+	},
+};
+</script>
+```
+
+```html
+<cropper
+	ref="cropper"
+	:src="image"
+/>
+```
+
+### Arguments
+
+#### `move`
+
+Move is used to translate visible area relative to its position: 
+```js
+cropper.move(left, top)
+```
+
+
+#### `scale`
+
+Move is used to scale visible area relative to its scale: 
+```js
+cropper.scale(factor, center)
+```
+
+The parameter `factor` is the number, that represents scale factor (i.e. `1.1` to resize on `110%`, `0.8` to resize to `80%`). 
+
+The parameter `center` is the object `{ width, height }`.
+
 
 ## Default size and position
 

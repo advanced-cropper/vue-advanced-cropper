@@ -484,8 +484,8 @@ export function manipulateImage({ event, coordinates: originalCoordinates, visib
 
 	// Move visible area. Image shift is inverted.
 	visibleArea = applyMove(visibleArea, {
-		left: -move.left || 0,
-		top: -move.top || 0,
+		left: move.left || 0,
+		top: move.top || 0,
 	});
 
 	const scaleRestrictions = {

@@ -120,8 +120,8 @@ export default {
 			if (this.touches.length) {
 				if (this.touches.length === 1 && newTouches.length === 1 && this.touchMove.enabled) {
 					this.$emit('move', new ManipulateImageEvent(event, {
-						left: (newTouches[0].clientX - this.touches[0].clientX),
-						top: (newTouches[0].clientY - this.touches[0].clientY),
+						left: (this.touches[0].clientX - newTouches[0].clientX),
+						top: (this.touches[0].clientY - newTouches[0].clientY),
 					}));
 				} else if (this.touches.length > 1 && this.touchResize) {
 					const oldProperties = this.oldGeometricProperties;

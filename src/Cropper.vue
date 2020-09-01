@@ -5,7 +5,7 @@ import Vue from 'vue';
 import debounce from 'debounce';
 import { RectangleStencil } from './components/stencils';
 import { CropperWrapper } from './components/service';
-import { ResizeEvent, MoveEvent, ManipulateImageEvent } from './core/events';
+import { MoveEvent, ManipulateImageEvent } from './core/events';
 import { isLocal, isCrossOriginURL, isUndefined, getSettings, parseNumber } from './core/utils';
 import { arrayBufferToDataURL, getImageTransforms, getStyleTransforms, prepareSource, parseImage } from './core/image';
 import { ALL_DIRECTIONS, MINIMAL_PERCENT_SIZE, IMAGE_RESTRICTIONS, DEFAULT_COORDINATES } from './core/constants';
@@ -410,8 +410,16 @@ export default {
 		zoom(factor, center) {
 			this.onManipulateImage(
 				new ManipulateImageEvent(null, {}, {
-					factor,
+					factor: 1 / factor,
 					center
+				})
+			);
+		},
+		move(left, top) {
+			this.onManipulateImage(
+				new ManipulateImageEvent(null, {
+					left: left || 0,
+					top: top || 0
 				})
 			);
 		},
