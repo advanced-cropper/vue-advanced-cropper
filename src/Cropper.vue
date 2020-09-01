@@ -540,6 +540,7 @@ export default {
 			// Therefore there is a workaround to prevent processing the following code
 			if (this.$refs.image && !this.imageLoaded) {
 				this.imageLoaded = true;
+				this.visibleArea = {};
 				this.refreshImage().then(() => {
 					this.resetCoordinates();
 					this.$emit('ready');
@@ -787,7 +788,7 @@ export default {
 					imageSize: this.imageSize,
 					imageRestriction: this.imageRestriction
 				});
-			return insideArea ? algorithms.limitBy(limits, algorithms.toLimits(this.visibleArea)) : limits;
+			return insideArea ? algorithms.limitBy(limits, this.visibleArea) : limits;
 		},
 		refreshImage() {
 			return new Promise((resolve, reject) => {
