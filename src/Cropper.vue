@@ -589,19 +589,28 @@ export default {
 			this.updateStencilCoordinates(this.coordinates);
 		},
 		onManipulateImage(event) {
-			if (event.move.left) {
-				event.move.left *= this.coefficient;
+			const normalizedEvent = {
+				nativeEvent: event.nativeEvent,
+			};
+			if (event.scale) {
+				normalizedEvent.scale = {
+					factor: event.scale.factor || 1,
+				};
+				if (event.scale.center) {
+					normalizedEvent.scale.center = {
+						left: event.scale.center.left * this.coefficient + this.visibleArea.left,
+						top: event.scale.center.top * this.coefficient + this.visibleArea.top,
+					};
+				}
 			}
-			if (event.move.top) {
-				event.move.top *= this.coefficient;
-			}
-			// Get the absolute coordinates of scale center instead coordinates relative to visibleArea
-			if (event.scale.center) {
-				event.scale.center.left = event.scale.center.left * this.coefficient + this.visibleArea.left;
-				event.scale.center.top = event.scale.center.top * this.coefficient + this.visibleArea.top;
+			if (event.move) {
+				normalizedEvent.move = {
+					left: event.move.left ? this.coefficient * event.move.left : 0,
+					top: event.move.top ? this.coefficient * event.move.top : 0,
+				};
 			}
 			const { visibleArea, coordinates } = algorithms.manipulateImage({
-				event,
+				event: normalizedEvent,
 				coordinates: this.coordinates,
 				visibleArea: this.visibleArea,
 				areaLimits: this.getAreaLimits(),

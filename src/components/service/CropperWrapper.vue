@@ -131,8 +131,8 @@ export default {
 						this.$emit('resize', new ManipulateImageEvent(
 							event,
 							{
-								left: newProperties.centerMass.left - oldProperties.centerMass.left,
-								top: newProperties.centerMass.top - oldProperties.centerMass.top,
+								left: oldProperties.centerMass.left - newProperties.centerMass.left,
+								top: oldProperties.centerMass.top - newProperties.centerMass.top,
 							},
 							{
 								factor: oldProperties.spread / newProperties.spread,
