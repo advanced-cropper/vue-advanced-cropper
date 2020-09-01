@@ -742,6 +742,7 @@ export default {
 				defaultSize,
 				(coordinates) => ({
 					...this.defaultPosition({
+						visibleArea: this.visibleArea,
 						cropper,
 						image,
 						stencilWidth: coordinates.width,

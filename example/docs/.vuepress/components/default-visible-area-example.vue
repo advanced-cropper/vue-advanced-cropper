@@ -11,20 +11,18 @@
 			};
 		},
 		methods: {
-			defaultVisibleArea() {
+			boundaries({ cropper, imageSize }) {
 				return {
-					width: 1404,
-					height: 2108,
-					left: 341,
-					top: 6
+					width: cropper.clientWidth,
+					height: cropper.clientHeight,
 				};
 			},
-			defaultPosition() {
+			defaultVisibleArea() {
 				return {
-					width: 1123,
-					height: 1121,
-					left: 500,
-					top: 254,
+					width: 1049,
+					height: 902,
+					left: 454,
+					top: 552,
 				}
 			}
 		},
@@ -36,7 +34,7 @@
 		<Cropper
 			:src="img"
 			:default-visible-area="defaultVisibleArea"
-			:default-position="defaultPosition"
+			:boundaries="boundaries"
 		/>
 	</div>
 </template>

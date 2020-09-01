@@ -805,10 +805,10 @@ export function areaLimits({ imageSize, imageRestriction }) {
 }
 
 // eslint-disable-next-line no-unused-vars
-export function defaultPosition ({ cropper, image, stencilWidth, stencilHeight, imageWidth, imageHeight,  props }) {
+export function defaultPosition ({ cropper, visibleArea, image, stencilWidth, stencilHeight, imageSize,  props }) {
 	return {
-		left: imageWidth / 2 - stencilWidth / 2,
-		top: imageHeight / 2 - stencilHeight / 2,
+		left: visibleArea.left + visibleArea.width / 2 - stencilWidth / 2,
+		top: visibleArea.top + visibleArea.height / 2 - stencilHeight / 2,
 	};
 }
 

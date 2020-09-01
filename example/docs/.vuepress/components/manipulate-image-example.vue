@@ -15,6 +15,12 @@
 			};
 		},
 		methods: {
+			boundaries({ cropper, imageSize }) {
+				return {
+					width: cropper.clientWidth,
+					height: cropper.clientHeight,
+				};
+			},
 			updateSize({coordinates}) {
 				this.size.width = Math.round(coordinates.width)
 				this.size.height = Math.round(coordinates.height)
@@ -38,11 +44,12 @@
 </script>
 
 <template>
-	<div class="set-coordinates-example">
+	<div class="manipulate-image-example">
 		<Cropper
 			ref="cropper"
 			classname="coodinates-cropper"
 			:src="image"
+			:boundaries="boundaries"
 			:stencil-props="{
 			minAspectRatio: 10/20,
 		}"
@@ -81,8 +88,9 @@
 		margin-bottom: 20px;
 		position: relative;
 		user-select: none;
+
 		.coodinates-cropper {
-			min-height: 400px;
+			max-height: 500px;
 			background: black;
 		}
 		.size-info {

@@ -17,20 +17,9 @@
 		methods: {
 			// Full boundaries
 			boundaries({ cropper, imageSize }) {
-				const areaHeight = cropper.clientHeight;
-				const areaWidth = cropper.clientWidth;
-
-				let currentHeight = areaHeight;
-				let currentWidth = imageSize.width * areaHeight / imageSize.height;
-
-				if (currentWidth > areaWidth) {
-					currentWidth = areaWidth;
-					currentHeight = imageSize.height * areaWidth / imageSize.width;
-				}
-
 				return {
-					width: areaWidth,
-					height: areaHeight,
+					width: cropper.clientWidth,
+					height: cropper.clientHeight,
 				};
 			},
 			// Full size
