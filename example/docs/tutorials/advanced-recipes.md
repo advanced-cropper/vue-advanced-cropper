@@ -226,9 +226,9 @@ export default {
 />
 ```
 
-### Arguments
+### Methods
 
-#### `move`
+#### `move(left, top)`
 
 Move is used to translate visible area relative to its position: 
 ```js
@@ -236,16 +236,16 @@ cropper.move(left, top)
 ```
 
 
-#### `scale`
+#### `zoom(factor, center)`
 
-Move is used to scale visible area relative to its scale: 
+Zoom is used to scale visible area relative to its scale: 
 ```js
-cropper.scale(factor, center)
+cropper.zoom(factor, center)
 ```
 
-The parameter `factor` is the number, that represents scale factor (i.e. `1.1` to resize on `110%`, `0.8` to resize to `80%`). 
+The first parameter `factor` is the number, that represents scale factor (i.e. `1.1` to resize to `110%`, `0.8` to resize to `80%`). 
 
-The parameter `center` is the object `{ width, height }`.
+The second parameter `center` is the object `{ left, top }`.
 
 
 ## Default size and position

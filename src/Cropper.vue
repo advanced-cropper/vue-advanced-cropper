@@ -115,10 +115,6 @@ export default {
 			type: Boolean,
 			default: true,
 		},
-		checkCrossOrigin: {
-			type: Boolean,
-			default: true,
-		},
 		crossOrigin: {
 			type: String,
 			default: 'anonymous'
@@ -384,8 +380,8 @@ export default {
 		this.onChangeImage();
 
 		// Add listeners to window to adapt the cropper to window changes
-		window.addEventListener('resize', this.onResizeContainer);
-		window.addEventListener('orientationchange', this.onResizeContainer);
+		window.addEventListener('resize', this.refresh);
+		window.addEventListener('orientationchange', this.refresh);
 	},
 	destroyed() {
 		window.removeEventListener('resize', this.refreshImage);
@@ -399,11 +395,13 @@ export default {
 				this.updateCanvas(this.coordinates);
 				return {
 					coordinates,
+					visibleArea: { ...this.visibleArea },
 					canvas: this.$refs.canvas,
 				};
 			} else {
 				return {
 					coordinates,
+					visibleArea: { ...this.visibleArea },
 				};
 			}
 		},
@@ -489,7 +487,7 @@ export default {
 		update() {
 			this.$emit('change', this.getResult());
 		},
-		onResizeContainer() {
+		refresh() {
 			const image = this.$refs.image;
 			if (this.src && image) {
 				this.refreshImage().then(() => {
@@ -514,7 +512,7 @@ export default {
 
 			if (this.src) {
 				const crossOrigin = isCrossOriginURL(this.src);
-				if (crossOrigin && this.canvas && this.checkCrossOrigin) {
+				if (crossOrigin && this.canvas) {
 					this.imageAttributes.crossOrigin = this.crossOrigin;
 				}
 				setTimeout(() => {

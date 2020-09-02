@@ -21,7 +21,8 @@ module.exports = {
 				collapsable: false,
 				children: [
 					'/introduction/getting-started',
-					'/introduction/concepts'
+					'/introduction/concepts',
+					'/introduction/under-the-hood'
 				],
 			},
 			{

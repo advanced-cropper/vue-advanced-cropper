@@ -34,8 +34,8 @@ But algorithm can be changed via `boundaries` prop to force an boundaries fill t
 
 ### Visible area
 
-The image is displayed inside the `boundaries`. But what's part of the image we see? 
-When image is not zoomed user sees the whole image, but what's the part of image user sees when he zoom or translate image? 
+The image is displayed inside the `boundaries`. But what's part of the image an user see? 
+When image is not zoomed user sees the whole image, but what's the part of image an user sees when he zooms or translates image? 
 This part can be called literally `visibleArea`.
 
 The visible area is the most abstract, flexible and determined way to define the image zoom and translation. Remember,

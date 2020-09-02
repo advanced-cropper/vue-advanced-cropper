@@ -19,9 +19,9 @@ Cropper will emit `error` event when image is unsuccessfully loaded.
 ## Methods
 
 ### `getResult()`
-Returns: current coordinates and canvas
+Returns: current coordinates, canvas and visible area.
 
-The static method that allow you to get the result of cropper programatically, instead of listen `change` event.
+The method that allow you to get the result of cropper programmatically, instead of listen `change` event.
 
 It described [here](/tutorials/recipes.html#second-method).
 
@@ -29,9 +29,40 @@ It described [here](/tutorials/recipes.html#second-method).
 ### `setCoordinates(transform)`
 Returns: new coordinates
 
-The static method that allow you to set the coordinates programatically. The transform argument can be: `Object`, `Function` or `Array` that contains objects or function in the case if you need consequence transforms.
+The method that allow you to set the coordinates programmatically. The transform argument can be: `Object`, `Function` or `Array` that contains objects or function in the case if you need consequence transforms.
 
 It described [here](/tutorials/recipes.html#second-method).
+
+### `refresh()`
+
+::: warning Experimental method
+It may change its name or may be deleted in the future.
+:::
+
+This method [refreshes cropper](/introduction/under-hood.html#refresh-image). This method is called on every window resize and can be
+useful if external container width is changed, but window's size isn't changed.
+
+### `zoom(factor, center)`
+
+::: warning Experimental method
+It may change its name or may be deleted in the future.
+:::
+
+This methods is used to scale visible area relative to its scale.
+
+The first parameter `factor` is the number, that represents scale factor (i.e. `1.1` to resize to `110%`, `0.8` to resize to `80%`). 
+
+The second parameter `center` is the object `{ left, top }`.
+
+### `move(left, top)`
+
+::: warning Experimental method
+It may change its name or may be deleted in the future.
+:::
+
+This methods is used to translate visible area relative to its position. The parameters
+`left` and `top` determine the relative shift at left and top.
+
 
 ## Props
 
