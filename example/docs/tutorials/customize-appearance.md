@@ -26,6 +26,28 @@ You can apply different effects (for example blurring) to image by passing custo
 
 Background is literally background directly under image. By default it's black rectangle, but you are able to change, let's say, its color by passing class name to `backgroundClassname` prop.
 
+## Styling notice
+
+There is only one way to change the styling of cropper and default stencils: add additional classes to them.
+Passing inline styles is not supported now.
+
+### Scoped styles
+
+If you use `vue-loader` [scoped css](https://vue-loader.vuejs.org/guide/scoped-css.html), you will not be able to pass the scoped class name to stencil, 
+background and image, because they are children components of cropper:
+> With scoped, the parent component's styles will not leak into child components. However, a child component's root node will be affected by both the parent's scoped CSS and the child's scoped CSS. This is by design so that the parent can style the child root element for layout purposes.
+
+To bypass this limitation you can:
+- Use [not scoped classes](https://vue-loader.vuejs.org/guide/scoped-css.html#mixing-local-and-global-styles) for a background, stencil and image.
+- Use [the deep selector](https://vue-loader.vuejs.org/guide/scoped-css.html#deep-selectors):
+```html
+<style scoped>
+>>> .background {
+	background: white;
+}
+</style>
+```
+
 ## Stencil
 
 There may be numerous different stencils with different ways to customize them. But there will be described customizing of default stencils like ([RectangleStencil](/components/rectangle-stencil.html) and [CircleStencil](/components/circle-stencil.html))
@@ -40,6 +62,7 @@ You are able to customize handle by the following ways:
 - change handler component
 - add custom handler classnames
 - remove or add handlers at one of six positions
+
 
 #### Change handler component
 
