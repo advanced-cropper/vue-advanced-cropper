@@ -5,28 +5,59 @@ title: Concepts
 # Concepts
 
 ## Goals
-The goal of this library to give a developer opportunity create any cropper easily and effortless. To achieve it the cropper is divided to two parts: broadly customizable `cropper` and arbitrary component `stencil`.
+The goal of this library to give a developer opportunity create any cropper easily and effortless. To achieve it the cropper is conceptually divided to two parts: broadly customizable `cropper` and arbitrary component `stencil`.
 
 ## Cropper
 
-`Cropper` is the root component of this library. It contains coordinates of current cropped area (left, top, width, height) relative to original image coordinates. This coordinates can be imagined like `box`.
+`Cropper` is the root component of this library. 
 
-![Example](../.vuepress/assets/home/example-cropper.svg)
+It is composed of three main parts: `boundaries`, `visibleArea` and `coordinates`. The conceptual scheme
+below may look pretty complicated, but the first impression is misleading.
 
-It responsible for:
-- resizing and moving box
-- displaying the cropping image and fitting it to container
-- setting default coordinates
-- cropping canvas area
+![Example](../.vuepress/assets/concepts/example-cropper.svg)
+
+This scheme applied to the real image is shown below.
+
+![Example](../.vuepress/assets/concepts/example-cropper-result.svg)
+
+
+### Boundaries
+
+It's the least obvious part of the cropper. Boundaries is the area inside the cropper that will contain the image.
+By default, it is equal to an image fitted to a cropper.
+
+![Example](../.vuepress/assets/concepts/example-default-boundaries.svg)
+
+But algorithm can be changed via `boundaries` prop to force an boundaries fill the cropper. 
+
+![Example](../.vuepress/assets/concepts/example-custom-boundaries.svg)
+
+### Visible area
+
+The image is displayed inside the `boundaries`. But what's part of the image we see? 
+When image is not zoomed user sees the whole image, but what's the part of image user sees when he zoom or translate image? 
+This part can be called literally `visibleArea`.
+
+The visible area is the most abstract, flexible and determined way to define the image zoom and translation. Remember,
+that is should always have same aspect ratio as `boundaries` due its nature.
+
+![Example](../.vuepress/assets/concepts/example-visible-area.svg)
+
+The visible area is defined by coordinates (`left`, `top`, `width`, `height`) relative to the image.
+
+### Coordinates
+
+The `coordinates` is the just cropped coordinates of an image (`left`, `top`, `width`, `height`) inside the `visibleArea` relative to the image.
+
 
 ## Stencil
 
 Cropper operates the abstract box that represents current cropped area. But it just abstract couple of coordinates, to visualize the cropped area and give the possibility to interact with cropper there is a `stencil` component.
 
-![Example](../.vuepress/assets/home/example-stencil.svg)
+![Example](../.vuepress/assets/concepts/example-stencil.svg)
 
 Stencil can be literally any arbitrary component, but to make sense there are some requirements to it:
-- it should be inscibed to box is represented by coordinates (`width`, `height`, `left`, `top`)
+- it should be inscribed to box is represented by coordinates (`width`, `height`, `left`, `top`)
 - if stencil has aspect ratios it should has `aspectRatios` method to inform the cropper resize algorithm about it (this method should return object with minimum and maximum aspect ratio values)
 - it should emit `resize` and `move` events
 - it should display the cropped part of a image

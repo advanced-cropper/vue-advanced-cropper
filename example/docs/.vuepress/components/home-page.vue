@@ -187,10 +187,8 @@
           <div class="col">
             <p>
               <b>Cropper</b>
-            </p>
-            <p>
-              is the root component of this library. It contains the coordinates of the currently cropped area (left, top, width, height) relative to the original image coordinates. These coordinates can be imagined like a <b>box</b>.
-              that's responsible for:
+              is the root component of this library. It contains the coordinates of the currently cropped area (left, top, width, height) relative to the original image coordinates. These coordinates can be imagined like a box.
+              That's responsible for:
             </p>
             <ul>
               <li> resizing and moving the box </li>
