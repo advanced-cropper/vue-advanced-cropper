@@ -3,7 +3,7 @@ name: Bugs / problems
 about: Use it template if you encounter any specific bugs or problems
 title: ''
 labels: ''
-assignees: Norserium
+assignees: ''
 
 ---
 
