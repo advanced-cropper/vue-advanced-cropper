@@ -9,7 +9,7 @@ import { replacedProp } from './core';
 import { MoveEvent, ManipulateImageEvent } from './core/events';
 import { isLocal, isCrossOriginURL, isUndefined, getSettings, parseNumber } from './core/utils';
 import { arrayBufferToDataURL, getImageTransforms, getStyleTransforms, prepareSource, parseImage } from './core/image';
-import { ALL_DIRECTIONS, MINIMAL_PERCENT_SIZE, IMAGE_RESTRICTIONS, DEFAULT_COORDINATES } from './core/constants';
+import { ALL_DIRECTIONS, IMAGE_RESTRICTIONS, DEFAULT_COORDINATES } from './core/constants';
 import * as algorithms from './core/algorithms';
 
 const cn = bem('vue-advanced-cropper');
@@ -265,11 +265,6 @@ export default {
 			return result;
 		},
 		sizeRestrictions() {
-			const minSize = Math.max(
-				MINIMAL_PERCENT_SIZE * this.imageSize.width / this.coefficient,
-				MINIMAL_PERCENT_SIZE * this.imageSize.height / this.coefficient,
-			);
-
 			const oldRestrictions = {
 				minWidth: !isUndefined(this.minWidth) ? this.minWidth : 0,
 				minHeight: !isUndefined(this.minHeight) ? this.minHeight : 0,
@@ -295,14 +290,6 @@ export default {
 			}
 			if ('top' in positionRestrictions && 'bottom' in positionRestrictions) {
 				restrictions.maxHeight = Math.min(restrictions.maxHeight, positionRestrictions.bottom - positionRestrictions.top);
-			}
-
-			if (isUndefined(restrictions.minWidth)) {
-				restrictions.minWidth = Math.floor(minSize);
-			}
-
-			if (isUndefined(restrictions.minHeight)) {
-				restrictions.minHeight = Math.floor(minSize);
 			}
 
 			if (restrictions.minWidth > restrictions.maxWidth) {
@@ -367,10 +354,10 @@ export default {
 		imageTransforms() {
 			return {
 				...this.basicImageTransforms,
-				scaleX: (this.basicImageTransforms.scaleX || 1),
-				scaleY: (this.basicImageTransforms.scaleY || 1),
-				translateX: (this.visibleArea.left) / this.coefficient,
-				translateY: (this.visibleArea.top) / this.coefficient,
+				scaleX: this.basicImageTransforms.scaleX || 1,
+				scaleY: this.basicImageTransforms.scaleY || 1,
+				translateX: this.visibleArea.left / this.coefficient,
+				translateY: this.visibleArea.top / this.coefficient,
 			};
 		},
 		stencilCoordinates() {
