@@ -34,7 +34,7 @@
 		<Cropper
 			:src="img"
 			:default-visible-area="defaultVisibleArea"
-			:boundaries="boundaries"
+			:default-boundaries="boundaries"
 		/>
 	</div>
 </template>

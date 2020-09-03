@@ -191,10 +191,6 @@ cropper.setCoordinates([
 
 There are two methods to manipulate visible area programmatically **move** and **scale**.
 
-::: warning
-This feature is not published. It's still under the development.
-:::
-
 <manipulate-image-example></manipulate-image-example>
 
 The minimal working example:
@@ -291,9 +287,6 @@ export default {
 
 Moreover, there are situations where you need to save, for example, previous visible area position. To implement
 it you can use `default-visible-area` prop.
-::: warning
-This feature is not published. It's still under the development.
-:::
 
 <default-visible-area-example></default-visible-area-example>
 
