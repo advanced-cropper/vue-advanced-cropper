@@ -71,57 +71,57 @@ new Vue({
 
 ## Cropper
 
-| Prop                   | Type               | Description                                                    | Default
-| ---------------------- | ------------------ | -------------------------------------------------------------- | ---------------
-| src                    | `String`           | The cropping image (link / base64)                             |
-| stencilComponent       | `String`, `Object` | The stencil component                                          | `RectangleStencil`
-| stencilProps           | `Object`           | The props for the stencil component                            | `{}`
-| class                  | `String`           | The optional class for the root cropper block              |
-| imageClass             | `String`           | The optional class for the cropping image                  |
-| areaClass              | `String`           | The optional class for the area.                           |
-| backgroundClass        | `String`           | The optional class for the background under the image      |
-| debounce               | `String`, `Number` | The time before change event will be emitted after changes (ms)| `500`
-| canvas                 | `Boolean`          | The flag that indicates if canvas should be used               | `true`
-| minWidth               | `String`, `Number` | The minimum width of the stencil (percents)                    | `10`
-| minHeight              | `String`, `Number` | The minimum height of the stencil (percents)                   | `10`
-| maxWidth               | `String`, `Number` | The maximum width of the stencil (percents)                    | `10`
-| maxHeight              | `String`, `Number` | The maximum height of the stencil (percents)                   | `10`
-| checkOrientation       | `Boolean`          | Check if EXIF orientation should be checked                    | `true`
-| touchMove              | `Boolean`          | Check if image should be dragged by a touch                    | `true`
-| touchResize            | `Boolean`          | Check if image should be resized by a pinch gesture            | `true`
-| mouseMove              | `Boolean`          | Check if image should be dragged by a mouse                    | `true`
-| wheelResize            | `Boolean`          | Check if image should be resized by a mouse wheel              | `true`
-| imageRestriction       | `String`           | Set restrictions for image position ('area', 'stencil', 'none')| `core.move`
-| defaultSize            | `Function`         | The function that returns the default size of the stencil      | `core.defaultSize`
-| defaultPosition        | `Function`         | The function that returns the default position of the stencil  | `core.defaultPosition`
-| restrictions           | `Function`         | The function that returns the restrictions object              | `core.percentRestrictions`
-| areaSize               | `Function`         | The function that determines the area size                     | `core.areaSize`
-| resizeAlgorithm        | `Function`         | The function that determines the resize algorithm              | `core.resize`
-| moveAlgorithm          | `Function`         | The function that determines the move algorithm                | `core.move`
-
-| Event                  | Description
-| ---------------------- | --------------------------------------------------------------
-| change                 | Invoked on changing of a stencil position / size, after mounting the component and on an image changing
-| ready                  | Invoked on success of an image loading
-| error                  | Invoked on error of an image loading
-
-
+| Prop                      | Type               | Description                                                     | Default
+| ------------------------- | ------------------ | --------------------------------------------------------------  | ---------------
+| src                       | `String`           | The cropping image (link / base64)                              |
+| stencilComponent          | `String`, `Object` | The stencil component                                           | `RectangleStencil`
+| stencilProps              | `Object`           | The props for the stencil component                             | `{}`
+| class                     | `String`           | The optional class for the root cropper block                   |
+| imageClass                | `String`           | The optional class for the cropping image                       |
+| areaClass                 | `String`           | The optional class for the area.                                |
+| backgroundClass           | `String`           | The optional class for the background under the image           |
+| debounce                  | `String`, `Number` | The time before change event will be emitted after changes (ms) | `500`
+| canvas                    | `Boolean`          | The flag that indicates if canvas should be used                | `true`
+| minWidth                  | `String`, `Number` | The minimum width of the stencil (percents)                     | `10`
+| minHeight                 | `String`, `Number` | The minimum height of the stencil (percents)                    | `10`
+| maxWidth                  | `String`, `Number` | The maximum width of the stencil (percents)                     | `10`
+| maxHeight                 | `String`, `Number` | The maximum height of the stencil (percents)                    | `10`
+| checkOrientation          | `Boolean`          | Check if EXIF orientation should be checked                     | `true`
+| touchMove                 | `Boolean`          | Check if image should be dragged by a touch                     | `true`
+| touchResize               | `Boolean`          | Check if image should be resized by a pinch gesture             | `true`
+| mouseMove                 | `Boolean`          | Check if image should be dragged by a mouse                     | `true`
+| wheelResize               | `Boolean`          | Check if image should be resized by a mouse wheel               | `true`
+| imageRestriction          | `String`           | Set restrictions for image position ('area', 'stencil', 'none') | `core.move`
+| defaultSize               | `Function`         | The function that returns the default size of the stencil       | `core.defaultSize`
+| defaultPosition           | `Function`         | The function that returns the default position of the stencil   | `core.defaultPosition`
+| defaultBoundaries         | `Function`         | The function that determines the boundaries size                | `core.defaultBoundaries`
+| sizeRestrictionsAlgorithm | `Function`         | The function that returns the restrictions object               | `core.percentRestrictions`
+| resizeAlgorithm           | `Function`         | The function that determines the resize algorithm               | `core.resize`
+| moveAlgorithm             | `Function`         | The function that determines the move algorithm                 | `core.move`
+ 
+| Event                     | Description
+| ------------------------  | --------------------------------------------------------------
+| change                    | Invoked on changing of a stencil position / size, after mounting the component and on an image changing
+| ready                     | Invoked on success of an image loading
+| error                     | Invoked on error of an image loading
+ 
+ 
 ## RectangleStencil
-
-| Prop                   | Type                | Description                                                    | Default
-| ---------------------- | ------------------- | -------------------------------------------------------------- | ---------------
-| aspectRatio            | `Number`, `String`, | The aspect ratio                                               |
-| minAspectRatio         | `Number`, `String`, | The minimum aspect ratio                                       |
-| maxAspectRatio         | `Number`, `String`, | The maximum aspect ratio                                       |
-| class                  | `String`,           | The class for root block of the stencil component          |
-| previewClass           | `String`,           | The class for the preview component                        |
-| boundingBoxClass       | `String`,           | The class for the bouding box component                    |
-| handlerComponent       | `String`,`Object`   | The handler component                                          |
-| handlers               | `Object`,           | The object of handlers that should be visible or hidden.       |
-| handlersClasses        | `Object`,           | The object of custom handler classes                        |
-| lineComponent          | `String`,`Object`   | The handler component                                          |
-| lines                  | `Object`,           | The object of lines  that should be visible or hidden.         |
-| linesClasses           | `Object`,           | The object of custom line classes                           |
+ 
+| Prop                      | Type                | Description                                                    | Default
+| ------------------------  | ------------------- | -------------------------------------------------------------- | ---------------
+| aspectRatio               | `Number`, `String`, | The aspect ratio                                               |
+| minAspectRatio            | `Number`, `String`, | The minimum aspect ratio                                       |
+| maxAspectRatio            | `Number`, `String`, | The maximum aspect ratio                                       |
+| class                     | `String`,           | The class for root block of the stencil component              |
+| previewClass              | `String`,           | The class for the preview component                            |
+| boundingBoxClass          | `String`,           | The class for the bouding box component                        |
+| handlerComponent          | `String`,`Object`   | The handler component                                          |
+| handlers                  | `Object`,           | The object of handlers that should be visible or hidden.       |
+| handlersClasses           | `Object`,           | The object of custom handler classes                           |
+| lineComponent             | `String`,`Object`   | The handler component                                          |
+| lines                     | `Object`,           | The object of lines  that should be visible or hidden.         |
+| linesClasses              | `Object`,           | The object of custom line classes                              |
 
 ## License
 

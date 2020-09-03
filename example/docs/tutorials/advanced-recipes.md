@@ -4,13 +4,13 @@ title: Advanced Recipes
 
 # Advanced Recipes
 
-## Custom restrictions
+## Custom size restrictions
 
-There may be situations, where you need to set the minimum and maximim sizes, for example, in pixels, not by percents. In that situations you should redefine the `restrictions` functions by passing your custom function as [a corresponding prop](/components/cropper.html#restrictions)
+There may be situations, when you need to set the minimum and maximum sizes, for example, in pixels, not by percents. In that situations you should redefine the `sizeRestrictionsAlgorithm` functions by passing your custom function as [a corresponding prop](/components/cropper.html#sizeretrictionsalgorithm)
 
 
 <custom-restrictions-example></custom-restrictions-example>
-
+ 
 ```js
 import { Cropper } from 'vue-advanced-cropper';
 
@@ -19,7 +19,7 @@ export default {
 		Cropper,
 	},
 	methods: {
-		pixelsRestriction({minWidth, minHeight, maxWidth, maxHeight, imageWidth, imageHeight}) {
+		pixelsRestriction({ minWidth, minHeight, maxWidth, maxHeight, imageWidth, imageHeight }) {
 			return {
 				minWidth: minWidth,
 				minHeight: minHeight,
@@ -34,9 +34,9 @@ export default {
 ```html
 <cropper
 	:src="image"
-	:restrictions="pixelsRestriction"
 	:min-height="400"
 	:min-width="400"
+	:size-restrictions-algorithm="pixelsRestriction"
 />
 ```
 

@@ -56,13 +56,13 @@ export default {
   <div class="custom-restrictions-example">
     <cropper
       class="custom-restrictions-cropper"
+      check-orientation
       :src="image"
-      :restrictions="pixelsRestriction"
       :max-height="limitations.maxHeight"
       :max-width="limitations.maxWidth"
       :min-height="limitations.minHeight"
       :min-width="limitations.minWidth"
-      check-orientation
+      :size-restrictions-algorithm="pixelsRestriction"
       @change="onCrop"
     />
     <div class="panel">

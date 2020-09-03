@@ -84,5 +84,5 @@ export function replacedProp(value, oldName, currentName) {
 }
 
 export function isEmpty(obj) {
-	return !obj || Object.keys(obj).length === 0;
+	return (!obj || Object.keys(obj).length === 0) && typeof obj !== 'function';
 }

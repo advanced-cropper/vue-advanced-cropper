@@ -28,7 +28,7 @@ By default, it is equal to an image fitted to a cropper.
 
 ![Example](../.vuepress/assets/concepts/example-default-boundaries.svg)
 
-But algorithm can be changed via `boundaries` prop to force an boundaries fill the cropper. 
+But algorithm can be changed via `defaultBoundaries` prop to force an boundaries fill the cropper. 
 
 ![Example](../.vuepress/assets/concepts/example-custom-boundaries.svg)
 

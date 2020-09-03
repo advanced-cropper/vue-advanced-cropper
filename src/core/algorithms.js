@@ -136,35 +136,6 @@ function isEmpty(object) {
 }
 
 
-export function roundCoordinates({ coordinates, restrictions, limits }) {
-	const roundedCoordinates = {
-		width: Math.round(coordinates.width),
-		height: Math.round(coordinates.height),
-		left: Math.round(coordinates.left),
-		top: Math.round(coordinates.top),
-	};
-
-	if (roundedCoordinates.width > restrictions.maxWidth) {
-		roundedCoordinates.width = Math.floor(coordinates.width);
-	} else if (roundedCoordinates.width < restrictions.minWidth) {
-		roundedCoordinates.width = Math.ceil(coordinates.width);
-	}
-	if (roundedCoordinates.height > restrictions.maxHeight) {
-		roundedCoordinates.height = Math.floor(coordinates.height);
-	} else if (roundedCoordinates.height < restrictions.minHeight) {
-		roundedCoordinates.height = Math.ceil(coordinates.height);
-	}
-	if (roundedCoordinates.left < limits.left || roundedCoordinates.left + roundedCoordinates.width > limits.right) {
-		roundedCoordinates.left = Math.floor(limits.left);
-	}
-	if (roundedCoordinates.top < limits.top || roundedCoordinates.top + roundedCoordinates.height > limits.bottom) {
-		roundedCoordinates.top = Math.floor(limits.top);
-	}
-
-	return roundedCoordinates;
-}
-
-
 function getIntersections(object, limits) {
 	const intersections = {};
 	ALL_DIRECTIONS.forEach(direction => {
@@ -179,7 +150,36 @@ function getIntersections(object, limits) {
 	return intersections;
 }
 
-function fitConditions({ directions,  coordinates, limits = {}, restrictions, preserveRatio, compensate }) {
+export function roundCoordinates({ coordinates, sizeRestrictions, positionRestrictions }) {
+	const roundedCoordinates = {
+		width: Math.round(coordinates.width),
+		height: Math.round(coordinates.height),
+		left: Math.round(coordinates.left),
+		top: Math.round(coordinates.top),
+	};
+
+	if (roundedCoordinates.width > sizeRestrictions.maxWidth) {
+		roundedCoordinates.width = Math.floor(coordinates.width);
+	} else if (roundedCoordinates.width < sizeRestrictions.minWidth) {
+		roundedCoordinates.width = Math.ceil(coordinates.width);
+	}
+	if (roundedCoordinates.height > sizeRestrictions.maxHeight) {
+		roundedCoordinates.height = Math.floor(coordinates.height);
+	} else if (roundedCoordinates.height < sizeRestrictions.minHeight) {
+		roundedCoordinates.height = Math.ceil(coordinates.height);
+	}
+	if (roundedCoordinates.left < positionRestrictions.left || roundedCoordinates.left + roundedCoordinates.width > positionRestrictions.right) {
+		roundedCoordinates.left = Math.floor(positionRestrictions.left);
+	}
+	if (roundedCoordinates.top < positionRestrictions.top || roundedCoordinates.top + roundedCoordinates.height > positionRestrictions.bottom) {
+		roundedCoordinates.top = Math.floor(positionRestrictions.top);
+	}
+
+	return roundedCoordinates;
+}
+
+
+function fitConditions({ directions, coordinates, positionRestrictions = {}, sizeRestrictions, preserveRatio, compensate }) {
 	const fixedDirections = { ...directions, };
 
 	let currentWidth = applyDirections(coordinates, fixedDirections).width;
@@ -188,27 +188,27 @@ function fitConditions({ directions,  coordinates, limits = {}, restrictions, pr
 	// Prevent strange resizes when the width or height of stencil becomes smaller than 0
 	if (currentWidth < 0) {
 		if (fixedDirections.left < 0 && fixedDirections.right < 0) {
-			fixedDirections.left = -(coordinates.width - restrictions.minWidth) / (fixedDirections.left / fixedDirections.right);
-			fixedDirections.right = -(coordinates.width - restrictions.minWidth) / (fixedDirections.right / fixedDirections.left);
+			fixedDirections.left = -(coordinates.width - sizeRestrictions.minWidth) / (fixedDirections.left / fixedDirections.right);
+			fixedDirections.right = -(coordinates.width - sizeRestrictions.minWidth) / (fixedDirections.right / fixedDirections.left);
 		} else if (fixedDirections.left < 0) {
-			fixedDirections.left = -(coordinates.width - restrictions.minWidth);
+			fixedDirections.left = -(coordinates.width - sizeRestrictions.minWidth);
 		} else if (fixedDirections.right < 0) {
-			fixedDirections.right = -(coordinates.width - restrictions.minWidth);
+			fixedDirections.right = -(coordinates.width - sizeRestrictions.minWidth);
 		}
 	}
 	if (currentHeight < 0) {
 		if (fixedDirections.top < 0 && fixedDirections.bottom < 0) {
-			fixedDirections.top = -(coordinates.height - restrictions.minHeight) / (fixedDirections.top / fixedDirections.bottom);
-			fixedDirections.bottom = -(coordinates.height - restrictions.minHeight) / (fixedDirections.bottom / fixedDirections.top);
+			fixedDirections.top = -(coordinates.height - sizeRestrictions.minHeight) / (fixedDirections.top / fixedDirections.bottom);
+			fixedDirections.bottom = -(coordinates.height - sizeRestrictions.minHeight) / (fixedDirections.bottom / fixedDirections.top);
 		} else if (fixedDirections.top < 0) {
-			fixedDirections.top = -(coordinates.height - restrictions.minHeight);
+			fixedDirections.top = -(coordinates.height - sizeRestrictions.minHeight);
 		} else if (fixedDirections.bottom < 0) {
-			fixedDirections.bottom = -(coordinates.height - restrictions.minHeight);
+			fixedDirections.bottom = -(coordinates.height - sizeRestrictions.minHeight);
 		}
 	}
 
 	// Prevent breaking limits
-	let breaks = getIntersections(applyDirections(coordinates, fixedDirections), limits);
+	let breaks = getIntersections(applyDirections(coordinates, fixedDirections), positionRestrictions);
 
 	if (compensate) {
 		if (breaks.left > 0 && breaks.right === 0) {
@@ -227,7 +227,7 @@ function fitConditions({ directions,  coordinates, limits = {}, restrictions, pr
 			fixedDirections.bottom -= breaks.bottom;
 		}
 
-		breaks = getIntersections(applyDirections(coordinates, fixedDirections), limits);
+		breaks = getIntersections(applyDirections(coordinates, fixedDirections), positionRestrictions);
 	}
 
 	const maxResize = {
@@ -262,18 +262,18 @@ function fitConditions({ directions,  coordinates, limits = {}, restrictions, pr
 	currentHeight = applyDirections(coordinates, fixedDirections).height;
 
 	if (fixedDirections.right + fixedDirections.left) {
-		if (currentWidth > restrictions.maxWidth) {
-			maxResize.width = (restrictions.maxWidth - coordinates.width) / (fixedDirections.right + fixedDirections.left);
-		} else if (currentWidth < restrictions.minWidth) {
-			maxResize.width = (restrictions.minWidth - coordinates.width) / (fixedDirections.right + fixedDirections.left);
+		if (currentWidth > sizeRestrictions.maxWidth) {
+			maxResize.width = (sizeRestrictions.maxWidth - coordinates.width) / (fixedDirections.right + fixedDirections.left);
+		} else if (currentWidth < sizeRestrictions.minWidth) {
+			maxResize.width = (sizeRestrictions.minWidth - coordinates.width) / (fixedDirections.right + fixedDirections.left);
 		}
 	}
 
 	if (fixedDirections.bottom + fixedDirections.top) {
-		if (currentHeight > restrictions.maxHeight) {
-			maxResize.height = (restrictions.maxHeight - coordinates.height) / (fixedDirections.bottom + fixedDirections.top);
-		} else if (currentHeight < restrictions.minHeight) {
-			maxResize.height = (restrictions.minHeight - coordinates.height) / (fixedDirections.bottom + fixedDirections.top);
+		if (currentHeight > sizeRestrictions.maxHeight) {
+			maxResize.height = (sizeRestrictions.maxHeight - coordinates.height) / (fixedDirections.bottom + fixedDirections.top);
+		} else if (currentHeight < sizeRestrictions.minHeight) {
+			maxResize.height = (sizeRestrictions.minHeight - coordinates.height) / (fixedDirections.bottom + fixedDirections.top);
 		}
 	}
 
@@ -313,7 +313,7 @@ function getBrokenRatio(currentAspectRatio, aspectRatio) {
 	return ratioBroken;
 }
 
-export function resize ({ resizeEvent, coordinates, limits, aspectRatio, restrictions }) {
+export function resize ({ resizeEvent, coordinates, aspectRatio, positionRestrictions, sizeRestrictions }) {
 	const actualCoordinates = {
 		...coordinates,
 		right: coordinates.left + coordinates.width,
@@ -327,9 +327,9 @@ export function resize ({ resizeEvent, coordinates, limits, aspectRatio, restric
 	};
 
 	const limitedRestrictions = {
-		...restrictions,
-		minWidth: Math.max(restrictions.minWidth, restrictions.minimum),
-		minHeight: Math.max(restrictions.minHeight, restrictions.minimum),
+		...sizeRestrictions,
+		minWidth: Math.max(sizeRestrictions.minWidth, sizeRestrictions.minimum),
+		minHeight: Math.max(sizeRestrictions.minHeight, sizeRestrictions.minimum),
 	};
 
 	const allowedDirections = params.allowedDirections || {
@@ -346,7 +346,7 @@ export function resize ({ resizeEvent, coordinates, limits, aspectRatio, restric
 	});
 
 	// 1. First step: determine the safe and desired area
-	directions = fitConditions({ coordinates: actualCoordinates, directions, restrictions: limitedRestrictions, limits });
+	directions = fitConditions({ coordinates: actualCoordinates, directions, sizeRestrictions: limitedRestrictions, positionRestrictions });
 
 	// 2. Second step: fix desired box to correspondent to aspect ratio
 	let currentWidth = applyDirections(actualCoordinates, directions).width;
@@ -394,7 +394,7 @@ export function resize ({ resizeEvent, coordinates, limits, aspectRatio, restric
 			}
 		}
 		// 3. Third step: check if desired box with correct aspect ratios break some limits and fit to this conditions
-		directions = fitConditions({ directions, restrictions: limitedRestrictions, coordinates: actualCoordinates, limits, preserveRatio: true, compensate: params.compensate });
+		directions = fitConditions({ directions, restrictions: limitedRestrictions, coordinates: actualCoordinates, positionRestrictions, preserveRatio: true, compensate: params.compensate });
 	}
 
 	// 4. Check if ratio broken (temporary):
@@ -419,7 +419,7 @@ export function resize ({ resizeEvent, coordinates, limits, aspectRatio, restric
 			left: coordinates.left,
 			top: coordinates.top,
 		},
-		limits,
+		positionRestrictions,
 		moveEvent: new MoveEvent({}, {
 			left: -directions.left,
 			top: -directions.top,
@@ -427,19 +427,23 @@ export function resize ({ resizeEvent, coordinates, limits, aspectRatio, restric
 	});
 }
 
-export function move ({ moveEvent, coordinates, limits = {}}) {
+export function move ({ moveEvent, coordinates, positionRestrictions = {}}) {
 	const movedCoordinates = applyMove(coordinates, moveEvent.directions);
 
 	return applyMove(
 		movedCoordinates,
-		fit(movedCoordinates, limits)
+		fit(movedCoordinates, positionRestrictions)
 	);
 }
 
 
 // The main point of this feature is calculating the needed position of stencil and parameters of world transforms
 // Real coordinates don't changes here
-export function autoZoom({ coordinates: originalCoordinates, visibleArea: originalVisibleArea, limits }) {
+export function autoZoom({
+	coordinates: originalCoordinates,
+	visibleArea: originalVisibleArea,
+	areaRestrictions
+}) {
 	let visibleArea = { ...originalVisibleArea };
 	let coordinates = { ...originalCoordinates };
 
@@ -449,23 +453,31 @@ export function autoZoom({ coordinates: originalCoordinates, visibleArea: origin
 	const heightIntersections = intersections.bottom + intersections.top;
 
 	if (widthIntersections > heightIntersections) {
-		visibleArea = applyScale(visibleArea, Math.min((widthIntersections + visibleArea.width) / visibleArea.width, maxScale(visibleArea, limits)));
+		visibleArea = applyScale(visibleArea, Math.min((widthIntersections + visibleArea.width) / visibleArea.width, maxScale(visibleArea, areaRestrictions)));
 	} else {
-		visibleArea = applyScale(visibleArea, Math.min((heightIntersections + visibleArea.height) / visibleArea.height, maxScale(visibleArea, limits)));
+		visibleArea = applyScale(visibleArea, Math.min((heightIntersections + visibleArea.height) / visibleArea.height, maxScale(visibleArea, areaRestrictions)));
 	}
 
 	visibleArea = applyMove(visibleArea, inverseMove(
 		fit(coordinates, toLimits(visibleArea))
 	));
 
-	visibleArea = applyMove(visibleArea, fit(visibleArea, limits));
+	visibleArea = applyMove(visibleArea, fit(visibleArea, areaRestrictions));
 
 	return {
 		visibleArea
 	};
 }
 
-export function manipulateImage({ event, coordinates: originalCoordinates, visibleArea: originalVisibleArea, restrictions, areaLimits, coordinatesLimits, settings }) {
+export function manipulateImage({
+	event,
+	coordinates: originalCoordinates,
+	visibleArea: originalVisibleArea,
+	sizeRestrictions,
+	areaRestrictions,
+	positionRestrictions,
+	settings
+}) {
 	let { scale, move } = event;
 
 	let visibleArea = { ...originalVisibleArea };
@@ -484,17 +496,17 @@ export function manipulateImage({ event, coordinates: originalCoordinates, visib
 	const scaleRestrictions = {
 		stencil: {
 			minimum: Math.max(
-				restrictions.minWidth ? restrictions.minWidth / coordinates.width : 0,
-				restrictions.minHeight ? restrictions.minHeight / coordinates.height : 0
+				sizeRestrictions.minWidth ? sizeRestrictions.minWidth / coordinates.width : 0,
+				sizeRestrictions.minHeight ? sizeRestrictions.minHeight / coordinates.height : 0
 			),
 			maximum: Math.min(
-				restrictions.maxWidth ? restrictions.maxWidth / coordinates.width : Infinity,
-				restrictions.maxHeight ? restrictions.maxHeight / coordinates.height : Infinity,
-				maxScale(coordinates, coordinatesLimits),
+				sizeRestrictions.maxWidth ? sizeRestrictions.maxWidth / coordinates.width : Infinity,
+				sizeRestrictions.maxHeight ? sizeRestrictions.maxHeight / coordinates.height : Infinity,
+				maxScale(coordinates, positionRestrictions),
 			),
 		},
 		area: {
-			maximum: maxScale(visibleArea, areaLimits),
+			maximum: maxScale(visibleArea, areaRestrictions),
 		}
 	};
 
@@ -521,15 +533,15 @@ export function manipulateImage({ event, coordinates: originalCoordinates, visib
 	};
 
 	// Move the area to fit to area limits:
-	visibleArea = applyMove(visibleArea, fit(visibleArea, areaLimits));
+	visibleArea = applyMove(visibleArea, fit(visibleArea, areaRestrictions));
 
 
 	// Move the area to fit to coordinates limits:
 	visibleArea = applyMove(visibleArea, fit(visibleArea, {
-		left: coordinatesLimits.left - relativeCoordinates.left * stencilScale,
-		top: coordinatesLimits.top - relativeCoordinates.top * stencilScale,
-		bottom: coordinatesLimits.bottom + relativeCoordinates.bottom * stencilScale,
-		right: coordinatesLimits.right + relativeCoordinates.right * stencilScale,
+		left: positionRestrictions.left - relativeCoordinates.left * stencilScale,
+		top: positionRestrictions.top - relativeCoordinates.top * stencilScale,
+		bottom: positionRestrictions.bottom + relativeCoordinates.bottom * stencilScale,
+		right: positionRestrictions.right + relativeCoordinates.right * stencilScale,
 	}));
 
 	// Set the same coordinates of stencil inside visible area
@@ -550,7 +562,7 @@ export function manipulateImage({ event, coordinates: originalCoordinates, visib
 			visibleArea, areaScale, getCenter(coordinates),
 			Math.pow(scale.factor > 1 ? scaleRestrictions.area.maximum : coordinates.height / visibleArea.height, 2)
 		);
-		visibleArea = applyMove(visibleArea, fit(visibleArea, areaLimits));
+		visibleArea = applyMove(visibleArea, fit(visibleArea, areaRestrictions));
 	}
 
 	return {
@@ -561,7 +573,7 @@ export function manipulateImage({ event, coordinates: originalCoordinates, visib
 
 // This function returns the approximation size to width / height with respect to
 // restrictions and aspect ratio
-export function approximatedSize({ width, height, aspectRatio, restrictions }) {
+export function approximatedSize({ width, height, aspectRatio, sizeRestrictions }) {
 
 	const ratio = {
 		minimum: aspectRatio.minimum || 0,
@@ -569,8 +581,8 @@ export function approximatedSize({ width, height, aspectRatio, restrictions }) {
 	};
 
 	const coordinates = {
-		width: Math.max(restrictions.minWidth, Math.min(restrictions.maxWidth, width)),
-		height: Math.max(restrictions.minHeight, Math.min(restrictions.maxHeight, height)),
+		width: Math.max(sizeRestrictions.minWidth, Math.min(sizeRestrictions.maxWidth, width)),
+		height: Math.max(sizeRestrictions.minHeight, Math.min(sizeRestrictions.maxHeight, height)),
 	};
 
 	function distance(a, b) {
@@ -579,10 +591,10 @@ export function approximatedSize({ width, height, aspectRatio, restrictions }) {
 
 	function isValid(candidate) {
 		return 	(
-			candidate.width <= restrictions.maxWidth &&
-			candidate.width >= restrictions.minWidth &&
-			candidate.height <= restrictions.maxHeight &&
-			candidate.height >= restrictions.minHeight &&
+			candidate.width <= sizeRestrictions.maxWidth &&
+			candidate.width >= sizeRestrictions.minWidth &&
+			candidate.height <= sizeRestrictions.maxHeight &&
+			candidate.height >= sizeRestrictions.minHeight &&
 			candidate.width >= candidate.height * ratio.minimum &&
 			candidate.width <= candidate.height * ratio.maximum &&
 			candidate.width && candidate.height
@@ -616,7 +628,7 @@ export function approximatedSize({ width, height, aspectRatio, restrictions }) {
 
 // This function updates visible area with respect to current transformations and fits
 // coordinates to the new visible area
-export function updateVisibleArea({ current, previous, limits, coordinates }) {
+export function updateVisibleArea({ current, previous, areaRestrictions, coordinates }) {
 	let visibleArea = { ...current };
 
 	if (previous.width && previous.height && !isEqual(current, previous)) {
@@ -624,12 +636,12 @@ export function updateVisibleArea({ current, previous, limits, coordinates }) {
 		if (previous.width > coordinates.width ) {
 			visibleArea = applyScale(visibleArea, Math.min(
 				previous.height / visibleArea.height,
-				maxScale(visibleArea, limits)
+				maxScale(visibleArea, areaRestrictions)
 			));
 		} else {
 			visibleArea = applyScale(visibleArea, Math.min(
 				previous.width / visibleArea.width,
-				maxScale(visibleArea, limits)
+				maxScale(visibleArea, areaRestrictions)
 			));
 		}
 
@@ -640,7 +652,7 @@ export function updateVisibleArea({ current, previous, limits, coordinates }) {
 		));
 
 		// Prevent the breaking of limits
-		visibleArea = applyMove(visibleArea, fit(visibleArea, limits));
+		visibleArea = applyMove(visibleArea, fit(visibleArea, areaRestrictions));
 
 		const intersections = getIntersections(coordinates, toLimits(visibleArea));
 
@@ -648,12 +660,12 @@ export function updateVisibleArea({ current, previous, limits, coordinates }) {
 			if (intersections.left + intersections.right > intersections.top + intersections.bottom) {
 				visibleArea = applyScale(visibleArea, Math.min(
 					(visibleArea.width + intersections.left + intersections.right) / visibleArea.width,
-					maxScale(visibleArea, limits)
+					maxScale(visibleArea, areaRestrictions)
 				));
 			} else {
 				visibleArea = applyScale(visibleArea, Math.min(
 					(visibleArea.width + intersections.top + intersections.bottom) / visibleArea.height,
-					maxScale(visibleArea, limits)
+					maxScale(visibleArea, areaRestrictions)
 				));
 			}
 		}
@@ -662,7 +674,7 @@ export function updateVisibleArea({ current, previous, limits, coordinates }) {
 	return visibleArea;
 }
 
-export function fitToVisibleArea({ visibleArea, coordinates: previousCoordinates, stencilRatio, stencilRestrictions, coordinatesLimits }) {
+export function fitToVisibleArea({ visibleArea, coordinates: previousCoordinates, aspectRatio, sizeRestrictions, positionRestrictions }) {
 	let coordinates = { ...previousCoordinates };
 	if (!isEmpty(coordinates)) {
 		coordinates = {
@@ -670,12 +682,12 @@ export function fitToVisibleArea({ visibleArea, coordinates: previousCoordinates
 			...approximatedSize({
 				width: coordinates.width,
 				height: coordinates.height,
-				aspectRatio: stencilRatio,
-				restrictions: {
+				aspectRatio,
+				sizeRestrictions: {
 					maxWidth: visibleArea.width,
 					maxHeight: visibleArea.height,
-					minHeight: Math.min(visibleArea.height, stencilRestrictions.minHeight),
-					minWidth: Math.min(visibleArea.width, stencilRestrictions.minWidth),
+					minHeight: Math.min(visibleArea.height, sizeRestrictions.minHeight),
+					minWidth: Math.min(visibleArea.width, sizeRestrictions.minWidth),
 				},
 			})
 		};
@@ -684,14 +696,14 @@ export function fitToVisibleArea({ visibleArea, coordinates: previousCoordinates
 			getCenter(previousCoordinates), getCenter(coordinates)
 		));
 
-		coordinates = applyMove(coordinates, fit(coordinates, toLimits(coordinatesLimits)));
+		coordinates = applyMove(coordinates, fit(coordinates, toLimits(positionRestrictions)));
 	}
 	return coordinates;
 }
 
-export function defaultVisibleArea({ imageSize, boundariesSize }) {
+export function defaultVisibleArea({ imageSize, boundaries }) {
 	const imageRatio = ratio(imageSize);
-	const boundaryRatio = ratio(boundariesSize);
+	const boundaryRatio = ratio(boundaries);
 
 	const areaProperties = {
 		height: imageRatio > boundaryRatio ? imageSize.height : imageSize.width / boundaryRatio,
@@ -765,7 +777,7 @@ export function limitBy(limits, object) {
 	return joinLimits(limits, toLimits(object));
 }
 
-export function coordinatesLimits({ imageSize, imageRestriction }) {
+export function positionRestrictions({ imageSize, imageRestriction }) {
 	let limits = {};
 
 
@@ -781,7 +793,7 @@ export function coordinatesLimits({ imageSize, imageRestriction }) {
 	return limits;
 }
 
-export function areaLimits({ imageSize, imageRestriction }) {
+export function areaRestrictions({ imageSize, imageRestriction }) {
 	let limits = {};
 
 	if (imageRestriction === 'area') {
@@ -803,24 +815,24 @@ export function defaultPosition ({ visibleArea, coordinates }) {
 	};
 }
 
-export function defaultSize ({ visibleArea, aspectRatio, restrictions }) {
+export function defaultSize ({ visibleArea, aspectRatio, sizeRestrictions }) {
 	return approximatedSize({
 		width: visibleArea.width * 0.8,
 		height: visibleArea.height * 0.8,
 		aspectRatio,
-		restrictions: {
-			...restrictions,
-			maxWidth: Math.min(visibleArea.width, restrictions.maxWidth),
-			maxHeight: Math.min(visibleArea.height, restrictions.maxHeight),
+		sizeRestrictions: {
+			...sizeRestrictions,
+			maxWidth: Math.min(visibleArea.width, sizeRestrictions.maxWidth),
+			maxHeight: Math.min(visibleArea.height, sizeRestrictions.maxHeight),
 		}
 	});
 }
 
-export function percentRestrictions({ minWidth, minHeight, maxWidth, maxHeight, imageWidth, imageHeight }) {
+export function percentRestrictions({ imageSize, minWidth, minHeight, maxWidth, maxHeight }) {
 	return {
-		minWidth: minWidth / 100 * imageWidth,
-		minHeight: minHeight / 100 * imageHeight,
-		maxWidth: maxWidth / 100 * imageWidth,
-		maxHeight: maxHeight / 100 * imageHeight,
+		minWidth: minWidth / 100 * imageSize.width,
+		minHeight: minHeight / 100 * imageSize.height,
+		maxWidth: maxWidth / 100 * imageSize.width,
+		maxHeight: maxHeight / 100 * imageSize.height,
 	};
 }

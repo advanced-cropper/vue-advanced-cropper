@@ -39,7 +39,7 @@ It described [here](/tutorials/recipes.html#second-method).
 It may change its name or may be deleted in the future.
 :::
 
-This method [refreshes cropper](/introduction/under-hood.html#refresh-image). This method is called on every window resize and can be
+This method [refreshes cropper](/introduction/under-the-hood.html#refresh-image). This method is called on every window resize and can be
 useful if external container width is changed, but window's size isn't changed.
 
 ### `zoom(factor, center)`
@@ -173,11 +173,8 @@ The flag that indicates if image should be resized by a mouse wheel
 Default: `core.defaultPosition`
 
 The static function that accepts the only argument, the object with following fields:
-- `cropper` (DOM Element)
-- `image` (DOM Element),
-- `stencilWidth`, `stencilHeight`
-- `imageWidth`, `imageHeight`
-- `props` (all cropper's props)
+- `coordinates` (`{ width, height }`),
+- `visibleArea` (`{ left, top, width, height }`),
 
 It should return an object with `left` and `top` fields, i.e. default position of the stencil (relative to original image size)
 
@@ -185,29 +182,28 @@ It should return an object with `left` and `top` fields, i.e. default position o
 Default: `core.defaultSize`
 
 The static function that accepts the only argument, the object with following fields:
-- `cropper` (DOM Element)
-- `image` (DOM Element),
-- `minWidth`, `minHeight`, `maxWidth`, `maxHeight`
-- `imageWidth`, `imageHeight`
-- `props` (all cropper's props)
+- `visibleArea` (`{ left, top, width, height }`),
+- `imageSize` (`{ width, height }`),
+- `stencilRatio` (`{ minimum, maximum }`)
+- `sizeRestrictions` (`{ minWidth, minHeight, maxWidth, maxHeight }`)
 
 It should return an object with `height` and `width` fields, i.e. default size of the stencil (relative to original image size)
 
-### `areaSize`
-Default: `core.areaSize`
+### `defaultBoundaries`
+Default: `core.defaultBoundaries`
 
 The static function that accepts the only argument, the object with following fields:
 - `cropper` (DOM Element)
-- `image` (DOM Element),
+- `imageSize` (`{ width, height }`),
 
 It should return the object with `height` and `width` fields, i.e. width and height of the area.
 
-### restrictions
-Default: `core.pixelRestrictions`
+### `sizeRestrictionAlgorithm`
+Default: `core.percentRestrictions`
 
 The static function that accepts the only argument, the object with following fields:
 - `minWidth`, `minHeight`, `maxWidth`, `maxHeight`
-- `imageWidth`, `imageHeight`
+- `imageSize` (`{ width, height}`)
 
 It should return the object with restrictions for stencil. For example something like this:
 ```js
