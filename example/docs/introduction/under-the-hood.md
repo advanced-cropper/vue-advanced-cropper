@@ -4,11 +4,14 @@ title: Under The Hood
 
 # Under The Hood
 
-## Refresh image
+## Basic methods
+
+### Refresh image
+
+The image is refreshed on change the `src` prop and on the cropper's mount.
 
 ::: warning Notice!
-The internal process of `refreshImage` method is described below. You should not use this
-method directly (use `refresh` instead, because it includes additional post process logic), but you should know what's going on under its hood.
+The internal process of `refresh` method is described below.
 :::
 
 1. First of all, stretcher is initialized. By default `initStretcher` method tries to
@@ -33,14 +36,63 @@ visible area. It may break minimum width and minimum height restrictions but it 
 
 7. The internal values `visibleArea` and `coordinates` are updated.
 
+### Reset coordinates
 
-## On resize window
+The coordinates resets on each successful image change.
 
-1. Refresh image by `refreshImage` method.
+::: warning Notice!
+The internal process of `resetCoordinates` method is described below.
+:::
+
+1. Calculate default size with `defaultSize` method. It returns the object with `width` and `height` fields.
+ 
+2. Calculate default position with `defaultPosition`. It returns the object with `left` and `top` fields.
+
+3. Form default transforms array `[{ width, height }, { left, top}]` where `width`, `height`, `left` and `top` are fields calculated before.
+
+4. If there was delayed transforms, i.e. transforms that was applied after change image but before it was loaded, append them to the transforms array. 
+It's needed to give the possibility 
+
+5. Apply transforms.
+
+
+### Apply transforms
+
+It's the main way to update `coordinates`. 
+
+It is used every time when need to independently change coordinates (`setCoordinates`, `resetCoordinates`) or adapt current coordinates to props changes (`minWidth`, `maxWidth`, `minHeight`, `maxHeight`).
+
+::: warning Notice!
+The internal process of `applyTransforms` method is described below. You shouldn't call this method himself.
+:::
+
+This method has two parameters `transforms` and `autoZoom`. 
+The first parameter is an object of coordinates or array with one objects. 
+The second parameter indicates should be autozoom (i.e. translating and resizing visible area to fit new coordinates) is used or not.
+
+For each a transform:
+
+1. If there is `width` or `height` field in the transform generate the box by `approximiatedSize` algorithm that creates
+the box with width and height similar to given one with respect to the limitations (aspect ratio, maximum and minimum values of one). 
+After that cropper tries to return the box to its previous coordinates with respect to limitations returns by `coordinatesLimits`, but not 
+visible area (i.e. stencil can leave the current visible area). 
+
+2. If there is `left` or `top` field in the transform cropper moves box to given coordinates. Yet again, with respect to `coordinatesLimits`, but not `visibleArea`.
+
+After all transformations, if `autoZoom` parameter is set, apply autozoom algorithm to transform visible area in such way that coordinates
+fits into it.
+
+At the end, this method calls `onChangeCoordinates` method, that updates internal coordinates and emit corresponding event.
+
+## What's happens when?
+
+## Resize window
+
+1. Refresh image by `refresh` method.
 
 2. Update stencil coordinates.
 
-## On change image
+## Change image
 
 The following cycle runs when image is changed.
 

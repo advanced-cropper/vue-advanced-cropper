@@ -6,8 +6,8 @@ import resolve from 'rollup-plugin-node-resolve';
 import url from 'rollup-plugin-url';
 import Vue from 'rollup-plugin-vue';
 import css from 'rollup-plugin-merge-and-inject-css';
-import pkg from './package.json';
 import minify from 'rollup-plugin-babel-minify';
+import pkg from './package.json';
 
 export default {
 	input: 'src/index.js',
@@ -49,6 +49,6 @@ export default {
 			extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.vue'],
 		}),
 		resolve(),
-		commonjs(),
+		commonjs()
 	]
 };

@@ -50,11 +50,6 @@ export function isObject(obj) {
 	return typeof obj === 'object' && obj !== null;
 }
 
-export function addTimestamp(url) {
-	const timestamp = `timestamp=${(new Date()).getTime()}`;
-	return url + (url.indexOf('?') === -1 ? '?' : '&') + timestamp;
-}
-
 export function distance(firstPoint, secondPoint) {
 	return Math.sqrt(
 		Math.pow(firstPoint.x - secondPoint.x, 2) + Math.pow(firstPoint.y - secondPoint.y, 2)

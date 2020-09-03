@@ -91,16 +91,13 @@ export default {
 				return {};
 			},
 		},
-		classname: {
+		imageClass: {
 			type: String,
 		},
-		imageClassname: {
+		areaClass: {
 			type: String,
 		},
-		areaClassname: {
-			type: String,
-		},
-		backgroundClassname: {
+		backgroundClass: {
 			type: String,
 		},
 		debounce: {
@@ -149,7 +146,20 @@ export default {
 		roundResult: {
 			type: Boolean,
 			default: true
-		}
+		},
+		// Deprecated props
+		classname: {
+			type: String,
+		},
+		imageClassname: {
+			type: String,
+		},
+		areaClassname: {
+			type: String,
+		},
+		backgroundClassname: {
+			type: String,
+		},
 	},
 	data() {
 		return {
@@ -173,9 +183,6 @@ export default {
 			},
 			visibleArea: {},
 			coordinates: {
-				...DEFAULT_COORDINATES
-			},
-			stencilCoordinates: {
 				...DEFAULT_COORDINATES
 			},
 			frozenDirections: {
@@ -219,6 +226,15 @@ export default {
 				background: classnames(cn('background'), this.backgroundClassname),
 				imageWrapper: classnames(cn('image-wrapper')),
 				cropperWrapper: classnames(cn('cropper-wrapper')),
+			};
+		},
+		stencilCoordinates() {
+			const { width, height, left, top, } = this.coordinates;
+			return {
+				width: width / this.coefficient,
+				height: height / this.coefficient,
+				left: (left - this.visibleArea.left) / this.coefficient,
+				top: (top - this.visibleArea.top) / this.coefficient,
 			};
 		},
 		wrapperStyle() {
@@ -300,18 +316,20 @@ export default {
 			}
 
 			if (restrictions.minWidth > restrictions.maxWidth) {
-				console.warn(`Warning: maximum width (${restrictions.maxWidth}px) fewer that the minimum width (${restrictions.minWidth}px). It is set equal to the minimum width and width resizing was blocked`);
+				if (process.env.NODE_ENV !== 'production') {
+					console.warn(`Warning: maximum width (${restrictions.maxWidth}px) fewer that the minimum width (${restrictions.minWidth}px). It is set equal to the minimum width and width resizing was blocked`);
+				}
 				restrictions.maxWidth = restrictions.minWidth;
 				restrictions.widthFrozen = true;
 			}
 
 			if (restrictions.minHeight > restrictions.maxHeight) {
-				console.warn(`Warning: maximum height (${restrictions.maxHeight}px) fewer that the minimum height (${restrictions.minHeight}px). It is set equal to the minimum height and height resizing was blocked`);
+				if (process.env.NODE_ENV !== 'production') {
+					console.warn(`Warning: maximum height (${restrictions.maxHeight}px) fewer that the minimum height (${restrictions.minHeight}px). It is set equal to the minimum height and height resizing was blocked`);
+				}
 				restrictions.maxHeight = restrictions.minHeight;
 				restrictions.heightFrozen = true;
 			}
-
-
 
 			if (this.imageRestriction !== 'none') {
 				const visibleAreaMaximum = algorithms.fitIn(this.visibleArea, this.imageSize);
@@ -326,7 +344,7 @@ export default {
 				}
 			}
 
-			// Stencil should not be smaller than visible area anyway
+			// Stencil should not be larger than visible area anyway
 			restrictions.minWidth = Math.min(restrictions.minWidth, this.visibleArea.width);
 			restrictions.minHeight = Math.min(restrictions.minHeight, this.visibleArea.height);
 
@@ -384,8 +402,8 @@ export default {
 		window.addEventListener('orientationchange', this.refresh);
 	},
 	destroyed() {
-		window.removeEventListener('resize', this.refreshImage);
-		window.removeEventListener('orientationchange', this.refreshImage);
+		window.removeEventListener('resize', this.refresh);
+		window.removeEventListener('orientationchange', this.refresh);
 	},
 	methods: {
 		// External methods
@@ -433,12 +451,6 @@ export default {
 				return coordinates;
 			}
 		},
-		getArea() {
-			return this.$refs.area;
-		},
-		getStencil() {
-			return this.$refs.stencil;
-		},
 		autoZoom(coordinates) {
 			const { visibleArea } = algorithms.autoZoom({
 				coordinates,
@@ -447,16 +459,6 @@ export default {
 			});
 
 			this.visibleArea = visibleArea;
-			this.updateStencilCoordinates(coordinates);
-		},
-		updateStencilCoordinates(coordinates) {
-			const { width, height, left, top, } = coordinates;
-			this.stencilCoordinates =  {
-				width: width / this.coefficient,
-				height: height / this.coefficient,
-				left: (left - this.visibleArea.left) / this.coefficient,
-				top: (top - this.visibleArea.top) / this.coefficient,
-			};
 		},
 		updateCanvas(coordinates) {
 			// This function can be asynchronously called because it's debounced
@@ -486,14 +488,6 @@ export default {
 		},
 		update() {
 			this.$emit('change', this.getResult());
-		},
-		refresh() {
-			const image = this.$refs.image;
-			if (this.src && image) {
-				this.refreshImage().then(() => {
-					this.updateStencilCoordinates(this.coordinates);
-				});
-			}
 		},
 		onChangeCoordinates(newCoordinates, debounce = true) {
 			this.coordinates = newCoordinates;
@@ -539,7 +533,7 @@ export default {
 			if (this.$refs.image && !this.imageLoaded) {
 				this.imageLoaded = true;
 				this.visibleArea = {};
-				this.refreshImage().then(() => {
+				this.refresh().then(() => {
 					this.resetCoordinates();
 					this.$emit('ready');
 				});
@@ -584,7 +578,6 @@ export default {
 					resizeEvent
 				})
 			);
-			this.updateStencilCoordinates(this.coordinates);
 		},
 		onManipulateImage(event) {
 			const normalizedEvent = {
@@ -623,7 +616,6 @@ export default {
 
 			this.visibleArea = visibleArea;
 			this.onChangeCoordinates(coordinates);
-			this.updateStencilCoordinates(coordinates);
 		},
 		onMove(moveEvent) {
 			ALL_DIRECTIONS.forEach(direction => {
@@ -636,7 +628,6 @@ export default {
 					limits: this.getCoordinatesLimits(),
 				})
 			);
-			this.updateStencilCoordinates(this.coordinates);
 		},
 		setCoordinates(transforms, params = {}) {
 			const { autoZoom = true } = params;
@@ -708,8 +699,6 @@ export default {
 
 			if (autoZoom) {
 				this.autoZoom(coordinates);
-			} else {
-				this.updateStencilCoordinates(coordinates);
 			}
 			this.onChangeCoordinates(coordinates, false);
 
@@ -722,7 +711,7 @@ export default {
 
 			const cropper = this.$refs.cropper;
 			const image = this.$refs.image;
-			const { minWidth, minHeight, maxWidth, maxHeight, widthFrozen, heightFrozen, } = this.stencilRestrictions;
+			const { minWidth, minHeight, maxWidth, maxHeight, widthFrozen, heightFrozen } = this.stencilRestrictions;
 
 			// Freeze height or width if there was problems while setting stencil restrictions
 			this.frozenDirections.width = Boolean(widthFrozen);
@@ -751,6 +740,7 @@ export default {
 				(coordinates) => ({
 					...this.defaultPosition({
 						visibleArea: this.visibleArea,
+						coordinates,
 						cropper,
 						image,
 						stencilWidth: coordinates.width,
@@ -779,7 +769,6 @@ export default {
 					width: 0,
 					height: 0,
 				};
-				this.updateStencilCoordinates({ ...DEFAULT_COORDINATES });
 			}, this.transitionTime);
 		},
 		getAreaLimits() {
@@ -797,7 +786,7 @@ export default {
 				});
 			return insideArea ? algorithms.limitBy(limits, this.visibleArea) : limits;
 		},
-		refreshImage() {
+		refresh() {
 			return new Promise((resolve, reject) => {
 				const image = this.$refs.image;
 				const cropper = this.$refs.cropper;

@@ -23,5 +23,6 @@ yarn-error.log*
 
 testing-internet-explorer/
 example/package-lock.json
+stats.html
 
 .idea

@@ -20,7 +20,6 @@ export default {
 			);
 		}
 		this.touches = [];
-		this.draggingAnchor = [];
 		this.hovered = false;
 	},
 	methods: {

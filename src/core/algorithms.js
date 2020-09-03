@@ -115,16 +115,7 @@ export function fit(object, limits) {
 	return directions;
 }
 
-export function center(object, area) {
-	return {
-		left: area.width / 2 - object.width / 2,
-		right: area.width / 2 + object.width / 2,
-		top: area.height / 2 - object.height / 2,
-		bottom: area.height / 2 + object.height / 2,
-	};
-}
-
-export function toLimits(object) {
+function toLimits(object) {
 	return {
 		left: object.left,
 		top: object.top,
@@ -362,7 +353,7 @@ export function resize ({ resizeEvent, coordinates, limits, aspectRatio, restric
 	let currentHeight = applyDirections(actualCoordinates, directions).height;
 
 	// Checks ratio:
-	let ratioBroken = params.preserveRatio ? actualCoordinates.width / actualCoordinates.height : getBrokenRatio(currentWidth / currentHeight, aspectRatio);
+	let ratioBroken = params.preserveRatio ? ratio(actualCoordinates) : getBrokenRatio(currentWidth / currentHeight, aspectRatio);
 
 	if (ratioBroken) {
 		let { respectDirection, } = params;
@@ -409,9 +400,11 @@ export function resize ({ resizeEvent, coordinates, limits, aspectRatio, restric
 	// 4. Check if ratio broken (temporary):
 	currentWidth = applyDirections(actualCoordinates, directions).width;
 	currentHeight = applyDirections(actualCoordinates, directions).height;
-	ratioBroken = params.preserveRatio ? actualCoordinates.width / actualCoordinates.height : getBrokenRatio(currentWidth / currentHeight, aspectRatio);
+	ratioBroken = params.preserveRatio ? ratio(actualCoordinates) : getBrokenRatio(currentWidth / currentHeight, aspectRatio);
 	if (Math.abs(ratioBroken - currentWidth/currentHeight) > 1e-3) {
-		console.error(`Something went wrong and ratio was broken: ${currentWidth/currentHeight} instead of ${ratioBroken}`);
+		if (process.env.NODE_END !== 'production') {
+			console.error(`Something went wrong and ratio was broken: ${currentWidth/currentHeight} instead of ${ratioBroken}`);
+		}
 		ALL_DIRECTIONS.forEach(direction => {
 			if (!allowedDirections[direction]) {
 				directions[direction] = 0;
@@ -566,7 +559,6 @@ export function manipulateImage({ event, coordinates: originalCoordinates, visib
 	};
 }
 
-
 // This function returns the approximation size to width / height with respect to
 // restrictions and aspect ratio
 export function approximatedSize({ width, height, aspectRatio, restrictions }) {
@@ -698,8 +690,8 @@ export function fitToVisibleArea({ visibleArea, coordinates: previousCoordinates
 }
 
 export function defaultVisibleArea({ imageSize, boundariesSize }) {
-	const imageRatio = imageSize.width / imageSize.height;
-	const boundaryRatio = boundariesSize.width / boundariesSize.height;
+	const imageRatio = ratio(imageSize);
+	const boundaryRatio = ratio(boundariesSize);
 
 	const areaProperties = {
 		height: imageRatio > boundaryRatio ? imageSize.height : imageSize.width / boundaryRatio,
@@ -716,7 +708,7 @@ export function defaultVisibleArea({ imageSize, boundariesSize }) {
 
 
 export function initStretcher({ stretcher, imageSize }) {
-	const aspectRatio = imageSize.width / imageSize.height;
+	const aspectRatio = ratio(imageSize);
 
 	if (imageSize.height > imageSize.width) {
 		stretcher.style.height = `${imageSize.height}px`;
@@ -804,11 +796,10 @@ export function areaLimits({ imageSize, imageRestriction }) {
 	return limits;
 }
 
-// eslint-disable-next-line no-unused-vars
-export function defaultPosition ({ cropper, visibleArea, image, stencilWidth, stencilHeight, imageSize,  props }) {
+export function defaultPosition ({ visibleArea, coordinates }) {
 	return {
-		left: visibleArea.left + visibleArea.width / 2 - stencilWidth / 2,
-		top: visibleArea.top + visibleArea.height / 2 - stencilHeight / 2,
+		left: visibleArea.left + visibleArea.width / 2 - coordinates.width / 2,
+		top: visibleArea.top + visibleArea.height / 2 - coordinates.height / 2,
 	};
 }
 
