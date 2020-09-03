@@ -22,14 +22,14 @@ fit to external container image completely by defining to stretcher element its 
 2. Cropper waits rerender to await the changing of external container size.
 
 3. After rerender, the cropper determines the boundaries size by calling `boundaries` method and getting its result to 
-set `boundariesSize` value.
+set `boundaries` value.
 
 4. After boundaries is determined, the visible area coordinates is calculated by method `defaultVisibleArea`. 
 The cropper always checks that visible area ratio is equal to the boundaries aspect ratio, if it's not equal,
 cropper recalculates visible area height to corresponding aspect ratio of the boundaries.
 
 5. After calculating boundaries and visible area `updateVisibleArea` methods is called. This method tries do adapt
-calculated visible area on previous step to the previous `visibleArea` value, current `coordinates` and `boundariesSize`.
+calculated visible area on previous step to the previous `visibleArea` value, current `coordinates` and `boundaries`.
 
 6. Cropper checks that coordinates fits inside visible area. If it's not cropper adapts coordinates to fit to
 visible area. It may break minimum width and minimum height restrictions but it always preserve aspect ratio restrictions.
@@ -74,12 +74,12 @@ For each a transform:
 
 1. If there is `width` or `height` field in the transform generate the box by `approximiatedSize` algorithm that creates
 the box with width and height similar to given one with respect to the limitations (aspect ratio, maximum and minimum values of one). 
-After that cropper tries to return the box to its previous coordinates with respect to limitations returns by `coordinatesLimits`, but not 
+After that cropper tries to return the box to its previous coordinates with respect to limitations returns by `positionRestrictions`, but not 
 visible area (i.e. stencil can leave the current visible area). 
 
-2. If there is `left` or `top` field in the transform cropper moves box to given coordinates. Yet again, with respect to `coordinatesLimits`, but not `visibleArea`.
+2. If there is `left` or `top` field in the transform cropper moves box to given coordinates. Yet again, with respect to `positionRestrictions`, but not `visibleArea`.
 
-After all transformations, if `autoZoom` parameter is set, apply autozoom algorithm to transform visible area in such way that coordinates
+After all transformations, if `autoZoom` parameter is set, apply auto zoom algorithm to transform visible area in such way that coordinates
 fits into it.
 
 At the end, this method calls `onChangeCoordinates` method, that updates internal coordinates and emit corresponding event.
