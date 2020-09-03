@@ -20,11 +20,11 @@ It can be useful if you want to set background of filled area at the scheme abov
 
 ### Image
 
-You can apply different effects (for example blurring) to image by passing custom class name to `imageClassname` prop. By default it has `0.5` only opacity.
+You can apply different effects (for example blurring) to image by passing custom class name to `imageClass` prop. By default it has `0.5` only opacity.
 
 ### Background
 
-Background is literally background directly under image. By default it's black rectangle, but you are able to change, let's say, its color by passing class name to `backgroundClassname` prop.
+Background is literally background directly under image. By default it's black rectangle, but you are able to change, let's say, its color by passing class name to `backgroundClass` prop.
 
 ## Styling notice
 
@@ -79,13 +79,13 @@ To change handler component just pass the name of globally registered handler co
 
 #### Customize the classnames
 
-To add handler classnames you should pass an object to `handlersClassnames` prop. All available classnames are represented at the example below
+To add handler classnames you should pass an object to `handlersClasses` prop. All available classnames are represented at the example below
 
 ```html
 <cropper
 	:src="img"
 	:stencil-props="{
-		handlersClassnames: {
+		handlersClasses: {
 			default: 'handler',
 			hover: 'handler--hover',
 			eastNorth: 'handler--east-north',
@@ -106,7 +106,7 @@ Pay attention to `default` classname. If you want just change classname of a han
 <Cropper
 	:src="img"
 	:stencil-props="{
-		handlerClassnames: {
+		handlerClasses: {
 			default: 'handler',
 		}
 	}"
@@ -143,7 +143,7 @@ If you don't set `[direction]: true` the correspondenting handler will be hidden
 
 You are able to customize lines by the same three ways:
 - change line component (`lineComponent`)
-- add custom line classnames (`linesClassnames`)
+- add custom line classnames (`linesClasses`)
 - remove or add lines at one of four positions (`lines`)
 
 Line component by default is [SimpleLine](/components/simple-line.html). Each line is a narrow block with applied border style. So to change the apperance of line you should change the border style.

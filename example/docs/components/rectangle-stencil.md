@@ -24,9 +24,9 @@ The class name for root block of the stencil component. Probably you don't need 
 
 The class name for the preview component.
 
-### `boundingBoxClassname`
+### `boundingBoxClass`
 
-The class name for the bouding box component.  Probably you don't need to use it.
+The class name for the bounding box component.  Probably you don't need to use it.
 
 ### `handlerComponent`
 Default: `SimpleHandler`
@@ -51,7 +51,7 @@ For example if you pass the following object to the current prop, only handlers 
 }
 ```
 
-### `handlersClassnames`
+### `handlersClasses`
 
 The object of custom handler class names.
 
@@ -91,7 +91,7 @@ For example if you pass the following object to the current prop, only top and b
 }
 ```
 
-### `linesClassnames`
+### `linesClasses`
 
 The object of custom lines class names.
 

@@ -12,7 +12,7 @@ The class name for root block of the stencil component. Probably you don't need 
 
 The class name for the preview component.
 
-### `boundingBoxClassname`
+### `boundingBoxClass`
 
 The class name for the bouding box component.  Probably you don't need to use it.
 
