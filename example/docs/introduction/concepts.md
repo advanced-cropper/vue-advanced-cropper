@@ -23,7 +23,7 @@ This scheme applied to the real image is shown below.
 
 ### Boundaries
 
-It's the least obvious part of the cropper. Boundaries is the area inside the cropper that will contain the image.
+It's the least obvious part of the cropper. Boundaries is the area inside the cropper that will contain an image.
 By default, it is equal to an image fitted to a cropper.
 
 ![Example](../.vuepress/assets/concepts/example-default-boundaries.svg)
@@ -39,7 +39,7 @@ When image is not zoomed user sees the whole image, but what's the part of image
 This part can be called literally `visibleArea`.
 
 The visible area is the most abstract, flexible and determined way to define the image zoom and translation. Remember,
-that is should always have same aspect ratio as `boundaries` due its nature.
+it must have same aspect ratio as `boundaries` due its nature.
 
 ![Example](../.vuepress/assets/concepts/example-visible-area.svg)
 

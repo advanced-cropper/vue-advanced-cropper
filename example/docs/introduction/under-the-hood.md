@@ -68,7 +68,7 @@ The internal process of `applyTransforms` method is described below. You shouldn
 
 This method has two parameters `transforms` and `autoZoom`. 
 The first parameter is an object of coordinates or array with one objects. 
-The second parameter indicates should be autozoom (i.e. translating and resizing visible area to fit new coordinates) is used or not.
+The second parameter indicates should be auto zoom (i.e. translating and resizing visible area to fit new coordinates) is used or not.
 
 For each a transform:
 
@@ -86,13 +86,13 @@ At the end, this method calls `onChangeCoordinates` method, that updates interna
 
 ## What's happens when?
 
-## Resize window
+### Resize window
 
 1. Refresh image by `refresh` method.
 
 2. Update stencil coordinates.
 
-## Change image
+### Change image
 
 The following cycle runs when image is changed.
 

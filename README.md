@@ -82,10 +82,10 @@ new Vue({
 | backgroundClass           | `String`           | The optional class for the background under the image           |
 | debounce                  | `String`, `Number` | The time before change event will be emitted after changes (ms) | `500`
 | canvas                    | `Boolean`          | The flag that indicates if canvas should be used                | `true`
-| minWidth                  | `String`, `Number` | The minimum width of the stencil (percents)                     | `10`
-| minHeight                 | `String`, `Number` | The minimum height of the stencil (percents)                    | `10`
-| maxWidth                  | `String`, `Number` | The maximum width of the stencil (percents)                     | `10`
-| maxHeight                 | `String`, `Number` | The maximum height of the stencil (percents)                    | `10`
+| minWidth                  | `String`, `Number` | The minimum width of the stencil (percents)                     | 
+| minHeight                 | `String`, `Number` | The minimum height of the stencil (percents)                    | 
+| maxWidth                  | `String`, `Number` | The maximum width of the stencil (percents)                     | 
+| maxHeight                 | `String`, `Number` | The maximum height of the stencil (percents)                    | 
 | checkOrientation          | `Boolean`          | Check if EXIF orientation should be checked                     | `true`
 | touchMove                 | `Boolean`          | Check if image should be dragged by a touch                     | `true`
 | touchResize               | `Boolean`          | Check if image should be resized by a pinch gesture             | `true`
