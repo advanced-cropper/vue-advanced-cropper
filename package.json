@@ -81,8 +81,7 @@
 	"dependencies": {
 		"classnames": "^2.2.6",
 		"debounce": "^1.2.0",
-		"easy-bem": "^1.0.2",
-		"rollup-plugin-analyzer": "^3.3.0"
+		"easy-bem": "^1.0.2"
 	},
 	"files": [
 		"dist"
