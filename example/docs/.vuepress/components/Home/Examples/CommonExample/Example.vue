@@ -1,16 +1,16 @@
 <template>
   <Cropper
     :src="require('./assets/image.jpg')"
-    classname="common-example"
+    class="common-example"
     :stencil-props="{
       aspectRatio: 10/12,
-      classname: 'common-example__stencil',
-      previewClassname: 'common-example__preview',
-      linesClassnames: {
+      class: 'common-example__stencil',
+      previewClass: 'common-example__preview',
+      linesClasses: {
         default: 'common-example__line',
         hover: 'common-example__line--hover',
       },
-      handlersClassnames: {
+      handlersClasses: {
         default: 'common-example__handler',
         over: 'common-example__handler--hover',
       }

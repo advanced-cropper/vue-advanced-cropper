@@ -162,13 +162,13 @@ Currently there are problems with changing the line width.
 
 ### Preview
 
-The necessity to change preview appearance is pretty rare. But if you want to change it you may pass custom classname to `previewClassname` prop.
+The necessity to change preview appearance is pretty rare. But if you want to change it you may pass custom classname to `previewClass` prop.
 
 ```html
 <cropper
 	:src="img"
 	:stencil-props="{
-		previewClassname: 'preview'
+		previewClass: 'preview'
 	}"
 	stencil-component="circle-stencil"
 />

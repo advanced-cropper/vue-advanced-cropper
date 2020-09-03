@@ -1,6 +1,7 @@
 <script>
 import classnames from 'classnames';
 import bem from 'easy-bem';
+import { replacedProp } from '../../core';
 import { PreviewResult, BoundingBox, DraggableArea } from '../service';
 import { SimpleHandler } from '../handlers';
 import { SimpleLine } from '../lines';
@@ -17,9 +18,6 @@ export default {
 	props: {
 		img: {
 			type: Object,
-		},
-		stencilClass: {
-			type: String,
 		},
 		stencilCoordinates: {
 			type: Object,
@@ -41,12 +39,6 @@ export default {
 				return SimpleHandler;
 			},
 		},
-		handlersClassnames: {
-			type: Object,
-			default() {
-				return {};
-			},
-		},
 		lines: {
 			type: Object,
 		},
@@ -56,21 +48,6 @@ export default {
 				return SimpleLine;
 			},
 		},
-		linesClassnames: {
-			type: Object,
-			default() {
-				return {};
-			},
-		},
-		classname: {
-			type: String,
-		},
-		previewClassname: {
-			type: String,
-		},
-		boundingBoxClassname: {
-			type: String,
-		},
 		movable: {
 			type: Boolean,
 			default: true,
@@ -79,13 +56,62 @@ export default {
 			type: Boolean,
 			default: true,
 		},
+		previewClass: {
+			type: String,
+		},
+		boundingBoxClass: {
+			type: String,
+		},
+		linesClasses: {
+			type: Object,
+			default() {
+				return {};
+			},
+		},
+		handlersClasses: {
+			type: Object,
+			default() {
+				return {};
+			},
+		},
+		// Deprecated props
+		classname: {
+			type: String,
+			validator(value) {
+				return replacedProp(value, 'classname', 'class');
+			}
+		},
+		previewClassname: {
+			type: String,
+			validator(value) {
+				return replacedProp(value, 'previewClassname', 'previewClass');
+			}
+		},
+		boundingBoxClassname: {
+			type: String,
+			validator(value) {
+				return replacedProp(value, 'boundingBoxClassname', 'boundingBoxClass');
+			}
+		},
+		linesClassnames: {
+			type: Object,
+			validator(value) {
+				return replacedProp(value, 'linesClassnames', 'linesClasses');
+			}
+		},
+		handlersClassnames: {
+			type: Object,
+			validator(value) {
+				return replacedProp(value, 'handlersClassnames', 'handlersClasses');
+			}
+		},
 	},
 	computed: {
 		classes() {
 			return {
 				stencil: classnames(cn(), this.classname),
-				preview: classnames(cn('preview'), this.previewClassname),
-				boundingBox: classnames(cn('bounding-box'), this.boundingBox),
+				preview: classnames(cn('preview'), this.previewClass || this.previewClassname),
+				boundingBox: classnames(cn('bounding-box'), this.boundingBoxClass || this.boundingBoxClassname),
 			};
 		},
 		style() {
@@ -121,12 +147,14 @@ export default {
     :style="style"
   >
     <BoundingBox
-      :classname="classes.boundingBox"
+      :class="classes.boundingBox"
       :handlers="handlers"
       :handler-component="handlerComponent"
-      :handlers-classnames="handlersClassnames"
+      :handlers-classes=" handlersClasses"
+      :handlers-classnames=" handlersClassnames"
       :lines="lines"
       :line-component="lineComponent"
+      :lines-classes="linesClasses"
       :lines-classnames="linesClassnames"
       :scalable="scalable"
       @resize="onResize"
@@ -137,7 +165,7 @@ export default {
       >
         <PreviewResult
           :img="img"
-          :classname="classes.preview"
+          :class="classes.preview"
           :stencil-coordinates="stencilCoordinates"
         />
       </DraggableArea>

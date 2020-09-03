@@ -24,7 +24,7 @@ export default {
 <template>
   <div>
     <Cropper
-      classname="cropper"
+      class="cropper"
       :src="img"
       :stencil-props="{
         aspectRatio: 10/12

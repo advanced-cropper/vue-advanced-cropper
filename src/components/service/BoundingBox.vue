@@ -1,6 +1,7 @@
 <script>
 import bem from 'easy-bem';
 import classnames from 'classnames';
+import { isEmpty, replacedProp } from '../../core';
 import { directionNames } from '../../core/utils';
 import { ResizeEvent } from '../../core/events';
 import { SimpleHandler } from '../handlers';
@@ -13,9 +14,6 @@ const VERTICAL_DIRECTIONS = ['south', 'north', null];
 export default {
 	name: 'BoundingBox',
 	props: {
-		classname: {
-			type: String,
-		},
 		handlers: {
 			type: Object,
 			default() {
@@ -37,7 +35,7 @@ export default {
 				return SimpleHandler;
 			},
 		},
-		handlersClassnames: {
+		handlersClasses: {
 			type: Object,
 			default() {
 				return {};
@@ -57,7 +55,7 @@ export default {
 		lineComponent: {
 			type: [Object, String],
 		},
-		linesClassnames: {
+		linesClasses: {
 			type: Object,
 			default() {
 				return {};
@@ -66,7 +64,32 @@ export default {
 		scalable: {
 			type: Boolean,
 			default: true
-		}
+		},
+		// Deprecated props:
+		classname: {
+			type: String,
+			validator(value) {
+				return replacedProp(value, 'classname', 'class');
+			}
+		},
+		linesClassnames: {
+			type: Object,
+			default() {
+				return {};
+			},
+			validator(value) {
+				return replacedProp(value, 'linesClassnames', 'linesClasses');
+			}
+		},
+		handlersClassnames: {
+			type: Object,
+			default() {
+				return {};
+			},
+			validator(value) {
+				return replacedProp(value, 'handlersClassnames', 'handlersClasses');
+			}
+		},
 	},
 	data() {
 		const points = [];
@@ -88,12 +111,12 @@ export default {
 		};
 	},
 	computed: {
-		classnames() {
-			const handlers = this.handlersClassnames;
-			const lines = this.linesClassnames;
+		classes() {
+			const handlers = isEmpty(this.handlersClasses) ? this.handlersClassnames : this.handlersClasses;
+			const lines = isEmpty(this.linesClasses) ? this.linesClassnames : this.linesClasses;
 
 			return {
-				default: classnames(
+				root: classnames(
 					cn(),
 					this.classname
 				),
@@ -108,12 +131,12 @@ export default {
 					lines.push({
 						name: point.name,
 						component: this.lineComponent,
-						classname: classnames(
-							this.classnames.lines.default,
-							this.classnames.lines[point.name],
-							!this.scalable && this.classnames.lines.disabled
+						class: classnames(
+							this.classes.lines.default,
+							this.classes.lines[point.name],
+							!this.scalable && this.classes.lines.disabled
 						),
-						hoverClassname: this.classnames.lines.hover,
+						hoverClass: this.classes.lines.hover,
 						verticalDirection: point.verticalDirection,
 						horizontalDirection: point.horizontalDirection,
 						disabled: !this.scalable
@@ -129,11 +152,11 @@ export default {
 					handlers.push({
 						name: point.name,
 						component: this.handlerComponent,
-						classname: classnames(
-							this.classnames.handlers.default,
-							this.classnames.handlers[point.name]
+						class: classnames(
+							this.classes.handlers.default,
+							this.classes.handlers[point.name]
 						),
-						hoverClassname: this.classnames.handlers.hover,
+						hoverClass: this.classes.handlers.hover,
 						verticalDirection: point.verticalDirection,
 						horizontalDirection: point.horizontalDirection,
 						disabled: !this.scalable
@@ -211,7 +234,7 @@ export default {
 <template>
   <div
     ref="box"
-    :class="classnames.default"
+    :class="classes.root"
   >
     <slot />
     <div>
@@ -219,8 +242,8 @@ export default {
         :is="line.component"
         v-for="line in lineNodes"
         :key="line.name"
-        :classname="line.classname"
-        :hover-classname="line.hoverClassname"
+        :classname="line.class"
+        :hover-classname="line.hoverClass"
         :position="line.name"
         :disabled="line.disabled"
         @drag="onHandlerDrag($event, line.horizontalDirection, line.verticalDirection)"
@@ -231,8 +254,8 @@ export default {
         :is="handler.component"
         v-for="handler in handlerNodes"
         :key="handler.name"
-        :classname="handler.classname"
-        :hover-classname="handler.hoverClassname"
+        :classname="handler.class"
+        :hover-classname="handler.hoverClass"
         :horizontal-position="handler.horizontalDirection"
         :vertical-position="handler.verticalDirection"
         :disabled="handler.disabled"

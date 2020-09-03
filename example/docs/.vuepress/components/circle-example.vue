@@ -17,11 +17,11 @@ export default {
   <div>
     <Cropper
       :src="img"
-      classname="circle-cropper"
-      stencil-component="circle-stencil"
       :stencil-props="{
-        previewClassname: 'circle-cropper__preview'
+        previewClass: 'circle-cropper__preview'
       }"
+      class="circle-cropper"
+      stencil-component="circle-stencil"
     />
   </div>
 </template>

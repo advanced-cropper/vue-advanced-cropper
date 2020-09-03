@@ -201,7 +201,7 @@ export default {
   	<div class="circle-stencil" :style="style">
 	 	<img src="./handler.svg">
         <PreviewResult
-        	classname="circle-stencil__preview"
+        	class="circle-stencil__preview"
         	:img="img"
         	:width="stencilCoordinates.width"
         	:height="stencilCoordinates.height"
@@ -297,14 +297,14 @@ export default {
 <template>
   	<div class="circle-stencil" :style="style">
 		<DraggableElement
-			classname="circle-stencil__handler"
+			class="circle-stencil__handler"
 			@drag="onHandlerMove"
 		>
 			<img :src="require('./assets/handler.svg')">
 		</DraggableElement>
 		<DraggableArea @move="onMove">
 			<PreviewResult
-				classname="circle-stencil__preview"
+				class="circle-stencil__preview"
 				:img="img"
 				:stencilCoordinates="stencilCoordinates"
 				:resultCoordinates="resultCoordinates"
@@ -457,7 +457,7 @@ export default {
     :style="style"
   >
     <DraggableElement
-      classname="circle-stencil__handler"
+      class="circle-stencil__handler"
       @drag="onHandlerMove"
     >
       <img
@@ -467,7 +467,7 @@ export default {
     </DraggableElement>
     <DraggableArea @move="onMove">
       <PreviewResult
-        classname="circle-stencil__preview"
+        class="circle-stencil__preview"
         :img="img"
 		:stencilCoordinates="stencilCoordinates"
 		:resultCoordinates="resultCoordinates"

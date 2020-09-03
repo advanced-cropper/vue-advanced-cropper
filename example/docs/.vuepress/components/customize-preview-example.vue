@@ -19,7 +19,7 @@ export default {
       :src="img"
       stencil-component="circle-stencil"
       :stencil-props="{
-        previewClassname: 'preview'
+        previewClass: 'preview'
       }"
     />
   </div>

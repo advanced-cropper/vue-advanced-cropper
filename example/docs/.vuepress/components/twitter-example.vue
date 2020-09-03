@@ -121,14 +121,14 @@
 		<Cropper
 			ref="cropper"
 			class="twitter-cropper"
-			backgroundClassname="twitter-cropper__background"
+			backgroundClass="twitter-cropper__background"
 			image-restriction="stencil"
 			:stencil-props="{
 				handlers: {},
 				movable: false,
 				scalable: false,
 				aspectRatio: 1,
-				previewClassname: 'twitter-cropper__stencil',
+				previewClass: 'twitter-cropper__stencil',
 		    }"
 			:debounce="false"
 			:canvas="false"

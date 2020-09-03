@@ -343,7 +343,7 @@ In the example below all this events are used to display the image loading indic
 	<div class="cropper-wrapper">
 		<img v-if="img.loading" class="cropper-wrapper__loading" src="./indicator.svg">
 		<cropper
-			classname="cropper"
+			class="cropper"
 			:src="img.src"
 			@ready="ready"
 			@error="error"

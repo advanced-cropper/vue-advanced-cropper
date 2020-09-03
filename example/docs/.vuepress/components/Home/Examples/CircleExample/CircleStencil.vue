@@ -73,7 +73,7 @@ export default {
     :style="style"
   >
     <DraggableElement
-      classname="circle-stencil__handler"
+      class="circle-stencil__handler"
       @drag="onHandlerMove"
     >
       <img
@@ -84,7 +84,7 @@ export default {
     </DraggableElement>
     <DraggableArea @move="onMove">
       <PreviewResult
-        classname="circle-stencil__preview"
+        class="circle-stencil__preview"
         :img="img"
         :result-coordinates="resultCoordinates"
         :stencil-coordinates="stencilCoordinates"

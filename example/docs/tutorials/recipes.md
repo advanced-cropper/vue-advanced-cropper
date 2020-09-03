@@ -206,7 +206,7 @@ export default {
 <div id="app">
 	<div class="upload-example">
 		<cropper
-			classname="upload-example-cropper"
+			class="upload-example-cropper"
 			:src="image"
 		/>
 		<div class="button-wrapper">

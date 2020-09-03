@@ -4,17 +4,17 @@
 
 ## Props
 
-### `classname`
+### `class`
 
-The classname for root block of the stencil component. Probably you don't need to use it.
+The class name for root block of the stencil component. Probably you don't need to use it.
 
-### `previewClassname`
+### `previewClass`
 
-The classname for the preview component.
+The class name for the preview component.
 
 ### `boundingBoxClassname`
 
-The classname for the bouding box component.  Probably you don't need to use it.
+The class name for the bouding box component.  Probably you don't need to use it.
 
 ### `handlerComponent`
 Default: `SimpleHandler`
@@ -39,11 +39,11 @@ For example if you pass the following object to the current prop, only handlers 
 }
 ```
 
-### `handlersClassnames`
+### `handlersClasses`
 
-The object of custom handler classnames.
+The object of custom handler class names.
 
-All available classnames are listed below
+All available class names are listed below
 ```js
 {
 	default: 'handler',
@@ -79,11 +79,11 @@ For example if you pass the following object to the current prop, only top and b
 }
 ```
 
-### `linesClassnames`
+### `linesClasses`
 
-The object of custom lines classnames.
+The object of custom lines class names.
 
-All available classnames are listed below
+All available class names are listed below
 ```js
 {
 	default: 'line',

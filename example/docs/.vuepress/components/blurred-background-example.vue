@@ -22,7 +22,7 @@ export default {
       />
       <Cropper
         :src="img"
-        background-classname="image-background"
+        background-class="image-background"
       />
     </div>
   </div>

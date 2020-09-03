@@ -47,7 +47,7 @@
 	<div class="manipulate-image-example">
 		<Cropper
 			ref="cropper"
-			classname="coodinates-cropper"
+			class="coodinates-cropper"
 			:src="image"
 			:boundaries="boundaries"
 			:stencil-props="{

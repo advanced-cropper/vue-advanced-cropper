@@ -55,7 +55,7 @@ export default {
 <template>
   <div class="custom-restrictions-example">
     <cropper
-      classname="custom-restrictions-cropper"
+      class="custom-restrictions-cropper"
       :src="image"
       :restrictions="pixelsRestriction"
       :max-height="limitations.maxHeight"

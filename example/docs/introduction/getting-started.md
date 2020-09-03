@@ -51,7 +51,7 @@ new Vue({
 ```html
 <div id="app">
   <cropper
-	classname="cropper"
+	class="cropper"
 	:src="img"
 	:stencil-props="{
 		aspectRatio: 10/12

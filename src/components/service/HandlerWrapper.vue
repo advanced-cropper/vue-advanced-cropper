@@ -1,6 +1,7 @@
 <script>
 import bem from 'easy-bem';
 import classnames from 'classnames';
+import { replacedProp } from '../../core';
 import { directionNames } from '../../core/utils';
 import DraggableElement from './DraggableElement.vue';
 
@@ -18,28 +19,32 @@ export default {
 		verticalPosition: {
 			type: String,
 		},
-		classname: {
-			type: String,
-		},
 		disabled: {
 			type: Boolean,
 			default: false,
-		}
+		},
+		// Deprecated props:
+		classname: {
+			type: String,
+			validator(value) {
+				return replacedProp(value, 'classname', 'class');
+			}
+		},
 	},
 	computed: {
-		classnames() {
-			let defaultClassname;
+		classes() {
+			let rootClass;
 			if (this.horizontalPosition || this.verticalPosition) {
 				const position = directionNames(
 					this.horizontalPosition,
 					this.verticalPosition
 				);
-				defaultClassname = classnames(this.classname, cn({ [position.classname]: true, disabled: this.disabled }));
+				rootClass = classnames(this.classname, cn({ [position.classname]: true, disabled: this.disabled }));
 			} else {
-				defaultClassname = classnames(this.classname, cn({ disabled: this.disabled }));
+				rootClass = classnames(this.classname, cn({ disabled: this.disabled }));
 			}
 			return {
-				default: defaultClassname,
+				root: rootClass,
 				draggable: cn('draggable'),
 			};
 		},
@@ -48,9 +53,9 @@ export default {
 </script>
 
 <template>
-  <div :class="classnames.default">
+  <div :class="classes.root">
     <DraggableElement
-      :class="classnames.draggable"
+      :class="classes.draggable"
       :disabled="disabled"
       @drag="$emit('drag', $event)"
       @leave="$emit('leave')"

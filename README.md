@@ -47,7 +47,7 @@ new Vue({
 ```html
 <div id="app">
   <cropper
-    classname="cropper"
+    class="cropper"
     :src="img"
     :stencilProps="{
       aspectRatio: 10/12
@@ -76,10 +76,10 @@ new Vue({
 | src                    | `String`           | The cropping image (link / base64)                             |
 | stencilComponent       | `String`, `Object` | The stencil component                                          | `RectangleStencil`
 | stencilProps           | `Object`           | The props for the stencil component                            | `{}`
-| classname              | `String`           | The optional classname for the root cropper block              |
-| imageClassname         | `String`           | The optional classname for the cropping image                  |
-| areaClassname          | `String`           | The optional classname for the area.                           |
-| backgroundClassname    | `String`           | The optional classname for the background under the image      |
+| class                  | `String`           | The optional class for the root cropper block              |
+| imageClass             | `String`           | The optional class for the cropping image                  |
+| areaClass              | `String`           | The optional class for the area.                           |
+| backgroundClass        | `String`           | The optional class for the background under the image      |
 | debounce               | `String`, `Number` | The time before change event will be emitted after changes (ms)| `500`
 | canvas                 | `Boolean`          | The flag that indicates if canvas should be used               | `true`
 | minWidth               | `String`, `Number` | The minimum width of the stencil (percents)                    | `10`
@@ -113,15 +113,15 @@ new Vue({
 | aspectRatio            | `Number`, `String`, | The aspect ratio                                               |
 | minAspectRatio         | `Number`, `String`, | The minimum aspect ratio                                       |
 | maxAspectRatio         | `Number`, `String`, | The maximum aspect ratio                                       |
-| classname              | `String`,           | The classname for root block of the stencil component          |
-| previewClassname       | `String`,           | The classname for the preview component                        |
-| boundingBoxClassname   | `String`,           | The classname for the bouding box component                    |
+| class                  | `String`,           | The class for root block of the stencil component          |
+| previewClass           | `String`,           | The class for the preview component                        |
+| boundingBoxClass       | `String`,           | The class for the bouding box component                    |
 | handlerComponent       | `String`,`Object`   | The handler component                                          |
 | handlers               | `Object`,           | The object of handlers that should be visible or hidden.       |
-| handlersClassnames     | `Object`,           | The object of custom handler classnames                        |
+| handlersClasses        | `Object`,           | The object of custom handler classes                        |
 | lineComponent          | `String`,`Object`   | The handler component                                          |
 | lines                  | `Object`,           | The object of lines  that should be visible or hidden.         |
-| linesClassnames        | `Object`,           | The object of custom line classnames                           |
+| linesClasses           | `Object`,           | The object of custom line classes                           |
 
 ## License
 

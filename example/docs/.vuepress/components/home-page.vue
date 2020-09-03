@@ -88,18 +88,18 @@
       <div class="container container--centered">
         <Cropper
           :src="require('../assets/home/photo.jpeg')"
-          classname="demo-cropper"
-          image-classname="demo-cropper__image"
+          class="demo-cropper"
+          image-class="demo-cropper__image"
           :min-width="20"
           :min-height="20"
           :stencil-props="{
             maxAspectRatio: 16/9,
             minAspectRatio: 9/16,
-            linesClassnames: {
+            linesClasses: {
               default: 'demo-cropper__line',
               hover: 'demo-cropper__line--hover',
             },
-            handlersClassnames: {
+            handlersClasses: {
               default: 'demo-cropper__handler',
               hover: 'demo-cropper__handler--hover',
             }

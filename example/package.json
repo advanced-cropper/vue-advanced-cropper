@@ -1,33 +1,42 @@
 {
-  "name": "example",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "start": "vuepress dev docs",
-    "build": "vuepress build docs"
-  },
-  "dependencies": {
-    "core-js": "^2.6.5",
-    "easy-bem": "^1.0.2",
-    "vue": "^2.6.6",
-    "vue-advanced-cropper": "file:.."
-  },
-  "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.5.0",
-    "@vue/cli-service": "^3.5.0",
-    "node-sass": "^4.12.0",
-    "sass-loader": "^7.1.0",
-    "vue-template-compiler": "^2.5.21",
-    "vuepress": "1.0.1"
-  },
-  "postcss": {
-    "plugins": {
-      "autoprefixer": {}
-    }
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not ie <= 8"
-  ]
+	"name": "example",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"start": "vuepress dev docs",
+		"build": "vuepress build docs"
+	},
+	"dependencies": {
+		"core-js": "^2.6.5",
+		"easy-bem": "^1.0.2",
+		"vue": "^2.6.6",
+		"vue-advanced-cropper": "file:.."
+	},
+	"devDependencies": {
+		"@vue/cli-plugin-babel": "^3.5.0",
+		"@vue/cli-service": "^3.5.0",
+		"node-sass": "^4.12.0",
+		"sass-loader": "^7.1.0",
+		"vue-template-compiler": "^2.5.21",
+		"vuepress": "1.0.1"
+	},
+	"postcss": {
+		"plugins": {
+			"autoprefixer": {}
+		}
+	},
+	"browserslist": {
+		"production": [
+			">0.2%",
+			"not dead",
+			"not op_mini all",
+			"ie 11"
+		],
+		"development": [
+			"last 1 chrome version",
+			"last 1 firefox version",
+			"last 1 safari version",
+			"ie 11"
+		]
+	}
 }

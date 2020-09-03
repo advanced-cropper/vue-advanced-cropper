@@ -5,6 +5,7 @@ import Vue from 'vue';
 import debounce from 'debounce';
 import { RectangleStencil } from './components/stencils';
 import { CropperWrapper } from './components/service';
+import { replacedProp } from './core';
 import { MoveEvent, ManipulateImageEvent } from './core/events';
 import { isLocal, isCrossOriginURL, isUndefined, getSettings, parseNumber } from './core/utils';
 import { arrayBufferToDataURL, getImageTransforms, getStyleTransforms, prepareSource, parseImage } from './core/image';
@@ -150,15 +151,27 @@ export default {
 		// Deprecated props
 		classname: {
 			type: String,
+			validator(value) {
+				return replacedProp(value, 'classname', 'class');
+			}
 		},
 		imageClassname: {
 			type: String,
+			validator(value) {
+				return replacedProp(value, 'imageClassname', 'imageClass');
+			}
 		},
 		areaClassname: {
 			type: String,
+			validator(value) {
+				return replacedProp(value, 'areaClassname', 'areaClass');
+			}
 		},
 		backgroundClassname: {
 			type: String,
+			validator(value) {
+				return  replacedProp(value, 'backgroundClassname', 'backgroundClass');
+			}
 		},
 	},
 	data() {
@@ -220,10 +233,10 @@ export default {
 		classes() {
 			return {
 				cropper: classnames(cn(), this.classname),
-				image: classnames(cn('image'), this.imageClassname),
-				area: classnames(cn('area'), this.areaClassname),
+				image: classnames(cn('image'), this.imageClass || this.imageClassname),
+				area: classnames(cn('area'), this.areaClass || this.areaClassname),
 				stretcher: classnames(cn('stretcher')),
-				background: classnames(cn('background'), this.backgroundClassname),
+				background: classnames(cn('background'), this.backgroundClass || this.backgroundClassname),
 				imageWrapper: classnames(cn('image-wrapper')),
 				cropperWrapper: classnames(cn('cropper-wrapper')),
 			};

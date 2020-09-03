@@ -39,7 +39,7 @@ export default {
   <div class="upload-example">
 		<div class="cropper-wrapper">
 			<Cropper
-				classname="upload-example-cropper"
+				class="upload-example-cropper"
 				check-orientation
 				:src="image"
 			/>

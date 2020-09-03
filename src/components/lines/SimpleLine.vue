@@ -31,9 +31,9 @@ export default {
 		};
 	},
 	computed: {
-		classnames() {
+		classes() {
 			return {
-				default: classnames(
+				root: classnames(
 					cn({ [this.position]: true }),
 					this.classname,
 					this.hover && this.hoverClassname
@@ -63,7 +63,7 @@ export default {
     @leave="onLeave"
     @drag="onDrag"
   >
-    <div :class="classnames.default" />
+    <div :class="classes.root" />
   </LineWrapper>
 </template>
 

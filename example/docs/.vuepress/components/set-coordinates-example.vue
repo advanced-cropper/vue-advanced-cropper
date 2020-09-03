@@ -68,7 +68,7 @@ export default {
   <div class="set-coordinates-example">
     <Cropper
 	  	ref="cropper"
-		classname="coodinates-cropper"
+		class="coodinates-cropper"
       	:src="image"
 	    :stencil-props="{
 			minAspectRatio: 10/20,

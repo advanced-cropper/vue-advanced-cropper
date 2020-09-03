@@ -83,28 +83,28 @@ Default: `{}`
 The props that will be passed to the stencil component
 
 
-### `classname`
+### `class`
 Default: `''`
 
-The optional classname for the root cropper block
+The optional class name for the root cropper block
 
 
-### `imageClassname`
+### `imageClass`
 Default: `''`
 
-The optional classname for the cropping image
+The optional class name for the cropping image
 
 
-### `areaClassname`
+### `areaClass`
 Default: `''`
 
-The optional classname for the area. Probably you should not use this prop.
+The optional class name for the area. Probably you should not use this prop.
 
 
-### `backgroundClassname`
+### `backgroundClass`
 Default: `''`
 
-The optional classname for the background under the cropping image
+The optional class name for the background under the cropping image
 
 ### `debounce`
 Default: `500`

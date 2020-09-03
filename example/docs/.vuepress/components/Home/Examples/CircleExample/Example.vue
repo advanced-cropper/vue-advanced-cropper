@@ -1,6 +1,6 @@
 <template>
   <Cropper
-    classname="circle-example"
+    class="circle-example"
     :src="require('./assets/image.jpg')"
     :stencil-component="stencil"
   />

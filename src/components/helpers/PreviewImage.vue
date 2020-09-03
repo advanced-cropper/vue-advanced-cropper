@@ -10,10 +10,7 @@ export default {
 		img: {
 			type: String,
 		},
-		classname: {
-			type: String,
-		},
-		imageClassname: {
+		imageClass: {
 			type: String,
 		},
 		width: {
@@ -46,10 +43,10 @@ export default {
 		};
 	},
 	computed: {
-		classnames() {
+		classes() {
 			return {
-				default: classnames(cn(), this.classname),
-				image: classnames(cn('image'), this.imageClassname),
+				root: cn(),
+				image: classnames(cn('image'), this.imageClass),
 			};
 		},
 		wrapperStyle() {
@@ -98,13 +95,13 @@ export default {
 
 <template>
   <div
-    :class="classnames.default"
+    :class="classes.root"
     :style="wrapperStyle"
   >
     <img
       ref="image"
       :src="img"
-      :class="classnames.image"
+      :class="classes.image"
       :style="imageStyle"
     >
   </div>

@@ -14,9 +14,9 @@ The basic component for constructing typical stencil components.
 
 ## Props
 
-### `classname`
+### `class`
 
-The classname for root block of the bounding box component
+The class name for root block of the bounding box component
 
 ### `handlerComponent`
 
@@ -40,11 +40,11 @@ Default:
 }
 ```
 
-### `handlersClassnames`
+### `handlersClasses`
 
-The object of custom handler classnames.
+The object of custom handler class names.
 
-All available classnames are listed below
+All available class names are listed below
 ```js
 {
 	default: 'handler',
@@ -78,11 +78,11 @@ Default:
 }
 ```
 
-### `linesClassnames`
+### `linesClasses`
 
-The object of custom lines classnames.
+The object of custom lines class names.
 
-All available classnames are listed below
+All available class names are listed below
 ```js
 {
 	default: 'line',

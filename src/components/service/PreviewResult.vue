@@ -1,6 +1,7 @@
 <script>
 import bem from 'easy-bem';
 import classnames from 'classnames';
+import { replacedProp } from '../../core';
 import { getStyleTransforms } from '../../core/image';
 
 const cn = bem('vue-preview-result');
@@ -10,12 +11,6 @@ export default {
 	props: {
 		img: {
 			type: Object,
-		},
-		classname: {
-			type: String,
-		},
-		imageClassname: {
-			type: String,
 		},
 		stencilCoordinates: {
 			type: Object,
@@ -28,12 +23,28 @@ export default {
 				};
 			},
 		},
+		imageClass: {
+			type: String
+		},
+		// Deprecated props
+		classname: {
+			type: String,
+			validator(value) {
+				return replacedProp(value, 'classname', 'class');
+			}
+		},
+		imageClassname: {
+			type: String,
+			validator(value) {
+				return replacedProp(value, 'imageClassname', 'imageClass');
+			}
+		},
 	},
 	computed: {
-		classnames() {
+		classes() {
 			return {
-				default: classnames(cn(), this.classname),
-				image: classnames(cn('image'), this.imageClassname),
+				root: classnames(cn(), this.classname),
+				image: classnames(cn('image'), this.imageClass || this.imageClassname),
 				wrapper: cn('wrapper'),
 			};
 		},
@@ -75,17 +86,17 @@ export default {
 
 <template>
   <div
-    :class="classnames.default"
+    :class="classes.root"
   >
     <div
       ref="wrapper"
-      :class="classnames.wrapper"
+      :class="classes.wrapper"
       :style="wrapperStyle"
     >
       <img
         ref="image"
         :src="img.src"
-        :class="classnames.image"
+        :class="classes.image"
         :style="imageStyle"
       >
     </div>

@@ -28,7 +28,7 @@ export default {
   <div class="image-restriction-example">
     <Cropper
       check-orientation
-      backgroundClassname="background"
+      backgroundClass="background"
       :src="image"
 			:image-restriction="restrictionType"
       @change="onCrop"

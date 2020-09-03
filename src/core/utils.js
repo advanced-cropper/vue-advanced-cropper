@@ -75,3 +75,14 @@ export function parseNumber(number) {
 		return parsedNumber;
 	}
 }
+
+export function replacedProp(value, oldName, currentName) {
+	if (!isEmpty(value) && process.env.NODE_ENV !== 'production') {
+		console.warn(`Warning: prop "${oldName}" is deprecated, use "${currentName}" instead. Value:`, value);
+	}
+	return true;
+}
+
+export function isEmpty(obj) {
+	return !obj || Object.keys(obj).length === 0;
+}
