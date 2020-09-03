@@ -394,7 +394,7 @@ export function resize ({ resizeEvent, coordinates, aspectRatio, positionRestric
 			}
 		}
 		// 3. Third step: check if desired box with correct aspect ratios break some limits and fit to this conditions
-		directions = fitConditions({ directions, restrictions: limitedRestrictions, coordinates: actualCoordinates, positionRestrictions, preserveRatio: true, compensate: params.compensate });
+		directions = fitConditions({ directions, coordinates: actualCoordinates, sizeRestrictions: limitedRestrictions, positionRestrictions, preserveRatio: true, compensate: params.compensate });
 	}
 
 	// 4. Check if ratio broken (temporary):
