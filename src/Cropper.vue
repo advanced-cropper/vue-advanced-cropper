@@ -923,7 +923,7 @@ export default {
         <div :class="classes.imageWrapper">
           <img
             ref="image"
-            :cross-origin="imageAttributes.crossOrigin"
+            :crossorigin="imageAttributes.crossOrigin"
             :src="imageAttributes.src"
             :class="classes.image"
             :style="imageStyle"
