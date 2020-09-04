@@ -116,6 +116,10 @@ export default {
 			type: Function,
 			default: algorithms.initStretcher
 		},
+		fitCoordinates: {
+			type: Function,
+			default: algorithms.fitToVisibleArea,
+		},
 		updateVisibleArea: {
 			type: Function,
 			default: algorithms.updateVisibleArea,
@@ -739,6 +743,7 @@ export default {
 			this.frozenDirections.height = Boolean(heightFrozen);
 
 			const defaultSize = this.defaultSize({
+				boundaries: this.boundaries,
 				visibleArea: this.visibleArea,
 				imageSize: this.imageSize,
 				aspectRatio: this.getAspectRatio(),
@@ -844,7 +849,7 @@ export default {
 						});
 
 						// If visible area was changed the coordinates should be adapted to this changes
-						const coordinates = algorithms.fitToVisibleArea({
+						const coordinates = this.fitCoordinates({
 							visibleArea,
 							coordinates: this.coordinates,
 							aspectRatio: this.getAspectRatio(),
