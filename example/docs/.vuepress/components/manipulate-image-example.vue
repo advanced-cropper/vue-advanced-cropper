@@ -47,9 +47,9 @@
 	<div class="manipulate-image-example">
 		<Cropper
 			ref="cropper"
-			class="coodinates-cropper"
+			class="coordinates-cropper"
 			:src="image"
-			:boundaries="boundaries"
+			:default-boundaries="boundaries"
 			:stencil-props="{
 			minAspectRatio: 10/20,
 		}"
@@ -89,7 +89,7 @@
 		position: relative;
 		user-select: none;
 
-		.coodinates-cropper {
+		.coordinates-cropper {
 			max-height: 500px;
 			background: black;
 		}
