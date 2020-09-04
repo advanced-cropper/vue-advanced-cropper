@@ -447,15 +447,13 @@ export function autoZoom({
 	let visibleArea = { ...originalVisibleArea };
 	let coordinates = { ...originalCoordinates };
 
-	const intersections = getIntersections(coordinates, toLimits(visibleArea));
-
-	const widthIntersections =  intersections.left + intersections.right;
-	const heightIntersections = intersections.bottom + intersections.top;
+	const widthIntersections =  Math.max(0, coordinates.width - visibleArea.width);
+	const heightIntersections =  Math.max(0, coordinates.height - visibleArea.height);
 
 	if (widthIntersections > heightIntersections) {
-		visibleArea = applyScale(visibleArea, Math.min((widthIntersections + visibleArea.width) / visibleArea.width, maxScale(visibleArea, areaRestrictions)));
-	} else {
-		visibleArea = applyScale(visibleArea, Math.min((heightIntersections + visibleArea.height) / visibleArea.height, maxScale(visibleArea, areaRestrictions)));
+		visibleArea = applyScale(visibleArea, Math.min(coordinates.width / visibleArea.width, maxScale(visibleArea, areaRestrictions)));
+	} else if (heightIntersections > widthIntersections) {
+		visibleArea = applyScale(visibleArea, Math.min(coordinates.height / visibleArea.height, maxScale(visibleArea, areaRestrictions)));
 	}
 
 	visibleArea = applyMove(visibleArea, inverseMove(
