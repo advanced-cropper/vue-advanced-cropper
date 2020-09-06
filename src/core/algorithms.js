@@ -587,17 +587,29 @@ export function approximatedSize({ width, height, aspectRatio, sizeRestrictions 
 		return Math.pow(a.width - b.width,2) + Math.pow(a.height - b.height, 2);
 	}
 
-	function isValid(candidate) {
+	function isValid(candidate, ignoreMinimum = false) {
 		return 	(
-			candidate.width <= sizeRestrictions.maxWidth &&
-			candidate.width >= sizeRestrictions.minWidth &&
-			candidate.height <= sizeRestrictions.maxHeight &&
-			candidate.height >= sizeRestrictions.minHeight &&
 			candidate.width >= candidate.height * ratio.minimum &&
 			candidate.width <= candidate.height * ratio.maximum &&
+			candidate.height <= sizeRestrictions.maxHeight &&
+			candidate.width <= sizeRestrictions.maxWidth &&
 			candidate.width && candidate.height
-		);
+		) && (ignoreMinimum || (
+			candidate.height >= sizeRestrictions.minHeight &&
+			candidate.width >= sizeRestrictions.minWidth
+		));
 	}
+
+	function findBestCandidate(candidates, ignoreMinimum = false) {
+		return candidates.reduce((minimum, candidate) => {
+			if (isValid(candidate, ignoreMinimum)) {
+				return !minimum || distance(candidate, { width, height }) < distance(minimum, { width, height }) ? candidate : minimum;
+			} else {
+				return minimum;
+			}
+		}, null);
+	}
+
 	const candidates = [];
 
 	[aspectRatio.minimum, aspectRatio.maximum].forEach((ratio) => {
@@ -613,19 +625,16 @@ export function approximatedSize({ width, height, aspectRatio, sizeRestrictions 
 		candidates.push(coordinates);
 	}
 
-	// This candidate maybe breaks limitation on maximum height or width, but it preserves aspect ratio at least
-	const reserveCandidate = candidates[0];
+	const bestCandidate = findBestCandidate(candidates);
 
-	return candidates.reduce((minimum, candidate) => {
-		if (isValid(candidate)) {
-			return !minimum || distance(candidate, { width, height }) < distance(minimum, { width, height }) ? candidate : minimum;
-		} else {
-			return minimum;
-		}
-	}, reserveCandidate);
+	if (bestCandidate) {
+		return bestCandidate;
+	} else {
+		// If there are no candidates that preserves all limitations, choice the best candidate
+		// that breaks minimum height or width limitations
+		return findBestCandidate(candidates, true);
+	}
 }
-
-
 
 // This function updates visible area with respect to current transformations and fits
 // coordinates to the new visible area

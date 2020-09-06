@@ -30,7 +30,7 @@ export default {
       check-orientation
       backgroundClass="background"
       :src="image"
-			:image-restriction="restrictionType"
+      :image-restriction="restrictionType"
       @change="onCrop"
     />
     <div class="panel">
