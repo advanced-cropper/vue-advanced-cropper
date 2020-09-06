@@ -402,7 +402,7 @@ export function resize ({ resizeEvent, coordinates, aspectRatio, positionRestric
 	currentHeight = applyDirections(actualCoordinates, directions).height;
 	ratioBroken = params.preserveRatio ? ratio(actualCoordinates) : getBrokenRatio(currentWidth / currentHeight, aspectRatio);
 	if (Math.abs(ratioBroken - currentWidth/currentHeight) > 1e-3) {
-		if (process.env.NODE_END !== 'production') {
+		if (process.env.NODE_ENV !== 'production') {
 			console.error(`Something went wrong and ratio was broken: ${currentWidth/currentHeight} instead of ${ratioBroken}`);
 		}
 		ALL_DIRECTIONS.forEach(direction => {

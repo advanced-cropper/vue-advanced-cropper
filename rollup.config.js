@@ -1,9 +1,10 @@
 import autoprefixer from 'autoprefixer';
-import babel from 'rollup-plugin-babel';
-import commonjs from 'rollup-plugin-commonjs';
+import babel from '@rollup/plugin-babel';
+import commonjs from '@rollup/plugin-commonjs';
+import replace from '@rollup/plugin-replace';
+import resolve from '@rollup/plugin-node-resolve';
+import url from '@rollup/plugin-url';
 import external from 'rollup-plugin-peer-deps-external';
-import resolve from 'rollup-plugin-node-resolve';
-import url from 'rollup-plugin-url';
 import Vue from 'rollup-plugin-vue';
 import css from 'rollup-plugin-merge-and-inject-css';
 import minify from 'rollup-plugin-babel-minify';
@@ -41,14 +42,17 @@ export default {
 			id: 'vue-advanced-cropper'
 		}),
 		url(),
-		minify({
-			comments: false
-		}),
 		babel({
 			exclude: '/node_modules/**',
 			extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.vue'],
 		}),
 		resolve(),
-		commonjs()
+		commonjs(),
+		minify({
+			comments: false
+		}),
+		replace({
+			'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
+		}),
 	]
 };

@@ -268,6 +268,7 @@ export default {
 			}
 			return result;
 		},
+		// TODO: it's need to be rewrited
 		sizeRestrictions() {
 			const oldRestrictions = {
 				minWidth: !isUndefined(this.minWidth) ? this.minWidth : 0,
