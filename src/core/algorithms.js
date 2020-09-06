@@ -613,13 +613,16 @@ export function approximatedSize({ width, height, aspectRatio, sizeRestrictions 
 		candidates.push(coordinates);
 	}
 
+	// This candidate maybe breaks limitation on maximum height or width, but it preserves aspect ratio at least
+	const reserveCandidate = candidates[0];
+
 	return candidates.reduce((minimum, candidate) => {
 		if (isValid(candidate)) {
 			return !minimum || distance(candidate, { width, height }) < distance(minimum, { width, height }) ? candidate : minimum;
 		} else {
 			return minimum;
 		}
-	}, null);
+	}, reserveCandidate);
 }
 
 
