@@ -6,8 +6,12 @@ export default {
 		Cropper,
 	},
 	data() {
+		const variants = [
+			'https://images.pexels.com/photos/872848/pexels-photo-872848.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+			'https://images.pexels.com/photos/4178716/pexels-photo-4178716.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260',
+		]
 		return {
-			img: 'https://images.pexels.com/photos/872848/pexels-photo-872848.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+			img: variants[Math.round(Math.random())],
 		};
 	},
 	methods: {

@@ -260,7 +260,7 @@ function getOrientation(arrayBuffer) {
 export function arrayBufferToDataURL(arrayBuffer) {
 	const chunks = [];
 
-	// Chunk Typed Array for better performance (#435)
+	// Chunk Typed Array for better performance
 	const chunkSize = 8192;
 	let uint8 = new Uint8Array(arrayBuffer);
 
