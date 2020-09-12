@@ -1,15 +1,14 @@
 <script>
 import classnames from 'classnames';
 import bem from 'easy-bem';
-import Vue from 'vue';
 import debounce from 'debounce';
 import { RectangleStencil } from './components/stencils';
 import { CropperWrapper } from './components/service';
-import { replacedProp } from './core';
+import { isLoadedImage, replacedProp, validateVisibleArea } from './core';
 import { MoveEvent, ManipulateImageEvent } from './core/events';
 import { isLocal, isCrossOriginURL, isUndefined, getSettings, parseNumber } from './core/utils';
 import { arrayBufferToDataURL, getImageTransforms, getStyleTransforms, prepareSource, parseImage } from './core/image';
-import { ALL_DIRECTIONS, IMAGE_RESTRICTIONS, DEFAULT_COORDINATES } from './core/constants';
+import { IMAGE_RESTRICTIONS, DEFAULT_COORDINATES } from './core/constants';
 import * as algorithms from './core/algorithms';
 
 const cn = bem('vue-advanced-cropper');
@@ -118,7 +117,7 @@ export default {
 		},
 		fitCoordinates: {
 			type: Function,
-			default: algorithms.fitToVisibleArea,
+			default: algorithms.fitCoordinates,
 		},
 		updateVisibleArea: {
 			type: Function,
@@ -226,6 +225,8 @@ export default {
 				wheelResize: getSettings(this.wheelResize, {
 					ratio: 0.1
 				}),
+				frozenDirections: this.frozenDirections,
+				imageRestriction: this.imageRestriction
 			};
 		},
 		coefficient() {
@@ -268,81 +269,11 @@ export default {
 			}
 			return result;
 		},
-		// TODO: it's need to be rewrited
 		sizeRestrictions() {
-			const oldRestrictions = {
-				minWidth: !isUndefined(this.minWidth) ? this.minWidth : 0,
-				minHeight: !isUndefined(this.minHeight) ? this.minHeight : 0,
-				maxWidth: !isUndefined(this.maxWidth) ? this.maxWidth : Infinity,
-				maxHeight: !isUndefined(this.maxHeight) ? this.maxHeight : Infinity,
-			};
-
-			const restrictions = (this.restrictions || this.sizeRestrictionsAlgorithm)({
-				imageSize: this.imageSize,
-				minWidth: parseNumber(oldRestrictions.minWidth),
-				minHeight: parseNumber(oldRestrictions.minHeight),
-				maxWidth: parseNumber(oldRestrictions.maxWidth),
-				maxHeight: parseNumber(oldRestrictions.maxHeight),
-				imageWidth: this.imageSize.width,
-				imageHeight: this.imageSize.height,
-				props: this.$props
-			});
-
-			const positionRestrictions = this.positionRestrictions;
-
-			if ('left' in positionRestrictions && 'right' in positionRestrictions) {
-				restrictions.maxWidth = Math.min(restrictions.maxWidth, positionRestrictions.right - positionRestrictions.left);
-			}
-			if ('top' in positionRestrictions && 'bottom' in positionRestrictions) {
-				restrictions.maxHeight = Math.min(restrictions.maxHeight, positionRestrictions.bottom - positionRestrictions.top);
-			}
-
-			if (restrictions.minWidth > restrictions.maxWidth) {
-				if (process.env.NODE_ENV !== 'production') {
-					console.warn(`Warning: maximum width (${restrictions.maxWidth}px) fewer that the minimum width (${restrictions.minWidth}px). It is set equal to the minimum width and width resizing was blocked`);
-				}
-				restrictions.maxWidth = restrictions.minWidth;
-				restrictions.widthFrozen = true;
-			}
-
-			if (restrictions.minHeight > restrictions.maxHeight) {
-				if (process.env.NODE_ENV !== 'production') {
-					console.warn(`Warning: maximum height (${restrictions.maxHeight}px) fewer that the minimum height (${restrictions.minHeight}px). It is set equal to the minimum height and height resizing was blocked`);
-				}
-				restrictions.maxHeight = restrictions.minHeight;
-				restrictions.heightFrozen = true;
-			}
-
-			if (this.imageRestriction !== 'none') {
-				const visibleAreaMaximum = algorithms.fitIn(this.visibleArea, this.imageSize);
-
-				let maxWidth = this.imageRestriction === 'area' ? visibleAreaMaximum.width : this.imageSize.width;
-				let maxHeight = this.imageRestriction === 'area' ? visibleAreaMaximum.height : this.imageSize.height;
-				if (!restrictions.maxWidth || (restrictions.maxWidth > maxWidth)) {
-					restrictions.maxWidth = maxWidth;
-				}
-				if (!restrictions.maxHeight || (restrictions.maxHeight > maxHeight)) {
-					restrictions.maxHeight = maxHeight;
-				}
-			}
-
-			// Stencil should not be larger than visible area anyway
-			restrictions.minWidth = Math.min(restrictions.minWidth, this.visibleArea.width);
-			restrictions.minHeight = Math.min(restrictions.minHeight, this.visibleArea.height);
-
-			// The magic number is the approximation of the handler size
-			// Temporary solution that should be improved in the future
-			restrictions.minimum = Math.min(
-				this.coordinates.width, this.coordinates.height, 20 * this.coefficient
-			);
-
-			return restrictions;
+			return this.calculateSizeRestrictions();
 		},
 		positionRestrictions() {
-			return this.positionRestrictionsAlgorithm({
-				imageSize: this.imageSize,
-				imageRestriction: this.imageRestriction
-			});
+			return this.calculatePositionRestrictions();
 		},
 		// Styling
 		classes() {
@@ -405,7 +336,7 @@ export default {
 		stencilProps(oldProps, newProps) {
 			const significantProps = ['aspectRatio', 'minAspectRatio', 'maxAspectRatio'];
 			if (significantProps.find(prop => oldProps[prop] !== newProps[prop])) {
-				Vue.nextTick(this.onPropsChange);
+				this.$nextTick(this.onPropsChange);
 			}
 		}
 	},
@@ -467,7 +398,7 @@ export default {
 		},
 		setCoordinates(transforms, params = {}) {
 			const { autoZoom = true } = params;
-			Vue.nextTick(() => {
+			this.$nextTick(() => {
 				if (!this.imageLoaded) {
 					this.delayedTransforms = transforms;
 				} else {
@@ -479,9 +410,8 @@ export default {
 		prepareResult(coordinates) {
 			if (this.roundResult) {
 				return algorithms.roundCoordinates({
+					...this.getPublicProperties(),
 					coordinates,
-					sizeRestrictions: this.sizeRestrictions,
-					positionRestrictions: this.getPositionRestrictions(),
 				});
 			} else {
 				return coordinates;
@@ -489,12 +419,17 @@ export default {
 		},
 		autoZoom(coordinates) {
 			const { visibleArea } = algorithms.autoZoom({
+				...this.getPublicProperties(),
 				coordinates,
-				visibleArea: this.visibleArea,
-				areaRestrictions: this.areaRestrictions,
 			});
 
 			this.visibleArea = visibleArea;
+		},
+		normalizeEvent(event) {
+			return algorithms.normalizeEvent({
+				...this.getPublicProperties(),
+				event
+			});
 		},
 		updateCanvas(coordinates) {
 			// This function can be asynchronously called because it's debounced
@@ -541,8 +476,7 @@ export default {
 			this.imageAttributes.src = null;
 
 			if (this.src) {
-				const crossOrigin = isCrossOriginURL(this.src);
-				if (crossOrigin && this.canvas) {
+				if (isCrossOriginURL(this.src) && this.canvas) {
 					this.imageAttributes.crossOrigin = this.crossOrigin;
 				}
 				setTimeout(() => {
@@ -582,10 +516,10 @@ export default {
 				this.imageAttributes.src = source;
 			}
 			this.basicImageTransforms = getImageTransforms(orientation);
-			Vue.nextTick(() => {
+			this.$nextTick(() => {
 				const image = this.$refs.image;
 				if (image && image.complete) {
-					if (image.naturalWidth) {
+					if (isLoadedImage(image)) {
 						this.onSuccessLoadImage();
 					} else {
 						this.onFailLoadImage();
@@ -593,56 +527,39 @@ export default {
 				}
 			});
 		},
-		onResize(resizeEvent) {
-			if (this.frozenDirections.width) {
-				resizeEvent.directions.left = 0;
-				resizeEvent.directions.right = 0;
-			}
-			if (this.frozenDirections.height) {
-				resizeEvent.directions.top = 0;
-				resizeEvent.directions.bottom = 0;
-			}
-			ALL_DIRECTIONS.forEach(direction => {
-				resizeEvent.directions[direction] *= this.coefficient;
-			});
+		onMove(event) {
+			this.onChangeCoordinates(
+				this.moveAlgorithm({
+					...this.getPublicProperties(),
+					event: this.normalizeEvent(event),
+				})
+			);
+		},
+		onResize(event) {
+			const sizeRestrictions = this.sizeRestrictions;
+
+			// The magic number is the approximation of the handler size
+			// Temporary solution that should be improved in the future
+			const minimumSize = Math.min(
+				this.coordinates.width, this.coordinates.height, 20 * this.coefficient
+			);
+
 			this.onChangeCoordinates(
 				this.resizeAlgorithm({
-					coordinates: this.coordinates,
-					positionRestrictions: this.getPositionRestrictions(),
-					sizeRestrictions: this.sizeRestrictions,
-					aspectRatio: this.getAspectRatio(),
-					resizeEvent
+					...this.getPublicProperties(),
+					sizeRestrictions: {
+						...sizeRestrictions,
+						minWidth: Math.max(sizeRestrictions.minWidth, minimumSize),
+						minHeight: Math.max(sizeRestrictions.minHeight, minimumSize),
+					},
+					event: this.normalizeEvent(event),
 				})
 			);
 		},
 		onManipulateImage(event) {
-			const normalizedEvent = {
-				nativeEvent: event.nativeEvent,
-			};
-			if (event.scale) {
-				normalizedEvent.scale = {
-					factor: event.scale.factor || 1,
-				};
-				if (event.scale.center) {
-					normalizedEvent.scale.center = {
-						left: event.scale.center.left * this.coefficient + this.visibleArea.left,
-						top: event.scale.center.top * this.coefficient + this.visibleArea.top,
-					};
-				}
-			}
-			if (event.move) {
-				normalizedEvent.move = {
-					left: event.move.left ? this.coefficient * event.move.left : 0,
-					top: event.move.top ? this.coefficient * event.move.top : 0,
-				};
-			}
 			const { visibleArea, coordinates } = algorithms.manipulateImage({
-				event: normalizedEvent,
-				coordinates: this.coordinates,
-				visibleArea: this.visibleArea,
-				areaRestrictions: this.areaRestrictions,
-				positionRestrictions: this.positionRestrictions,
-				sizeRestrictions: this.sizeRestrictions,
+				...this.getPublicProperties(),
+				event: this.normalizeEvent(event),
 				settings: {
 					frozenDirections: this.frozenDirections,
 					imageRestriction: this.imageRestriction,
@@ -652,18 +569,6 @@ export default {
 
 			this.visibleArea = visibleArea;
 			this.onChangeCoordinates(coordinates);
-		},
-		onMove(moveEvent) {
-			ALL_DIRECTIONS.forEach(direction => {
-				moveEvent.directions[direction] *= this.coefficient;
-			});
-			this.onChangeCoordinates(
-				this.moveAlgorithm({
-					moveEvent,
-					coordinates: this.coordinates,
-					positionRestrictions: this.getPositionRestrictions(),
-				})
-			);
 		},
 		onPropsChange() {
 			this.applyTransforms(this.coordinates, true);
@@ -675,7 +580,7 @@ export default {
 				return this.moveAlgorithm({
 					coordinates: prevCoordinates,
 					positionRestrictions,
-					moveEvent: new MoveEvent(null, {
+					event: new MoveEvent(null, {
 						left: (newCoordinates.left - prevCoordinates.left),
 						top: (newCoordinates.top - prevCoordinates.top),
 					})
@@ -749,7 +654,7 @@ export default {
 				imageSize: this.imageSize,
 				aspectRatio: this.getAspectRatio(),
 				sizeRestrictions: this.sizeRestrictions,
-				// Maybe this parameters will be removed in the release version
+				// Deprecated params
 				cropper,
 				image,
 				imageWidth: this.imageSize.width,
@@ -766,8 +671,10 @@ export default {
 				defaultSize,
 				(coordinates) => ({
 					...this.defaultPosition({
-						visibleArea: this.visibleArea,
 						coordinates,
+						visibleArea: this.visibleArea,
+						imageSize: this.imageSize,
+						// Deprecated params
 						cropper,
 						image,
 						stencilWidth: coordinates.width,
@@ -823,7 +730,7 @@ export default {
 					});
 
 					// 2. The code below should be executed after rerender (i.e. stretching of cropper)
-					Vue.nextTick(() => {
+					this.$nextTick(() => {
 						this.boundaries = this.defaultBoundaries({
 							cropper,
 							imageSize: this.imageSize
@@ -834,14 +741,11 @@ export default {
 							boundaries: this.boundaries
 						});
 
-						const boundariesRatio = this.boundaries.width / this.boundaries.height;
-
-						if (newArea.width / newArea.height !== boundariesRatio) {
-							newArea.height = newArea.width / boundariesRatio;
-						}
-
 						const visibleArea = this.updateVisibleArea({
-							current: newArea,
+							current: algorithms.refineVisibleArea({
+								visibleArea: newArea,
+								boundaries: this.boundaries
+							}),
 							previous: this.visibleArea,
 							areaRestrictions: this.areaRestrictions,
 							coordinates: this.coordinates,
@@ -854,11 +758,9 @@ export default {
 							visibleArea,
 							coordinates: this.coordinates,
 							aspectRatio: this.getAspectRatio(),
-							sizeRestrictions: this.sizeRestrictions,
-							positionRestrictions: this.getPositionRestrictions({
+							positionRestrictions: this.positionRestrictions,
+							sizeRestrictions: this.calculateSizeRestrictions({
 								visibleArea,
-								imageRestriction: this.imageRestriction,
-								imageSize: this.imageSize
 							}),
 						});
 
@@ -880,6 +782,51 @@ export default {
 					maximum: this.stencilProps.aspectRatio || this.stencilProps.maxAspectRatio,
 				};
 			}
+		},
+		getPublicProperties() {
+			return {
+				coefficient: this.coefficient,
+				visibleArea: this.visibleArea,
+				coordinates: this.coordinates,
+				boundaries: this.boundaries,
+				sizeRestrictions: this.sizeRestrictions,
+				positionRestrictions: this.positionRestrictions,
+				areaRestrictions: this.areaRestrictions,
+				frozenDirections: this.frozenDirections,
+				aspectRatio: this.getAspectRatio(),
+			};
+		},
+		calculatePositionRestrictions(params = {}) {
+			const visibleArea = params.visibleArea || this.visibleArea;
+			return this.positionRestrictionsAlgorithm({
+				imageSize: this.imageSize,
+				imageRestriction: this.imageRestriction,
+				visibleArea
+			});
+		},
+		calculateSizeRestrictions(params = {}) {
+			const visibleArea = params.visibleArea || this.visibleArea;
+
+			const sizeRestrictions = (this.restrictions || this.sizeRestrictionsAlgorithm)({
+				imageSize: this.imageSize,
+				minWidth: !isUndefined(this.minWidth) ? parseNumber(this.minWidth) : 0,
+				minHeight: !isUndefined(this.minHeight) ? parseNumber(this.minHeight) : 0,
+				maxWidth: !isUndefined(this.maxWidth) ? parseNumber(this.maxWidth) : Infinity,
+				maxHeight: !isUndefined(this.maxHeight) ? parseNumber(this.maxHeight) : Infinity,
+				// Deprecated params
+				imageWidth: this.imageSize.width,
+				imageHeight: this.imageSize.height,
+				props: this.$props
+			});
+
+			return algorithms.refineSizeRestrictions({
+				visibleArea,
+				sizeRestrictions,
+				positionRestrictions: this.positionRestrictions,
+				imageSize: this.imageSize,
+				imageRestriction: this.imageRestriction
+			});
+
 		},
 	},
 };

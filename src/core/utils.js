@@ -37,7 +37,7 @@ export function isCrossOriginURL(url) {
 
 	return !((!urlparts.protocol && !urlparts.host && !urlparts.port) ||
 		Boolean((urlparts.protocol  && (urlparts.protocol  == pageLocation.protocol)) &&
-									(urlparts.host      && (urlparts.host       == pageLocation.host))     &&
+									(urlparts.host      && (urlparts.host       == pageLocation.host))    &&
 									(urlparts.host      && (portOf(urlparts)    == portOf(pageLocation)))
 		));
 }
@@ -85,4 +85,8 @@ export function replacedProp(value, oldName, currentName) {
 
 export function isEmpty(obj) {
 	return (!obj || Object.keys(obj).length === 0) && typeof obj !== 'function';
+}
+
+export function isLoadedImage(image) {
+	return Boolean(image.naturalWidth)
 }
