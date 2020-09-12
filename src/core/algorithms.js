@@ -150,35 +150,6 @@ function getIntersections(object, limits) {
 	return intersections;
 }
 
-export function roundCoordinates({ coordinates, sizeRestrictions, positionRestrictions }) {
-	const roundedCoordinates = {
-		width: Math.round(coordinates.width),
-		height: Math.round(coordinates.height),
-		left: Math.round(coordinates.left),
-		top: Math.round(coordinates.top),
-	};
-
-	if (roundedCoordinates.width > sizeRestrictions.maxWidth) {
-		roundedCoordinates.width = Math.floor(coordinates.width);
-	} else if (roundedCoordinates.width < sizeRestrictions.minWidth) {
-		roundedCoordinates.width = Math.ceil(coordinates.width);
-	}
-	if (roundedCoordinates.height > sizeRestrictions.maxHeight) {
-		roundedCoordinates.height = Math.floor(coordinates.height);
-	} else if (roundedCoordinates.height < sizeRestrictions.minHeight) {
-		roundedCoordinates.height = Math.ceil(coordinates.height);
-	}
-	if (roundedCoordinates.left < positionRestrictions.left || roundedCoordinates.left + roundedCoordinates.width > positionRestrictions.right) {
-		roundedCoordinates.left = Math.floor(positionRestrictions.left);
-	}
-	if (roundedCoordinates.top < positionRestrictions.top || roundedCoordinates.top + roundedCoordinates.height > positionRestrictions.bottom) {
-		roundedCoordinates.top = Math.floor(positionRestrictions.top);
-	}
-
-	return roundedCoordinates;
-}
-
-
 function fitConditions({ directions, coordinates, positionRestrictions = {}, sizeRestrictions, preserveRatio, compensate }) {
 	const fixedDirections = { ...directions, };
 
@@ -313,17 +284,17 @@ function getBrokenRatio(currentAspectRatio, aspectRatio) {
 	return ratioBroken;
 }
 
-export function resize ({ resizeEvent, coordinates, aspectRatio, positionRestrictions, sizeRestrictions }) {
+export function resize ({ event, coordinates, aspectRatio, positionRestrictions, sizeRestrictions }) {
 	const actualCoordinates = {
 		...coordinates,
 		right: coordinates.left + coordinates.width,
 		bottom: coordinates.top + coordinates.height,
 	};
 
-	const params = resizeEvent.params || {};
+	const params = event.params || {};
 
 	let directions = {
-		...resizeEvent.directions,
+		...event.directions,
 	};
 
 	const limitedRestrictions = {
@@ -413,6 +384,10 @@ export function resize ({ resizeEvent, coordinates, aspectRatio, positionRestric
 	}
 
 	return move({
+		event: new MoveEvent({}, {
+			left: -directions.left,
+			top: -directions.top,
+		}),
 		coordinates: {
 			width: coordinates.width + directions.right + directions.left,
 			height: coordinates.height + directions.top + directions.bottom,
@@ -420,15 +395,11 @@ export function resize ({ resizeEvent, coordinates, aspectRatio, positionRestric
 			top: coordinates.top,
 		},
 		positionRestrictions,
-		moveEvent: new MoveEvent({}, {
-			left: -directions.left,
-			top: -directions.top,
-		})
 	});
 }
 
-export function move ({ moveEvent, coordinates, positionRestrictions = {}}) {
-	const movedCoordinates = applyMove(coordinates, moveEvent.directions);
+export function move ({ event, coordinates, positionRestrictions = {}}) {
+	const movedCoordinates = applyMove(coordinates, event.directions);
 
 	return applyMove(
 		movedCoordinates,
@@ -684,7 +655,7 @@ export function updateVisibleArea({ current, previous, areaRestrictions, coordin
 	return visibleArea;
 }
 
-export function fitToVisibleArea({ visibleArea, coordinates: previousCoordinates, aspectRatio, sizeRestrictions, positionRestrictions }) {
+export function fitCoordinates({ visibleArea, coordinates: previousCoordinates, aspectRatio, sizeRestrictions, positionRestrictions }) {
 	let coordinates = { ...previousCoordinates };
 	if (!isEmpty(coordinates)) {
 		coordinates = {
@@ -845,4 +816,127 @@ export function percentRestrictions({ imageSize, minWidth, minHeight, maxWidth, 
 		maxWidth: maxWidth / 100 * imageSize.width,
 		maxHeight: maxHeight / 100 * imageSize.height,
 	};
+}
+
+export function roundCoordinates({ coordinates, sizeRestrictions, positionRestrictions }) {
+	const roundedCoordinates = {
+		width: Math.round(coordinates.width),
+		height: Math.round(coordinates.height),
+		left: Math.round(coordinates.left),
+		top: Math.round(coordinates.top),
+	};
+
+	if (roundedCoordinates.width > sizeRestrictions.maxWidth) {
+		roundedCoordinates.width = Math.floor(coordinates.width);
+	} else if (roundedCoordinates.width < sizeRestrictions.minWidth) {
+		roundedCoordinates.width = Math.ceil(coordinates.width);
+	}
+	if (roundedCoordinates.height > sizeRestrictions.maxHeight) {
+		roundedCoordinates.height = Math.floor(coordinates.height);
+	} else if (roundedCoordinates.height < sizeRestrictions.minHeight) {
+		roundedCoordinates.height = Math.ceil(coordinates.height);
+	}
+	if (roundedCoordinates.left < positionRestrictions.left || roundedCoordinates.left + roundedCoordinates.width > positionRestrictions.right) {
+		roundedCoordinates.left = Math.floor(positionRestrictions.left);
+	}
+	if (roundedCoordinates.top < positionRestrictions.top || roundedCoordinates.top + roundedCoordinates.height > positionRestrictions.bottom) {
+		roundedCoordinates.top = Math.floor(positionRestrictions.top);
+	}
+
+	return roundedCoordinates;
+}
+
+export function normalizeEvent({ event, visibleArea, coefficient, settings }) {
+	if (event.type === 'manipulateImage') {
+		return {
+			...event,
+			move: {
+				left: event.move.left ? coefficient * event.move.left : 0,
+				top: event.move.top ? coefficient * event.move.top : 0,
+			},
+			scale: {
+				factor: event.scale.factor || 1,
+				center: event.scale.center ? {
+					left: event.scale.center.left * coefficient + visibleArea.left,
+					top: event.scale.center.top * coefficient + visibleArea.top,
+				} : null,
+			}
+		};
+	} else if (event.type === 'resize') {
+		const normalizedEvent = { ...event };
+		const { frozenDirections } = settings;
+		if (frozenDirections.width) {
+			normalizedEvent.directions.left = 0;
+			normalizedEvent.directions.right = 0;
+		}
+		if (frozenDirections.height) {
+			normalizedEvent.directions.top = 0;
+			normalizedEvent.directions.bottom = 0;
+		}
+		ALL_DIRECTIONS.forEach(direction => {
+			normalizedEvent.directions[direction] *= coefficient;
+		});
+		return normalizedEvent;
+	} else if (event.type === 'move') {
+		const normalizedEvent = { ...event };
+		ALL_DIRECTIONS.forEach(direction => {
+			normalizedEvent.directions[direction] *= coefficient;
+		});
+		return normalizedEvent;
+	}
+}
+
+export function refineVisibleArea({ visibleArea, boundaries }) {
+	const result = { ...visibleArea };
+	const boundariesRatio = ratio(boundaries);
+	if (result.width / result.height !== boundariesRatio) {
+		result.height = result.width / boundariesRatio;
+	}
+	return result;
+}
+
+export function refineSizeRestrictions({ sizeRestrictions, imageSize, visibleArea, positionRestrictions, imageRestriction = 'none' }) {
+	const restrictions = { ...sizeRestrictions };
+	// 1. The situation, when stencil can't be positioned in cropper due to positionRestrictions should be avoided
+	if ('left' in positionRestrictions && 'right' in positionRestrictions) {
+		restrictions.maxWidth = Math.min(restrictions.maxWidth, positionRestrictions.right - positionRestrictions.left);
+	}
+	if ('top' in positionRestrictions && 'bottom' in positionRestrictions) {
+		restrictions.maxHeight = Math.min(restrictions.maxHeight, positionRestrictions.bottom - positionRestrictions.top);
+	}
+
+	// 2. The situation when stencil larger than maximum visible area or image should be avoided if imageRestriction != 'none':
+	if (imageRestriction !== 'none') {
+		const areaMaximum = fitIn(visibleArea, imageSize);
+		let maxWidth = imageRestriction === 'area' ? areaMaximum.width : imageSize.width;
+		let maxHeight = imageRestriction === 'area' ? areaMaximum.height : imageSize.height;
+		if (!restrictions.maxWidth || (restrictions.maxWidth > maxWidth)) {
+			restrictions.maxWidth = maxWidth;
+		}
+		if (!restrictions.maxHeight || (restrictions.maxHeight > maxHeight)) {
+			restrictions.maxHeight = maxHeight;
+		}
+	}
+
+	if (restrictions.minWidth > restrictions.maxWidth) {
+		if (process.env.NODE_ENV !== 'production') {
+			console.warn(`Warning: maximum width (${restrictions.maxWidth}px) fewer that the minimum width (${restrictions.minWidth}px). It is set equal to the minimum width and width resizing was blocked`);
+		}
+		restrictions.maxWidth = restrictions.minWidth;
+		restrictions.widthFrozen = true;
+	}
+
+	if (restrictions.minHeight > restrictions.maxHeight) {
+		if (process.env.NODE_ENV !== 'production') {
+			console.warn(`Warning: maximum height (${restrictions.maxHeight}px) fewer that the minimum height (${restrictions.minHeight}px). It is set equal to the minimum height and height resizing was blocked`);
+		}
+		restrictions.maxHeight = restrictions.minHeight;
+		restrictions.heightFrozen = true;
+	}
+
+	// Stencil should not be larger than visible area anyway
+	restrictions.minWidth = Math.min(restrictions.minWidth, visibleArea.width);
+	restrictions.minHeight = Math.min(restrictions.minHeight, visibleArea.height);
+
+	return restrictions;
 }
