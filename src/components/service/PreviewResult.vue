@@ -1,8 +1,8 @@
 <script>
+import { getStyleTransforms } from 'advanced-cropper/image';
 import bem from 'easy-bem';
 import classnames from 'classnames';
 import { replacedProp } from '../../core';
-import { getStyleTransforms } from '../../core/image';
 
 const cn = bem('vue-preview-result');
 

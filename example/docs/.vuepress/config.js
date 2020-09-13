@@ -22,7 +22,7 @@ module.exports = {
 				children: [
 					'/introduction/getting-started',
 					'/introduction/concepts',
-					'/introduction/under-the-hood'
+					'/introduction/under-the-hood',
 				],
 			},
 			{

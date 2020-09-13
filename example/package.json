@@ -10,6 +10,7 @@
 		"core-js": "^2.6.5",
 		"easy-bem": "^1.0.2",
 		"vue": "^2.6.6",
+		"advanced-cropper": "file:../../advanced-cropper/dist",
 		"vue-advanced-cropper": "file:.."
 	},
 	"devDependencies": {
