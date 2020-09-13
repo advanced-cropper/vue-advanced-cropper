@@ -2,14 +2,14 @@
 import classnames from 'classnames';
 import bem from 'easy-bem';
 import debounce from 'debounce';
+import { IMAGE_RESTRICTIONS, DEFAULT_COORDINATES } from 'advanced-cropper/constants';
+import { arrayBufferToDataURL, getImageTransforms, getStyleTransforms, prepareSource, parseImage } from 'advanced-cropper/image';
+import { MoveEvent, ManipulateImageEvent } from 'advanced-cropper/events';
+import * as algorithms from 'advanced-cropper/algorithms';
+
 import { RectangleStencil } from './components/stencils';
 import { CropperWrapper } from './components/service';
-import { isLoadedImage, replacedProp, validateVisibleArea } from './core';
-import { MoveEvent, ManipulateImageEvent } from './core/events';
-import { isLocal, isCrossOriginURL, isUndefined, getSettings, parseNumber } from './core/utils';
-import { arrayBufferToDataURL, getImageTransforms, getStyleTransforms, prepareSource, parseImage } from './core/image';
-import { IMAGE_RESTRICTIONS, DEFAULT_COORDINATES } from './core/constants';
-import * as algorithms from './core/algorithms';
+import { isLocal, isCrossOriginURL, isUndefined, getSettings, parseNumber, isLoadedImage, replacedProp } from './core/utils';
 
 const cn = bem('vue-advanced-cropper');
 
@@ -206,10 +206,6 @@ export default {
 			visibleArea: {},
 			coordinates: {
 				...DEFAULT_COORDINATES
-			},
-			frozenDirections: {
-				width: false,
-				height: false,
 			}
 		};
 	},
@@ -225,8 +221,6 @@ export default {
 				wheelResize: getSettings(this.wheelResize, {
 					ratio: 0.1
 				}),
-				frozenDirections: this.frozenDirections,
-				imageRestriction: this.imageRestriction
 			};
 		},
 		coefficient() {
@@ -480,14 +474,7 @@ export default {
 					this.imageAttributes.crossOrigin = this.crossOrigin;
 				}
 				setTimeout(() => {
-					const src = this.src;
-					if (this.checkOrientation) {
-						parseImage(src).then(this.onParseImage);
-					} else {
-						this.onParseImage({
-							source: src
-						});
-					}
+					parseImage(this.src, this.checkOrientation).then(this.onParseImage);
 				}, this.transitionTime);
 			} else {
 				this.clearImage();
@@ -560,10 +547,9 @@ export default {
 			const { visibleArea, coordinates } = algorithms.manipulateImage({
 				...this.getPublicProperties(),
 				event: this.normalizeEvent(event),
+				imageRestriction: this.imageRestriction,
 				settings: {
-					frozenDirections: this.frozenDirections,
-					imageRestriction: this.imageRestriction,
-					resizeStencil: this.settings.resize.stencil,
+					resize: this.settings.resize.stencil,
 				}
 			});
 
@@ -580,7 +566,7 @@ export default {
 				return this.moveAlgorithm({
 					coordinates: prevCoordinates,
 					positionRestrictions,
-					event: new MoveEvent(null, {
+					event: new MoveEvent({
 						left: (newCoordinates.left - prevCoordinates.left),
 						top: (newCoordinates.top - prevCoordinates.top),
 					})
@@ -590,7 +576,7 @@ export default {
 			const resizeAlgorithm = (prevCoordinates, newCoordinates) => {
 				let coordinates = {
 					...prevCoordinates,
-					...algorithms.approximatedSize({
+					...algorithms.approximateSize({
 						width: newCoordinates.width,
 						height: newCoordinates.height,
 						sizeRestrictions: this.sizeRestrictions,
@@ -642,11 +628,8 @@ export default {
 
 			const cropper = this.$refs.cropper;
 			const image = this.$refs.image;
-			const { minWidth, minHeight, maxWidth, maxHeight, widthFrozen, heightFrozen } = this.sizeRestrictions;
 
-			// Freeze height or width if there was problems while setting stencil restrictions
-			this.frozenDirections.width = Boolean(widthFrozen);
-			this.frozenDirections.height = Boolean(heightFrozen);
+			const { minWidth, minHeight, maxWidth, maxHeight} = this.sizeRestrictions;
 
 			const defaultSize = this.defaultSize({
 				boundaries: this.boundaries,
@@ -736,14 +719,12 @@ export default {
 							imageSize: this.imageSize
 						});
 
-						const newArea = this.defaultVisibleArea({
-							imageSize: this.imageSize,
-							boundaries: this.boundaries
-						});
-
-						const visibleArea = this.updateVisibleArea({
+						this.visibleArea = this.updateVisibleArea({
 							current: algorithms.refineVisibleArea({
-								visibleArea: newArea,
+								visibleArea: this.defaultVisibleArea({
+									imageSize: this.imageSize,
+									boundaries: this.boundaries
+								}),
 								boundaries: this.boundaries
 							}),
 							previous: this.visibleArea,
@@ -754,18 +735,15 @@ export default {
 						});
 
 						// If visible area was changed the coordinates should be adapted to this changes
-						const coordinates = this.fitCoordinates({
-							visibleArea,
+						this.coordinates = this.fitCoordinates({
+							visibleArea: this.visibleArea,
 							coordinates: this.coordinates,
 							aspectRatio: this.getAspectRatio(),
 							positionRestrictions: this.positionRestrictions,
 							sizeRestrictions: this.calculateSizeRestrictions({
-								visibleArea,
+								visibleArea: this.visibleArea,
 							}),
 						});
-
-						this.visibleArea = visibleArea;
-						this.coordinates = coordinates;
 						resolve();
 					});
 				} else {
@@ -792,8 +770,8 @@ export default {
 				sizeRestrictions: this.sizeRestrictions,
 				positionRestrictions: this.positionRestrictions,
 				areaRestrictions: this.areaRestrictions,
-				frozenDirections: this.frozenDirections,
 				aspectRatio: this.getAspectRatio(),
+				imageRestriction: this.imageRestriction
 			};
 		},
 		calculatePositionRestrictions(params = {}) {

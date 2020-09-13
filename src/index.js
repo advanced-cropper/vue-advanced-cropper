@@ -44,7 +44,7 @@ export {
 	ResizeEvent,
 	MoveEvent,
 	DragEvent
-} from './core/events';
+} from 'advanced-cropper/events';
 
 export { default as Cropper } from './Cropper.vue';
 

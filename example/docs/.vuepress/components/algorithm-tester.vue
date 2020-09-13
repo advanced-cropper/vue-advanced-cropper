@@ -1,6 +1,6 @@
 <script>
 import { BoundingBox, ResizeEvent } from 'vue-advanced-cropper';
-import {resize} from 'vue-advanced-cropper/src/core/algorithms'
+import {resize} from 'advanced-cropper/algorithms'
 
 export default {
 	name: 'AlgorithmTester',

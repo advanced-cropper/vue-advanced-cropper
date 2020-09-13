@@ -74,6 +74,7 @@
 		"vue-template-compiler": "^2.6.12"
 	},
 	"dependencies": {
+		"advanced-cropper": "file:../advanced-cropper/dist",
 		"classnames": "^2.2.6",
 		"debounce": "^1.2.0",
 		"easy-bem": "^1.0.2"
@@ -83,7 +84,7 @@
 	],
 	"lint-staged": {
 		"*.{js,vue}": [
-			"eslint"
+			"eslint --fix"
 		]
 	},
 	"husky": {

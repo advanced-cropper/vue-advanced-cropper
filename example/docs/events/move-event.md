@@ -21,7 +21,6 @@ import {MoveEvent} from 'vue-advanced-cropper'
 ```js
 // For example, inside a method of your stencil
 this.$emit('move', new MoveEvent(
-	event,
 	{
 		left: leftShift,
 		top: topShift

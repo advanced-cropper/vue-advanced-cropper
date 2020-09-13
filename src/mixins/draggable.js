@@ -1,4 +1,4 @@
-import { DragEvent } from '../core/events';
+import { DragEvent } from "advanced-cropper/events";
 
 export default {
 	beforeMount() {

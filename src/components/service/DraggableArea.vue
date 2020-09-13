@@ -1,8 +1,8 @@
 <script>
 import classnames from 'classnames';
 import bem from 'easy-bem';
+import { MoveEvent } from "advanced-cropper/events";
 import { distance } from '../../core/utils';
-import { MoveEvent } from '../../core/events.js';
 
 const cn = bem('vue-draggable-area');
 
@@ -116,7 +116,7 @@ export default {
 				const container = this.$refs.container;
 				const { left, top, } = container.getBoundingClientRect();
 				if (this.touches.length === 1 && newTouches.length === 1) {
-					this.$emit('move', new MoveEvent(event, {
+					this.$emit('move', new MoveEvent({
 						left: (newTouches[0].clientX - (left + this.anchor.x)),
 						top: (newTouches[0].clientY - (top + this.anchor.y)),
 					}));
