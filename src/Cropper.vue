@@ -719,31 +719,41 @@ export default {
 							imageSize: this.imageSize
 						});
 
-						this.visibleArea = this.updateVisibleArea({
-							current: algorithms.refineVisibleArea({
-								visibleArea: this.defaultVisibleArea({
-									imageSize: this.imageSize,
-									boundaries: this.boundaries
-								}),
-								boundaries: this.boundaries
+						const visibleArea = algorithms.refineVisibleArea({
+							visibleArea: this.defaultVisibleArea({
+								imageSize: this.imageSize,
+								boundaries: this.boundaries,
+								areaRestrictions: this.areaRestrictions,
+
 							}),
-							previous: this.visibleArea,
-							areaRestrictions: this.areaRestrictions,
-							coordinates: this.coordinates,
-							boundaries: this.boundaries,
-							imageSize: this.imageSize,
+							boundaries: this.boundaries
 						});
 
+						if (this.visibleArea) {
+							this.visibleArea = this.updateVisibleArea({
+								current: visibleArea,
+								previous: this.visibleArea,
+								areaRestrictions: this.areaRestrictions,
+								coordinates: this.coordinates,
+								boundaries: this.boundaries,
+								imageSize: this.imageSize,
+							});
+						} else {
+							this.visibleArea = visibleArea;
+						}
+
 						// If visible area was changed the coordinates should be adapted to this changes
-						this.coordinates = this.fitCoordinates({
-							visibleArea: this.visibleArea,
-							coordinates: this.coordinates,
-							aspectRatio: this.getAspectRatio(),
-							positionRestrictions: this.positionRestrictions,
-							sizeRestrictions: this.calculateSizeRestrictions({
+						if (this.coordinates) {
+							this.coordinates = this.fitCoordinates({
 								visibleArea: this.visibleArea,
-							}),
-						});
+								coordinates: this.coordinates,
+								aspectRatio: this.getAspectRatio(),
+								positionRestrictions: this.positionRestrictions,
+								sizeRestrictions: this.calculateSizeRestrictions({
+									visibleArea: this.visibleArea,
+								}),
+							});
+						}
 						resolve();
 					});
 				} else {
