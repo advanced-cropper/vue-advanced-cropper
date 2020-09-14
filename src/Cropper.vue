@@ -253,9 +253,9 @@ export default {
 		},
 		imageStyle() {
 			const result = {
-				left: `${-this.imageTransforms.translateX}px`,
-				top: `${-this.imageTransforms.translateY}px`,
-				transform: getStyleTransforms(this.imageTransforms),
+				left: `${this.imageSize.width / (2 * this.coefficient) - this.imageTransforms.translateX}px`,
+				top: `${this.imageSize.height / (2 * this.coefficient) - this.imageTransforms.translateY}px`,
+				transform: 'translate(-50%, -50%)' + getStyleTransforms(this.imageTransforms),
 			};
 
 			const { flipped } = this.imageTransforms;
