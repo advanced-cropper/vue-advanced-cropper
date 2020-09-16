@@ -198,7 +198,7 @@ The static function that accepts the only argument, the object with following fi
 
 It should return the object with `height` and `width` fields, i.e. width and height of the area.
 
-### `sizeRestrictionAlgorithm`
+### `sizeRestrictionsAlgorithm`
 Default: `core.percentRestrictions`
 
 The static function that accepts the only argument, the object with following fields:
