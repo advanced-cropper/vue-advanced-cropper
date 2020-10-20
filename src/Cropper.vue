@@ -4,7 +4,7 @@ import bem from 'easy-bem';
 import debounce from 'debounce';
 import { RectangleStencil } from './components/stencils';
 import { CropperWrapper } from './components/service';
-import { isLoadedImage, replacedProp, validateVisibleArea } from './core';
+import { isLoadedImage, replacedProp } from './core';
 import { MoveEvent, ManipulateImageEvent } from './core/events';
 import { isLocal, isCrossOriginURL, isUndefined, getSettings, parseNumber } from './core/utils';
 import { arrayBufferToDataURL, getImageTransforms, getStyleTransforms, prepareSource, parseImage } from './core/image';
@@ -663,7 +663,7 @@ export default {
 				...this.sizeRestrictions,
 			});
 
-			if (process.env.NODE_ENV === 'development' && defaultSize.width < minWidth || defaultSize.height < minHeight || defaultSize.width > maxWidth || defaultSize.height > maxHeight) {
+			if (process.env.NODE_ENV === 'development' && (defaultSize.width < minWidth || defaultSize.height < minHeight || defaultSize.width > maxWidth || defaultSize.height > maxHeight)) {
 				console.warn('Warning: the default size breaks size restrictions. Check your defaultSize function', defaultSize, this.sizeRestrictions);
 			}
 

@@ -560,8 +560,9 @@ export function approximatedSize({ width, height, aspectRatio, sizeRestrictions 
 
 	function isValid(candidate, ignoreMinimum = false) {
 		return 	(
-			candidate.width >= candidate.height * ratio.minimum &&
-			candidate.width <= candidate.height * ratio.maximum &&
+			// TODO: check how to solve the problem with similar but not equal values
+			candidate.width >= Math.floor(candidate.height * ratio.minimum) &&
+			candidate.width <= Math.ceil(candidate.height * ratio.maximum) &&
 			candidate.height <= sizeRestrictions.maxHeight &&
 			candidate.width <= sizeRestrictions.maxWidth &&
 			candidate.width && candidate.height
@@ -846,7 +847,7 @@ export function roundCoordinates({ coordinates, sizeRestrictions, positionRestri
 	return roundedCoordinates;
 }
 
-export function normalizeEvent({ event, visibleArea, coefficient, settings }) {
+export function normalizeEvent({ event, visibleArea, coefficient, frozenDirections }) {
 	if (event.type === 'manipulateImage') {
 		return {
 			...event,
@@ -864,7 +865,6 @@ export function normalizeEvent({ event, visibleArea, coefficient, settings }) {
 		};
 	} else if (event.type === 'resize') {
 		const normalizedEvent = { ...event };
-		const { frozenDirections } = settings;
 		if (frozenDirections.width) {
 			normalizedEvent.directions.left = 0;
 			normalizedEvent.directions.right = 0;
@@ -920,17 +920,17 @@ export function refineSizeRestrictions({ sizeRestrictions, imageSize, visibleAre
 
 	if (restrictions.minWidth > restrictions.maxWidth) {
 		if (process.env.NODE_ENV !== 'production') {
-			console.warn(`Warning: maximum width (${restrictions.maxWidth}px) fewer that the minimum width (${restrictions.minWidth}px). It is set equal to the minimum width and width resizing was blocked`);
+			console.warn(`Warning: maximum width (${restrictions.maxWidth}px) fewer that the minimum width (${restrictions.minWidth}px). Minimum width set equal to the maximum width and width resizing was blocked`);
 		}
-		restrictions.maxWidth = restrictions.minWidth;
+		restrictions.minWidth = restrictions.maxWidth;
 		restrictions.widthFrozen = true;
 	}
 
 	if (restrictions.minHeight > restrictions.maxHeight) {
 		if (process.env.NODE_ENV !== 'production') {
-			console.warn(`Warning: maximum height (${restrictions.maxHeight}px) fewer that the minimum height (${restrictions.minHeight}px). It is set equal to the minimum height and height resizing was blocked`);
+			console.warn(`Warning: maximum height (${restrictions.maxHeight}px) fewer that the minimum height (${restrictions.minHeight}px). Minimum height set equal to the maximum height and height resizing was blocked`);
 		}
-		restrictions.maxHeight = restrictions.minHeight;
+		restrictions.minHeight = restrictions.maxHeight;
 		restrictions.heightFrozen = true;
 	}
 
