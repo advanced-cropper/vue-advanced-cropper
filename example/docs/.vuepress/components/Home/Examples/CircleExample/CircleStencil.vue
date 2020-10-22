@@ -45,7 +45,6 @@ export default {
 			const heightResize = -shift.top/2;
 			const { height, width, left, top, } = this.resultCoordinates;
 			this.$emit('resize', new ResizeEvent(
-				dragEvent.nativeEvent,
 				{
 					left: widthResize,
 					right: widthResize,

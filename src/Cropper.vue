@@ -206,10 +206,6 @@ export default {
 			visibleArea: {},
 			coordinates: {
 				...DEFAULT_COORDINATES
-			},
-			frozenDirections: {
-				width: false,
-				height: false,
 			}
 		};
 	},
@@ -225,8 +221,6 @@ export default {
 				wheelResize: getSettings(this.wheelResize, {
 					ratio: 0.1
 				}),
-				frozenDirections: this.frozenDirections,
-				imageRestriction: this.imageRestriction
 			};
 		},
 		coefficient() {
@@ -331,7 +325,9 @@ export default {
 			this.onPropsChange();
 		},
 		imageRestriction() {
-			this.resetCoordinates();
+			this.refresh().then(() => {
+				this.resetCoordinates();
+			});
 		},
 		stencilProps(oldProps, newProps) {
 			const significantProps = ['aspectRatio', 'minAspectRatio', 'maxAspectRatio'];
@@ -382,7 +378,7 @@ export default {
 		},
 		zoom(factor, center) {
 			this.onManipulateImage(
-				new ManipulateImageEvent(null, {}, {
+				new ManipulateImageEvent({}, {
 					factor: 1 / factor,
 					center
 				})
@@ -390,9 +386,10 @@ export default {
 		},
 		move(left, top) {
 			this.onManipulateImage(
-				new ManipulateImageEvent(null, {
-					left: left || 0,
-					top: top || 0
+				// Multiplying on coefficient is temporary solution
+				new ManipulateImageEvent({
+					left: left * this.coefficient || 0,
+					top: top * this.coefficient || 0
 				})
 			);
 		},
@@ -480,14 +477,7 @@ export default {
 					this.imageAttributes.crossOrigin = this.crossOrigin;
 				}
 				setTimeout(() => {
-					const src = this.src;
-					if (this.checkOrientation) {
-						parseImage(src).then(this.onParseImage);
-					} else {
-						this.onParseImage({
-							source: src
-						});
-					}
+					parseImage(this.src, this.checkOrientation).then(this.onParseImage);
 				}, this.transitionTime);
 			} else {
 				this.clearImage();
@@ -531,6 +521,8 @@ export default {
 			this.onChangeCoordinates(
 				this.moveAlgorithm({
 					...this.getPublicProperties(),
+					positionRestrictions: algorithms.limitBy(this.positionRestrictions, this.visibleArea),
+					coordinates: this.coordinates,
 					event: this.normalizeEvent(event),
 				})
 			);
@@ -547,6 +539,7 @@ export default {
 			this.onChangeCoordinates(
 				this.resizeAlgorithm({
 					...this.getPublicProperties(),
+					positionRestrictions: algorithms.limitBy(this.positionRestrictions, this.visibleArea),
 					sizeRestrictions: {
 						...sizeRestrictions,
 						minWidth: Math.max(sizeRestrictions.minWidth, minimumSize),
@@ -560,10 +553,9 @@ export default {
 			const { visibleArea, coordinates } = algorithms.manipulateImage({
 				...this.getPublicProperties(),
 				event: this.normalizeEvent(event),
+				imageRestriction: this.imageRestriction,
 				settings: {
-					frozenDirections: this.frozenDirections,
-					imageRestriction: this.imageRestriction,
-					resizeStencil: this.settings.resize.stencil,
+					resize: this.settings.resize.stencil,
 				}
 			});
 
@@ -580,7 +572,7 @@ export default {
 				return this.moveAlgorithm({
 					coordinates: prevCoordinates,
 					positionRestrictions,
-					event: new MoveEvent(null, {
+					event: new MoveEvent({
 						left: (newCoordinates.left - prevCoordinates.left),
 						top: (newCoordinates.top - prevCoordinates.top),
 					})
@@ -590,7 +582,7 @@ export default {
 			const resizeAlgorithm = (prevCoordinates, newCoordinates) => {
 				let coordinates = {
 					...prevCoordinates,
-					...algorithms.approximatedSize({
+					...algorithms.approximateSize({
 						width: newCoordinates.width,
 						height: newCoordinates.height,
 						sizeRestrictions: this.sizeRestrictions,
@@ -642,11 +634,8 @@ export default {
 
 			const cropper = this.$refs.cropper;
 			const image = this.$refs.image;
-			const { minWidth, minHeight, maxWidth, maxHeight, widthFrozen, heightFrozen } = this.sizeRestrictions;
 
-			// Freeze height or width if there was problems while setting stencil restrictions
-			this.frozenDirections.width = Boolean(widthFrozen);
-			this.frozenDirections.height = Boolean(heightFrozen);
+			const { minWidth, minHeight, maxWidth, maxHeight } = this.sizeRestrictions;
 
 			const defaultSize = this.defaultSize({
 				boundaries: this.boundaries,
@@ -736,36 +725,41 @@ export default {
 							imageSize: this.imageSize
 						});
 
-						const newArea = this.defaultVisibleArea({
-							imageSize: this.imageSize,
+						const visibleArea = algorithms.refineVisibleArea({
+							visibleArea: this.defaultVisibleArea({
+								imageSize: this.imageSize,
+								boundaries: this.boundaries,
+								areaRestrictions: this.areaRestrictions,
+
+							}),
 							boundaries: this.boundaries
 						});
 
-						const visibleArea = this.updateVisibleArea({
-							current: algorithms.refineVisibleArea({
-								visibleArea: newArea,
-								boundaries: this.boundaries
-							}),
-							previous: this.visibleArea,
-							areaRestrictions: this.areaRestrictions,
-							coordinates: this.coordinates,
-							boundaries: this.boundaries,
-							imageSize: this.imageSize,
-						});
+						if (this.visibleArea) {
+							this.visibleArea = this.updateVisibleArea({
+								current: visibleArea,
+								previous: this.visibleArea,
+								areaRestrictions: this.areaRestrictions,
+								coordinates: this.coordinates,
+								boundaries: this.boundaries,
+								imageSize: this.imageSize,
+							});
+						} else {
+							this.visibleArea = visibleArea;
+						}
 
 						// If visible area was changed the coordinates should be adapted to this changes
-						const coordinates = this.fitCoordinates({
-							visibleArea,
-							coordinates: this.coordinates,
-							aspectRatio: this.getAspectRatio(),
-							positionRestrictions: this.positionRestrictions,
-							sizeRestrictions: this.calculateSizeRestrictions({
-								visibleArea,
-							}),
-						});
-
-						this.visibleArea = visibleArea;
-						this.coordinates = coordinates;
+						if (this.coordinates) {
+							this.coordinates = this.fitCoordinates({
+								visibleArea: this.visibleArea,
+								coordinates: this.coordinates,
+								aspectRatio: this.getAspectRatio(),
+								positionRestrictions: this.positionRestrictions,
+								sizeRestrictions: this.calculateSizeRestrictions({
+									visibleArea: this.visibleArea,
+								}),
+							});
+						}
 						resolve();
 					});
 				} else {
@@ -792,8 +786,8 @@ export default {
 				sizeRestrictions: this.sizeRestrictions,
 				positionRestrictions: this.positionRestrictions,
 				areaRestrictions: this.areaRestrictions,
-				frozenDirections: this.frozenDirections,
 				aspectRatio: this.getAspectRatio(),
+				imageRestriction: this.imageRestriction
 			};
 		},
 		calculatePositionRestrictions(params = {}) {

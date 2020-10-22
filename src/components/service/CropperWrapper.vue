@@ -119,7 +119,7 @@ export default {
 		processMove(event, newTouches) {
 			if (this.touches.length) {
 				if (this.touches.length === 1 && newTouches.length === 1 && this.touchMove.enabled) {
-					this.$emit('move', new ManipulateImageEvent(event, {
+					this.$emit('move', new ManipulateImageEvent({
 						left: (this.touches[0].clientX - newTouches[0].clientX),
 						top: (this.touches[0].clientY - newTouches[0].clientY),
 					}));
@@ -128,16 +128,14 @@ export default {
 					const newProperties = this.calculateGeometricProperties(newTouches);
 
 					if (oldProperties.count === newProperties.count && oldProperties.count > 1) {
-						this.$emit('resize', new ManipulateImageEvent(
-							event,
-							{
-								left: oldProperties.centerMass.left - newProperties.centerMass.left,
-								top: oldProperties.centerMass.top - newProperties.centerMass.top,
-							},
-							{
-								factor: oldProperties.spread / newProperties.spread,
-								center: newProperties.centerMass,
-							}
+						this.$emit('resize', new ManipulateImageEvent({
+							left: oldProperties.centerMass.left - newProperties.centerMass.left,
+							top: oldProperties.centerMass.top - newProperties.centerMass.top,
+						},
+						{
+							factor: oldProperties.spread / newProperties.spread,
+							center: newProperties.centerMass,
+						}
 						));
 					}
 					this.oldGeometricProperties = newProperties;
@@ -158,7 +156,7 @@ export default {
 					top: (event.clientY - top),
 				};
 
-				this.$emit('resize', new ManipulateImageEvent(event, {}, { factor, center }));
+				this.$emit('resize', new ManipulateImageEvent({}, { factor, center }));
 
 				event.preventDefault();
 				event.stopPropagation();

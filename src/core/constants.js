@@ -1,6 +1,7 @@
 export const HORIZONTAL_DIRECTIONS = ['left', 'right'];
 export const VERTICAL_DIRECTIONS = ['top', 'bottom'];
 export const ALL_DIRECTIONS = ['left', 'right', 'top', 'bottom'];
+export const MAIN_DIRECTIONS = ['left', 'top'];
 export const IMAGE_RESTRICTIONS = ['area', 'stencil', 'none'];
 export const XHR_DONE = 4;
 

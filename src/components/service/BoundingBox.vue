@@ -212,7 +212,6 @@ export default {
 
 			if (this.scalable) {
 				this.$emit('resize', new ResizeEvent(
-					dragEvent.nativeEvent,
 					directions,
 					{
 						allowedDirections: {
@@ -221,7 +220,7 @@ export default {
 							bottom: verticalDirection === 'south' || !verticalDirection,
 							top: verticalDirection === 'north' || !verticalDirection,
 						},
-						preserveAspectRatio: dragEvent.nativeEvent.shiftKey,
+						preserveAspectRatio: dragEvent.nativeEvent && dragEvent.nativeEvent.shiftKey,
 						respectDirection,
 					}
 				));
