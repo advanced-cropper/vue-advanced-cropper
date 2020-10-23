@@ -730,7 +730,6 @@ export default {
 								imageSize: this.imageSize,
 								boundaries: this.boundaries,
 								areaRestrictions: this.areaRestrictions,
-
 							}),
 							boundaries: this.boundaries
 						});

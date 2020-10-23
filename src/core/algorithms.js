@@ -299,7 +299,7 @@ function fitSize(firstCoordinates, secondCoordinates) {
 	if (firstRatio > secondRatio) {
 		return {
 			width: secondCoordinates.width,
-			height: secondCoordinates.width * firstRatio,
+			height: secondCoordinates.width / firstRatio,
 		};
 	} else {
 		return {
