@@ -12,7 +12,8 @@
 		"eslint:recommended",
 		"plugin:vue/recommended",
 		"plugin:prettier/recommended",
-		"prettier/@typescript-eslint"
+		"prettier/@typescript-eslint",
+		"prettier/vue"
 	],
 	"plugins": [
 		"vue",

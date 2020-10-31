@@ -16,7 +16,7 @@ const cn = bem('vue-advanced-cropper');
 export default {
 	name: 'Cropper',
 	components: {
-		CropperWrapper
+		CropperWrapper,
 	},
 	props: {
 		src: {
@@ -70,11 +70,11 @@ export default {
 		},
 		crossOrigin: {
 			type: String,
-			default: 'anonymous'
+			default: 'anonymous',
 		},
 		transitionTime: {
 			type: Number,
-			default: 300
+			default: 300,
 		},
 		wheelResize: {
 			type: [Boolean, Object],
@@ -97,11 +97,11 @@ export default {
 			default: 'area',
 			validator(value) {
 				return IMAGE_RESTRICTIONS.indexOf(value) !== -1;
-			}
+			},
 		},
 		roundResult: {
 			type: Boolean,
-			default: true
+			default: true,
 		},
 		resizeAlgorithm: {
 			type: Function,
@@ -113,7 +113,7 @@ export default {
 		},
 		initStretcher: {
 			type: Function,
-			default: algorithms.initStretcher
+			default: algorithms.initStretcher,
 		},
 		fitCoordinates: {
 			type: Function,
@@ -156,31 +156,31 @@ export default {
 			type: Function,
 			validator(value) {
 				return replacedProp(value, 'restrictions', 'sizeRestrictionsAlgorithm');
-			}
+			},
 		},
 		classname: {
 			type: String,
 			validator(value) {
 				return replacedProp(value, 'classname', 'class');
-			}
+			},
 		},
 		imageClassname: {
 			type: String,
 			validator(value) {
 				return replacedProp(value, 'imageClassname', 'imageClass');
-			}
+			},
 		},
 		areaClassname: {
 			type: String,
 			validator(value) {
 				return replacedProp(value, 'areaClassname', 'areaClass');
-			}
+			},
 		},
 		backgroundClassname: {
 			type: String,
 			validator(value) {
-				return  replacedProp(value, 'backgroundClassname', 'backgroundClass');
-			}
+				return replacedProp(value, 'backgroundClassname', 'backgroundClass');
+			},
 		},
 	},
 	data() {
@@ -205,21 +205,21 @@ export default {
 			},
 			visibleArea: {},
 			coordinates: {
-				...DEFAULT_COORDINATES
-			}
+				...DEFAULT_COORDINATES,
+			},
 		};
 	},
 	computed: {
 		settings() {
 			return {
 				resize: getSettings(this.resize, {
-					stencil: false
+					stencil: false,
 				}),
 				touchResize: getSettings(this.touchResize),
 				touchMove: getSettings(this.touchMove),
 				mouseMove: getSettings(this.mouseMove),
 				wheelResize: getSettings(this.wheelResize, {
-					ratio: 0.1
+					ratio: 0.1,
 				}),
 			};
 		},
@@ -230,17 +230,13 @@ export default {
 			return this.areaRestrictionsAlgorithm({
 				imageSize: this.imageSize,
 				visibleArea: this.visibleArea,
-				imageRestriction: this.imageRestriction
+				imageRestriction: this.imageRestriction,
 			});
 		},
 		areaStyle() {
 			return {
-				width: this.boundaries.width
-					? `${this.boundaries.width}px`
-					: 'auto',
-				height: this.boundaries.height
-					? `${this.boundaries.height}px`
-					: 'auto',
+				width: this.boundaries.width ? `${this.boundaries.width}px` : 'auto',
+				height: this.boundaries.height ? `${this.boundaries.height}px` : 'auto',
 				opacity: this.imageLoaded ? 1 : 0,
 				transition: `opacity ${this.transitionTime}ms`,
 				pointerEvents: this.imageLoaded ? 'all' : 'none',
@@ -291,7 +287,7 @@ export default {
 			};
 		},
 		stencilCoordinates() {
-			const { width, height, left, top, } = this.coordinates;
+			const { width, height, left, top } = this.coordinates;
 			return {
 				width: width / this.coefficient,
 				height: height / this.coefficient,
@@ -318,7 +314,7 @@ export default {
 		stencilComponent() {
 			this.$nextTick(() => {
 				this.resetCoordinates();
-			})
+			});
 		},
 		maxWidth() {
 			this.onPropsChange();
@@ -336,16 +332,13 @@ export default {
 		},
 		stencilProps(oldProps, newProps) {
 			const significantProps = ['aspectRatio', 'minAspectRatio', 'maxAspectRatio'];
-			if (significantProps.find(prop => oldProps[prop] !== newProps[prop])) {
+			if (significantProps.find((prop) => oldProps[prop] !== newProps[prop])) {
 				this.$nextTick(this.onPropsChange);
 			}
-		}
+		},
 	},
 	mounted() {
-		this.debouncedUpdate = debounce(
-			this.update,
-			this.debounce
-		);
+		this.debouncedUpdate = debounce(this.update, this.debounce);
 
 		this.$refs.image.addEventListener('load', () => {
 			this.onSuccessLoadImage();
@@ -383,10 +376,13 @@ export default {
 		},
 		zoom(factor, center) {
 			this.onManipulateImage(
-				new ManipulateImageEvent({}, {
-					factor: 1 / factor,
-					center
-				})
+				new ManipulateImageEvent(
+					{},
+					{
+						factor: 1 / factor,
+						center,
+					},
+				),
 			);
 		},
 		move(left, top) {
@@ -394,8 +390,8 @@ export default {
 				// Multiplying on coefficient is temporary solution
 				new ManipulateImageEvent({
 					left: left * this.coefficient || 0,
-					top: top * this.coefficient || 0
-				})
+					top: top * this.coefficient || 0,
+				}),
 			);
 		},
 		setCoordinates(transforms, params = {}) {
@@ -430,7 +426,7 @@ export default {
 		normalizeEvent(event) {
 			return algorithms.normalizeEvent({
 				...this.getPublicProperties(),
-				event
+				event,
 			});
 		},
 		updateCanvas(coordinates) {
@@ -439,14 +435,16 @@ export default {
 			if (!this.$refs.canvas) return;
 
 			const image = this.$refs.image;
-			const source = this.checkOrientation ? prepareSource(this.$refs.sourceCanvas, image, this.imageTransforms) : image;
+			const source = this.checkOrientation
+				? prepareSource(this.$refs.sourceCanvas, image, this.imageTransforms)
+				: image;
 
 			const canvas = this.$refs.canvas;
 			canvas.width = coordinates.width;
 			canvas.height = coordinates.height;
 
 			const ctx = canvas.getContext('2d');
-			ctx.clearRect(0,0,canvas.width,canvas.height);
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			ctx.drawImage(
 				source,
 				coordinates.left,
@@ -456,7 +454,7 @@ export default {
 				0,
 				0,
 				coordinates.width,
-				coordinates.height
+				coordinates.height,
 			);
 		},
 		update() {
@@ -529,7 +527,7 @@ export default {
 					positionRestrictions: algorithms.limitBy(this.positionRestrictions, this.visibleArea),
 					coordinates: this.coordinates,
 					event: this.normalizeEvent(event),
-				})
+				}),
 			);
 		},
 		onResize(event) {
@@ -537,9 +535,7 @@ export default {
 
 			// The magic number is the approximation of the handler size
 			// Temporary solution that should be improved in the future
-			const minimumSize = Math.min(
-				this.coordinates.width, this.coordinates.height, 20 * this.coefficient
-			);
+			const minimumSize = Math.min(this.coordinates.width, this.coordinates.height, 20 * this.coefficient);
 
 			this.onChangeCoordinates(
 				this.resizeAlgorithm({
@@ -551,7 +547,7 @@ export default {
 						minHeight: Math.max(sizeRestrictions.minHeight, minimumSize),
 					},
 					event: this.normalizeEvent(event),
-				})
+				}),
 			);
 		},
 		onManipulateImage(event) {
@@ -561,7 +557,7 @@ export default {
 				imageRestriction: this.imageRestriction,
 				settings: {
 					resize: this.settings.resize.stencil,
-				}
+				},
 			});
 
 			this.visibleArea = visibleArea;
@@ -578,9 +574,9 @@ export default {
 					coordinates: prevCoordinates,
 					positionRestrictions,
 					event: new MoveEvent({
-						left: (newCoordinates.left - prevCoordinates.left),
-						top: (newCoordinates.top - prevCoordinates.top),
-					})
+						left: newCoordinates.left - prevCoordinates.left,
+						top: newCoordinates.top - prevCoordinates.top,
+					}),
 				});
 			};
 
@@ -599,7 +595,7 @@ export default {
 
 				return moveAlgorithm(coordinates, {
 					left: prevCoordinates.left,
-					top: prevCoordinates.top
+					top: prevCoordinates.top,
 				});
 			};
 
@@ -609,7 +605,7 @@ export default {
 				transforms = [transforms];
 			}
 
-			transforms.forEach(transform => {
+			transforms.forEach((transform) => {
 				let changes = {};
 				if (typeof transform === 'function') {
 					changes = transform({ ...coordinates }, this.imageSize);
@@ -657,8 +653,18 @@ export default {
 				...this.sizeRestrictions,
 			});
 
-			if (process.env.NODE_ENV === 'development' && (defaultSize.width < minWidth || defaultSize.height < minHeight || defaultSize.width > maxWidth || defaultSize.height > maxHeight)) {
-				console.warn('Warning: the default size breaks size restrictions. Check your defaultSize function', defaultSize, this.sizeRestrictions);
+			if (
+				process.env.NODE_ENV === 'development' &&
+				(defaultSize.width < minWidth ||
+					defaultSize.height < minHeight ||
+					defaultSize.width > maxWidth ||
+					defaultSize.height > maxHeight)
+			) {
+				console.warn(
+					'Warning: the default size breaks size restrictions. Check your defaultSize function',
+					defaultSize,
+					this.sizeRestrictions,
+				);
 			}
 
 			const transforms = [
@@ -675,13 +681,15 @@ export default {
 						stencilHeight: coordinates.height,
 						imageWidth: this.imageSize.width,
 						imageHeight: this.imageSize.height,
-						props: this.$props
-					})
-				})
+						props: this.$props,
+					}),
+				}),
 			];
 
 			if (this.delayedTransforms) {
-				transforms.push(...Array.isArray(this.delayedTransforms) ? this.delayedTransforms : [this.delayedTransforms]);
+				transforms.push(
+					...(Array.isArray(this.delayedTransforms) ? this.delayedTransforms : [this.delayedTransforms]),
+				);
 			}
 			this.applyTransforms(transforms);
 			this.delayedTransforms = null;
@@ -717,14 +725,14 @@ export default {
 					this.initStretcher({
 						cropper,
 						stretcher,
-						imageSize: this.imageSize
+						imageSize: this.imageSize,
 					});
 
 					// 2. The code below should be executed after rerender (i.e. stretching of cropper)
 					this.$nextTick(() => {
 						this.boundaries = this.defaultBoundaries({
 							cropper,
-							imageSize: this.imageSize
+							imageSize: this.imageSize,
 						});
 
 						const visibleArea = algorithms.refineVisibleArea({
@@ -733,7 +741,7 @@ export default {
 								boundaries: this.boundaries,
 								areaRestrictions: this.areaRestrictions,
 							}),
-							boundaries: this.boundaries
+							boundaries: this.boundaries,
 						});
 
 						if (this.visibleArea) {
@@ -788,7 +796,7 @@ export default {
 				positionRestrictions: this.positionRestrictions,
 				areaRestrictions: this.areaRestrictions,
 				aspectRatio: this.getAspectRatio(),
-				imageRestriction: this.imageRestriction
+				imageRestriction: this.imageRestriction,
 			};
 		},
 		calculatePositionRestrictions(params = {}) {
@@ -796,7 +804,7 @@ export default {
 			return this.positionRestrictionsAlgorithm({
 				imageSize: this.imageSize,
 				imageRestriction: this.imageRestriction,
-				visibleArea
+				visibleArea,
 			});
 		},
 		calculateSizeRestrictions(params = {}) {
@@ -811,7 +819,7 @@ export default {
 				// Deprecated params
 				imageWidth: this.imageSize.width,
 				imageHeight: this.imageSize.height,
-				props: this.$props
+				props: this.$props,
 			});
 
 			return algorithms.refineSizeRestrictions({
@@ -819,80 +827,58 @@ export default {
 				sizeRestrictions,
 				positionRestrictions: this.positionRestrictions,
 				imageSize: this.imageSize,
-				imageRestriction: this.imageRestriction
+				imageRestriction: this.imageRestriction,
 			});
-
 		},
 	},
 };
 </script>
 
 <template>
-  <div
-    ref="cropper"
-    :class="classes.cropper"
-  >
-    <div
-      :class="classes.background"
-      :style="areaStyle"
-    />
-    <div
-      ref="stretcher"
-      :class="classes.stretcher"
-    />
+	<div ref="cropper" :class="classes.cropper">
+		<div :class="classes.background" :style="areaStyle" />
+		<div ref="stretcher" :class="classes.stretcher" />
 
-    <div
-      ref="area"
-      :class="classes.area"
-      :style="areaStyle"
-    >
-      <cropper-wrapper
-        :class="classes.cropperWrapper"
-        :wheel-resize="settings.wheelResize"
-        :touch-resize="settings.touchResize"
-        :touch-move="settings.touchMove"
-        :mouse-move="settings.touchMove"
-        @move="onManipulateImage"
-        @resize="onManipulateImage"
-      >
-        <div :class="classes.imageWrapper">
-          <img
-            ref="image"
-            :crossorigin="imageAttributes.crossOrigin"
-            :src="imageAttributes.src"
-            :class="classes.image"
-            :style="imageStyle"
-            @mousedown.prevent
-          >
-        </div>
-        <component
-          :is="stencilComponent"
-          ref="stencil"
-          :img="{
-            src: imageAttributes.src,
-            size: imageSize,
-            transforms: imageTransforms,
-            coefficient: coefficient
-          }"
-          :result-coordinates="coordinates"
-          :stencil-coordinates="stencilCoordinates"
-          v-bind="stencilProps"
-          @resize="onResize"
-          @move="onMove"
-        />
-        <canvas
-          v-if="canvas"
-          ref="canvas"
-          :style="{display:'none'}"
-        />
-        <canvas
-          v-if="canvas"
-          ref="sourceCanvas"
-          :style="{display:'none'}"
-        />
-      </cropper-wrapper>
-    </div>
-  </div>
+		<div ref="area" :class="classes.area" :style="areaStyle">
+			<cropper-wrapper
+				:class="classes.cropperWrapper"
+				:wheel-resize="settings.wheelResize"
+				:touch-resize="settings.touchResize"
+				:touch-move="settings.touchMove"
+				:mouse-move="settings.touchMove"
+				@move="onManipulateImage"
+				@resize="onManipulateImage"
+			>
+				<div :class="classes.imageWrapper">
+					<img
+						ref="image"
+						:crossorigin="imageAttributes.crossOrigin"
+						:src="imageAttributes.src"
+						:class="classes.image"
+						:style="imageStyle"
+						@mousedown.prevent
+					/>
+				</div>
+				<component
+					:is="stencilComponent"
+					ref="stencil"
+					:img="{
+						src: imageAttributes.src,
+						size: imageSize,
+						transforms: imageTransforms,
+						coefficient: coefficient,
+					}"
+					:result-coordinates="coordinates"
+					:stencil-coordinates="stencilCoordinates"
+					v-bind="stencilProps"
+					@resize="onResize"
+					@move="onMove"
+				/>
+				<canvas v-if="canvas" ref="canvas" :style="{ display: 'none' }" />
+				<canvas v-if="canvas" ref="sourceCanvas" :style="{ display: 'none' }" />
+			</cropper-wrapper>
+		</div>
+	</div>
 </template>
 
 <style lang="scss">
@@ -911,40 +897,40 @@ export default {
 		max-height: 100%;
 	}
 
-  &__image {
-	opacity: 0.5;
-	user-select: none;
-	position: absolute;
-	transform-origin: center;
-	// Workaround to prevent bugs at the websites with max-width
-	// rule applied to img (Vuepress for example)
-	max-width: unset !important;
-  }
-  &__area {
-	position: absolute;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	top: 50%;
-  }
-  &__background {
-	position: absolute;
-	background: black;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-  }
-  &__cropper-wrapper {
-	width: 100%;
-	height: 100%;
-  }
-  &__image-wrapper {
-	overflow: hidden;
-	position: absolute;
-	width: 100%;
-	height: 100%;
-  }
-  &__stencil-wrapper {
-	position: absolute;
-  }
+	&__image {
+		opacity: 0.5;
+		user-select: none;
+		position: absolute;
+		transform-origin: center;
+		// Workaround to prevent bugs at the websites with max-width
+		// rule applied to img (Vuepress for example)
+		max-width: unset !important;
+	}
+	&__area {
+		position: absolute;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		top: 50%;
+	}
+	&__background {
+		position: absolute;
+		background: black;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+	}
+	&__cropper-wrapper {
+		width: 100%;
+		height: 100%;
+	}
+	&__image-wrapper {
+		overflow: hidden;
+		position: absolute;
+		width: 100%;
+		height: 100%;
+	}
+	&__stencil-wrapper {
+		position: absolute;
+	}
 }
 </style>
