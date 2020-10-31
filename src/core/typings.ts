@@ -85,7 +85,6 @@ export type EventType = 'resize' | 'move' | 'drag' | 'manipulateImage';
 
 export type ImageRestriction = 'area' | 'stencil' | 'none';
 
-
 export interface Scale {
 	factor: number;
 	center: Point;
@@ -98,3 +97,7 @@ export interface ImageTransforms {
 	rotate?: number;
 	flipped?: boolean;
 }
+
+export type Transform =
+	| ((coordinates: Coordinates, imageSize: ImageSize) => Partial<Coordinates>)
+	| Partial<Coordinates>;

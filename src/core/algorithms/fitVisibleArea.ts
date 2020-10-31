@@ -9,7 +9,7 @@ interface UpdateVisibleAreaParams {
 	areaRestrictions: AreaRestrictions;
 	coordinates: Coordinates;
 }
-export function updateVisibleArea(params: UpdateVisibleAreaParams): VisibleArea {
+export function fitVisibleArea(params: UpdateVisibleAreaParams): VisibleArea {
 	const { current, previous, areaRestrictions, coordinates } = params;
 	let visibleArea = { ...current };
 

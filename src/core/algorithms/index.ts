@@ -1,3 +1,4 @@
+export * from './applyTransforms';
 export * from './approximatedSize';
 export * from './areaRestrictions';
 export * from './autoZoom';

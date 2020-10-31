@@ -28,7 +28,7 @@ import {
 	refineSizeRestrictions,
 	refineVisibleArea,
 	resize,
-	updateVisibleArea,
+	fitVisibleArea,
 } from './algorithms';
 
 import { fitPosition, ratio } from './service';
@@ -210,7 +210,7 @@ export class Cropper {
 	public refresh(boundaries?: Boundaries) {
 		this.boundaries = boundaries || this.boundaries;
 		this.$setVisibleArea(
-			updateVisibleArea({
+			fitVisibleArea({
 				current: refineVisibleArea({
 					visibleArea: defaultVisibleArea({
 						boundaries: this.boundaries,

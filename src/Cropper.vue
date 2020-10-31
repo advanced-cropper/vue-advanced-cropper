@@ -121,7 +121,7 @@ export default {
 		},
 		updateVisibleArea: {
 			type: Function,
-			default: algorithms.updateVisibleArea,
+			default: algorithms.fitVisibleArea,
 		},
 		defaultVisibleArea: {
 			type: Function,
@@ -400,7 +400,7 @@ export default {
 				if (!this.imageLoaded) {
 					this.delayedTransforms = transforms;
 				} else {
-					this.applyTransforms(transforms, autoZoom);
+					this.applyTransform(transforms, autoZoom);
 				}
 			});
 		},
@@ -564,66 +564,21 @@ export default {
 			this.onChangeCoordinates(coordinates);
 		},
 		onPropsChange() {
-			this.applyTransforms(this.coordinates, true);
+			this.applyTransform(this.coordinates, true);
 		},
-		applyTransforms(transforms, autoZoom = false) {
-			const positionRestrictions = this.positionRestrictions;
-
-			const moveAlgorithm = (prevCoordinates, newCoordinates) => {
-				return this.moveAlgorithm({
-					coordinates: prevCoordinates,
-					positionRestrictions,
-					event: new MoveEvent({
-						left: newCoordinates.left - prevCoordinates.left,
-						top: newCoordinates.top - prevCoordinates.top,
-					}),
-				});
-			};
-
-			const resizeAlgorithm = (prevCoordinates, newCoordinates) => {
-				let coordinates = {
-					...prevCoordinates,
-					...algorithms.approximatedSize({
-						width: newCoordinates.width,
-						height: newCoordinates.height,
-						sizeRestrictions: this.sizeRestrictions,
-						aspectRatio: this.getAspectRatio(),
-					}),
-					left: 0,
-					top: 0,
-				};
-
-				return moveAlgorithm(coordinates, {
-					left: prevCoordinates.left,
-					top: prevCoordinates.top,
-				});
-			};
-
-			let coordinates = this.coordinates;
-
-			if (!Array.isArray(transforms)) {
-				transforms = [transforms];
-			}
-
-			transforms.forEach((transform) => {
-				let changes = {};
-				if (typeof transform === 'function') {
-					changes = transform({ ...coordinates }, this.imageSize);
-				} else {
-					changes = transform;
-				}
-
-				if (!isUndefined(changes.width) || !isUndefined(changes.height)) {
-					coordinates = resizeAlgorithm(coordinates, { ...coordinates, ...changes });
-				}
-				if (!isUndefined(changes.left) || !isUndefined(changes.top)) {
-					coordinates = moveAlgorithm(coordinates, { ...coordinates, ...changes });
-				}
+		applyTransform(transform, autoZoom = false) {
+			const coordinates = algorithms.applyTransform({
+				coordinates: this.coordinates,
+				transform,
+				sizeRestrictions: this.sizeRestrictions,
+				positionRestrictions: this.positionRestrictions,
+				aspectRatio: this.getAspectRatio(),
 			});
 
 			if (autoZoom) {
 				this.autoZoom(coordinates);
 			}
+
 			this.onChangeCoordinates(coordinates, false);
 
 			return coordinates;
@@ -691,7 +646,7 @@ export default {
 					...(Array.isArray(this.delayedTransforms) ? this.delayedTransforms : [this.delayedTransforms]),
 				);
 			}
-			this.applyTransforms(transforms);
+			this.applyTransform(transforms);
 			this.delayedTransforms = null;
 		},
 		clearImage() {
