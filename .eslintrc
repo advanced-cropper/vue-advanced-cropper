@@ -1,14 +1,21 @@
 {
+	"parser": "@typescript-eslint/parser",
+	"parserOptions": {
+		"ecmaVersion": 2018,
+		"sourceType": "module",
+		"ecmaFeatures": {
+			"jsx": true
+		}
+	},
 	"extends": [
 		"eslint:recommended",
-		"plugin:vue/recommended"
+		"plugin:vue/recommended",
+		"plugin:prettier/recommended",
+		"prettier/@typescript-eslint"
 	],
-	"env": {
-		"node": true,
-		"jest": true
-	},
 	"plugins": [
-		"vue"
+		"vue",
+		"@typescript-eslint"
 	],
 	"rules": {
 		"space-before-function-parent": 0,
@@ -22,7 +29,12 @@
 		}],
 		"semi": ["error", "always"],
 		"no-console": ["error", {
-			"allow": ["warn", "error"],
+			"allow": ["warn", "error"]
 		}]
+	},
+	"env": {
+		"browser": true,
+		"node": true,
+		"es6": true
 	}
 }

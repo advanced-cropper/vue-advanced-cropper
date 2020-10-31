@@ -1,6 +1,8 @@
-import { XHR_DONE } from './constants';
+import { ImageTransforms } from './typings';
 
-export function prepareSource(canvas, image, { flipped, orientation, }) {
+export const XHR_DONE = 4;
+
+export function prepareSource(canvas, image, { flipped, orientation }) {
 	const width = image.naturalWidth;
 	const height = image.naturalHeight;
 
@@ -21,23 +23,23 @@ export function prepareSource(canvas, image, { flipped, orientation, }) {
 		ctx.scale(-1, 1);
 	} else if (orientation == 3) {
 		ctx.translate(width, height);
-		ctx.rotate(180 / 180 * Math.PI);
+		ctx.rotate((180 / 180) * Math.PI);
 	} else if (orientation == 4) {
 		ctx.translate(0, height);
 		ctx.scale(1, -1);
 	} else if (orientation == 5) {
-		ctx.rotate(90 / 180 * Math.PI);
+		ctx.rotate((90 / 180) * Math.PI);
 		ctx.scale(1, -1);
 	} else if (orientation == 6) {
-		ctx.rotate(90 / 180 * Math.PI);
+		ctx.rotate((90 / 180) * Math.PI);
 		ctx.translate(0, -height);
 	} else if (orientation == 7) {
-		ctx.rotate(270 / 180 * Math.PI);
+		ctx.rotate((270 / 180) * Math.PI);
 		ctx.translate(-width, height);
 		ctx.scale(1, -1);
 	} else if (orientation == 8) {
 		ctx.translate(0, width);
-		ctx.rotate(270 / 180 * Math.PI);
+		ctx.rotate((270 / 180) * Math.PI);
 	}
 
 	ctx.drawImage(image, 0, 0, width, height);
@@ -46,35 +48,59 @@ export function prepareSource(canvas, image, { flipped, orientation, }) {
 	return canvas;
 }
 
-export function getImageTransforms(orientation) {
-	let result = {
+function base64ToArrayBuffer(base64) {
+	base64 = base64.replace(/^data:([^;]+);base64,/gim, '');
+	const binary = atob(base64);
+	const len = binary.length;
+	const buffer = new ArrayBuffer(len);
+	const view = new Uint8Array(buffer);
+	for (let i = 0; i < len; i++) {
+		view[i] = binary.charCodeAt(i);
+	}
+	return buffer;
+}
+
+function objectURLToBlob(url, callback) {
+	const http = new XMLHttpRequest();
+	http.open('GET', url, true);
+	http.responseType = 'blob';
+	http.onload = function () {
+		if (this.status == 200 || this.status === 0) {
+			callback(this.response);
+		}
+	};
+	http.send();
+}
+
+export function getImageTransforms(orientation: number) {
+	const result: ImageTransforms = {
 		orientation,
 	};
 	if (orientation) {
 		switch (orientation) {
-		case 2:
-			result.scaleX = -1;
-			break;
-		case 3:
-			result.rotate = -180;
-			break;
-		case 4:
-			result.scaleY = -1;
-			break;
-		case 5:
-			result.rotate = 90;
-			result.scaleY = -1;
-			break;
-		case 6:
-			result.rotate = 90;
-			break;
-		case 7:
-			result.rotate = 90;
-			result.scaleX = -1;
-			break;
-		case 8:
-			result.rotate = -90;
-			break;
+			case 2:
+				result.scaleX = -1;
+				break;
+			case 3:
+				result.rotate = -180;
+				break;
+			case 4:
+				result.scaleY = -1;
+				break;
+			case 5:
+				result.rotate = 90;
+				result.scaleY = -1;
+				break;
+			case 6:
+				result.rotate = 90;
+				break;
+			case 7:
+				result.rotate = 90;
+				result.scaleX = -1;
+				break;
+			case 8:
+				result.rotate = -90;
+				break;
 		}
 	}
 	if (result.rotate === 90 || result.rotate === -90) {
@@ -82,48 +108,15 @@ export function getImageTransforms(orientation) {
 	}
 	return result;
 }
-
-export function getStyleTransforms({ rotate, scaleX, scaleY, }) {
-	let transform = '';
-	if (rotate || scaleX || scaleY) {
-		if (rotate) {
-			transform += ` rotate(${rotate}deg) `;
-		}
-		if (scaleX) {
-			transform += ` scaleX(${scaleX}) `;
-		}
-		if (scaleY) {
-			transform += ` scaleY(${scaleY}) `;
-		}
-	}
-	return transform;
-}
-
-export function parseImage(src) {
-	return new Promise((resolve) => {
-		getImageData(src)
-			.then(data => {
-				resolve(data ?
-					{ source: src, arrayBuffer: data, orientation: getOrientation(data) } :
-					{ source: src, arrayBuffer: null, orientation: null }
-				);
-			})
-			.catch((error) => {
-				console.warn(error);
-				resolve({ source: src, arrayBuffer: null, orientation: null, });
-			});
-	});
-}
-
 function getImageData(img) {
 	return new Promise((resolve, reject) => {
 		try {
 			if (img) {
-				// Data URL
 				if (/^data:/i.test(img)) {
+					// Data URL
 					resolve(base64ToArrayBuffer(img));
-				// Blob
 				} else if (/^blob:/i.test(img)) {
+					// Blob
 					const fileReader = new FileReader();
 					fileReader.onload = function (e) {
 						resolve(e.target.result);
@@ -131,8 +124,8 @@ function getImageData(img) {
 					objectURLToBlob(img, function (blob) {
 						fileReader.readAsArrayBuffer(blob);
 					});
-				// Simple URL
 				} else {
+					// Simple URL
 					let http = new XMLHttpRequest();
 					http.onreadystatechange = function () {
 						if (http.readyState !== XHR_DONE) return;
@@ -150,7 +143,7 @@ function getImageData(img) {
 							http.abort();
 						}
 					};
-					http.withCredentials  = false;
+					http.withCredentials = false;
 					http.open('GET', img, true);
 					http.responseType = 'arraybuffer';
 					http.send(null);
@@ -164,29 +157,22 @@ function getImageData(img) {
 	});
 }
 
-function objectURLToBlob(url, callback) {
-	const http = new XMLHttpRequest();
-	http.open('GET', url, true);
-	http.responseType = 'blob';
-	http.onload = function () {
-		if (this.status == 200 || this.status === 0) {
-			callback(this.response);
+export function getStyleTransforms({ rotate, scaleX, scaleY }) {
+	let transform = '';
+	if (rotate || scaleX || scaleY) {
+		if (rotate) {
+			transform += ` rotate(${rotate}deg) `;
 		}
-	};
-	http.send();
+		if (scaleX) {
+			transform += ` scaleX(${scaleX}) `;
+		}
+		if (scaleY) {
+			transform += ` scaleY(${scaleY}) `;
+		}
+	}
+	return transform;
 }
 
-function base64ToArrayBuffer(base64) {
-	base64 = base64.replace(/^data:([^;]+);base64,/gmi, '');
-	const binary = atob(base64);
-	const len = binary.length;
-	const buffer = new ArrayBuffer(len);
-	const view = new Uint8Array(buffer);
-	for (let i = 0; i < len; i++) {
-		view[i] = binary.charCodeAt(i);
-	}
-	return buffer;
-}
 function getStringFromCharCode(dataView, start, length) {
 	let str = '';
 	let i;
@@ -206,11 +192,11 @@ function getOrientation(arrayBuffer) {
 		let app1Start;
 		let ifdStart;
 		// Only handle JPEG image (start by 0xFFD8)
-		if (dataView.getUint8(0) === 0xFF && dataView.getUint8(1) === 0xD8) {
+		if (dataView.getUint8(0) === 0xff && dataView.getUint8(1) === 0xd8) {
 			const length = dataView.byteLength;
 			let offset = 2;
 			while (offset + 1 < length) {
-				if (dataView.getUint8(offset) === 0xFF && dataView.getUint8(offset + 1) === 0xE1) {
+				if (dataView.getUint8(offset) === 0xff && dataView.getUint8(offset + 1) === 0xe1) {
 					app1Start = offset;
 					break;
 				}
@@ -225,8 +211,8 @@ function getOrientation(arrayBuffer) {
 
 				littleEndian = endianness === 0x4949;
 
-				if (littleEndian || endianness === 0x4D4D /* bigEndian */) {
-					if (dataView.getUint16(tiffOffset + 2, littleEndian) === 0x002A) {
+				if (littleEndian || endianness === 0x4d4d /* bigEndian */) {
+					if (dataView.getUint16(tiffOffset + 2, littleEndian) === 0x002a) {
 						const firstIFDOffset = dataView.getUint32(tiffOffset + 4, littleEndian);
 						if (firstIFDOffset >= 0x00000008) {
 							ifdStart = tiffOffset + firstIFDOffset;
@@ -239,7 +225,7 @@ function getOrientation(arrayBuffer) {
 			const length = dataView.getUint16(ifdStart, littleEndian);
 
 			for (let i = 0; i < length; i++) {
-				let offset = ifdStart + (i * 12) + 2;
+				let offset = ifdStart + i * 12 + 2;
 				if (dataView.getUint16(offset, littleEndian) === 0x0112 /* Orientation */) {
 					// 8 is the offset of the current tag's value
 					offset += 8;
@@ -257,6 +243,23 @@ function getOrientation(arrayBuffer) {
 	}
 }
 
+export function parseImage(src: string) {
+	return new Promise((resolve) => {
+		getImageData(src)
+			.then((data) => {
+				resolve(
+					data
+						? { source: src, arrayBuffer: data, orientation: getOrientation(data) }
+						: { source: src, arrayBuffer: null, orientation: null },
+				);
+			})
+			.catch((error) => {
+				console.warn(error);
+				resolve({ source: src, arrayBuffer: null, orientation: null });
+			});
+	});
+}
+
 export function arrayBufferToDataURL(arrayBuffer) {
 	const chunks = [];
 
@@ -266,10 +269,7 @@ export function arrayBufferToDataURL(arrayBuffer) {
 
 	while (uint8.length > 0) {
 		const value = uint8.subarray(0, chunkSize);
-		chunks.push(String.fromCharCode.apply(
-			null,
-			Array.from ? Array.from(value) : Array.slice(value)
-		));
+		chunks.push(String.fromCharCode.apply(null, Array.from ? Array.from(value) : value.slice()));
 		uint8 = uint8.subarray(chunkSize);
 	}
 

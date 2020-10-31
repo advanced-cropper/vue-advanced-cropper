@@ -2,7 +2,7 @@
 import classnames from 'classnames';
 import bem from 'easy-bem';
 import { distance } from '../../core/utils';
-import { MoveEvent } from '../../core/events.js';
+import { MoveEvent } from '../../core/events.ts';
 
 const cn = bem('vue-draggable-area');
 

@@ -8,6 +8,7 @@ import external from 'rollup-plugin-peer-deps-external';
 import Vue from 'rollup-plugin-vue';
 import css from 'rollup-plugin-merge-and-inject-css';
 import minify from 'rollup-plugin-babel-minify';
+import typescript from '@rollup/plugin-typescript';
 import pkg from './package.json';
 
 export default {
@@ -51,6 +52,7 @@ export default {
 		minify({
 			comments: false
 		}),
+		typescript(),
 		replace({
 			'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
 		}),

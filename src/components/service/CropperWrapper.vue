@@ -1,6 +1,6 @@
 <script>
-import { ManipulateImageEvent } from '../../core/events.js';
-import { distance } from '../../core/utils.js';
+import { ManipulateImageEvent } from '../../core/events.ts';
+import { distance } from '../../core/utils';
 
 export default {
 	name: 'CropperWrapper',

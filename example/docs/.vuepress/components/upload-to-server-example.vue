@@ -7,7 +7,7 @@
 		},
 		data() {
 			return {
-				image: 'https://images.unsplash.com/photo-1494256997604-768d1f608cac?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1101&q=80',
+				image: 'https://images.pexels.com/photos/1536198/pexels-photo-1536198.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
 			};
 		},
 		methods: {

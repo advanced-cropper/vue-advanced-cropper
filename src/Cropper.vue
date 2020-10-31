@@ -587,7 +587,7 @@ export default {
 			const resizeAlgorithm = (prevCoordinates, newCoordinates) => {
 				let coordinates = {
 					...prevCoordinates,
-					...algorithms.approximateSize({
+					...algorithms.approximatedSize({
 						width: newCoordinates.width,
 						height: newCoordinates.height,
 						sizeRestrictions: this.sizeRestrictions,

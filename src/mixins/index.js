@@ -1,1 +1,1 @@
-export { default as draggable } from './draggable.js';
+export { default as draggable } from './draggable';
