@@ -7,7 +7,7 @@ export default {
 	},
 	data() {
 		return {
-			img: 'https://images.pexels.com/photos/2737393/pexels-photo-2737393.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260',
+			img: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1049&q=80',
 			coordinates: {
 				width: 0,
 				height: 0,

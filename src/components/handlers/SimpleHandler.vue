@@ -3,7 +3,7 @@ import classnames from 'classnames';
 import bem from 'easy-bem';
 import { HandlerWrapper } from '../service';
 
-const cn = bem('vue-square-handler');
+const cn = bem('vue-simple-handler');
 
 export default {
 	name: 'SimpleHandler',
@@ -28,11 +28,21 @@ export default {
 			default: false,
 		}
 	},
+	data() {
+		return {
+			hover: false
+		}
+	},
 	computed: {
 		classnames() {
 			return {
 				default: classnames(
-					cn({ [this.position]: true, }),
+					cn({
+						[this.horizontalPosition]: Boolean(this.horizontalPosition),
+						[this.verticalPosition]: Boolean(this.verticalPosition),
+						[`${this.horizontalPosition}-${this.verticalPosition}`]: Boolean(this.verticalPosition && this.horizontalPosition),
+						'hover': this.hover
+					}),
 					this.classname,
 					this.hover && this.hoverClassname
 				),
@@ -59,13 +69,15 @@ export default {
     :horizontal-position="horizontalPosition"
     :disabled="disabled"
     @drag="onDrag"
+    @enter="onEnter"
+    @leave="onLeave"
   >
     <div :class="classnames.default" />
   </HandlerWrapper>
 </template>
 
 <style lang="scss">
-.vue-square-handler {
+.vue-simple-handler {
   display: block;
   background: white;
   height: 10px;

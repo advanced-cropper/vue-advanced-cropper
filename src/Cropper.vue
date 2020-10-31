@@ -315,6 +315,11 @@ export default {
 		minWidth() {
 			this.onPropsChange();
 		},
+		stencilComponent() {
+			this.$nextTick(() => {
+				this.resetCoordinates();
+			})
+		},
 		maxWidth() {
 			this.onPropsChange();
 		},
@@ -693,9 +698,6 @@ export default {
 					height: 0,
 				};
 			}, this.transitionTime);
-		},
-		getPositionRestrictions(insideArea = true) {
-			return insideArea ? algorithms.limitBy(this.positionRestrictions, this.visibleArea) : this.positionRestrictions;
 		},
 		refresh() {
 			return new Promise((resolve, reject) => {

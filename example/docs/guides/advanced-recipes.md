@@ -283,10 +283,10 @@ export default {
 />
 ```
 
-## Default visible area (zoom)
+## Default visible area
 
-Moreover, there are situations where you need to save, for example, previous visible area position. To implement
-it you can use `default-visible-area` prop.
+Moreover, there are situations where you need to save, for example, previous visible area position, i.e. zoom or translate image.
+To implement it you can use `default-visible-area` prop.
 
 <default-visible-area-example></default-visible-area-example>
 

@@ -7,7 +7,6 @@ title: Resize Event
 This event is emitted to stencil to resize a stencil. It emits, for example, by [BoundingBox]('/components/bouding-box.html) component.
 
 This event is represented by `ResizeEvent` class instance that has two fields:
-- `nativeEvent` is the literally last native event related to this drag event
 - `directions` is the object with `left`, `right`, `bottom`, `top` fields, that tells to resize stencil at corresponding count of pixels in that sides
 - `params` is the object with different params to customize resize algorithm
 
@@ -42,7 +41,6 @@ import { ResizeEvent } from 'vue-advanced-cropper'
 ```js
 // For example, inside a method of your stencil
 this.$emit('move', new ResizeEvent(
-	event,
 	{
 		left: leftShift,
 		right: rightShift,

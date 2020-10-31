@@ -30,7 +30,7 @@ export default {
 			}
 		},
 		onMouseLeave () {
-			if (this.hovered) {
+			if (this.hovered && !this.touches.length) {
 				this.hovered = false;
 				this.$emit('leave');
 			}
@@ -41,6 +41,7 @@ export default {
 
 				if (!this.hovered) {
 					this.$emit('enter');
+					this.hovered = true;
 				}
 
 				if (e.touches.length) {
@@ -103,7 +104,7 @@ export default {
 			}
 		},
 		onMouseUp () {
-			this.touches = [];
+			this.processEnd();
 		},
 		initAnchor (touch) {
 			const draggable = this.$refs.draggable;

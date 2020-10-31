@@ -19,7 +19,6 @@ yarn add vue-advanced-cropper
 
 Then you should add somewhere in your script file or block the import of `Cropper` component:
 ```js
-import Vue from 'vue'
 import { Cropper } from 'vue-advanced-cropper'
 ```
 
@@ -27,38 +26,34 @@ After that [register](https://vuejs.org/v2/guide/components-registration.html) t
 
 ## Minimal working example
 
-The following example is demonstrating the using of cropper:
+The following example is demonstrating the using of the cropper in a custom component:
 ```js
-import Vue from 'vue'
 import { Cropper } from 'vue-advanced-cropper'
 
-new Vue({
-	el: '#app',
+export default {
+	components: {
+		Cropper,
+	},
 	data: {
-		img: 'https://images.pexels.com/photos/226746/pexels-photo-226746.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260'
+		img: 'https://images.unsplash.com/photo-1600984575359-310ae7b6bdf2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=700&q=80'
 	},
 	methods: {
-		change({coordinates, canvas}) {
+		change({ coordinates, canvas }) {
 			console.log(coordinates, canvas)
 		}
 	},
-	components: {
-		Cropper
-	}
-})
+}
 ```
 
 ```html
-<div id="app">
-  <cropper
+<cropper
 	class="cropper"
 	:src="img"
 	:stencil-props="{
 		aspectRatio: 10/12
 	}"
 	@change="change"
-  ></cropper>
-</div>
+/>
 ```
 ``` css
 /*

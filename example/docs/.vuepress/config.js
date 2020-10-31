@@ -22,18 +22,18 @@ module.exports = {
 				children: [
 					'/introduction/getting-started',
 					'/introduction/concepts',
-					'/introduction/under-the-hood'
 				],
 			},
 			{
-				title: 'Tutorials',
+				title: 'Guides',
 				collapsable: false,
 				children: [
-					'/tutorials/recipes',
-					'/tutorials/advanced-recipes',
-					'/tutorials/customize-appearance',
-					'/tutorials/custom-stencil',
-					'/tutorials/showcase'
+					'/guides/recipes',
+					'/guides/advanced-recipes',
+					'/guides/theming',
+					'/guides/customize-appearance',
+					'/guides/custom-stencil',
+					'/guides/showcase'
 				],
 			},
 			{

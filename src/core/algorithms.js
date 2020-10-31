@@ -833,9 +833,9 @@ export function joinLimits(a, b) {
 			} else {
 				limits[direction] = Math.min(a[direction], b[direction]);
 			}
-		} else if (b[direction]) {
+		} else if (!isUndefined(b[direction])) {
 			limits[direction] = b[direction];
-		} else if (a[direction]) {
+		} else if (!isUndefined(a[direction])) {
 			limits[direction] = a[direction];
 		}
 	});
