@@ -1,6 +1,7 @@
 {
-	"parser": "@typescript-eslint/parser",
+	"parser": "vue-eslint-parser",
 	"parserOptions": {
+		"parser": "@typescript-eslint/parser",
 		"ecmaVersion": 2018,
 		"sourceType": "module",
 		"ecmaFeatures": {
@@ -35,6 +36,7 @@
 	"env": {
 		"browser": true,
 		"node": true,
-		"es6": true
+		"es6": true,
+		"jest": true
 	}
 }
