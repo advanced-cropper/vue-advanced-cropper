@@ -7,7 +7,7 @@ export default {
   },
   data() {
     return {
-      img: 'https://images.unsplash.com/photo-1586622620426-5bd3340198a6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=700&q=80',
+      img: 'https://images.unsplash.com/photo-1586083718719-019f9dc6ca94?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1024&q=80',
       coordinates: {
         width: 0,
         height: 0,

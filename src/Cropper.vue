@@ -6,6 +6,7 @@ import { RectangleStencil } from './components/stencils';
 import { CropperWrapper } from './components/service';
 import { isLoadedImage, replacedProp } from './core';
 import { MoveEvent, ManipulateImageEvent } from './core/events';
+import { limitSizeRestrictions } from './core/service';
 import { isLocal, isCrossOriginURL, isUndefined, getSettings, parseNumber } from './core/utils';
 import { arrayBufferToDataURL, getImageTransforms, getStyleTransforms, prepareSource, parseImage } from './core/image';
 import { IMAGE_RESTRICTIONS, DEFAULT_COORDINATES } from './core/constants';
@@ -119,7 +120,7 @@ export default {
 			type: Function,
 			default: algorithms.fitCoordinates,
 		},
-		updateVisibleArea: {
+		fitVisibleArea: {
 			type: Function,
 			default: algorithms.fitVisibleArea,
 		},
@@ -409,6 +410,7 @@ export default {
 			if (this.roundResult) {
 				return algorithms.roundCoordinates({
 					...this.getPublicProperties(),
+					positionRestrictions: algorithms.limitBy(this.positionRestrictions, this.visibleArea),
 					coordinates,
 				});
 			} else {
@@ -570,9 +572,12 @@ export default {
 			const coordinates = algorithms.applyTransform({
 				coordinates: this.coordinates,
 				transform,
-				sizeRestrictions: this.sizeRestrictions,
+				sizeRestrictions: this.visibleArea
+					? limitSizeRestrictions(this.sizeRestrictions, this.visibleArea)
+					: this.sizeRestrictions,
 				positionRestrictions: this.positionRestrictions,
 				aspectRatio: this.getAspectRatio(),
+				imageSize: this.imageSize,
 			});
 
 			if (autoZoom) {
@@ -685,35 +690,34 @@ export default {
 
 					// 2. The code below should be executed after rerender (i.e. stretching of cropper)
 					this.$nextTick(() => {
+						const previousBoundaries = { ...this.boundaries };
+
 						this.boundaries = this.defaultBoundaries({
 							cropper,
 							imageSize: this.imageSize,
 						});
 
-						const visibleArea = algorithms.refineVisibleArea({
-							visibleArea: this.defaultVisibleArea({
-								imageSize: this.imageSize,
+						if (!this.visibleArea.width) {
+							this.visibleArea = algorithms.refineVisibleArea({
+								visibleArea: this.defaultVisibleArea({
+									imageSize: this.imageSize,
+									boundaries: this.boundaries,
+									areaRestrictions: this.areaRestrictions,
+								}),
 								boundaries: this.boundaries,
-								areaRestrictions: this.areaRestrictions,
-							}),
-							boundaries: this.boundaries,
-						});
-
-						if (this.visibleArea) {
-							this.visibleArea = this.updateVisibleArea({
-								current: visibleArea,
-								previous: this.visibleArea,
-								areaRestrictions: this.areaRestrictions,
-								coordinates: this.coordinates,
-								boundaries: this.boundaries,
-								imageSize: this.imageSize,
 							});
 						} else {
-							this.visibleArea = visibleArea;
+							this.visibleArea = this.fitVisibleArea({
+								imageSize: this.imageSize,
+								boundaries: this.boundaries,
+								visibleArea: this.visibleArea,
+								coordinates: this.coordinates,
+								areaRestrictions: this.areaRestrictions,
+							});
 						}
 
 						// If visible area was changed the coordinates should be adapted to this changes
-						if (this.coordinates) {
+						if (this.coordinates.width) {
 							this.coordinates = this.fitCoordinates({
 								visibleArea: this.visibleArea,
 								coordinates: this.coordinates,

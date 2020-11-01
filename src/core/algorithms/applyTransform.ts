@@ -1,21 +1,30 @@
-import { AspectRatio, PositionRestrictions, SizeRestrictions, Transform, Coordinates } from '../typings';
+import { AspectRatio, PositionRestrictions, SizeRestrictions, Transform, Coordinates, Size } from '../typings';
 import { MoveEvent } from '../events';
 import { approximatedSize } from './approximatedSize';
 import { isUndefined } from '../utils';
+import { move } from './move';
 
 interface ApplyTransformParams {
 	coordinates: Coordinates;
 	transform: Transform | Transform[];
 	sizeRestrictions: SizeRestrictions;
 	positionRestrictions: PositionRestrictions;
+	imageSize: Size;
 	aspectRatio?: AspectRatio;
 }
 
 export function applyTransform(params: ApplyTransformParams) {
-	const { coordinates: initialCoordinates, transform, sizeRestrictions, positionRestrictions, aspectRatio } = params;
+	const {
+		coordinates: initialCoordinates,
+		transform,
+		imageSize,
+		sizeRestrictions,
+		positionRestrictions,
+		aspectRatio,
+	} = params;
 
 	const moveAlgorithm = (prevCoordinates, newCoordinates) => {
-		return this.moveAlgorithm({
+		return move({
 			coordinates: prevCoordinates,
 			positionRestrictions,
 			event: new MoveEvent({
@@ -31,8 +40,8 @@ export function applyTransform(params: ApplyTransformParams) {
 			...approximatedSize({
 				width: newCoordinates.width,
 				height: newCoordinates.height,
-				sizeRestrictions: sizeRestrictions,
-				aspectRatio: aspectRatio,
+				sizeRestrictions,
+				aspectRatio,
 			}),
 			left: 0,
 			top: 0,
@@ -51,7 +60,7 @@ export function applyTransform(params: ApplyTransformParams) {
 	transforms.forEach((transform) => {
 		let changes: Partial<Coordinates> = {};
 		if (typeof transform === 'function') {
-			changes = transform({ ...coordinates }, this.imageSize);
+			changes = transform({ ...coordinates }, imageSize);
 		} else {
 			changes = transform;
 		}
@@ -64,5 +73,5 @@ export function applyTransform(params: ApplyTransformParams) {
 		}
 	});
 
-
+	return coordinates;
 }

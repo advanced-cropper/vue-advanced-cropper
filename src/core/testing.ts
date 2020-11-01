@@ -1,3 +1,5 @@
+// @ts-ignore
+
 import {
 	Coordinates,
 	Point,
@@ -115,7 +117,7 @@ export function examine(cropper: Cropper) {
 
 export class Cropper {
 	coordinates: Coordinates;
-	visibleArea: VisibleArea;
+	visibleArea: VisibleArea | null;
 	boundaries: Boundaries;
 	areaRestrictions: AreaRestrictions;
 	sizeRestrictions: SizeRestrictions;
@@ -150,6 +152,7 @@ export class Cropper {
 		this.render = render;
 		this.aspectRatio = aspectRatio || {};
 		this.imageRestriction = imageRestriction || 'none';
+		this.visibleArea = null;
 	}
 
 	public setImage(image: ImageSize) {
@@ -210,18 +213,17 @@ export class Cropper {
 	public refresh(boundaries?: Boundaries) {
 		this.boundaries = boundaries || this.boundaries;
 		this.$setVisibleArea(
-			fitVisibleArea({
-				current: refineVisibleArea({
-					visibleArea: defaultVisibleArea({
+			this.visibleArea
+				? fitVisibleArea({
+						areaRestrictions: this.areaRestrictions,
+						visibleArea: this.visibleArea,
+						coordinates: this.coordinates,
+						boundaries: this.boundaries,
+				  })
+				: defaultVisibleArea({
 						boundaries: this.boundaries,
 						imageSize: this.imageSize,
-					}),
-					boundaries: this.boundaries,
-				}),
-				previous: this.visibleArea,
-				areaRestrictions: this.areaRestrictions,
-				coordinates: this.coordinates,
-			}),
+				  }),
 		);
 
 		this.$setCoordinates(

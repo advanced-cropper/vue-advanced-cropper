@@ -1,14 +1,39 @@
 // This function returns the approximation size to width / height with respect to
 // restrictions and aspect ratio
 import { AspectRatio, Size, SizeRestrictions } from '../typings';
+import { ratio } from '../service';
 
-interface Candidate extends Size {
+interface CandidateSize extends Size {
+	// Additional param to prevent double precision problems
 	correctRatio?: boolean;
+}
+
+interface ValidateSizeParams {
+	size: CandidateSize;
+	aspectRatio: AspectRatio;
+	sizeRestrictions: SizeRestrictions;
+	ignoreMinimum?: boolean;
+}
+function validateSize(params: ValidateSizeParams): boolean {
+	const { size, aspectRatio, ignoreMinimum, sizeRestrictions } = params;
+	return Boolean(
+		(size.correctRatio || (ratio(size) >= aspectRatio.minimum && ratio(size) <= aspectRatio.maximum)) &&
+			size.height <= sizeRestrictions.maxHeight &&
+			size.width <= sizeRestrictions.maxWidth &&
+			size.width &&
+			size.height &&
+			(ignoreMinimum || (size.height >= sizeRestrictions.minHeight && size.width >= sizeRestrictions.minWidth)),
+	);
+}
+
+function distance(a: Size, b: Size): number {
+	return Math.pow(a.width - b.width, 2) + Math.pow(a.height - b.height, 2);
 }
 
 // Limitations:
 // 1. Assume that maximum width and height always larger than minimum width and height
 // 2. Assume that aspectRatio.minimum < aspectRatio.maximum
+// If you break this limitations function could return null!
 interface ApproximatedSizeParams {
 	width: number;
 	height: number;
@@ -16,10 +41,11 @@ interface ApproximatedSizeParams {
 	aspectRatio?: AspectRatio;
 }
 export function approximatedSize(params: ApproximatedSizeParams): Size {
-	const { width, height, aspectRatio, sizeRestrictions } = params;
-	const ratio = {
-		minimum: (aspectRatio && aspectRatio.minimum) || 0,
-		maximum: (aspectRatio && aspectRatio.maximum) || Infinity,
+	const { width, height, sizeRestrictions } = params;
+
+	const aspectRatio = {
+		minimum: (params.aspectRatio && params.aspectRatio.minimum) || 0,
+		maximum: (params.aspectRatio && params.aspectRatio.maximum) || Infinity,
 	};
 
 	const coordinates = {
@@ -27,29 +53,11 @@ export function approximatedSize(params: ApproximatedSizeParams): Size {
 		height: Math.max(sizeRestrictions.minHeight, Math.min(sizeRestrictions.maxHeight, height)),
 	};
 
-	function distance(a: Size, b: Size): number {
-		return Math.pow(a.width - b.width, 2) + Math.pow(a.height - b.height, 2);
-	}
-
-	function isValid(candidate: Candidate, ignoreMinimum = false): boolean {
-		return Boolean(
-			(candidate.correctRatio ||
-				(candidate.width >= candidate.height * ratio.minimum &&
-					candidate.width <= candidate.height * ratio.maximum)) &&
-				candidate.height <= sizeRestrictions.maxHeight &&
-				candidate.width <= sizeRestrictions.maxWidth &&
-				candidate.width &&
-				candidate.height &&
-				(ignoreMinimum ||
-					(candidate.height >= sizeRestrictions.minHeight && candidate.width >= sizeRestrictions.minWidth)),
-		);
-	}
-
-	function findBestCandidate(candidates: Candidate[], ignoreMinimum = false): Candidate | null {
-		return candidates.reduce<Candidate | null>((minimum: Candidate | null, candidate: Candidate) => {
-			if (isValid(candidate, ignoreMinimum)) {
-				return !minimum || distance(candidate, { width, height }) < distance(minimum, { width, height })
-					? candidate
+	function findBestCandidate(candidates: CandidateSize[], ignoreMinimum = false): CandidateSize | null {
+		return candidates.reduce<CandidateSize | null>((minimum: CandidateSize | null, size: CandidateSize) => {
+			if (validateSize({ size, aspectRatio, sizeRestrictions, ignoreMinimum })) {
+				return !minimum || distance(size, { width, height }) < distance(minimum, { width, height })
+					? size
 					: minimum;
 			} else {
 				return minimum;
@@ -57,7 +65,7 @@ export function approximatedSize(params: ApproximatedSizeParams): Size {
 		}, null);
 	}
 
-	const candidates: Candidate[] = [];
+	const candidates: CandidateSize[] = [];
 
 	if (aspectRatio) {
 		[aspectRatio.minimum, aspectRatio.maximum].forEach((ratio) => {
@@ -70,14 +78,16 @@ export function approximatedSize(params: ApproximatedSizeParams): Size {
 		});
 	}
 
-	if (isValid(coordinates)) {
+	if (validateSize({ size: coordinates, aspectRatio, sizeRestrictions })) {
 		candidates.push(coordinates);
 	}
 
-	const candidate = (findBestCandidate(candidates) || findBestCandidate(candidates, true)) as Size;
+	const candidate = findBestCandidate(candidates) || findBestCandidate(candidates, true);
 
-	return {
-		width: candidate.width,
-		height: candidate.height,
-	};
+	return (
+		candidate && {
+			width: candidate.width,
+			height: candidate.height,
+		}
+	);
 }

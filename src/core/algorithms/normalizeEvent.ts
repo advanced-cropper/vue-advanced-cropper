@@ -1,6 +1,6 @@
-import { ManipulateImageEvent, MoveEvent, ResizeEvent } from "../events";
-import { VisibleArea } from "../typings";
-import { ALL_DIRECTIONS, MAIN_DIRECTIONS } from "../constants";
+import { ManipulateImageEvent, MoveEvent, ResizeEvent } from '../events';
+import { VisibleArea } from '../typings';
+import { ALL_DIRECTIONS, MAIN_DIRECTIONS } from '../constants';
 
 interface NormalizeEventParams {
 	event: ResizeEvent | MoveEvent | ManipulateImageEvent;
@@ -8,7 +8,6 @@ interface NormalizeEventParams {
 	coefficient: number;
 }
 export function normalizeEvent({ event, visibleArea, coefficient }: NormalizeEventParams) {
-	console.log(event, coefficient);
 	if (event.type === 'manipulateImage') {
 		return {
 			...event,
@@ -18,12 +17,13 @@ export function normalizeEvent({ event, visibleArea, coefficient }: NormalizeEve
 			},
 			scale: {
 				factor: event.scale && event.scale.factor ? event.scale.factor : 1,
-				center: event.scale && event.scale.center
-					? {
-						left: event.scale.center.left * coefficient + visibleArea.left,
-						top: event.scale.center.top * coefficient + visibleArea.top,
-					}
-					: null,
+				center:
+					event.scale && event.scale.center
+						? {
+							left: event.scale.center.left * coefficient + visibleArea.left,
+							top: event.scale.center.top * coefficient + visibleArea.top,
+						  }
+						: null,
 			},
 		};
 	} else if (event.type === 'resize') {

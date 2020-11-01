@@ -57,6 +57,13 @@ const tests = [
 	},
 ];
 
+
+test('Correct approximation', () => {
+	tests.forEach((test) => {
+		expect(approximatedSize(test.input)).toStrictEqual(test.output)
+	})
+});
+
 test('Should return result in ANY POSSIBLE situations', () => {
 	const random = mockRandom();
 	const iterations = 20;

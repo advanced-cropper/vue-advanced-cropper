@@ -1,4 +1,4 @@
-export * from './applyTransforms';
+export * from './applyTransform';
 export * from './approximatedSize';
 export * from './areaRestrictions';
 export * from './autoZoom';
@@ -18,4 +18,4 @@ export * from './refineSizeRestrictions';
 export * from './refineVisibleArea';
 export * from './resize';
 export * from './roundCoordinates';
-export * from './updateVisibleArea';
+export * from './fitVisibleArea';

@@ -16,7 +16,6 @@ export function refineSizeRestrictions({
 	positionRestrictions,
 	imageRestriction = 'none',
 }: RefineSizeRestrictionsParams) {
-
 	// User can forget to set some of restrictions, so we should init them by default values
 	const restrictions = {
 		...sizeRestrictions,
@@ -25,6 +24,7 @@ export function refineSizeRestrictions({
 		maxWidth: sizeRestrictions.maxWidth !== undefined ? sizeRestrictions.maxWidth : Infinity,
 		maxHeight: sizeRestrictions.maxHeight !== undefined ? sizeRestrictions.maxHeight : Infinity,
 	};
+
 
 	// The situation, when stencil can't be positioned in cropper due to positionRestrictions should be avoided
 	if (positionRestrictions.left !== undefined && positionRestrictions.right !== undefined) {
@@ -57,7 +57,7 @@ export function refineSizeRestrictions({
 				`Warning: maximum width (${restrictions.maxWidth}px) fewer that the minimum width (${restrictions.minWidth}px). It is set equal to the minimum width and width resizing was blocked`,
 			);
 		}
-		restrictions.maxWidth = restrictions.minWidth;
+		restrictions.minWidth = restrictions.maxWidth;
 		restrictions.widthFrozen = true;
 	}
 
@@ -67,13 +67,9 @@ export function refineSizeRestrictions({
 				`Warning: maximum height (${restrictions.maxHeight}px) fewer that the minimum height (${restrictions.minHeight}px). It is set equal to the minimum height and height resizing was blocked`,
 			);
 		}
-		restrictions.maxHeight = restrictions.minHeight;
+		restrictions.minHeight = restrictions.maxHeight;
 		restrictions.heightFrozen = true;
 	}
-
-	// Stencil should not be larger than visible area anyway
-	restrictions.minWidth = Math.min(restrictions.minWidth, visibleArea.width);
-	restrictions.minHeight = Math.min(restrictions.minHeight, visibleArea.height);
 
 	return restrictions;
 }

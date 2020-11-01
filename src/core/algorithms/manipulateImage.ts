@@ -35,11 +35,7 @@ export function manipulateImage(params: ManipulateImageParams): ManipulateImageR
 
 	let areaScale = 1;
 	let stencilScale = 1;
-	const allowedScale =
-		scale.factor &&
-		Math.abs(scale.factor - 1) > 1e-3 &&
-		!sizeRestrictions.widthFrozen &&
-		!sizeRestrictions.heightFrozen;
+	const allowedScale =	scale.factor && Math.abs(scale.factor - 1) > 1e-3
 
 	visibleArea = applyMove(visibleArea, {
 		left: move.left || 0,
@@ -68,11 +64,17 @@ export function manipulateImage(params: ManipulateImageParams): ManipulateImageR
 		// Determine scale factor
 		if (scale.factor < 1) {
 			stencilScale = Math.max(scale.factor, scaleRestrictions.stencil.minimum);
+			if (stencilScale > 1) {
+				stencilScale = 1;
+			}
 		} else if (scale.factor > 1) {
 			stencilScale = Math.min(
 				scale.factor,
 				Math.min(scaleRestrictions.area.maximum, scaleRestrictions.stencil.maximum),
 			);
+			if (stencilScale < 1) {
+				stencilScale = 1;
+			}
 		}
 	}
 

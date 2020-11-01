@@ -1,58 +1,60 @@
-import { applyMove, applyScale, diff, fit, getCenter, getIntersections, isEqual, maxScale, toLimits } from "../service";
-import { Coordinates, AreaRestrictions, VisibleArea } from "../typings";
+import {
+	applyMove,
+	applyScale,
+	diff,
+	fit,
+	getCenter,
+	getIntersections,
+	inverseMove,
+	isEqual,
+	maxScale,
+	ratio,
+	toLimits,
+} from '../service';
+import { Coordinates, AreaRestrictions, VisibleArea, Boundaries } from '../typings';
 
 // This function updates visible area with respect to current transformations and fits
 // coordinates to the new visible area
-interface UpdateVisibleAreaParams {
-	current: VisibleArea;
-	previous: VisibleArea;
-	areaRestrictions: AreaRestrictions;
+interface FitVisibleAreaParams {
 	coordinates: Coordinates;
+	visibleArea: VisibleArea;
+	boundaries: Boundaries;
+	areaRestrictions: AreaRestrictions;
 }
-export function fitVisibleArea(params: UpdateVisibleAreaParams): VisibleArea {
-	const { current, previous, areaRestrictions, coordinates } = params;
-	let visibleArea = { ...current };
+export function fitVisibleArea(params: FitVisibleAreaParams): VisibleArea {
+	const { visibleArea: previousVisibleArea, boundaries, areaRestrictions, coordinates } = params;
 
-	if (previous && previous.width && previous.height && !isEqual(current, previous)) {
-		// Adapt scale transformations
-		if (previous.width > coordinates.width) {
+	let visibleArea = { ...previousVisibleArea };
+
+	visibleArea.height = visibleArea.width / ratio(boundaries);
+	visibleArea.top += (previousVisibleArea.height - visibleArea.height) / 2;
+
+	if (coordinates.height - visibleArea.height > 0 || coordinates.width - visibleArea.width > 0) {
+		visibleArea = applyScale(
+			visibleArea,
+			Math.max(coordinates.height / visibleArea.height, coordinates.width / visibleArea.height),
+		);
+	}
+
+	const intersections = getIntersections(visibleArea, areaRestrictions);
+
+	if (intersections.left + intersections.right + intersections.top + intersections.bottom) {
+		if (intersections.left + intersections.right > intersections.top + intersections.bottom) {
 			visibleArea = applyScale(
 				visibleArea,
-				Math.min(previous.height / visibleArea.height, maxScale(visibleArea, areaRestrictions)),
+				Math.min(
+					(visibleArea.width + intersections.left + intersections.right) / visibleArea.width,
+					maxScale(visibleArea, areaRestrictions),
+				),
 			);
 		} else {
 			visibleArea = applyScale(
 				visibleArea,
-				Math.min(previous.width / visibleArea.width, maxScale(visibleArea, areaRestrictions)),
+				Math.min(
+					(visibleArea.height + intersections.top + intersections.bottom) / visibleArea.height,
+					maxScale(visibleArea, areaRestrictions),
+				),
 			);
-		}
-
-		// Adapt move transformations
-		visibleArea = applyMove(visibleArea, diff(getCenter(previous), getCenter(visibleArea)));
-
-		// Prevent the breaking of limits
-		visibleArea = applyMove(visibleArea, fit(visibleArea, areaRestrictions));
-
-		const intersections = getIntersections(coordinates, toLimits(visibleArea));
-
-		if (intersections.left + intersections.right + intersections.top + intersections.bottom) {
-			if (intersections.left + intersections.right > intersections.top + intersections.bottom) {
-				visibleArea = applyScale(
-					visibleArea,
-					Math.min(
-						(visibleArea.width + intersections.left + intersections.right) / visibleArea.width,
-						maxScale(visibleArea, areaRestrictions),
-					),
-				);
-			} else {
-				visibleArea = applyScale(
-					visibleArea,
-					Math.min(
-						(visibleArea.width + intersections.top + intersections.bottom) / visibleArea.height,
-						maxScale(visibleArea, areaRestrictions),
-					),
-				);
-			}
 		}
 	}
 

@@ -9,6 +9,7 @@ import {
 	ResizeDirections,
 	Size,
 	SizeRestrictions,
+	VisibleArea,
 } from './typings';
 import { ALL_DIRECTIONS, HORIZONTAL_DIRECTIONS, VERTICAL_DIRECTIONS } from './constants';
 
@@ -123,6 +124,7 @@ export function maxScale(object: Coordinates, area: Limits): number {
 	);
 }
 
+// Move object to correspond limits
 export function fit(object: Coordinates, limits: Limits): MoveDirections {
 	const directions = {
 		left: 0,
@@ -310,7 +312,7 @@ export function fitSize(firstCoordinates: Size, secondCoordinates: Size): Size {
 	if (firstRatio > secondRatio) {
 		return {
 			width: secondCoordinates.width,
-			height: secondCoordinates.width * firstRatio,
+			height: secondCoordinates.width / firstRatio,
 		};
 	} else {
 		return {
@@ -322,4 +324,14 @@ export function fitSize(firstCoordinates: Size, secondCoordinates: Size): Size {
 
 export function fitPosition(coordinates: Coordinates, area: Limits) {
 	return applyMove(coordinates, fit(coordinates, area));
+}
+
+export function limitSizeRestrictions(sizeRestrictions: SizeRestrictions, object: Size) {
+	return {
+		...sizeRestrictions,
+		minWidth: Math.min(object.width, sizeRestrictions.minWidth),
+		minHeight: Math.min(object.height, sizeRestrictions.minHeight),
+		maxWidth: Math.min(object.width, sizeRestrictions.maxWidth),
+		maxHeight: Math.min(object.height, sizeRestrictions.maxHeight),
+	};
 }

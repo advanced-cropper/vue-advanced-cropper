@@ -36,21 +36,29 @@
 					}
 				}
 			},
-			updateVisibleArea({ current, previous, coordinates, imageSize }) {
-				if (previous.width && previous.height) {
-					const visibleArea = { ...current };
-					const coefficient = (imageSize.width > imageSize.height ? imageSize.height : imageSize.width) / coordinates.width;
-					const width = visibleArea.width / coefficient;
-					const height = visibleArea.height / coefficient;
+			fitVisibleArea({ visibleArea: previousVisibleArea, boundaries, coordinates, coefficient }) {
+				const ratio = boundaries.width / boundaries.height;
 
+				if (boundaries.width / boundaries.height < coordinates.width / coordinates.height) {
+					const coefficient = coordinates.width / (boundaries.width - 48);
+					const width = coordinates.width + 48 * coefficient
+					const height = width / ratio
 					return {
-						left: previous.left - (width - previous.width)/2,
-						top: previous.top - (height - previous.height)/2,
 						width,
-						height
+						height,
+						left: previousVisibleArea.left + (previousVisibleArea.width - width) / 2,
+						top: previousVisibleArea.top + (previousVisibleArea.height - height) / 2,
 					}
 				} else {
-					return current;
+					const coefficient = coordinates.height / (boundaries.height - 48);
+					const height = coordinates.height + 48 * coefficient;
+					const width = height * ratio;
+					return {
+						width,
+						height,
+						left: previousVisibleArea.left + (previousVisibleArea.width - width) / 2,
+						top: previousVisibleArea.top + (previousVisibleArea.height - height) / 2,
+					}
 				}
 			},
 			defaultVisibleArea({ imageSize, boundaries }) {
@@ -132,7 +140,7 @@
 		    }"
 			:debounce="false"
 			:canvas="false"
-			:update-visible-area="updateVisibleArea"
+			:fit-visible-area="fitVisibleArea"
 			:default-visible-area="defaultVisibleArea"
 			:default-size="defaultSize"
 			:default-boundaries="defaultBoundaries"
