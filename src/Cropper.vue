@@ -5,7 +5,7 @@ import debounce from 'debounce';
 import { RectangleStencil } from './components/stencils';
 import { CropperWrapper } from './components/service';
 import { isLoadedImage, replacedProp } from './core';
-import { MoveEvent, ManipulateImageEvent } from './core/events';
+import { ManipulateImageEvent } from './core/events';
 import { limitSizeRestrictions } from './core/service';
 import { isLocal, isCrossOriginURL, isUndefined, getSettings, parseNumber } from './core/utils';
 import { arrayBufferToDataURL, getImageTransforms, getStyleTransforms, prepareSource, parseImage } from './core/image';
@@ -327,9 +327,7 @@ export default {
 			this.onPropsChange();
 		},
 		imageRestriction() {
-			this.refresh().then(() => {
-				this.resetCoordinates();
-			});
+			this.reset();
 		},
 		stencilProps(oldProps, newProps) {
 			const significantProps = ['aspectRatio', 'minAspectRatio', 'maxAspectRatio'];
@@ -482,7 +480,7 @@ export default {
 					this.imageAttributes.crossOrigin = this.crossOrigin;
 				}
 				setTimeout(() => {
-					parseImage(this.src, this.checkOrientation).then(this.onParseImage);
+					parseImage(this.src).then(this.onParseImage);
 				}, this.transitionTime);
 			} else {
 				this.clearImage();
@@ -495,11 +493,17 @@ export default {
 		onSuccessLoadImage() {
 			// After loading image the current component can be unmounted
 			// Therefore there is a workaround to prevent processing the following code
-			if (this.$refs.image && !this.imageLoaded) {
+			const image = this.$refs.image;
+			if (image && !this.imageLoaded) {
+				if (this.imageTransforms.flipped) {
+					this.imageSize.height = image.naturalWidth;
+					this.imageSize.width = image.naturalHeight;
+				} else {
+					this.imageSize.height = image.naturalHeight;
+					this.imageSize.width = image.naturalWidth;
+				}
 				this.imageLoaded = true;
-				this.visibleArea = {};
-				this.refresh().then(() => {
-					this.resetCoordinates();
+				this.reset().then(() => {
 					this.$emit('ready');
 				});
 			}
@@ -566,15 +570,16 @@ export default {
 			this.onChangeCoordinates(coordinates);
 		},
 		onPropsChange() {
-			this.applyTransform(this.coordinates, true);
+			this.applyTransform(this.coordinates, true, true);
 		},
-		applyTransform(transform, autoZoom = false) {
+		applyTransform(transform, autoZoom = false, limited = false) {
 			const coordinates = algorithms.applyTransform({
 				coordinates: this.coordinates,
 				transform,
-				sizeRestrictions: this.visibleArea
-					? limitSizeRestrictions(this.sizeRestrictions, this.visibleArea)
-					: this.sizeRestrictions,
+				sizeRestrictions:
+					this.visibleArea && limited
+						? limitSizeRestrictions(this.sizeRestrictions, this.visibleArea)
+						: this.sizeRestrictions,
 				positionRestrictions: this.positionRestrictions,
 				aspectRatio: this.getAspectRatio(),
 				imageSize: this.imageSize,
@@ -651,7 +656,7 @@ export default {
 					...(Array.isArray(this.delayedTransforms) ? this.delayedTransforms : [this.delayedTransforms]),
 				);
 			}
-			this.applyTransform(transforms);
+			this.applyTransform(transforms, false, true);
 			this.delayedTransforms = null;
 		},
 		clearImage() {
@@ -667,73 +672,63 @@ export default {
 				};
 			}, this.transitionTime);
 		},
-		refresh() {
-			return new Promise((resolve, reject) => {
-				const image = this.$refs.image;
-				const cropper = this.$refs.cropper;
-				if (this.src && image) {
-					// 1. First of all, we should stretch cropper
-					const stretcher = this.$refs.stretcher;
-					if (this.imageTransforms.flipped) {
-						this.imageSize.height = image.naturalWidth;
-						this.imageSize.width = image.naturalHeight;
-					} else {
-						this.imageSize.height = image.naturalHeight;
-						this.imageSize.width = image.naturalWidth;
-					}
+		updateBoundaries() {
+			const stretcher = this.$refs.stretcher;
+			const cropper = this.$refs.cropper;
 
-					this.initStretcher({
-						cropper,
-						stretcher,
-						imageSize: this.imageSize,
-					});
-
-					// 2. The code below should be executed after rerender (i.e. stretching of cropper)
-					this.$nextTick(() => {
-						const previousBoundaries = { ...this.boundaries };
-
-						this.boundaries = this.defaultBoundaries({
-							cropper,
-							imageSize: this.imageSize,
-						});
-
-						if (!this.visibleArea.width) {
-							this.visibleArea = algorithms.refineVisibleArea({
-								visibleArea: this.defaultVisibleArea({
-									imageSize: this.imageSize,
-									boundaries: this.boundaries,
-									areaRestrictions: this.areaRestrictions,
-								}),
-								boundaries: this.boundaries,
-							});
-						} else {
-							this.visibleArea = this.fitVisibleArea({
-								imageSize: this.imageSize,
-								boundaries: this.boundaries,
-								visibleArea: this.visibleArea,
-								coordinates: this.coordinates,
-								areaRestrictions: this.areaRestrictions,
-							});
-						}
-
-						// If visible area was changed the coordinates should be adapted to this changes
-						if (this.coordinates.width) {
-							this.coordinates = this.fitCoordinates({
-								visibleArea: this.visibleArea,
-								coordinates: this.coordinates,
-								aspectRatio: this.getAspectRatio(),
-								positionRestrictions: this.positionRestrictions,
-								sizeRestrictions: this.calculateSizeRestrictions({
-									visibleArea: this.visibleArea,
-								}),
-							});
-						}
-						resolve();
-					});
-				} else {
-					reject();
-				}
+			this.initStretcher({
+				cropper,
+				stretcher,
+				imageSize: this.imageSize,
 			});
+
+			return this.$nextTick().then(() => {
+				this.boundaries = this.defaultBoundaries({
+					cropper,
+					imageSize: this.imageSize,
+				});
+			});
+		},
+		resetVisibleArea() {
+			return this.updateBoundaries().then(() => {
+				this.visibleArea = algorithms.refineVisibleArea({
+					visibleArea: this.defaultVisibleArea({
+						imageSize: this.imageSize,
+						boundaries: this.boundaries,
+						areaRestrictions: this.areaRestrictions,
+					}),
+					boundaries: this.boundaries,
+				});
+			});
+		},
+		updateVisibleArea() {
+			return this.updateBoundaries().then(() => {
+				this.visibleArea = this.fitVisibleArea({
+					imageSize: this.imageSize,
+					boundaries: this.boundaries,
+					visibleArea: this.visibleArea,
+					coordinates: this.coordinates,
+					areaRestrictions: this.areaRestrictions,
+				});
+				this.coordinates = this.fitCoordinates({
+					visibleArea: this.visibleArea,
+					coordinates: this.coordinates,
+					aspectRatio: this.getAspectRatio(),
+					positionRestrictions: this.positionRestrictions,
+					sizeRestrictions: this.calculateSizeRestrictions({
+						visibleArea: this.visibleArea,
+					}),
+				});
+			});
+		},
+		refresh() {
+			const image = this.$refs.image;
+			if (this.src && image) {
+				return this.updateVisibleArea();
+			}
+		},
+		reset() {
+			return this.resetVisibleArea().then(this.resetCoordinates);
 		},
 		getAspectRatio() {
 			if (this.$refs.stencil.aspectRatios) {
