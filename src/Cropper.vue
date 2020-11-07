@@ -708,11 +708,13 @@ export default {
 			this.delayedTransforms = null;
 		},
 		clearImage() {
-			const stretcher = this.$refs.stretcher;
 			this.imageLoaded = false;
 			setTimeout(() => {
-				stretcher.style.height = 'auto';
-				stretcher.style.width = 'auto';
+				const stretcher = this.$refs.stretcher;
+				if (stretcher) {
+					stretcher.style.height = 'auto';
+					stretcher.style.width = 'auto';
+				}
 				this.coordinates = this.defaultCoordinates();
 				this.boundaries = {
 					width: 0,

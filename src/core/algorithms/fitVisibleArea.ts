@@ -1,12 +1,10 @@
 import {
 	applyMove,
 	applyScale,
-	diff,
-	fit, fitPosition,
-	getCenter,
+	fit,
+	fitPosition,
 	getIntersections,
 	inverseMove,
-	isEqual,
 	maxScale,
 	ratio,
 	toLimits,
@@ -61,10 +59,18 @@ export function fitVisibleArea(params: FitVisibleAreaParams): VisibleArea {
 		}
 	}
 
-	// Move visible area to prevent overlap area restrictions
-	//visibleArea = applyMove(visibleArea, fitPosition(visibleArea, areaRestrictions));
+	// Move visible are to prevent moving of the coordinates:
+	const move = inverseMove(fit(coordinates, toLimits(visibleArea)));
+	if (visibleArea.width < coordinates.width) {
+		move.left = 0;
+	}
+	if (visibleArea.height < coordinates.height) {
+		move.top = 0;
+	}
+	visibleArea = applyMove(visibleArea, move);
 
-	visibleArea = fitPosition(visibleArea, areaRestrictions)
+	// Move visible area to prevent overlap the area restrictions
+	visibleArea = fitPosition(visibleArea, areaRestrictions);
 
 	return visibleArea;
 }
