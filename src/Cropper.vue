@@ -212,7 +212,7 @@ export default {
 	},
 	computed: {
 		initialized() {
-			return this.visibleArea;
+			return Boolean(this.visibleArea && this.imageLoaded);
 		},
 		settings() {
 			return {

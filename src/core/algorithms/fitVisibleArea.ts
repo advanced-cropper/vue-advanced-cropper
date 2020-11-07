@@ -2,7 +2,7 @@ import {
 	applyMove,
 	applyScale,
 	diff,
-	fit,
+	fit, fitPosition,
 	getCenter,
 	getIntersections,
 	inverseMove,
@@ -26,9 +26,11 @@ export function fitVisibleArea(params: FitVisibleAreaParams): VisibleArea {
 
 	let visibleArea = { ...previousVisibleArea };
 
+	// Scale visible area size to fit new boundaries:
 	visibleArea.height = visibleArea.width / ratio(boundaries);
 	visibleArea.top += (previousVisibleArea.height - visibleArea.height) / 2;
 
+	// Scale visible area to prevent overlap coordinates
 	if (coordinates.height - visibleArea.height > 0 || coordinates.width - visibleArea.width > 0) {
 		visibleArea = applyScale(
 			visibleArea,
@@ -36,6 +38,7 @@ export function fitVisibleArea(params: FitVisibleAreaParams): VisibleArea {
 		);
 	}
 
+	// Scale visible area to prevent overlap area restrictions
 	const intersections = getIntersections(visibleArea, areaRestrictions);
 
 	if (intersections.left + intersections.right + intersections.top + intersections.bottom) {
@@ -57,6 +60,11 @@ export function fitVisibleArea(params: FitVisibleAreaParams): VisibleArea {
 			);
 		}
 	}
+
+	// Move visible area to prevent overlap area restrictions
+	//visibleArea = applyMove(visibleArea, fitPosition(visibleArea, areaRestrictions));
+
+	visibleArea = fitPosition(visibleArea, areaRestrictions)
 
 	return visibleArea;
 }
