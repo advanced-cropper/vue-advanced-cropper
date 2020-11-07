@@ -5,6 +5,7 @@ import { isEmpty, replacedProp } from '../../core';
 import { directionNames } from '../../core/utils';
 import { ResizeEvent } from '../../core/events';
 import { SimpleHandler } from '../handlers';
+import { SimpleLine } from '../lines';
 
 const cn = bem('vue-bounding-box');
 
@@ -54,6 +55,9 @@ export default {
 		},
 		lineComponent: {
 			type: [Object, String],
+			default() {
+				return SimpleLine;
+			},
 		},
 		linesClasses: {
 			type: Object,
@@ -63,14 +67,14 @@ export default {
 		},
 		scalable: {
 			type: Boolean,
-			default: true
+			default: true,
 		},
 		// Deprecated props:
 		classname: {
 			type: String,
 			validator(value) {
 				return replacedProp(value, 'classname', 'class');
-			}
+			},
 		},
 		linesClassnames: {
 			type: Object,
@@ -79,7 +83,7 @@ export default {
 			},
 			validator(value) {
 				return replacedProp(value, 'linesClassnames', 'linesClasses');
-			}
+			},
 		},
 		handlersClassnames: {
 			type: Object,
@@ -88,15 +92,15 @@ export default {
 			},
 			validator(value) {
 				return replacedProp(value, 'handlersClassnames', 'handlersClasses');
-			}
+			},
 		},
 	},
 	data() {
 		const points = [];
-		HORIZONTAL_DIRECTIONS.forEach(hDirection => {
-			VERTICAL_DIRECTIONS.forEach(vDirection => {
+		HORIZONTAL_DIRECTIONS.forEach((hDirection) => {
+			VERTICAL_DIRECTIONS.forEach((vDirection) => {
 				if (hDirection !== vDirection) {
-					let { name, classname, } = directionNames(hDirection, vDirection);
+					let { name, classname } = directionNames(hDirection, vDirection);
 					points.push({
 						name,
 						classname,
@@ -116,17 +120,14 @@ export default {
 			const lines = isEmpty(this.linesClasses) ? this.linesClassnames : this.linesClasses;
 
 			return {
-				root: classnames(
-					cn(),
-					this.classname
-				),
+				root: classnames(cn(), this.classname),
 				handlers,
 				lines,
 			};
 		},
 		lineNodes() {
 			const lines = [];
-			this.points.forEach(point => {
+			this.points.forEach((point) => {
 				if ((!point.horizontalDirection || !point.verticalDirection) && this.lines[point.name]) {
 					lines.push({
 						name: point.name,
@@ -134,12 +135,12 @@ export default {
 						class: classnames(
 							this.classes.lines.default,
 							this.classes.lines[point.name],
-							!this.scalable && this.classes.lines.disabled
+							!this.scalable && this.classes.lines.disabled,
 						),
 						hoverClass: this.classes.lines.hover,
 						verticalDirection: point.verticalDirection,
 						horizontalDirection: point.horizontalDirection,
-						disabled: !this.scalable
+						disabled: !this.scalable,
 					});
 				}
 			});
@@ -147,19 +148,16 @@ export default {
 		},
 		handlerNodes() {
 			const handlers = [];
-			this.points.forEach(point => {
+			this.points.forEach((point) => {
 				if (this.handlers[point.name]) {
 					handlers.push({
 						name: point.name,
 						component: this.handlerComponent,
-						class: classnames(
-							this.classes.handlers.default,
-							this.classes.handlers[point.name]
-						),
+						class: classnames(this.classes.handlers.default, this.classes.handlers[point.name]),
 						hoverClass: this.classes.handlers.hover,
 						verticalDirection: point.verticalDirection,
 						horizontalDirection: point.horizontalDirection,
-						disabled: !this.scalable
+						disabled: !this.scalable,
 					});
 				}
 			});
@@ -167,10 +165,10 @@ export default {
 		},
 	},
 	beforeMount() {
-		window.addEventListener('mouseup', this.onMouseUp, { passive: false, });
-		window.addEventListener('mousemove', this.onMouseMove, { passive: false, });
-		window.addEventListener('touchmove', this.onTouchMove, { passive: false, });
-		window.addEventListener('touchend', this.onTouchEnd, { passive: false, });
+		window.addEventListener('mouseup', this.onMouseUp, { passive: false });
+		window.addEventListener('mousemove', this.onMouseMove, { passive: false });
+		window.addEventListener('touchmove', this.onTouchMove, { passive: false });
+		window.addEventListener('touchend', this.onTouchEnd, { passive: false });
 	},
 	beforeDestroy() {
 		window.removeEventListener('mouseup', this.onMouseUp);
@@ -183,7 +181,7 @@ export default {
 	},
 	methods: {
 		onHandlerDrag(dragEvent, horizontalDirection, verticalDirection) {
-			const { left, top, } = dragEvent.shift();
+			const { left, top } = dragEvent.shift();
 
 			const directions = {
 				left: 0,
@@ -211,9 +209,9 @@ export default {
 			}
 
 			if (this.scalable) {
-				this.$emit('resize', new ResizeEvent(
-					directions,
-					{
+				this.$emit(
+					'resize',
+					new ResizeEvent(directions, {
 						allowedDirections: {
 							left: horizontalDirection === 'west' || !horizontalDirection,
 							right: horizontalDirection === 'east' || !horizontalDirection,
@@ -222,8 +220,8 @@ export default {
 						},
 						preserveAspectRatio: dragEvent.nativeEvent && dragEvent.nativeEvent.shiftKey,
 						respectDirection,
-					}
-				));
+					}),
+				);
 			}
 		},
 	},
@@ -231,43 +229,40 @@ export default {
 </script>
 
 <template>
-  <div
-    ref="box"
-    :class="classes.root"
-  >
-    <slot />
-    <div>
-      <component
-        :is="line.component"
-        v-for="line in lineNodes"
-        :key="line.name"
-        :classname="line.class"
-        :hover-classname="line.hoverClass"
-        :position="line.name"
-        :disabled="line.disabled"
-        @drag="onHandlerDrag($event, line.horizontalDirection, line.verticalDirection)"
-      />
-    </div>
-    <div>
-      <component
-        :is="handler.component"
-        v-for="handler in handlerNodes"
-        :key="handler.name"
-        :classname="handler.class"
-        :hover-classname="handler.hoverClass"
-        :horizontal-position="handler.horizontalDirection"
-        :vertical-position="handler.verticalDirection"
-        :disabled="handler.disabled"
-        @drag="onHandlerDrag($event, handler.horizontalDirection, handler.verticalDirection)"
-      />
-    </div>
-  </div>
+	<div ref="box" :class="classes.root">
+		<slot />
+		<div>
+			<component
+				:is="line.component"
+				v-for="line in lineNodes"
+				:key="line.name"
+				:classname="line.class"
+				:hover-classname="line.hoverClass"
+				:position="line.name"
+				:disabled="line.disabled"
+				@drag="onHandlerDrag($event, line.horizontalDirection, line.verticalDirection)"
+			/>
+		</div>
+		<div>
+			<component
+				:is="handler.component"
+				v-for="handler in handlerNodes"
+				:key="handler.name"
+				:classname="handler.class"
+				:hover-classname="handler.hoverClass"
+				:horizontal-position="handler.horizontalDirection"
+				:vertical-position="handler.verticalDirection"
+				:disabled="handler.disabled"
+				@drag="onHandlerDrag($event, handler.horizontalDirection, handler.verticalDirection)"
+			/>
+		</div>
+	</div>
 </template>
 
 <style lang="scss">
 .vue-bounding-box {
-  position: relative;
-  height: 100%;
-  width: 100%;
+	position: relative;
+	height: 100%;
+	width: 100%;
 }
 </style>

@@ -383,6 +383,32 @@ export default {
 	},
 };
 ```
+
+## Dynamic cropper size
+
+There are situations, when a cropper container size is changed. It's
+can't be handle by cropper itself, because it doesn't know about this changes at all (in contradistinction to window's resize),
+so you should call [refresh](/components/cropper.html#refresh) method.
+
+::: tip 
+This situation may seems unlikely, but in fact if your cropper was in a container that was, for example, hidden by 
+`display: none`, you should call `refresh` method after its appearing.
+:::
+
+There is a minimal example:
+```html
+	<cropper ref="cropper"/>
+```
+
+```js
+	// On some change, that causes container's size change
+	this.$refs.cropper.refresh();
+```
+
+
+<refresh-example></refresh-example>
+
+
 ## Blurred background
 
 <blurred-background-example></blurred-background-example>
