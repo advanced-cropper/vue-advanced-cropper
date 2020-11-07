@@ -44,6 +44,14 @@ import 'vue-advanced-cropper/theme.engineer.css';
 ```
 <theme-example theme="engineer"/>
 
+### Classic
+
+The simple classic theme
+```js
+import 'vue-advanced-cropper/theme.classic.css';
+```
+<theme-example theme="classic"/>
+
 ### Bubble
 
 The bright and light theme. 
