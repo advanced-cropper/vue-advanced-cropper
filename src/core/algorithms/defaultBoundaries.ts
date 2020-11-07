@@ -1,4 +1,4 @@
-import { Boundaries, Size } from "../typings";
+import { Boundaries, Size } from '../typings';
 
 interface DefaultBoundariesParams {
 	cropper: HTMLElement;

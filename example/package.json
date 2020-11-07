@@ -7,6 +7,7 @@
 		"build": "vuepress build docs"
 	},
 	"dependencies": {
+		"bootstrap-vue": "^2.18.1",
 		"core-js": "^2.6.5",
 		"easy-bem": "^1.0.2",
 		"vue": "^2.6.6",

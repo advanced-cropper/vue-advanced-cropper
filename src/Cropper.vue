@@ -204,13 +204,16 @@ export default {
 				width: null,
 				height: null,
 			},
-			visibleArea: {},
+			visibleArea: null,
 			coordinates: {
 				...DEFAULT_COORDINATES,
 			},
 		};
 	},
 	computed: {
+		initialized() {
+			return this.visibleArea;
+		},
 		settings() {
 			return {
 				resize: getSettings(this.resize, {
@@ -225,14 +228,18 @@ export default {
 			};
 		},
 		coefficient() {
-			return this.visibleArea.width ? this.visibleArea.width / this.boundaries.width : 0;
+			return this.visibleArea ? this.visibleArea.width / this.boundaries.width : 0;
 		},
 		areaRestrictions() {
-			return this.areaRestrictionsAlgorithm({
-				imageSize: this.imageSize,
-				visibleArea: this.visibleArea,
-				imageRestriction: this.imageRestriction,
-			});
+			if (this.initialized) {
+				return this.areaRestrictionsAlgorithm({
+					imageSize: this.imageSize,
+					visibleArea: this.visibleArea,
+					imageRestriction: this.imageRestriction,
+				});
+			} else {
+				return {};
+			}
 		},
 		areaStyle() {
 			return {
@@ -261,10 +268,45 @@ export default {
 			return result;
 		},
 		sizeRestrictions() {
-			return this.calculateSizeRestrictions();
+			if (this.initialized) {
+				const sizeRestrictions = (this.restrictions || this.sizeRestrictionsAlgorithm)({
+					imageSize: this.imageSize,
+					minWidth: !isUndefined(this.minWidth) ? parseNumber(this.minWidth) : 0,
+					minHeight: !isUndefined(this.minHeight) ? parseNumber(this.minHeight) : 0,
+					maxWidth: !isUndefined(this.maxWidth) ? parseNumber(this.maxWidth) : Infinity,
+					maxHeight: !isUndefined(this.maxHeight) ? parseNumber(this.maxHeight) : Infinity,
+					// Deprecated params
+					imageWidth: this.imageSize.width,
+					imageHeight: this.imageSize.height,
+					props: this.$props,
+				});
+
+				return algorithms.refineSizeRestrictions({
+					sizeRestrictions,
+					visibleArea: this.visibleArea,
+					positionRestrictions: this.positionRestrictions,
+					imageSize: this.imageSize,
+					imageRestriction: this.imageRestriction,
+				});
+			} else {
+				return {
+					minWidth: 0,
+					minHeight: 0,
+					maxWidth: 0,
+					maxHeight: 0,
+				};
+			}
 		},
 		positionRestrictions() {
-			return this.calculatePositionRestrictions();
+			if (this.initialized) {
+				return this.positionRestrictionsAlgorithm({
+					imageSize: this.imageSize,
+					imageRestriction: this.imageRestriction,
+					visibleArea: this.visibleArea,
+				});
+			} else {
+				return {};
+			}
 		},
 		// Styling
 		classes() {
@@ -283,18 +325,22 @@ export default {
 				...this.basicImageTransforms,
 				scaleX: this.basicImageTransforms.scaleX || 1,
 				scaleY: this.basicImageTransforms.scaleY || 1,
-				translateX: this.visibleArea.left / this.coefficient,
-				translateY: this.visibleArea.top / this.coefficient,
+				translateX: this.visibleArea ? this.visibleArea.left / this.coefficient : 0,
+				translateY: this.visibleArea ? this.visibleArea.top / this.coefficient : 0,
 			};
 		},
 		stencilCoordinates() {
-			const { width, height, left, top } = this.coordinates;
-			return {
-				width: width / this.coefficient,
-				height: height / this.coefficient,
-				left: (left - this.visibleArea.left) / this.coefficient,
-				top: (top - this.visibleArea.top) / this.coefficient,
-			};
+			if (this.initialized) {
+				const { width, height, left, top } = this.coordinates;
+				return {
+					width: width / this.coefficient,
+					height: height / this.coefficient,
+					left: (left - this.visibleArea.left) / this.coefficient,
+					top: (top - this.visibleArea.top) / this.coefficient,
+				};
+			} else {
+				return this.defaultCoordinates();
+			}
 		},
 		wrapperStyle() {
 			return {
@@ -363,13 +409,13 @@ export default {
 				this.updateCanvas(this.coordinates);
 				return {
 					coordinates,
-					visibleArea: { ...this.visibleArea },
+					visibleArea: this.visibleArea ? { ...this.visibleArea } : null,
 					canvas: this.$refs.canvas,
 				};
 			} else {
 				return {
 					coordinates,
-					visibleArea: { ...this.visibleArea },
+					visibleArea: this.visibleArea ? { ...this.visibleArea } : null,
 				};
 			}
 		},
@@ -476,11 +522,12 @@ export default {
 			this.imageAttributes.src = null;
 
 			if (this.src) {
+				const promise = parseImage(this.src);
 				if (isCrossOriginURL(this.src) && this.canvas) {
 					this.imageAttributes.crossOrigin = this.crossOrigin;
 				}
 				setTimeout(() => {
-					parseImage(this.src).then(this.onParseImage);
+					promise.then(this.onParseImage);
 				}, this.transitionTime);
 			} else {
 				this.clearImage();
@@ -596,7 +643,8 @@ export default {
 		resetCoordinates() {
 			// This function can be asynchronously called after completion of refreshing image promise
 			// Therefore there is a workaround to prevent processing after the component was unmounted
-			if (!this.$refs.image) return;
+			// Also coordinates can't be reset if visible area was not initialized
+			if (!this.$refs.image || !this.initialized) return;
 
 			const cropper = this.$refs.cropper;
 			const image = this.$refs.image;
@@ -665,7 +713,7 @@ export default {
 			setTimeout(() => {
 				stretcher.style.height = 'auto';
 				stretcher.style.width = 'auto';
-				this.coordinates = { ...DEFAULT_COORDINATES };
+				this.coordinates = this.defaultCoordinates();
 				this.boundaries = {
 					width: 0,
 					height: 0,
@@ -687,44 +735,57 @@ export default {
 					cropper,
 					imageSize: this.imageSize,
 				});
+				if (!this.boundaries.width || !this.boundaries.height) {
+					throw new Error("It's impossible to fit the cropper in the current container");
+				}
 			});
 		},
 		resetVisibleArea() {
-			return this.updateBoundaries().then(() => {
-				this.visibleArea = algorithms.refineVisibleArea({
-					visibleArea: this.defaultVisibleArea({
-						imageSize: this.imageSize,
+			return this.updateBoundaries()
+				.then(() => {
+					this.visibleArea = algorithms.refineVisibleArea({
+						visibleArea: this.defaultVisibleArea({
+							imageSize: this.imageSize,
+							boundaries: this.boundaries,
+							areaRestrictions: this.areaRestrictions,
+						}),
 						boundaries: this.boundaries,
-						areaRestrictions: this.areaRestrictions,
-					}),
-					boundaries: this.boundaries,
+					});
+				})
+				.catch(() => {
+					this.visibleArea = null;
 				});
-			});
 		},
 		updateVisibleArea() {
-			return this.updateBoundaries().then(() => {
-				this.visibleArea = this.fitVisibleArea({
-					imageSize: this.imageSize,
-					boundaries: this.boundaries,
-					visibleArea: this.visibleArea,
-					coordinates: this.coordinates,
-					areaRestrictions: this.areaRestrictions,
-				});
-				this.coordinates = this.fitCoordinates({
-					visibleArea: this.visibleArea,
-					coordinates: this.coordinates,
-					aspectRatio: this.getAspectRatio(),
-					positionRestrictions: this.positionRestrictions,
-					sizeRestrictions: this.calculateSizeRestrictions({
+			return this.updateBoundaries()
+				.then(() => {
+					this.visibleArea = this.fitVisibleArea({
+						imageSize: this.imageSize,
+						boundaries: this.boundaries,
 						visibleArea: this.visibleArea,
-					}),
+						coordinates: this.coordinates,
+						areaRestrictions: this.areaRestrictions,
+					});
+					this.coordinates = this.fitCoordinates({
+						visibleArea: this.visibleArea,
+						coordinates: this.coordinates,
+						aspectRatio: this.getAspectRatio(),
+						positionRestrictions: this.positionRestrictions,
+						sizeRestrictions: this.sizeRestrictions,
+					});
+				})
+				.catch(() => {
+					this.visibleArea = null;
 				});
-			});
 		},
 		refresh() {
 			const image = this.$refs.image;
 			if (this.src && image) {
-				return this.updateVisibleArea();
+				if (this.initialized) {
+					return this.updateVisibleArea();
+				} else {
+					return this.reset();
+				}
 			}
 		},
 		reset() {
@@ -753,36 +814,8 @@ export default {
 				imageRestriction: this.imageRestriction,
 			};
 		},
-		calculatePositionRestrictions(params = {}) {
-			const visibleArea = params.visibleArea || this.visibleArea;
-			return this.positionRestrictionsAlgorithm({
-				imageSize: this.imageSize,
-				imageRestriction: this.imageRestriction,
-				visibleArea,
-			});
-		},
-		calculateSizeRestrictions(params = {}) {
-			const visibleArea = params.visibleArea || this.visibleArea;
-
-			const sizeRestrictions = (this.restrictions || this.sizeRestrictionsAlgorithm)({
-				imageSize: this.imageSize,
-				minWidth: !isUndefined(this.minWidth) ? parseNumber(this.minWidth) : 0,
-				minHeight: !isUndefined(this.minHeight) ? parseNumber(this.minHeight) : 0,
-				maxWidth: !isUndefined(this.maxWidth) ? parseNumber(this.maxWidth) : Infinity,
-				maxHeight: !isUndefined(this.maxHeight) ? parseNumber(this.maxHeight) : Infinity,
-				// Deprecated params
-				imageWidth: this.imageSize.width,
-				imageHeight: this.imageSize.height,
-				props: this.$props,
-			});
-
-			return algorithms.refineSizeRestrictions({
-				visibleArea,
-				sizeRestrictions,
-				positionRestrictions: this.positionRestrictions,
-				imageSize: this.imageSize,
-				imageRestriction: this.imageRestriction,
-			});
+		defaultCoordinates() {
+			return { ...DEFAULT_COORDINATES };
 		},
 	},
 };

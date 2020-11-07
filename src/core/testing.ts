@@ -25,10 +25,8 @@ import {
 	fitCoordinates,
 	limitBy,
 	move,
-	percentRestrictions,
 	positionRestrictions,
 	refineSizeRestrictions,
-	refineVisibleArea,
 	resize,
 	fitVisibleArea,
 } from './algorithms';
@@ -306,12 +304,4 @@ export class Cropper {
 		);
 		this.$render();
 	}
-}
-
-export function mockRandom(initialSeed = 1) {
-	let seed = initialSeed;
-	return () => {
-		const x = Math.sin(seed++) * 10000;
-		return x - Math.floor(x);
-	};
 }
