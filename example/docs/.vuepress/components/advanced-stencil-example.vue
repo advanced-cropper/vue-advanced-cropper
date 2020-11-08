@@ -1,14 +1,17 @@
 <script>
 import CircleStencil from './Home/Examples/CircleExample/CircleStencil';
+import ExampleWrapper from './Components/ExampleWrapper';
 import { Cropper } from 'vue-advanced-cropper';
 
 export default {
 	components: {
+		ExampleWrapper,
 		Cropper,
 	},
 	data() {
 		return {
-			img: 'https://images.pexels.com/photos/1451124/pexels-photo-1451124.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+			img:
+				'https://images.pexels.com/photos/1451124/pexels-photo-1451124.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
 			stencil: CircleStencil,
 		};
 	},
@@ -16,16 +19,7 @@ export default {
 </script>
 
 <template>
-  <div class="advanced-stencil-example">
-    <Cropper
-      :src="img"
-      :stencil-component="stencil"
-    />
-  </div>
+	<example-wrapper>
+		<cropper :src="img" :stencil-component="stencil" />
+	</example-wrapper>
 </template>
-
-<style lang="scss">
-	.advanced-stencil-example {
-
-	}
-</style>

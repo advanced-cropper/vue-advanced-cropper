@@ -1,15 +1,9 @@
 <script>
-import { Cropper } from 'vue-advanced-cropper';
-import ExampleWrapper from './Components/ExampleWrapper';
-import VerticalButtons from './Components/VerticalButtons';
-import SquareButton from './Components/SquareButton';
+import { RoundStencil, Cropper } from 'vue-advanced-cropper';
 
 export default {
 	components: {
-		ExampleWrapper,
 		Cropper,
-		VerticalButtons,
-		SquareButton,
 	},
 	data() {
 		return {
@@ -70,8 +64,8 @@ export default {
 </script>
 
 <template>
-	<example-wrapper class="set-coordinates-example">
-		<cropper
+	<div class="set-coordinates-example">
+		<Cropper
 			ref="cropper"
 			class="coodinates-cropper"
 			:src="image"
@@ -80,35 +74,39 @@ export default {
 			}"
 			@change="updateSize"
 		/>
-		<vertical-buttons>
-			<square-button title="Resize (x2)" @click="resize(2, 2)">
+		<div class="buttons">
+			<div class="button" title="Resize (x2)" @click="resize(2, 2)">
 				<img :src="require('../assets/icons/resize.svg')" />
-			</square-button>
-			<square-button title="Resize height (x2)" @click="resize(1, 2)">
+			</div>
+			<div class="button" title="Resize height (x2)" @click="resize(1, 2)">
 				<img :src="require('../assets/icons/resize-vertical.svg')" />
-			</square-button>
-			<square-button title="Resize width (x2)" @click="resize(2, 1)">
+			</div>
+			<div class="button" title="Resize width (x2)" @click="resize(2, 1)">
 				<img :src="require('../assets/icons/resize-horizontal.svg')" />
-			</square-button>
-			<square-button title="Resize (x1/2)" @click="resize(0.5, 0.5)">
+			</div>
+			<div class="button" title="Resize (x1/2)" @click="resize(0.5, 0.5)">
 				<img :src="require('../assets/icons/resize-reduce.svg')" />
-			</square-button>
-			<square-button title="Maximize" @click="maximize()">
+			</div>
+			<div class="button" title="Maximize" @click="maximize()">
 				<img :src="require('../assets/icons/resize-maximize.svg')" />
-			</square-button>
-			<square-button title="Center" @click="center()">
+			</div>
+			<div class="button" title="Center" @click="center()">
 				<img :src="require('../assets/icons/center.svg')" />
-			</square-button>
-		</vertical-buttons>
+			</div>
+		</div>
 		<div class="size-info" v-if="size.width && size.height">
 			<div>Width: {{ size.width }}px</div>
 			<div>Height: {{ size.height }}px</div>
 		</div>
-	</example-wrapper>
+	</div>
 </template>
 
 <style lang="scss">
 .set-coordinates-example {
+	margin-top: 20px;
+	margin-bottom: 20px;
+	position: relative;
+	user-select: none;
 	.coodinates-cropper {
 		min-height: 400px;
 		background: black;
@@ -120,6 +118,26 @@ export default {
 		right: 10px;
 		bottom: 10px;
 		opacity: 0.5;
+	}
+	.button {
+		background: rgba(black, 0.4);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 42px;
+		width: 42px;
+		margin-bottom: 10px;
+		cursor: pointer;
+		transition: background 0.5s;
+		&:hover {
+			background: black;
+		}
+	}
+	.buttons {
+		position: absolute;
+		left: 10px;
+		top: 50%;
+		transform: translateY(-50%);
 	}
 }
 </style>

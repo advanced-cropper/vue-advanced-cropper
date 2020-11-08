@@ -1,19 +1,22 @@
 <script>
-import { RoundStencil, Cropper } from 'vue-advanced-cropper';
+import { Cropper } from 'vue-advanced-cropper';
+import ExampleWrapper from './Components/ExampleWrapper';
 
 export default {
 	components: {
 		Cropper,
+		ExampleWrapper,
 	},
 	data() {
 		return {
-			image: 'https://images.pexels.com/photos/3304973/pexels-photo-3304973.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260',
+			image:
+				'https://images.pexels.com/photos/3304973/pexels-photo-3304973.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260',
 			restrictionType: 'none',
 			result: null,
 		};
 	},
 	methods: {
-		onCrop({ canvas, }) {
+		onCrop({ canvas }) {
 			this.result = canvas.toDataURL();
 		},
 		showImage() {
@@ -25,49 +28,36 @@ export default {
 </script>
 
 <template>
-  <div class="image-restriction-example">
-    <Cropper
-      check-orientation
-      backgroundClass="background"
-      :src="image"
-      :image-restriction="restrictionType"
-      @change="onCrop"
-    />
-    <div class="panel">
-      <div class="panel__left">
-        <div class="input">
-          <span class="input__label">Image Restriction Type</span>
-          <select
-            v-model="restrictionType"
-            class="input__control"
-            type="text"
-          >
+	<example-wrapper class="image-restriction-example">
+		<cropper
+			check-orientation
+			backgroundClass="background"
+			:src="image"
+			:image-restriction="restrictionType"
+			@change="onCrop"
+		/>
+		<div class="panel">
+			<div class="panel__left">
+				<div class="input">
+					<span class="input__label">Image Restriction Type</span>
+					<select v-model="restrictionType" class="input__control" type="text">
 						<option value="area">area</option>
 						<option value="stencil">stencil</option>
 						<option value="none">none</option>
 					</select>
-        </div>
-      </div>
-      <div class="panel__right">
-        <div
-          v-if="this.result"
-          class="button"
-          @click="showImage()"
-        >
-          Download
-        </div>
-      </div>
-    </div>
-  </div>
+				</div>
+			</div>
+			<div class="panel__right">
+				<div v-if="this.result" class="button" @click="showImage()">Download</div>
+			</div>
+		</div>
+	</example-wrapper>
 </template>
 
 <style lang="scss">
 .image-restriction-example {
-	margin-top: 20px;
-	margin-bottom: 20px;
-
 	.background {
-		background: #C6BFAF;
+		background: #c6bfaf;
 	}
 
 	.panel {
@@ -100,7 +90,7 @@ export default {
 	.image-restriction-cropper {
 		width: 100%;
 		max-height: 500px;
-		border: solid 1px #EEE;
+		border: solid 1px #eee;
 	}
 
 	.button {

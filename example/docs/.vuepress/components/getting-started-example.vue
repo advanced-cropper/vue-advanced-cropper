@@ -1,9 +1,11 @@
 <script>
 import { Cropper } from 'vue-advanced-cropper';
+import ExampleWrapper from './Components/ExampleWrapper';
 
 export default {
 	components: {
 		Cropper,
+		ExampleWrapper,
 	},
 	data() {
 		return {
@@ -20,8 +22,8 @@ export default {
 </script>
 
 <template>
-	<div>
-		<Cropper
+	<example-wrapper>
+		<cropper
 			class="cropper"
 			:src="img"
 			:stencil-props="{
@@ -29,7 +31,7 @@ export default {
 			}"
 			@change="change"
 		/>
-	</div>
+	</example-wrapper>
 </template>
 
 <style>

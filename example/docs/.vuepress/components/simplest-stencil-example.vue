@@ -1,23 +1,21 @@
 <script>
-	import { Cropper } from 'vue-advanced-cropper';
-	import SimplestStencil from './Components/SimplestStencil';
+import { Cropper } from 'vue-advanced-cropper';
+import SimplestStencil from './Components/SimplestStencil';
 
-	export default {
-		components: {
-			Cropper, SimplestStencil
-		},
-		data() {
-			return {
-				img: 'https://images.unsplash.com/photo-1571040895662-2daba5bb466f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80',
-			};
-		},
-	};
+export default {
+	components: {
+		Cropper,
+		SimplestStencil,
+	},
+	data() {
+		return {
+			img:
+				'https://images.unsplash.com/photo-1571040895662-2daba5bb466f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80',
+		};
+	},
+};
 </script>
 
 <template>
-	<Cropper
-		:src="img"
-		:stencil-component="$options.components.SimplestStencil"
-	/>
+	<cropper :src="img" :stencil-component="$options.components.SimplestStencil" />
 </template>
-

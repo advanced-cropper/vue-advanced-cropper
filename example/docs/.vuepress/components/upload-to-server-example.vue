@@ -1,9 +1,11 @@
 <script>
 import { Cropper } from 'vue-advanced-cropper';
+import ExampleWrapper from './Components/ExampleWrapper';
 
 export default {
 	components: {
 		Cropper,
+		ExampleWrapper,
 	},
 	data() {
 		return {
@@ -33,21 +35,18 @@ export default {
 </script>
 
 <template>
-	<div class="upload-to-server-example">
+	<example-wrapper class="upload-to-server-example">
 		<div class="cropper-wrapper">
 			<cropper ref="cropper" :src="image" />
 		</div>
 		<div class="button-wrapper">
 			<span class="button" @click="uploadImage"> Crop image </span>
 		</div>
-	</div>
+	</example-wrapper>
 </template>
 
 <style lang="scss">
 .upload-to-server-example {
-	margin-top: 20px;
-	margin-bottom: 20px;
-
 	.upload-example-cropper {
 		border: solid 1px #eee;
 		min-height: 300px;

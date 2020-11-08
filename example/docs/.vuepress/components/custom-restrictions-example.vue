@@ -1,13 +1,16 @@
 <script>
 import { Cropper } from 'vue-advanced-cropper';
+import ExampleWrapper from './Components/ExampleWrapper';
 
 export default {
 	components: {
+		ExampleWrapper,
 		Cropper,
 	},
 	data() {
 		return {
-			image: 'https://images.unsplash.com/photo-1494205577727-d32e58564756?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80',
+			image:
+				'https://images.unsplash.com/photo-1494205577727-d32e58564756?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80',
 			limitations: {
 				minWidth: 200,
 				minHeight: 200,
@@ -16,7 +19,7 @@ export default {
 		};
 	},
 	methods: {
-		pixelsRestriction({minWidth, minHeight, maxWidth, maxHeight, imageWidth, imageHeight}) {
+		pixelsRestriction({ minWidth, minHeight, maxWidth, maxHeight, imageWidth, imageHeight }) {
 			return {
 				minWidth: minWidth,
 				minHeight: minHeight,
@@ -24,7 +27,7 @@ export default {
 				maxHeight: maxHeight,
 			};
 		},
-		onCrop({ canvas, }) {
+		onCrop({ canvas }) {
 			this.result = canvas.toDataURL();
 		},
 		showImage() {
@@ -53,89 +56,56 @@ export default {
 </script>
 
 <template>
-  <div class="custom-restrictions-example">
-    <cropper
-      class="custom-restrictions-cropper"
-      check-orientation
-      :src="image"
-      :max-height="limitations.maxHeight"
-      :max-width="limitations.maxWidth"
-      :min-height="limitations.minHeight"
-      :min-width="limitations.minWidth"
-      :size-restrictions-algorithm="pixelsRestriction"
-      @change="onCrop"
-    />
-    <div class="panel">
-      <div class="panel__left">
-        <div class="input">
-          <span class="input__label">Min width</span>
-          <input
-            v-model="limitations.minWidth"
-            class="input__control"
-            type="text"
-          ></input>
-        </div>
-        <div class="input">
-          <span class="input__label">Min height</span>
-          <input
-            v-model="limitations.minHeight"
-            class="input__control"
-            type="text"
-          ></input>
-        </div>
-        <div class="input">
-          <span class="input__label">Max width</span>
-          <input
-            v-model="limitations.maxWidth"
-            class="input__control"
-            type="text"
-          ></input>
-        </div>
-        <div class="input">
-          <span class="input__label">Max height</span>
-          <input
-            v-model="limitations.maxHeight"
-            class="input__control"
-            type="text"
-          ></input>
-        </div>
-      </div>
-      <div class="panel__right">
-        <div
-          class="button"
-          @click="$refs.file.click()"
-        >
-          <input
-            ref="file"
-            type="file"
-            accept="image/*"
-            @change="uploadImage($event)"
-          >
-          Upload image
-        </div>
-        <div
-          v-if="this.result"
-          class="button"
-          @click="showImage()"
-        >
-          Download result
-        </div>
-      </div>
-    </div>
-  </div>
+	<example-wrapper class="custom-restrictions-example">
+		<cropper
+			class="custom-restrictions-cropper"
+			check-orientation
+			:src="image"
+			:max-height="limitations.maxHeight"
+			:max-width="limitations.maxWidth"
+			:min-height="limitations.minHeight"
+			:min-width="limitations.minWidth"
+			:size-restrictions-algorithm="pixelsRestriction"
+			@change="onCrop"
+		/>
+		<div class="panel">
+			<div class="panel__left">
+				<div class="input">
+					<span class="input__label">Min width</span>
+					<input v-model="limitations.minWidth" class="input__control" type="text" />
+				</div>
+				<div class="input">
+					<span class="input__label">Min height</span>
+					<input v-model="limitations.minHeight" class="input__control" type="text" />
+				</div>
+				<div class="input">
+					<span class="input__label">Max width</span>
+					<input v-model="limitations.maxWidth" class="input__control" type="text" />
+				</div>
+				<div class="input">
+					<span class="input__label">Max height</span>
+					<input v-model="limitations.maxHeight" class="input__control" type="text" />
+				</div>
+			</div>
+			<div class="panel__right">
+				<div class="button" @click="$refs.file.click()">
+					<input ref="file" type="file" accept="image/*" @change="uploadImage($event)" />
+					Upload image
+				</div>
+				<div v-if="this.result" class="button" @click="showImage()">Download result</div>
+			</div>
+		</div>
+	</example-wrapper>
 </template>
 
 <style lang="scss">
 .custom-restrictions-example {
-	margin-top: 20px;
-	margin-bottom: 20px;
-
 	.panel {
-		border: solid 1px #DDD;
+		border: solid 1px #ddd;
 		color: black;
 		display: flex;
 		padding: 20px;
-		background: rgb(250,250,250);
+		background: rgb(250, 250, 250);
 		&__left {
 			width: 100%;
 			padding-right: 30px;
@@ -155,7 +125,7 @@ export default {
 			color: black;
 			font: inherit;
 			font-size: 15px;
-			border: solid 1px #AAA;
+			border: solid 1px #aaa;
 		}
 		&__label {
 			display: block;
@@ -166,7 +136,7 @@ export default {
 	.custom-restrictions-cropper {
 		width: 100%;
 		max-height: 500px;
-		border: solid 1px #EEE;
+		border: solid 1px #eee;
 	}
 
 	.button {

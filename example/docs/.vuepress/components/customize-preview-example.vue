@@ -1,8 +1,10 @@
 <script>
-import { RoundStencil, Cropper } from 'vue-advanced-cropper';
+import { Cropper } from 'vue-advanced-cropper';
+import ExampleWrapper from './Components/ExampleWrapper';
 
 export default {
 	components: {
+		ExampleWrapper,
 		Cropper,
 	},
 	data() {
@@ -14,15 +16,15 @@ export default {
 </script>
 
 <template>
-  <div class="customize-preview-example">
-    <Cropper
-      :src="img"
-      stencil-component="circle-stencil"
-      :stencil-props="{
-        previewClass: 'preview'
-      }"
-    />
-  </div>
+	<example-wrapper class="customize-preview-example">
+		<cropper
+			:src="img"
+			stencil-component="circle-stencil"
+			:stencil-props="{
+				previewClass: 'preview',
+			}"
+		/>
+	</example-wrapper>
 </template>
 
 <style lang="scss">

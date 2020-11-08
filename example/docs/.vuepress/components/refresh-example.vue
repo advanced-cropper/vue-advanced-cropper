@@ -1,141 +1,142 @@
 <script>
-	import { Cropper, BoundingBox } from 'vue-advanced-cropper';
-	import SimplestStencil from './Components/SimplestStencil';
+import { Cropper, BoundingBox } from 'vue-advanced-cropper';
+import SimplestStencil from './Components/SimplestStencil';
+import ExampleWrapper from './Components/ExampleWrapper';
 
-	export default {
-		components: {
-			BoundingBox,
-			Cropper,
-			SimplestStencil
-		},
-		data() {
+export default {
+	components: {
+		ExampleWrapper,
+		BoundingBox,
+		Cropper,
+		SimplestStencil,
+	},
+	data() {
+		return {
+			img:
+				'https://images.unsplash.com/photo-1553301208-a3718cc0150e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1024&q=80',
+			width: 0,
+			height: 0,
+			left: 0,
+			top: 0,
+		};
+	},
+	methods: {
+		boundaries({ cropper }) {
 			return {
-				img: 'https://images.unsplash.com/photo-1553301208-a3718cc0150e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1024&q=80',
-				width: 0,
-				height: 0,
-				left: 0,
-				top: 0
+				width: cropper.clientWidth,
+				height: cropper.clientHeight,
 			};
 		},
-		methods: {
-			boundaries({ cropper }) {
-				return {
-					width: cropper.clientWidth,
-					height: cropper.clientHeight
-				};
-			},
-			updateCoordinates(width, height) {
-				const { container } = this.$refs;
-				if (container) {
-					this.width  = Math.min(Math.max(0, width), container.clientWidth);
-					this.height = Math.min(Math.max(0, height), container.clientHeight);
-					this.left   = container.clientWidth / 2 - this.width / 2
-					this.top    = container.clientHeight / 2 - this.height / 2
-					this.$refs.cropper.refresh();
-				}
-			},
-			refresh() {
-				this.updateCoordinates(this.width, this.height)
-			},
-			onResize(event) {
-				const { container } = this.$refs;
-				if (container) {
-					const directions = {...event.directions};
-
-					if (directions.left) {
-						directions.right = directions.left
-					}
-					if (directions.right) {
-						directions.left = directions.right
-					}
-					if (directions.top) {
-						directions.bottom = directions.top
-					}
-					if (directions.bottom) {
-						directions.top = directions.bottom
-					}
-
-					const width = this.width + directions.left + directions.right;
-					const height = this.height + directions.top + directions.bottom;
-
-					this.updateCoordinates(width, height);
-				}
-
-			}
-		},
-		mounted() {
+		updateCoordinates(width, height) {
 			const { container } = this.$refs;
 			if (container) {
-				this.updateCoordinates(container.clientWidth, container.clientHeight, 0, 0)
+				this.width = Math.min(Math.max(0, width), container.clientWidth);
+				this.height = Math.min(Math.max(0, height), container.clientHeight);
+				this.left = container.clientWidth / 2 - this.width / 2;
+				this.top = container.clientHeight / 2 - this.height / 2;
+				this.$refs.cropper.refresh();
 			}
-			window.addEventListener('resize', this.refresh);
-			window.addEventListener('orientationchange', this.refresh);
 		},
-		destroyed() {
-			window.removeEventListener('resize', this.refresh);
-			window.removeEventListener('orientationchange', this.refresh);
+		refresh() {
+			this.updateCoordinates(this.width, this.height);
 		},
-		computed: {
-			boxStyle() {
-				return {
-					width: `${this.width}px`,
-					height: `${this.height}px`,
-					left: `${this.left}px`,
-					top: `${this.top}px`,
+		onResize(event) {
+			const { container } = this.$refs;
+			if (container) {
+				const directions = { ...event.directions };
+
+				if (directions.left) {
+					directions.right = directions.left;
 				}
+				if (directions.right) {
+					directions.left = directions.right;
+				}
+				if (directions.top) {
+					directions.bottom = directions.top;
+				}
+				if (directions.bottom) {
+					directions.top = directions.bottom;
+				}
+
+				const width = this.width + directions.left + directions.right;
+				const height = this.height + directions.top + directions.bottom;
+
+				this.updateCoordinates(width, height);
 			}
+		},
+	},
+	mounted() {
+		const { container } = this.$refs;
+		if (container) {
+			this.updateCoordinates(container.clientWidth, container.clientHeight, 0, 0);
 		}
-	};
+		window.addEventListener('resize', this.refresh);
+		window.addEventListener('orientationchange', this.refresh);
+	},
+	destroyed() {
+		window.removeEventListener('resize', this.refresh);
+		window.removeEventListener('orientationchange', this.refresh);
+	},
+	computed: {
+		boxStyle() {
+			return {
+				width: `${this.width}px`,
+				height: `${this.height}px`,
+				left: `${this.left}px`,
+				top: `${this.top}px`,
+			};
+		},
+	},
+};
 </script>
 
 <template>
-	<div class="refresh-example">
+	<example-wrapper class="refresh-example">
 		<div class="container" ref="container">
 			<bounding-box
 				@resize="onResize"
 				:style="boxStyle"
 				class="box"
 				:lines-classes="{
-			        default: 'line'
-			    }"
+					default: 'line',
+				}"
 				:handlers-classes="{
-			        default: 'handler'
-			     }"
+					default: 'handler',
+				}"
 			>
 				<cropper
 					class="cropper"
 					ref="cropper"
 					:src="img"
 					:stencil-props="{
-						aspectRatio: 1
+						aspectRatio: 1,
 					}"
 					:default-boundaries="boundaries"
 				/>
 			</bounding-box>
 		</div>
-	</div>
+	</example-wrapper>
 </template>
 
 <style lang="scss">
-	.refresh-example {
-		.container {
-			width: 100%;
-			height: 400px;
-			position: relative;
-			border: solid 1px #EEE;
-		}
-		.cropper {
-			width: 100%;
-			height: 100%;
-		}
-		.box {
-			position: absolute;
-		}
-		.line {
-			border-color: rgba(#3fb37f, 0.5);
-		}
-		.handler {
-			background: #3fb37f;
-		}
+.refresh-example {
+	.container {
+		width: 100%;
+		height: 400px;
+		position: relative;
 	}
+	.cropper {
+		width: 100%;
+		height: 100%;
+	}
+	.box {
+		position: absolute;
+	}
+	.line {
+		border-color: rgba(#3fb37f, 0.5);
+	}
+	.handler {
+		background: #3fb37f;
+	}
+}
 </style>
