@@ -1,10 +1,9 @@
-import { Boundaries, ImageRestriction, PositionRestrictions, Size, SizeRestrictions, VisibleArea } from '../typings';
+import { Boundaries, ImageRestriction, PositionRestrictions, Size, SizeRestrictions } from '../typings';
 import { fitSize } from '../service';
 
 interface RefineSizeRestrictionsParams {
 	sizeRestrictions: Partial<SizeRestrictions>;
 	positionRestrictions: PositionRestrictions;
-	visibleArea: VisibleArea;
 	boundaries: Boundaries;
 	imageSize: Size;
 	imageRestriction: ImageRestriction;
@@ -12,7 +11,7 @@ interface RefineSizeRestrictionsParams {
 export function refineSizeRestrictions({
 	sizeRestrictions,
 	imageSize,
-	visibleArea,
+	boundaries,
 	positionRestrictions,
 	imageRestriction = 'none',
 }: RefineSizeRestrictionsParams) {
@@ -24,7 +23,6 @@ export function refineSizeRestrictions({
 		maxWidth: sizeRestrictions.maxWidth !== undefined ? sizeRestrictions.maxWidth : Infinity,
 		maxHeight: sizeRestrictions.maxHeight !== undefined ? sizeRestrictions.maxHeight : Infinity,
 	};
-
 
 	// The situation, when stencil can't be positioned in cropper due to positionRestrictions should be avoided
 	if (positionRestrictions.left !== undefined && positionRestrictions.right !== undefined) {
@@ -39,7 +37,7 @@ export function refineSizeRestrictions({
 
 	// The situation when stencil larger than maximum visible area or image should be avoided if imageRestriction != 'none':
 	if (imageRestriction !== 'none') {
-		const areaMaximum = fitSize(visibleArea, imageSize);
+		const areaMaximum = fitSize(boundaries, imageSize);
 		const maxWidth = imageRestriction === 'area' ? areaMaximum.width : imageSize.width;
 		const maxHeight = imageRestriction === 'area' ? areaMaximum.height : imageSize.height;
 		if (!restrictions.maxWidth || restrictions.maxWidth > maxWidth) {

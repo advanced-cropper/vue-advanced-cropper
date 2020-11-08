@@ -9,7 +9,6 @@ import {
 	ResizeDirections,
 	Size,
 	SizeRestrictions,
-	VisibleArea,
 } from './typings';
 import { ALL_DIRECTIONS, HORIZONTAL_DIRECTIONS, VERTICAL_DIRECTIONS } from './constants';
 
@@ -334,4 +333,36 @@ export function limitSizeRestrictions(sizeRestrictions: SizeRestrictions, object
 		maxWidth: Math.min(object.width, sizeRestrictions.maxWidth),
 		maxHeight: Math.min(object.height, sizeRestrictions.maxHeight),
 	};
+}
+
+export function joinLimits(a: Limits, b: Limits, intersection = true): Limits {
+	const limits: Limits = {};
+	ALL_DIRECTIONS.forEach((direction) => {
+		const firstDirection = a[direction];
+		const secondDirection = b[direction];
+		if (firstDirection !== undefined && secondDirection !== undefined) {
+			if (direction === 'left' || direction === 'top') {
+				limits[direction] = intersection
+					? Math.max(firstDirection, secondDirection)
+					: Math.min(firstDirection, secondDirection);
+			} else {
+				limits[direction] = intersection
+					? Math.min(firstDirection, secondDirection)
+					: Math.max(firstDirection, secondDirection);
+			}
+		} else if (secondDirection !== undefined) {
+			limits[direction] = secondDirection;
+		} else if (firstDirection !== undefined) {
+			limits[direction] = firstDirection;
+		}
+	});
+	return limits;
+}
+
+export function unionLimits(a: Limits, b: Limits) {
+	return joinLimits(a, b, false);
+}
+
+export function intersectionLimits(a: Limits, b: Limits) {
+	return joinLimits(a, b, true);
 }

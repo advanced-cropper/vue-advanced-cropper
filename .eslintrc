@@ -9,9 +9,9 @@
 		}
 	},
 	"extends": [
+		"plugin:prettier/recommended",
 		"eslint:recommended",
 		"plugin:vue/recommended",
-		"plugin:prettier/recommended",
 		"prettier/@typescript-eslint",
 		"prettier/vue"
 	],
@@ -20,15 +20,8 @@
 		"@typescript-eslint"
 	],
 	"rules": {
-		"space-before-function-parent": 0,
-		"indent": [2,"tab"],
-		"no-tabs": "off",
+		"no-mixed-spaces-and-tabs": 0,
 		"vue/require-default-prop": "off",
-		"object-curly-spacing": ["error", "always", {
-			"arraysInObjects": false,
-			"objectsInObjects": false
-		}],
-		"semi": ["error", "always"],
 		"no-console": ["error", {
 			"allow": ["warn", "error"]
 		}]

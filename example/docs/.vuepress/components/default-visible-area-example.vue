@@ -22,7 +22,7 @@ export default {
 		},
 		defaultVisibleArea() {
 			return {
-				height: 775,
+				height: 649,
 				left: 63,
 				top: 668,
 				width: 800,
@@ -34,7 +34,12 @@ export default {
 
 <template>
 	<example-wrapper class="default-visible-area-example">
-		<cropper :src="img" :default-visible-area="defaultVisibleArea" :default-boundaries="boundaries" />
+		<cropper
+			:src="img"
+			:default-visible-area="defaultVisibleArea"
+			default-boundaries="fill"
+			priority="visibleArea"
+		/>
 	</example-wrapper>
 </template>
 

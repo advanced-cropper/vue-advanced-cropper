@@ -288,6 +288,15 @@ export default {
 Moreover, there are situations where you need to save, for example, previous visible area position, i.e. zoom or translate image.
 To implement it you can use `default-visible-area` prop.
 
+It should be noted, that visible area can be calculated either before default
+coordinates calculation or after one's calculation. The priority is set by
+prop [priority](/components/cropper.html#priority) that can be either `'coordinates'` (default) or `'visibleArea'`.
+
+::: tip 
+If you define only the visible area coordinates it may be easier to set priority to `visibleArea`. It eliminates the necessity
+to set default size and default position by yourself (default algorithms handle this situation).
+:::
+
 <default-visible-area-example></default-visible-area-example>
 
 ```js
@@ -300,12 +309,12 @@ export default {
 	methods: {
 		defaultVisibleArea() {
 			return {
-				width: 500,
-				height: 500,
-				left: 100,
-				top: 100
+				width: 800,
+				height: 775,
+				left: 63,
+				top: 668,
 			};
-		},
+		}
 	}
 };
 ```
@@ -315,6 +324,8 @@ export default {
 <cropper
 	:src="image"
 	:default-visible-area="defaultVisibleArea"
+	default-boundaries="fill"
+	priority="visibleArea"
 />
 ```
 

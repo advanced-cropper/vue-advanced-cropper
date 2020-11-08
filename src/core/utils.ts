@@ -1,9 +1,4 @@
-// @ts-ignore
-
-import { Limits } from "./typings";
-import { ALL_DIRECTIONS } from "./constants";
-
-type Protocol = 'http' | 'https'
+type Protocol = 'http' | 'https';
 
 export function directionNames(hDirection, vDirection) {
 	let name, classname;
@@ -59,6 +54,10 @@ export function isCrossOriginURL(url: string) {
 	);
 }
 
+export function isFunction(obj: any) {
+	return !!(obj && obj.constructor && obj.call && obj.apply);
+}
+
 export function isUndefined(obj: any): boolean {
 	return obj === undefined;
 }
@@ -102,29 +101,6 @@ export function isLoadedImage(image) {
 	return Boolean(image.naturalWidth);
 }
 
-
-export function joinLimits(a: Limits, b: Limits): Limits {
-	const limits: Limits = {};
-	ALL_DIRECTIONS.forEach((direction) => {
-		const firstDirection = a[direction];
-		const secondDirection = b[direction];
-		if (firstDirection !== undefined && secondDirection !== undefined) {
-			if (direction === 'left' || direction === 'top') {
-				limits[direction] = Math.max(firstDirection, secondDirection);
-			} else {
-				limits[direction] = Math.min(firstDirection, secondDirection);
-			}
-		} else if (secondDirection) {
-			limits[direction] = secondDirection;
-		} else if (firstDirection) {
-			limits[direction] = firstDirection;
-		}
-	});
-	return limits;
-}
-
 export function distance(firstPoint, secondPoint) {
-	return Math.sqrt(
-		Math.pow(firstPoint.x - secondPoint.x, 2) + Math.pow(firstPoint.y - secondPoint.y, 2)
-	);
+	return Math.sqrt(Math.pow(firstPoint.x - secondPoint.x, 2) + Math.pow(firstPoint.y - secondPoint.y, 2));
 }

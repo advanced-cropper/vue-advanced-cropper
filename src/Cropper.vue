@@ -4,7 +4,7 @@ import bem from 'easy-bem';
 import debounce from 'debounce';
 import { RectangleStencil } from './components/stencils';
 import { CropperWrapper } from './components/service';
-import { isLoadedImage, replacedProp } from './core';
+import { fillBoundaries, fitBoundaries, isFunction, isLoadedImage, limitBy, replacedProp } from './core';
 import { ManipulateImageEvent } from './core/events';
 import { limitSizeRestrictions } from './core/service';
 import { isLocal, isCrossOriginURL, isUndefined, getSettings, parseNumber } from './core/utils';
@@ -125,20 +125,31 @@ export default {
 			default: algorithms.fitVisibleArea,
 		},
 		defaultVisibleArea: {
-			type: Function,
+			type: [Function, Object],
 			default: algorithms.defaultVisibleArea,
 		},
 		defaultSize: {
-			type: Function,
+			type: [Function, Object],
 			default: algorithms.defaultSize,
 		},
 		defaultPosition: {
-			type: Function,
+			type: [Function, Object],
 			default: algorithms.defaultPosition,
 		},
 		defaultBoundaries: {
-			type: Function,
-			default: algorithms.defaultBoundaries,
+			type: [Function, String],
+			default: algorithms.fitBoundaries,
+			validator(value) {
+				const invalid = typeof value === 'string' && value !== 'fill' && value !== 'fit';
+				if (invalid) {
+					if (process.env.NODE_ENV !== 'production') {
+						console.warn(
+							`Warning: prop "defaultBoundaries" gets incorrect string value ${value}. It should be either function, 'fill' or 'fit'`,
+						);
+					}
+				}
+				return !invalid;
+			},
 		},
 		areaRestrictionsAlgorithm: {
 			type: Function,
@@ -151,6 +162,10 @@ export default {
 		positionRestrictionsAlgorithm: {
 			type: Function,
 			default: algorithms.positionRestrictions,
+		},
+		priority: {
+			type: String,
+			default: 'coordinates',
 		},
 		// Deprecated props
 		restrictions: {
@@ -231,10 +246,9 @@ export default {
 			return this.visibleArea ? this.visibleArea.width / this.boundaries.width : 0;
 		},
 		areaRestrictions() {
-			if (this.initialized) {
+			if (this.imageLoaded) {
 				return this.areaRestrictionsAlgorithm({
 					imageSize: this.imageSize,
-					visibleArea: this.visibleArea,
 					imageRestriction: this.imageRestriction,
 				});
 			} else {
@@ -268,7 +282,7 @@ export default {
 			return result;
 		},
 		sizeRestrictions() {
-			if (this.initialized) {
+			if (this.boundaries.width && this.boundaries.height) {
 				const sizeRestrictions = (this.restrictions || this.sizeRestrictionsAlgorithm)({
 					imageSize: this.imageSize,
 					minWidth: !isUndefined(this.minWidth) ? parseNumber(this.minWidth) : 0,
@@ -283,9 +297,9 @@ export default {
 
 				return algorithms.refineSizeRestrictions({
 					sizeRestrictions,
-					visibleArea: this.visibleArea,
-					positionRestrictions: this.positionRestrictions,
 					imageSize: this.imageSize,
+					boundaries: this.boundaries,
+					positionRestrictions: this.positionRestrictions,
 					imageRestriction: this.imageRestriction,
 				});
 			} else {
@@ -404,7 +418,9 @@ export default {
 	methods: {
 		// External methods
 		getResult() {
-			const coordinates = this.prepareResult({ ...this.coordinates });
+			const coordinates = this.initialized
+				? this.prepareResult({ ...this.coordinates })
+				: this.defaultCoordinates();
 			if (this.canvas && this.src && this.imageLoaded) {
 				this.updateCanvas(this.coordinates);
 				return {
@@ -620,14 +636,20 @@ export default {
 			this.applyTransform(this.coordinates, true, true);
 		},
 		applyTransform(transform, autoZoom = false, limited = false) {
+			const sizeRestrictions =
+				this.visibleArea && limited
+					? limitSizeRestrictions(this.sizeRestrictions, this.visibleArea)
+					: this.sizeRestrictions;
+
+			const positionRestrictions = this.visibleArea
+				? limitBy(this.positionRestrictions, this.visibleArea)
+				: this.positionRestrictions;
+
 			const coordinates = algorithms.applyTransform({
 				coordinates: this.coordinates,
 				transform,
-				sizeRestrictions:
-					this.visibleArea && limited
-						? limitSizeRestrictions(this.sizeRestrictions, this.visibleArea)
-						: this.sizeRestrictions,
-				positionRestrictions: this.positionRestrictions,
+				sizeRestrictions,
+				positionRestrictions,
 				aspectRatio: this.getAspectRatio(),
 				imageSize: this.imageSize,
 			});
@@ -644,27 +666,29 @@ export default {
 			// This function can be asynchronously called after completion of refreshing image promise
 			// Therefore there is a workaround to prevent processing after the component was unmounted
 			// Also coordinates can't be reset if visible area was not initialized
-			if (!this.$refs.image || !this.initialized) return;
+			if (!this.$refs.image) return;
 
 			const cropper = this.$refs.cropper;
 			const image = this.$refs.image;
 
 			const { minWidth, minHeight, maxWidth, maxHeight } = this.sizeRestrictions;
 
-			const defaultSize = this.defaultSize({
-				boundaries: this.boundaries,
-				visibleArea: this.visibleArea,
-				imageSize: this.imageSize,
-				aspectRatio: this.getAspectRatio(),
-				sizeRestrictions: this.sizeRestrictions,
-				// Deprecated params
-				cropper,
-				image,
-				imageWidth: this.imageSize.width,
-				imageHeight: this.imageSize.height,
-				props: this.$props,
-				...this.sizeRestrictions,
-			});
+			const defaultSize = isFunction(this.defaultSize)
+				? this.defaultSize({
+						boundaries: this.boundaries,
+						imageSize: this.imageSize,
+						aspectRatio: this.getAspectRatio(),
+						sizeRestrictions: this.sizeRestrictions,
+						visibleArea: this.visibleArea,
+						// Deprecated params
+						cropper,
+						image,
+						imageWidth: this.imageSize.width,
+						imageHeight: this.imageSize.height,
+						props: this.$props,
+						...this.sizeRestrictions,
+				  })
+				: this.defaultSize;
 
 			if (
 				process.env.NODE_ENV === 'development' &&
@@ -683,19 +707,21 @@ export default {
 			const transforms = [
 				defaultSize,
 				(coordinates) => ({
-					...this.defaultPosition({
-						coordinates,
-						visibleArea: this.visibleArea,
-						imageSize: this.imageSize,
-						// Deprecated params
-						cropper,
-						image,
-						stencilWidth: coordinates.width,
-						stencilHeight: coordinates.height,
-						imageWidth: this.imageSize.width,
-						imageHeight: this.imageSize.height,
-						props: this.$props,
-					}),
+					...(isFunction(this.defaultPosition)
+						? this.defaultPosition({
+								coordinates,
+								imageSize: this.imageSize,
+								visibleArea: this.visibleArea,
+								// Deprecated params
+								cropper,
+								image,
+								stencilWidth: coordinates.width,
+								stencilHeight: coordinates.height,
+								imageWidth: this.imageSize.width,
+								imageHeight: this.imageSize.height,
+								props: this.$props,
+						  })
+						: this.defaultPosition),
 				}),
 			];
 
@@ -733,10 +759,19 @@ export default {
 			});
 
 			return this.$nextTick().then(() => {
-				this.boundaries = this.defaultBoundaries({
+				const params = {
 					cropper,
 					imageSize: this.imageSize,
-				});
+				};
+
+				if (isFunction(this.defaultBoundaries)) {
+					this.boundaries = this.defaultBoundaries(params);
+				} else if (this.defaultBoundaries === 'fill') {
+					this.boundaries = fillBoundaries(params);
+				} else {
+					this.boundaries = fitBoundaries(params);
+				}
+
 				if (!this.boundaries.width || !this.boundaries.height) {
 					throw new Error("It's impossible to fit the cropper in the current container");
 				}
@@ -745,14 +780,26 @@ export default {
 		resetVisibleArea() {
 			return this.updateBoundaries()
 				.then(() => {
+					if (this.priority !== 'visibleArea') {
+						this.visibleArea = undefined;
+						this.resetCoordinates();
+					}
 					this.visibleArea = algorithms.refineVisibleArea({
-						visibleArea: this.defaultVisibleArea({
-							imageSize: this.imageSize,
-							boundaries: this.boundaries,
-							areaRestrictions: this.areaRestrictions,
-						}),
+						visibleArea: isFunction(this.defaultVisibleArea)
+							? this.defaultVisibleArea({
+									imageSize: this.imageSize,
+									boundaries: this.boundaries,
+									coordinates: this.priority !== 'visibleArea' ? this.coordinates : undefined,
+									areaRestrictions: this.areaRestrictions,
+							  })
+							: this.defaultVisibleArea,
 						boundaries: this.boundaries,
+						areaRestrictions: this.areaRestrictions,
 					});
+
+					if (this.priority === 'visibleArea') {
+						this.resetCoordinates();
+					}
 				})
 				.catch(() => {
 					this.visibleArea = null;
@@ -791,7 +838,7 @@ export default {
 			}
 		},
 		reset() {
-			return this.resetVisibleArea().then(this.resetCoordinates);
+			return this.resetVisibleArea();
 		},
 		getAspectRatio() {
 			if (this.$refs.stencil.aspectRatios) {

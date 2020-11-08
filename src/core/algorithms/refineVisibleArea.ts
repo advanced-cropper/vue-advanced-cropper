@@ -1,23 +1,20 @@
-import { Boundaries, VisibleArea } from '../typings';
-import { ratio } from '../service';
+import { AreaRestrictions, Boundaries, VisibleArea } from '../typings';
+import { fitPosition, ratio } from '../service';
 
 interface RefineVisibleAreaParams {
 	visibleArea: VisibleArea;
 	boundaries: Boundaries;
+	areaRestrictions: AreaRestrictions;
 }
-export function refineVisibleArea({ visibleArea, boundaries }: RefineVisibleAreaParams): VisibleArea {
-	const result = { ...visibleArea };
-	if (boundaries.height === 0 || boundaries.width === 0) {
-		return {
-			...boundaries,
-			top: 0,
-			left: 0,
-		};
-	} else {
-		const boundariesRatio = ratio(boundaries);
-		if (result.width / result.height !== boundariesRatio) {
-			result.height = result.width / boundariesRatio;
-		}
-		return result;
+export function refineVisibleArea(params: RefineVisibleAreaParams): VisibleArea {
+	const { visibleArea: previousVisibleArea, boundaries, areaRestrictions } = params;
+
+	let visibleArea = { ...previousVisibleArea };
+
+	const boundariesRatio = ratio(boundaries);
+	if (visibleArea.width / visibleArea.height !== boundariesRatio) {
+		visibleArea.height = visibleArea.width / boundariesRatio;
 	}
+
+	return fitPosition(visibleArea, areaRestrictions);
 }

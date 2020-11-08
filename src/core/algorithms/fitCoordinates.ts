@@ -1,7 +1,6 @@
 import { AspectRatio, Coordinates, PositionRestrictions, SizeRestrictions, VisibleArea } from '../typings';
 import { approximatedSize } from './approximatedSize';
-import { applyMove, diff, fit, getCenter, getIntersections, toLimits } from '../service';
-import { joinLimits } from '../utils';
+import { applyMove, diff, fit, getCenter, intersectionLimits, toLimits } from '../service';
 
 export interface FitCoordinatesParams {
 	visibleArea: VisibleArea;
@@ -37,7 +36,10 @@ export function fitCoordinates(params: FitCoordinatesParams): Coordinates {
 
 	coordinates = applyMove(coordinates, diff(getCenter(previousCoordinates), getCenter(coordinates)));
 
-	coordinates = applyMove(coordinates, fit(coordinates, joinLimits(toLimits(visibleArea), positionRestrictions)));
+	coordinates = applyMove(
+		coordinates,
+		fit(coordinates, intersectionLimits(toLimits(visibleArea), positionRestrictions)),
+	);
 
 	return coordinates;
 }

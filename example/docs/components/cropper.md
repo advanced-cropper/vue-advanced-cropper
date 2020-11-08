@@ -169,6 +169,17 @@ Default: `true`
 
 The flag that indicates if image should be resized by a mouse wheel
 
+### `priority`
+Default: `'coordinates'`
+
+It can be `'coordinates'` or `'visibleArea'`. Sets the priority of initialization default values.
+
+If it set to `'coordinates'` the coordinates will be initialized first, but `defaultSize` and `defaultPosition` algorithms
+will know nothing about visible area. 
+
+If it set to `'visibleArea'` then the visible area will be initialized first, but `defaultVisibleArea` algorithm
+will know nothing about coordinates.
+
 ### `defaultPosition`
 Default: `core.defaultPosition`
 
