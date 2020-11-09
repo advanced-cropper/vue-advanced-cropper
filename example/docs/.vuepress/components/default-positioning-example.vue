@@ -16,7 +16,7 @@ export default {
 	methods: {
 		defaultPosition() {
 			return {
-				left: 100,
+				left: -100,
 				top: 100,
 			};
 		},

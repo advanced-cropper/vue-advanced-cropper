@@ -312,15 +312,10 @@ export default {
 			}
 		},
 		positionRestrictions() {
-			if (this.initialized) {
-				return this.positionRestrictionsAlgorithm({
-					imageSize: this.imageSize,
-					imageRestriction: this.imageRestriction,
-					visibleArea: this.visibleArea,
-				});
-			} else {
-				return {};
-			}
+			return this.positionRestrictionsAlgorithm({
+				imageSize: this.imageSize,
+				imageRestriction: this.imageRestriction,
+			});
 		},
 		// Styling
 		classes() {
