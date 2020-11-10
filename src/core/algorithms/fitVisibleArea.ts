@@ -2,7 +2,7 @@ import {
 	applyMove,
 	applyScale,
 	fit,
-	fitPosition,
+	fitToLimits,
 	getIntersections,
 	inverseMove,
 	maxScale,
@@ -70,7 +70,7 @@ export function fitVisibleArea(params: FitVisibleAreaParams): VisibleArea {
 	visibleArea = applyMove(visibleArea, move);
 
 	// Move visible area to prevent overlap the area restrictions
-	visibleArea = fitPosition(visibleArea, areaRestrictions);
+	visibleArea = fitToLimits(visibleArea, areaRestrictions);
 
 	return visibleArea;
 }

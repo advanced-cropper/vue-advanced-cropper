@@ -23,13 +23,13 @@ test('Should return default size in ANY POSSIBLE situations', () => {
 				complete: false,
 			}),
 			boundaries,
-			visibleArea,
 			imageRestriction,
 			imageSize,
 			positionRestrictions: positionRestrictions({ imageRestriction, imageSize }),
 		});
 
 		const params = {
+			boundaries,
 			visibleArea,
 			aspectRatio,
 			sizeRestrictions: refinedSizeRestriction,

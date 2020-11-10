@@ -794,6 +794,14 @@ export default {
 
 					if (this.priority === 'visibleArea') {
 						this.resetCoordinates();
+					} else {
+						this.coordinates = this.fitCoordinates({
+							visibleArea: this.visibleArea,
+							coordinates: this.coordinates,
+							aspectRatio: this.getAspectRatio(),
+							positionRestrictions: this.positionRestrictions,
+							sizeRestrictions: this.sizeRestrictions,
+						});
 					}
 				})
 				.catch(() => {

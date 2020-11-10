@@ -1,11 +1,5 @@
 import { Size, VisibleArea, Coordinates, AreaRestrictions, Limits } from '../typings';
-import {
-	ratio,
-	toLimits,
-	intersectionLimits,
-	fitPosition,
-	getIntersections
-} from '../service';
+import { ratio, toLimits, intersectionLimits, fitToLimits, getIntersections, fitSize, limitsToSize } from '../service';
 
 interface DefaultVisibleAreaParams {
 	imageSize: Size;
@@ -26,10 +20,13 @@ export function defaultVisibleArea(params: DefaultVisibleAreaParams): VisibleAre
 
 		const referenceRatio = ratio(reference);
 
-		const areaProperties = {
-			width: referenceRatio > boundaryRatio ? reference.width : reference.height * boundaryRatio,
-			height: referenceRatio > boundaryRatio ? reference.width / boundaryRatio : reference.height,
-		};
+		const areaProperties = fitSize(
+			{
+				width: referenceRatio > boundaryRatio ? reference.width : reference.height * boundaryRatio,
+				height: referenceRatio > boundaryRatio ? reference.width / boundaryRatio : reference.height,
+			},
+			limitsToSize(areaRestrictions),
+		);
 
 		const visibleArea = {
 			left: coordinates.left + coordinates.width / 2 - areaProperties.width / 2,
@@ -59,7 +56,7 @@ export function defaultVisibleArea(params: DefaultVisibleAreaParams): VisibleAre
 			limits.bottom = imageSize.height;
 		}
 
-		return fitPosition(visibleArea, intersectionLimits(limits, areaRestrictions));
+		return fitToLimits(visibleArea, intersectionLimits(limits, areaRestrictions));
 	} else {
 		const imageRatio = ratio(imageSize);
 

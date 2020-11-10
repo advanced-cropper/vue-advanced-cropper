@@ -21,12 +21,6 @@ export default {
 		};
 	},
 	methods: {
-		boundaries({ cropper }) {
-			return {
-				width: cropper.clientWidth,
-				height: cropper.clientHeight,
-			};
-		},
 		updateCoordinates(width, height) {
 			const { container } = this.$refs;
 			if (container) {
@@ -111,7 +105,7 @@ export default {
 					:stencil-props="{
 						aspectRatio: 1,
 					}"
-					:default-boundaries="boundaries"
+					default-boundaries="fill"
 				/>
 			</bounding-box>
 		</div>

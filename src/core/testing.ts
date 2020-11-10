@@ -31,7 +31,7 @@ import {
 	fitVisibleArea,
 } from './algorithms';
 
-import { fitPosition, ratio } from './service';
+import { fitToLimits, ratio } from './service';
 
 import { MoveEvent, ResizeEvent } from './events';
 
@@ -291,7 +291,7 @@ export class Cropper {
 	}
 
 	private $setCoordinates(coordinates: Coordinates) {
-		this.coordinates = fitPosition(
+		this.coordinates = fitToLimits(
 			{
 				...coordinates,
 				...approximatedSize({

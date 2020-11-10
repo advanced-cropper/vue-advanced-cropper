@@ -3,7 +3,7 @@ import { approximatedSize } from './approximatedSize';
 import { ratio } from '../service';
 
 export interface DefaultSizeParams {
-	imageSize: ImageSize;
+	imageSize?: ImageSize;
 	aspectRatio: AspectRatio;
 	boundaries?: Boundaries;
 	visibleArea?: VisibleArea;

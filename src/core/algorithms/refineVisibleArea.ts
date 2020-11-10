@@ -1,5 +1,5 @@
 import { AreaRestrictions, Boundaries, VisibleArea } from '../typings';
-import { fitPosition, ratio } from '../service';
+import { fitToLimits, ratio } from '../service';
 
 interface RefineVisibleAreaParams {
 	visibleArea: VisibleArea;
@@ -16,5 +16,5 @@ export function refineVisibleArea(params: RefineVisibleAreaParams): VisibleArea 
 		visibleArea.height = visibleArea.width / boundariesRatio;
 	}
 
-	return fitPosition(visibleArea, areaRestrictions);
+	return fitToLimits(visibleArea, areaRestrictions);
 }
