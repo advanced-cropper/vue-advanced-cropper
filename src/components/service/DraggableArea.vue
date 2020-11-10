@@ -15,7 +15,7 @@ export default {
 		},
 		activationDistance: {
 			type: Number,
-			default: 10,
+			default: 20,
 		}
 	},
 	computed: {

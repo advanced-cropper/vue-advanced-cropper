@@ -7,26 +7,26 @@ export default {
 	props: {
 		touchMove: {
 			type: Object,
-			required: true
+			required: true,
 		},
 		mouseMove: {
 			type: Object,
-			required: true
+			required: true,
 		},
 		touchResize: {
 			type: Object,
-			required: true
+			required: true,
 		},
 		wheelResize: {
 			type: Object,
-			required: true
+			required: true,
 		},
 	},
 	beforeMount() {
-		window.addEventListener('mouseup', this.onMouseUp, { passive: false, });
-		window.addEventListener('mousemove', this.onMouseMove, { passive: false, });
-		window.addEventListener('touchmove', this.onTouchMove, { passive: false, });
-		window.addEventListener('touchend', this.onTouchEnd, { passive: false, });
+		window.addEventListener('mouseup', this.onMouseUp, { passive: false });
+		window.addEventListener('mousemove', this.onMouseMove, { passive: false });
+		window.addEventListener('touchmove', this.onTouchMove, { passive: false });
+		window.addEventListener('touchend', this.onTouchEnd, { passive: false });
 	},
 	beforeDestroy() {
 		window.removeEventListener('mouseup', this.onMouseUp);
@@ -42,9 +42,10 @@ export default {
 			if (e.cancelable && (this.touchMove.enabled || (this.touchResize.enabled && e.touches.length > 1))) {
 				const container = this.$refs.container;
 				const { left, top, bottom, right } = container.getBoundingClientRect();
-				this.touches = [...e.touches].filter(touch => (
-					touch.clientX > left && touch.clientX < right && touch.clientY > top && touch.clientY < bottom
-				));
+				this.touches = [...e.touches].filter(
+					(touch) =>
+						touch.clientX > left && touch.clientX < right && touch.clientY > top && touch.clientY < bottom,
+				);
 				this.oldGeometricProperties = this.calculateGeometricProperties(this.touches);
 
 				if (e.preventDefault) {
@@ -60,9 +61,11 @@ export default {
 		},
 		onTouchMove(e) {
 			if (this.touches.length) {
-				const touches = [...e.touches].filter(touch => !touch.identifier || this.touches.find(
-					anotherTouch => anotherTouch.identifier === touch.identifier
-				));
+				const touches = [...e.touches].filter(
+					(touch) =>
+						!touch.identifier ||
+						this.touches.find((anotherTouch) => anotherTouch.identifier === touch.identifier),
+				);
 				this.processMove(e, touches);
 				if (e.preventDefault) {
 					e.preventDefault();
@@ -73,7 +76,7 @@ export default {
 			}
 		},
 		onMouseDown(e) {
-			if (this.mouseMove && ('buttons' in e) && e.buttons === 1) {
+			if (this.mouseMove && 'buttons' in e && e.buttons === 1) {
 				const touch = {
 					fake: true,
 					clientX: e.clientX,
@@ -85,12 +88,14 @@ export default {
 		},
 		onMouseMove(e) {
 			if (this.touches.length) {
-				this.processMove(e, [{
-					fake: true,
-					clientX: e.clientX,
-					clientY: e.clientY,
-				}]);
-				if (e.preventDefault  && e.cancelable) {
+				this.processMove(e, [
+					{
+						fake: true,
+						clientX: e.clientX,
+						clientY: e.clientY,
+					},
+				]);
+				if (e.preventDefault && e.cancelable) {
 					e.preventDefault();
 				}
 			}
@@ -105,13 +110,16 @@ export default {
 			const centerMass = { left: 0, top: 0 };
 			let spread = 0;
 
-			touches.forEach(touch => {
+			touches.forEach((touch) => {
 				centerMass.left += (touch.clientX - left) / touches.length;
 				centerMass.top += (touch.clientY - top) / touches.length;
 			});
 
 			touches.forEach((touch) => {
-				spread += distance({ x: centerMass.left, y: centerMass.top }, { x: touch.clientX - left, y: touch.clientY - top });
+				spread += distance(
+					{ x: centerMass.left, y: centerMass.top },
+					{ x: touch.clientX - left, y: touch.clientY - top },
+				);
 			});
 
 			return { centerMass, spread, count: touches.length };
@@ -119,24 +127,31 @@ export default {
 		processMove(event, newTouches) {
 			if (this.touches.length) {
 				if (this.touches.length === 1 && newTouches.length === 1 && this.touchMove.enabled) {
-					this.$emit('move', new ManipulateImageEvent({
-						left: (this.touches[0].clientX - newTouches[0].clientX),
-						top: (this.touches[0].clientY - newTouches[0].clientY),
-					}));
+					this.$emit(
+						'move',
+						new ManipulateImageEvent({
+							left: this.touches[0].clientX - newTouches[0].clientX,
+							top: this.touches[0].clientY - newTouches[0].clientY,
+						}),
+					);
 				} else if (this.touches.length > 1 && this.touchResize) {
 					const oldProperties = this.oldGeometricProperties;
 					const newProperties = this.calculateGeometricProperties(newTouches);
 
 					if (oldProperties.count === newProperties.count && oldProperties.count > 1) {
-						this.$emit('resize', new ManipulateImageEvent({
-							left: oldProperties.centerMass.left - newProperties.centerMass.left,
-							top: oldProperties.centerMass.top - newProperties.centerMass.top,
-						},
-						{
-							factor: oldProperties.spread / newProperties.spread,
-							center: newProperties.centerMass,
-						}
-						));
+						this.$emit(
+							'resize',
+							new ManipulateImageEvent(
+								{
+									left: oldProperties.centerMass.left - newProperties.centerMass.left,
+									top: oldProperties.centerMass.top - newProperties.centerMass.top,
+								},
+								{
+									factor: oldProperties.spread / newProperties.spread,
+									center: newProperties.centerMass,
+								},
+							),
+						);
 					}
 					this.oldGeometricProperties = newProperties;
 				}
@@ -152,8 +167,8 @@ export default {
 				const { left, top } = container.getBoundingClientRect();
 				const factor = 1 + this.wheelResize.ratio * Math.sign(event.deltaY || event.detail || event.wheelDelta);
 				const center = {
-					left: (event.clientX - left),
-					top: (event.clientY - top),
+					left: event.clientX - left,
+					top: event.clientY - top,
 				};
 
 				this.$emit('resize', new ManipulateImageEvent({}, { factor, center }));
@@ -161,19 +176,13 @@ export default {
 				event.preventDefault();
 				event.stopPropagation();
 			}
-		}
+		},
 	},
-
 };
 </script>
 
 <template>
-  <div
-    ref="container"
-    @touchstart="onTouchStart"
-    @mousedown="onMouseDown"
-    @wheel="onWheel"
-  >
-    <slot />
-  </div>
+	<div ref="container" @touchstart="onTouchStart" @mousedown="onMouseDown" @wheel="onWheel">
+		<slot />
+	</div>
 </template>
