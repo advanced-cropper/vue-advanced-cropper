@@ -16,7 +16,7 @@ export default {
 		activationDistance: {
 			type: Number,
 			default: 20,
-		}
+		},
 	},
 	computed: {
 		classnames() {
@@ -26,10 +26,10 @@ export default {
 		},
 	},
 	beforeMount() {
-		window.addEventListener('mouseup', this.onMouseUp, { passive: false, });
-		window.addEventListener('mousemove', this.onMouseMove, { passive: false, });
-		window.addEventListener('touchmove', this.onTouchMove, { passive: false, });
-		window.addEventListener('touchend', this.onTouchEnd, { passive: false, });
+		window.addEventListener('mouseup', this.onMouseUp, { passive: false });
+		window.addEventListener('mousemove', this.onMouseMove, { passive: false });
+		window.addEventListener('touchmove', this.onTouchMove, { passive: false });
+		window.addEventListener('touchend', this.onTouchEnd, { passive: false });
 	},
 	beforeDestroy() {
 		window.removeEventListener('mouseup', this.onMouseUp);
@@ -64,7 +64,12 @@ export default {
 					this.processMove(e, e.touches);
 					e.preventDefault();
 					e.stopPropagation();
-				} else if (distance({ x: this.touches[0].clientX, y: this.touches[0].clientY }, { x: e.touches[0].clientX, y: e.touches[0].clientY }) > this.activationDistance) {
+				} else if (
+					distance(
+						{ x: this.touches[0].clientX, y: this.touches[0].clientY },
+						{ x: e.touches[0].clientX, y: e.touches[0].clientY },
+					) > this.activationDistance
+				) {
 					this.initAnchor({
 						clientX: e.touches[0].clientX,
 						clientY: e.touches[0].clientY,
@@ -87,12 +92,14 @@ export default {
 		},
 		onMouseMove(e) {
 			if (this.touches.length) {
-				this.processMove(e, [{
-					fake: true,
-					clientX: e.clientX,
-					clientY: e.clientY,
-				}]);
-				if (e.preventDefault  && e.cancelable) {
+				this.processMove(e, [
+					{
+						fake: true,
+						clientX: e.clientX,
+						clientY: e.clientY,
+					},
+				]);
+				if (e.preventDefault && e.cancelable) {
 					e.preventDefault();
 				}
 				e.stopPropagation();
@@ -103,7 +110,7 @@ export default {
 		},
 		initAnchor(touch) {
 			const container = this.$refs.container;
-			const { left, top, } = container.getBoundingClientRect();
+			const { left, top } = container.getBoundingClientRect();
 
 			this.anchor = {
 				x: touch.clientX - left,
@@ -114,12 +121,15 @@ export default {
 			const newTouches = [...touches];
 			if (this.touches.length) {
 				const container = this.$refs.container;
-				const { left, top, } = container.getBoundingClientRect();
+				const { left, top } = container.getBoundingClientRect();
 				if (this.touches.length === 1 && newTouches.length === 1) {
-					this.$emit('move', new MoveEvent({
-						left: (newTouches[0].clientX - (left + this.anchor.x)),
-						top: (newTouches[0].clientY - (top + this.anchor.y)),
-					}));
+					this.$emit(
+						'move',
+						new MoveEvent({
+							left: newTouches[0].clientX - (left + this.anchor.x),
+							top: newTouches[0].clientY - (top + this.anchor.y),
+						}),
+					);
 				}
 			}
 		},
@@ -127,22 +137,17 @@ export default {
 			this.touches = [];
 		},
 	},
-
 };
 </script>
 
 <template>
-  <div
-    ref="container"
-    @touchstart="onTouchStart"
-    @mousedown="onMouseDown"
-  >
-    <slot />
-  </div>
+	<div ref="container" @touchstart="onTouchStart" @mousedown="onMouseDown">
+		<slot />
+	</div>
 </template>
 
 <style lang="scss">
-  .vue-draggable-area {
+.vue-draggable-area {
 	position: relative;
-  }
+}
 </style>

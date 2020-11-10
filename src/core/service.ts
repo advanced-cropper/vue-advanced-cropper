@@ -10,7 +10,7 @@ import {
 	Size,
 	SizeRestrictions,
 } from './typings';
-import { ALL_DIRECTIONS, HORIZONTAL_DIRECTIONS, VERTICAL_DIRECTIONS } from './constants';
+import { ALL_DIRECTIONS } from './constants';
 
 export function isEqual(a: any, b: any, properties?: string[]): boolean {
 	properties = properties || ['width', 'height', 'left', 'top'];
@@ -184,11 +184,13 @@ export function fitSize(firstSize: Size, secondSize: Size): Size {
 			width: secondSize.width,
 			height: secondSize.width / firstRatio,
 		};
-	} else {
+	} else if (secondSize.height < Infinity) {
 		return {
 			width: secondSize.height * firstRatio,
 			height: secondSize.height,
 		};
+	} else {
+		return firstSize;
 	}
 }
 
@@ -200,7 +202,7 @@ export function limitsToSize(area: Limits) {
 	return {
 		width: area.right !== undefined && area.left !== undefined ? area.right - area.left : Infinity,
 		height: area.bottom !== undefined && area.top !== undefined ? area.bottom - area.top : Infinity,
-	}
+	};
 }
 
 export function limitSizeRestrictions(sizeRestrictions: SizeRestrictions, object: Size) {
