@@ -1,7 +1,7 @@
 <template>
-  <div class="example-wrapper">
+  <div class="home-example-wrapper">
     <a
-      class="example-wrapper__code-link"
+      class="home-example-wrapper__code-link"
       :href="href"
     >
       <img :src="require('../../assets/components/source.svg')">
@@ -20,12 +20,10 @@ export default {
 	},
 };
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
 @import "../../styles/constants";
 
-.example-wrapper {
+.home-example-wrapper {
   border-top: solid 3px $vue-color;
   position: relative;
   overflow: hidden;
