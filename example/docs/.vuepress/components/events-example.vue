@@ -56,6 +56,8 @@ export default {
 		background: #282c34;
 		overflow: hidden;
 		min-height: 300px;
+		display: flex;
+		align-items: center;
 	}
 	.cropper-wrapper__loading {
 		position: absolute;

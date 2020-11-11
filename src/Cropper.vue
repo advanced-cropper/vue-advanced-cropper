@@ -636,9 +636,10 @@ export default {
 					? limitSizeRestrictions(this.sizeRestrictions, this.visibleArea)
 					: this.sizeRestrictions;
 
-			const positionRestrictions = this.visibleArea
-				? limitBy(this.positionRestrictions, this.visibleArea)
-				: this.positionRestrictions;
+			const positionRestrictions =
+				this.visibleArea && limited
+					? limitBy(this.positionRestrictions, this.visibleArea)
+					: this.positionRestrictions;
 
 			const coordinates = algorithms.applyTransform({
 				coordinates: this.coordinates,
