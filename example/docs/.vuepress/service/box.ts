@@ -1,8 +1,8 @@
-import { ResizeEvent } from "../../../../src/core/events";
-import { Coordinates, Size } from "../../../../src/core/typings";
+import { ResizeEvent } from '../../../../src/core/events';
+import { Coordinates, Size } from '../../../../src/core/typings';
 
 export function resizeBox(box: Coordinates, event: ResizeEvent, area?: Coordinates) {
-	const directions = {...event.directions};
+	const directions = { ...event.directions };
 
 	if (box.width + directions.right < 0) {
 		directions.right = -box.width;
@@ -19,16 +19,16 @@ export function resizeBox(box: Coordinates, event: ResizeEvent, area?: Coordinat
 
 	if (area) {
 		if (box.width + box.left + directions.right > area.width + area.left) {
-			directions.right =  area.width + area.left - box.width - box.left;
+			directions.right = area.width + area.left - box.width - box.left;
 		}
 		if (box.height + box.top + directions.bottom > area.height + area.top) {
-			directions.bottom =  area.height + area.top - box.height - box.top;
+			directions.bottom = area.height + area.top - box.height - box.top;
 		}
 		if (box.left - directions.left < area.left) {
-			directions.left =  box.left - area.left;
+			directions.left = box.left - area.left;
 		}
 		if (box.top - directions.top < area.top) {
-			directions.top =  box.top - area.top;
+			directions.top = box.top - area.top;
 		}
 	}
 
@@ -42,13 +42,12 @@ export function resizeBox(box: Coordinates, event: ResizeEvent, area?: Coordinat
 		width,
 		height,
 		left,
-		top
-	}
+		top,
+	};
 }
 
-
 export function centerResizeBox(box: Coordinates, event: ResizeEvent, area: Coordinates) {
-	const directions = {...event.directions};
+	const directions = { ...event.directions };
 
 	if (directions.left) {
 		directions.right = directions.left;
@@ -64,7 +63,7 @@ export function centerResizeBox(box: Coordinates, event: ResizeEvent, area: Coor
 	}
 
 	let width = Math.min(area.width, Math.max(0, box.width + directions.left + directions.right));
-	let height = Math.min(area.height,Math.max(0, box.height + directions.top + directions.bottom));
+	let height = Math.min(area.height, Math.max(0, box.height + directions.top + directions.bottom));
 
 	const left = area.width / 2 - width / 2;
 	const top = area.height / 2 - height / 2;
@@ -73,8 +72,8 @@ export function centerResizeBox(box: Coordinates, event: ResizeEvent, area: Coor
 		width,
 		height,
 		left,
-		top
-	}
+		top,
+	};
 }
 
 export function elementToCoordinates(element: HTMLElement | null) {
@@ -84,7 +83,7 @@ export function elementToCoordinates(element: HTMLElement | null) {
 			top: 0,
 			width: element.clientWidth,
 			height: element.clientHeight,
-		}
+		};
 	}
 }
 
@@ -94,7 +93,7 @@ export function boxStyle(coordinates: Coordinates) {
 		height: `${coordinates.height}px`,
 		left: `${coordinates.left}px`,
 		top: `${coordinates.top}px`,
-	}
+	};
 }
 
 export function emptyBox() {
@@ -103,5 +102,5 @@ export function emptyBox() {
 		height: 0,
 		left: 0,
 		top: 0,
-	}
+	};
 }

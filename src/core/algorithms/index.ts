@@ -12,7 +12,7 @@ export * from './limitBy';
 export * from './manipulateImage';
 export * from './move';
 export * from './normalizeEvent';
-export * from './percentRestrictions';
+export * from './sizeRestrictions';
 export * from './positionRestrictions';
 export * from './refineSizeRestrictions';
 export * from './refineVisibleArea';

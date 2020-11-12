@@ -1,10 +1,10 @@
-import { Size, VisibleArea, Coordinates, AreaRestrictions, Limits } from '../typings';
+import { Size, VisibleArea, Coordinates, AreaRestrictions, Limits, Falsy } from '../typings';
 import { ratio, toLimits, intersectionLimits, fitToLimits, getIntersections, fitSize, limitsToSize } from '../service';
 
 interface DefaultVisibleAreaParams {
 	imageSize: Size;
 	boundaries: Size;
-	coordinates?: Coordinates;
+	coordinates?: Coordinates | Falsy;
 	areaRestrictions: AreaRestrictions;
 }
 export function defaultVisibleArea(params: DefaultVisibleAreaParams): VisibleArea {

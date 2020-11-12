@@ -1,6 +1,6 @@
 import { Size, SizeRestrictions } from '../typings';
 
-interface PercentRestrictionParams {
+interface SizeRestrictionsParams {
 	imageSize: Size;
 	minWidth: number;
 	minHeight: number;
@@ -13,11 +13,25 @@ export function percentRestrictions({
 	minHeight,
 	maxWidth,
 	maxHeight,
-}: PercentRestrictionParams): SizeRestrictions {
+}: SizeRestrictionsParams): SizeRestrictions {
 	return {
 		minWidth: (minWidth / 100) * imageSize.width,
 		minHeight: (minHeight / 100) * imageSize.height,
 		maxWidth: (maxWidth / 100) * imageSize.width,
 		maxHeight: (maxHeight / 100) * imageSize.height,
+	};
+}
+
+export function pixelsRestrictions({
+	minWidth,
+	minHeight,
+	maxWidth,
+	maxHeight,
+}: SizeRestrictionsParams): SizeRestrictions {
+	return {
+		minWidth,
+		minHeight,
+		maxWidth,
+		maxHeight,
 	};
 }

@@ -1,6 +1,5 @@
-
-import { applyMove, applyScale, fit, inverseMove, maxScale, toLimits } from "../service";
-import { Coordinates, AreaRestrictions, VisibleArea } from "../typings";
+import { applyMove, applyScale, fit, inverseMove, maxScale, toLimits } from '../service';
+import { Coordinates, AreaRestrictions, VisibleArea } from '../typings';
 
 // The main point of this feature is calculating the needed position of stencil and parameters of world transforms
 // Real coordinates don't changes here

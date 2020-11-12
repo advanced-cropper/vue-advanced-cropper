@@ -1,22 +1,31 @@
-import { AspectRatio, Boundaries, ImageSize, Size, SizeRestrictions, VisibleArea } from '../typings';
+import { AspectRatio, Boundaries, Falsy, ImageSize, Size, SizeRestrictions, VisibleArea } from '../typings';
 import { approximatedSize } from './approximatedSize';
 import { ratio } from '../service';
 
-export interface DefaultSizeParams {
-	imageSize?: ImageSize;
+interface DefaultSizeBasicParams {
 	aspectRatio: AspectRatio;
-	boundaries?: Boundaries;
-	visibleArea?: VisibleArea;
+	boundaries: Boundaries;
 	sizeRestrictions: SizeRestrictions;
 }
+
+export interface ImageDefaultSizeParams extends DefaultSizeBasicParams {
+	imageSize: ImageSize;
+	visibleArea?: VisibleArea | Falsy;
+}
+
+export interface VisibleAreaDefaultSizeParams extends DefaultSizeBasicParams {
+	imageSize?: ImageSize | Falsy;
+	visibleArea: VisibleArea;
+}
+
 export function defaultSize({
 	imageSize,
 	visibleArea,
 	boundaries,
 	aspectRatio,
 	sizeRestrictions,
-}: DefaultSizeParams): Size {
-	const area = visibleArea || imageSize;
+}: VisibleAreaDefaultSizeParams | ImageDefaultSizeParams): Size {
+	const area = (visibleArea || imageSize) as Size;
 
 	const size =
 		boundaries.width > boundaries.height

@@ -101,3 +101,5 @@ export interface ImageTransforms {
 export type Transform =
 	| ((coordinates: Coordinates, imageSize: ImageSize) => Partial<Coordinates>)
 	| Partial<Coordinates>;
+
+export type Falsy = false | 0 | '' | null | undefined;

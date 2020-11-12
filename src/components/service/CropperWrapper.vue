@@ -1,6 +1,6 @@
 <script>
 import { ManipulateImageEvent } from '../../core/events.ts';
-import { distance } from '../../core/utils';
+import { calculateGeometricProperties } from '../../core/touch';
 
 export default {
 	name: 'CropperWrapper',
@@ -46,7 +46,7 @@ export default {
 					(touch) =>
 						touch.clientX > left && touch.clientX < right && touch.clientY > top && touch.clientY < bottom,
 				);
-				this.oldGeometricProperties = this.calculateGeometricProperties(this.touches);
+				this.oldGeometricProperties = calculateGeometricProperties(this.touches, container);
 
 				if (e.preventDefault) {
 					e.preventDefault();
@@ -103,27 +103,6 @@ export default {
 		onMouseUp() {
 			this.touches = [];
 		},
-		calculateGeometricProperties(touches) {
-			const container = this.$refs.container;
-			const { left, top } = container.getBoundingClientRect();
-
-			const centerMass = { left: 0, top: 0 };
-			let spread = 0;
-
-			touches.forEach((touch) => {
-				centerMass.left += (touch.clientX - left) / touches.length;
-				centerMass.top += (touch.clientY - top) / touches.length;
-			});
-
-			touches.forEach((touch) => {
-				spread += distance(
-					{ x: centerMass.left, y: centerMass.top },
-					{ x: touch.clientX - left, y: touch.clientY - top },
-				);
-			});
-
-			return { centerMass, spread, count: touches.length };
-		},
 		processMove(event, newTouches) {
 			if (this.touches.length) {
 				if (this.touches.length === 1 && newTouches.length === 1 && this.touchMove.enabled) {
@@ -135,8 +114,8 @@ export default {
 						}),
 					);
 				} else if (this.touches.length > 1 && this.touchResize) {
+					const newProperties = calculateGeometricProperties(newTouches, this.$refs.container);
 					const oldProperties = this.oldGeometricProperties;
-					const newProperties = this.calculateGeometricProperties(newTouches);
 
 					if (oldProperties.count === newProperties.count && oldProperties.count > 1) {
 						this.$emit(

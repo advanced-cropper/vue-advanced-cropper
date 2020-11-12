@@ -170,7 +170,7 @@ export class Cropper {
 		const position = (this.defaultPosition || defaultPosition)({
 			coordinates: size,
 			visibleArea: this.visibleArea,
-			imageSize: this.imageSize
+			imageSize: this.imageSize,
 		});
 		this.$setCoordinates({
 			...size,
@@ -222,7 +222,7 @@ export class Cropper {
 				: defaultVisibleArea({
 						boundaries: this.boundaries,
 						imageSize: this.imageSize,
-						areaRestrictions: this.areaRestrictions
+						areaRestrictions: this.areaRestrictions,
 				  }),
 		);
 

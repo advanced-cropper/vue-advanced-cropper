@@ -10,28 +10,28 @@
 			default: 'dynamic-cropper__handler',
 		}"
 	>
-		<slot/>
+		<slot />
 	</bounding-box>
 </template>
 
 <style lang="scss">
-	@import '../../styles/constants';
-	.dynamic-cropper {
-		position: absolute;
-		&__line {
-			border-color: $cropper-color;
-		}
-		&__handler {
-			background: $cropper-color;
-		}
+@import '../../styles/constants';
+.dynamic-cropper {
+	position: absolute;
+	&__line {
+		border-color: $cropper-color;
 	}
+	&__handler {
+		background: $cropper-color;
+	}
+}
 </style>
 
 <script>
-	import { BoundingBox } from 'vue-advanced-cropper';
-	export default {
-		components: {
-			BoundingBox
-		}
-	}
+import { BoundingBox } from 'vue-advanced-cropper';
+export default {
+	components: {
+		BoundingBox,
+	},
+};
 </script>
