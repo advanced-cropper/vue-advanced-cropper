@@ -54,7 +54,25 @@ module.exports = {
 					'/components/circle-stencil',
 					'/components/bounding-box'
 				],
+			},
+			{
+				title: 'Algorithms',
+				collapsable: true,
+				children: [
+					'/algorithms/init-stretcher',
+					'/algorithms/default-boundaries',
+				],
 			}
 		],
 	},
+	plugins: [
+		[
+			'vuepress-plugin-typescript',
+			{
+				tsLoaderOptions: {
+					transpileOnly: true
+				}
+			}
+		],
+	],
 };

@@ -35,7 +35,7 @@ export function manipulateImage(params: ManipulateImageParams): ManipulateImageR
 
 	let areaScale = 1;
 	let stencilScale = 1;
-	const allowedScale =	scale.factor && Math.abs(scale.factor - 1) > 1e-3
+	const allowedScale = scale.factor && Math.abs(scale.factor - 1) > 1e-3
 
 	visibleArea = applyMove(visibleArea, {
 		left: move.left || 0,

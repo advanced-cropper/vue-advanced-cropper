@@ -17,10 +17,6 @@
 	"module": "esnext",
 	"moduleResolution": "node",
 	"noEmit": true,
-	"resolveJsonModule": true,
 	"skipLibCheck": true
-  },
-  "include": [
-    "src"
-  ]
+  }
 }

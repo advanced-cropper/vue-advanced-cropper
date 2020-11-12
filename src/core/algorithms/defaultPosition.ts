@@ -1,8 +1,8 @@
 import { ImageSize, Point, Size, VisibleArea } from '../typings';
 
 export interface DefaultPositionParams {
-	imageSize: ImageSize;
 	coordinates: Size;
+	imageSize?: ImageSize;
 	visibleArea?: VisibleArea;
 }
 export function defaultPosition({ imageSize, visibleArea, coordinates }: DefaultPositionParams): Point {

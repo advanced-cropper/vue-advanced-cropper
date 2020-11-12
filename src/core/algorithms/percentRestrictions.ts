@@ -1,4 +1,4 @@
-import { Size, SizeRestrictions } from "../typings";
+import { Size, SizeRestrictions } from '../typings';
 
 interface PercentRestrictionParams {
 	imageSize: Size;
@@ -8,11 +8,11 @@ interface PercentRestrictionParams {
 	maxHeight: number;
 }
 export function percentRestrictions({
-  imageSize,
-  minWidth,
-  minHeight,
-  maxWidth,
-  maxHeight,
+	imageSize,
+	minWidth,
+	minHeight,
+	maxWidth,
+	maxHeight,
 }: PercentRestrictionParams): SizeRestrictions {
 	return {
 		minWidth: (minWidth / 100) * imageSize.width,

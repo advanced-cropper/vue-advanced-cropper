@@ -123,13 +123,6 @@ export function maxScale(object: Coordinates, area: Limits): number {
 	);
 }
 
-export function limitsToRestrictions(area: Limits) {
-	return {
-		maxWidth: area.right !== undefined && area.left !== undefined ? area.right - area.left : Infinity,
-		maxHeight: area.bottom !== undefined && area.top !== undefined ? area.bottom - area.top : Infinity,
-	};
-}
-
 // Move object to correspond limits
 export function fit(object: Coordinates, limits: Limits): MoveDirections {
 	const directions = {
