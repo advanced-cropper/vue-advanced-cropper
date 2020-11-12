@@ -1,4 +1,4 @@
-import { ImageRestriction, Limits, Size } from "../typings";
+import { ImageRestriction, Limits, Size } from '../typings';
 
 interface AreaRestrictionsParams {
 	imageRestriction: ImageRestriction;

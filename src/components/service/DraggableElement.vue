@@ -13,14 +13,14 @@ export default {
 </script>
 
 <template>
-  <div
-    ref="draggable"
-    :class="classname"
-    @touchstart="onTouchStart"
-    @mousedown="onMouseDown"
-    @mouseover="onMouseOver"
-    @mouseleave="onMouseLeave"
-  >
-    <slot />
-  </div>
+	<div
+		ref="draggable"
+		:class="classname"
+		@touchstart="onTouchStart"
+		@mousedown="onMouseDown"
+		@mouseover="onMouseOver"
+		@mouseleave="onMouseLeave"
+	>
+		<slot />
+	</div>
 </template>

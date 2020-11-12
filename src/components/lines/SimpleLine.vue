@@ -33,11 +33,7 @@ export default {
 	computed: {
 		classes() {
 			return {
-				root: classnames(
-					cn({ [this.position]: true }),
-					this.classname,
-					this.hover && this.hoverClassname
-				),
+				root: classnames(cn({ [this.position]: true }), this.classname, this.hover && this.hoverClassname),
 			};
 		},
 	},
@@ -56,53 +52,47 @@ export default {
 </script>
 
 <template>
-  <LineWrapper
-    :position="position"
-    :disabled="disabled"
-    @enter="onEnter"
-    @leave="onLeave"
-    @drag="onDrag"
-  >
-    <div :class="classes.root" />
-  </LineWrapper>
+	<LineWrapper :position="position" :disabled="disabled" @enter="onEnter" @leave="onLeave" @drag="onDrag">
+		<div :class="classes.root" />
+	</LineWrapper>
 </template>
 
 <style lang="scss">
 .vue-simple-line {
-  background: none;
-  transition: border 0.5s;
-  border-color: rgba(white, 0.3);
-  border-width: 0;
-  border-style: solid;
+	background: none;
+	transition: border 0.5s;
+	border-color: rgba(white, 0.3);
+	border-width: 0;
+	border-style: solid;
 
-  &--south,
-  &--north {
-    height: 0;
-    width: 100%;
-  }
+	&--south,
+	&--north {
+		height: 0;
+		width: 100%;
+	}
 
-  &--east,
-  &--west {
-    height: 100%;
-    width: 0;
-  }
+	&--east,
+	&--west {
+		height: 100%;
+		width: 0;
+	}
 
-  &--east {
-    border-right-width: 1px;
-  }
-  &--west {
-    border-left-width: 1px;
-  }
-  &--south {
-    border-top-width: 1px;
-  }
-  &--north {
-    border-bottom-width: 1px;
-  }
+	&--east {
+		border-right-width: 1px;
+	}
+	&--west {
+		border-left-width: 1px;
+	}
+	&--south {
+		border-top-width: 1px;
+	}
+	&--north {
+		border-bottom-width: 1px;
+	}
 
-  &--hover {
-    opacity: 1;
-    border-color: white;
-  }
+	&--hover {
+		opacity: 1;
+		border-color: white;
+	}
 }
 </style>

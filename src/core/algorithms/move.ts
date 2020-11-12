@@ -1,6 +1,6 @@
-import { MoveEvent } from "../events";
-import { Coordinates, PositionRestrictions } from "../typings";
-import { applyMove, fit } from "../service";
+import { MoveEvent } from '../events';
+import { Coordinates, PositionRestrictions } from '../typings';
+import { applyMove, fit } from '../service';
 
 interface MoveParams {
 	event: MoveEvent;
@@ -9,11 +9,7 @@ interface MoveParams {
 }
 
 export function move(params: MoveParams): Coordinates {
-	const {
-		event,
-		coordinates,
-		positionRestrictions = {}
-	} = params;
+	const { event, coordinates, positionRestrictions = {} } = params;
 
 	const movedCoordinates = applyMove(coordinates, event.directions);
 

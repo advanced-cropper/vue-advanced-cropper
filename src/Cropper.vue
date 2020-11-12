@@ -222,7 +222,7 @@ export default {
 			},
 			visibleArea: null,
 			coordinates: {
-				...DEFAULT_COORDINATES
+				...DEFAULT_COORDINATES,
 			},
 		};
 	},

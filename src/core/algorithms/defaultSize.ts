@@ -8,15 +8,17 @@ interface DefaultSizeBasicParams {
 	sizeRestrictions: SizeRestrictions;
 }
 
-export interface ImageDefaultSizeParams extends DefaultSizeBasicParams {
+interface ImageDefaultSizeParams extends DefaultSizeBasicParams {
 	imageSize: ImageSize;
 	visibleArea?: VisibleArea | Falsy;
 }
 
-export interface VisibleAreaDefaultSizeParams extends DefaultSizeBasicParams {
+interface VisibleAreaDefaultSizeParams extends DefaultSizeBasicParams {
 	imageSize?: ImageSize | Falsy;
 	visibleArea: VisibleArea;
 }
+
+export type DefaultSizeParams = VisibleAreaDefaultSizeParams | ImageDefaultSizeParams
 
 export function defaultSize({
 	imageSize,
@@ -24,7 +26,7 @@ export function defaultSize({
 	boundaries,
 	aspectRatio,
 	sizeRestrictions,
-}: VisibleAreaDefaultSizeParams | ImageDefaultSizeParams): Size {
+}: DefaultSizeParams): Size {
 	const area = (visibleArea || imageSize) as Size;
 
 	const size =

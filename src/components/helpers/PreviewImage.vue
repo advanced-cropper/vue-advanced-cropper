@@ -94,29 +94,21 @@ export default {
 </script>
 
 <template>
-  <div
-    :class="classes.root"
-    :style="wrapperStyle"
-  >
-    <img
-      ref="image"
-      :src="img"
-      :class="classes.image"
-      :style="imageStyle"
-    >
-  </div>
+	<div :class="classes.root" :style="wrapperStyle">
+		<img ref="image" :src="img" :class="classes.image" :style="imageStyle" />
+	</div>
 </template>
 
 <style lang="scss">
-  .vue-preview-image {
-    overflow: hidden;
-		position: relative;
-    &__image {
-			pointer-events: none;
-			position: absolute;
-			// Workaround to prevent bugs at the websites with max-width
-			// rule applied to img (Vuepress for example)
-			max-width: unset !important;
-    }
-  }
+.vue-preview-image {
+	overflow: hidden;
+	position: relative;
+	&__image {
+		pointer-events: none;
+		position: absolute;
+		// Workaround to prevent bugs at the websites with max-width
+		// rule applied to img (Vuepress for example)
+		max-width: unset !important;
+	}
+}
 </style>

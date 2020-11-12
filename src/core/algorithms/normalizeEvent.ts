@@ -20,8 +20,8 @@ export function normalizeEvent({ event, visibleArea, coefficient }: NormalizeEve
 				center:
 					event.scale && event.scale.center
 						? {
-							left: event.scale.center.left * coefficient + visibleArea.left,
-							top: event.scale.center.top * coefficient + visibleArea.top,
+								left: event.scale.center.left * coefficient + visibleArea.left,
+								top: event.scale.center.top * coefficient + visibleArea.top,
 						  }
 						: null,
 			},

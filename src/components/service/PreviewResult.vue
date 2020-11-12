@@ -24,20 +24,20 @@ export default {
 			},
 		},
 		imageClass: {
-			type: String
+			type: String,
 		},
 		// Deprecated props
 		classname: {
 			type: String,
 			validator(value) {
 				return replacedProp(value, 'classname', 'class');
-			}
+			},
 		},
 		imageClassname: {
 			type: String,
 			validator(value) {
 				return replacedProp(value, 'imageClassname', 'imageClass');
-			}
+			},
 		},
 	},
 	computed: {
@@ -52,8 +52,8 @@ export default {
 			return {
 				width: `${this.stencilCoordinates.width}px`,
 				height: `${this.stencilCoordinates.height}px`,
-				left: `calc(50% - ${this.stencilCoordinates.width/2}px)`,
-				top: `calc(50% - ${this.stencilCoordinates.height/2}px)`,
+				left: `calc(50% - ${this.stencilCoordinates.width / 2}px)`,
+				top: `calc(50% - ${this.stencilCoordinates.height / 2}px)`,
 			};
 		},
 		imageStyle() {
@@ -71,8 +71,8 @@ export default {
 			if (flipped) {
 				result.width = `${height}px`;
 				result.height = `${width}px`;
-				result.left = `${-this.stencilCoordinates.left - imageTransforms.translateX - (height - width)/2}px`;
-				result.top = `${-this.stencilCoordinates.top - imageTransforms.translateY - (width - height)/2}px`;
+				result.left = `${-this.stencilCoordinates.left - imageTransforms.translateX - (height - width) / 2}px`;
+				result.top = `${-this.stencilCoordinates.top - imageTransforms.translateY - (width - height) / 2}px`;
 			} else {
 				result.left = `${-this.stencilCoordinates.left - imageTransforms.translateX}px`;
 				result.top = `${-this.stencilCoordinates.top - imageTransforms.translateY}px`;
@@ -85,26 +85,15 @@ export default {
 </script>
 
 <template>
-  <div
-    :class="classes.root"
-  >
-    <div
-      ref="wrapper"
-      :class="classes.wrapper"
-      :style="wrapperStyle"
-    >
-      <img
-        ref="image"
-        :src="img.src"
-        :class="classes.image"
-        :style="imageStyle"
-      >
-    </div>
-  </div>
+	<div :class="classes.root">
+		<div ref="wrapper" :class="classes.wrapper" :style="wrapperStyle">
+			<img ref="image" :src="img.src" :class="classes.image" :style="imageStyle" />
+		</div>
+	</div>
 </template>
 
 <style lang="scss">
-.vue-preview-result{
+.vue-preview-result {
 	overflow: hidden;
 	box-sizing: border-box;
 	position: absolute;

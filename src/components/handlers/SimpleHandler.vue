@@ -26,12 +26,12 @@ export default {
 		disabled: {
 			type: Boolean,
 			default: false,
-		}
+		},
 	},
 	data() {
 		return {
-			hover: false
-		}
+			hover: false,
+		};
 	},
 	computed: {
 		classnames() {
@@ -40,11 +40,13 @@ export default {
 					cn({
 						[this.horizontalPosition]: Boolean(this.horizontalPosition),
 						[this.verticalPosition]: Boolean(this.verticalPosition),
-						[`${this.horizontalPosition}-${this.verticalPosition}`]: Boolean(this.verticalPosition && this.horizontalPosition),
-						'hover': this.hover
+						[`${this.horizontalPosition}-${this.verticalPosition}`]: Boolean(
+							this.verticalPosition && this.horizontalPosition,
+						),
+						hover: this.hover,
 					}),
 					this.classname,
-					this.hover && this.hoverClassname
+					this.hover && this.hoverClassname,
 				),
 			};
 		},
@@ -64,23 +66,23 @@ export default {
 </script>
 
 <template>
-  <HandlerWrapper
-    :vertical-position="verticalPosition"
-    :horizontal-position="horizontalPosition"
-    :disabled="disabled"
-    @drag="onDrag"
-    @enter="onEnter"
-    @leave="onLeave"
-  >
-    <div :class="classnames.default" />
-  </HandlerWrapper>
+	<HandlerWrapper
+		:vertical-position="verticalPosition"
+		:horizontal-position="horizontalPosition"
+		:disabled="disabled"
+		@drag="onDrag"
+		@enter="onEnter"
+		@leave="onLeave"
+	>
+		<div :class="classnames.default" />
+	</HandlerWrapper>
 </template>
 
 <style lang="scss">
 .vue-simple-handler {
-  display: block;
-  background: white;
-  height: 10px;
-  width: 10px;
+	display: block;
+	background: white;
+	height: 10px;
+	width: 10px;
 }
 </style>

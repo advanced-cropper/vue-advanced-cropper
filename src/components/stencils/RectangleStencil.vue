@@ -80,31 +80,31 @@ export default {
 			type: String,
 			validator(value) {
 				return replacedProp(value, 'classname', 'class');
-			}
+			},
 		},
 		previewClassname: {
 			type: String,
 			validator(value) {
 				return replacedProp(value, 'previewClassname', 'previewClass');
-			}
+			},
 		},
 		boundingBoxClassname: {
 			type: String,
 			validator(value) {
 				return replacedProp(value, 'boundingBoxClassname', 'boundingBoxClass');
-			}
+			},
 		},
 		linesClassnames: {
 			type: Object,
 			validator(value) {
 				return replacedProp(value, 'linesClassnames', 'linesClasses');
-			}
+			},
 		},
 		handlersClassnames: {
 			type: Object,
 			validator(value) {
 				return replacedProp(value, 'handlersClassnames', 'handlersClasses');
-			}
+			},
 		},
 	},
 	computed: {
@@ -116,7 +116,7 @@ export default {
 			};
 		},
 		style() {
-			const { height, width, left, top, } = this.stencilCoordinates;
+			const { height, width, left, top } = this.stencilCoordinates;
 			return {
 				width: `${width}px`,
 				height: `${height}px`,
@@ -143,45 +143,35 @@ export default {
 </script>
 
 <template>
-  <div
-    :class="classes.stencil"
-    :style="style"
-  >
-    <BoundingBox
-      :class="classes.boundingBox"
-      :handlers="handlers"
-      :handler-component="handlerComponent"
-      :handlers-classnames="handlersClassnames"
-      :handlers-classes="handlersClasses"
-      :lines="lines"
-      :line-component="lineComponent"
-      :lines-classnames="linesClassnames"
-      :lines-classes="linesClasses"
-      :scalable="scalable"
-      @resize="onResize"
-    >
-      <DraggableArea
-        :movable="movable"
-        @move="onMove"
-      >
-        <PreviewResult
-          :img="img"
-          :class="classes.preview"
-          :stencil-coordinates="stencilCoordinates"
-        />
-      </DraggableArea>
-    </BoundingBox>
-  </div>
+	<div :class="classes.stencil" :style="style">
+		<BoundingBox
+			:class="classes.boundingBox"
+			:handlers="handlers"
+			:handler-component="handlerComponent"
+			:handlers-classnames="handlersClassnames"
+			:handlers-classes="handlersClasses"
+			:lines="lines"
+			:line-component="lineComponent"
+			:lines-classnames="linesClassnames"
+			:lines-classes="linesClasses"
+			:scalable="scalable"
+			@resize="onResize"
+		>
+			<DraggableArea :movable="movable" @move="onMove">
+				<PreviewResult :img="img" :class="classes.preview" :stencil-coordinates="stencilCoordinates" />
+			</DraggableArea>
+		</BoundingBox>
+	</div>
 </template>
 
 <style lang="scss">
 .vue-rectangle-stencil {
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  box-sizing: border-box;
-  &--movable {
-    cursor: move;
-  }
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	box-sizing: border-box;
+	&--movable {
+		cursor: move;
+	}
 }
 </style>
