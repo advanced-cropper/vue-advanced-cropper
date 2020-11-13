@@ -1,7 +1,7 @@
 import { Size, VisibleArea, Coordinates, AreaRestrictions, Limits, Falsy } from '../typings';
 import { ratio, toLimits, intersectionLimits, fitToLimits, getIntersections, fitSize, limitsToSize } from '../service';
 
-interface DefaultVisibleAreaParams {
+export interface DefaultVisibleAreaParams {
 	imageSize: Size;
 	boundaries: Size;
 	coordinates?: Coordinates | Falsy;

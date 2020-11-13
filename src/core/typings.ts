@@ -98,6 +98,14 @@ export interface ImageTransforms {
 	flipped?: boolean;
 }
 
+export interface ResizeSettings {
+	stencil?: boolean;
+}
+
+export interface WheelResizeSettings {
+	ratio?: number;
+}
+
 export type Transform =
 	| ((coordinates: Coordinates, imageSize: ImageSize) => Partial<Coordinates>)
 	| Partial<Coordinates>;

@@ -1,6 +1,6 @@
 import { Size, SizeRestrictions } from '../typings';
 
-interface SizeRestrictionsParams {
+export interface SizeRestrictionsParams {
 	imageSize: Size;
 	minWidth: number;
 	minHeight: number;

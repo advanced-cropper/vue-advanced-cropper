@@ -1,10 +1,12 @@
 import { ImageRestriction, Limits, Size } from '../typings';
 
-interface AreaRestrictionsParams {
+export interface AreaRestrictionsParams {
 	imageRestriction: ImageRestriction;
 	imageSize: Size;
 }
-export function areaRestrictions({ imageSize, imageRestriction }: AreaRestrictionsParams): Limits {
+export function areaRestrictions(params: AreaRestrictionsParams): Limits {
+	const { imageSize, imageRestriction } = params;
+
 	let limits = {};
 
 	if (imageRestriction === 'area') {

@@ -13,7 +13,7 @@ import { Coordinates, AreaRestrictions, VisibleArea, Boundaries } from '../typin
 
 // This function updates visible area with respect to current transformations and fits
 // coordinates to the new visible area
-interface FitVisibleAreaParams {
+export interface FitVisibleAreaParams {
 	coordinates: Coordinates;
 	visibleArea: VisibleArea;
 	boundaries: Boundaries;

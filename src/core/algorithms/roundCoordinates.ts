@@ -1,6 +1,6 @@
 import { Coordinates, PositionRestrictions, SizeRestrictions } from '../typings';
 
-interface RoundCoordinatesParams {
+export interface RoundCoordinatesParams {
 	coordinates: Coordinates;
 	sizeRestrictions: SizeRestrictions;
 	positionRestrictions: PositionRestrictions;

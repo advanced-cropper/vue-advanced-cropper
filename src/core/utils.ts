@@ -66,7 +66,7 @@ export function isObject(obj) {
 	return typeof obj === 'object' && obj !== null;
 }
 
-export function getSettings(param, defaultParams = {}) {
+export function getSettings<T extends {}>(param, defaultParams?:T ) {
 	let result = {
 		enabled: Boolean(param),
 		...defaultParams,

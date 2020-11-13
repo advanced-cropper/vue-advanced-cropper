@@ -1,6 +1,6 @@
 import { ImageRestriction, Limits, Size } from '../typings';
 
-interface PositionRestrictionsParams {
+export interface PositionRestrictionsParams {
 	imageRestriction: ImageRestriction;
 	imageSize: Size;
 }

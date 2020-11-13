@@ -1,6 +1,6 @@
 import { Boundaries, Size } from '../typings';
 
-interface DefaultBoundariesParams {
+export interface DefaultBoundariesParams {
 	cropper: HTMLElement;
 	imageSize: Size;
 }

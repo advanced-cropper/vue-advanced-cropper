@@ -1,7 +1,7 @@
 import { Size } from '../typings';
 import { ratio } from '../service';
 
-interface InitStretcherParams {
+export interface InitStretcherParams {
 	stretcher: HTMLElement;
 	imageSize: Size;
 }
