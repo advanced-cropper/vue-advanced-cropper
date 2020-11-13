@@ -211,7 +211,7 @@ export default {
 		/>
 		<div class="button-wrapper">
 			<span class="button" @click="$refs.file.click()">
-				<input type="file" ref="file" @change="loadImage($event)" accept="image/*">
+				<input type="file" ref="file" @change="uploadImage($event)" accept="image/*">
 				Upload image
 			</span>
 		</div>
