@@ -40,7 +40,7 @@ export default {
 		imageClass: {
 			type: String,
 		},
-		areaClass: {
+		boundariesClass: {
 			type: String,
 		},
 		backgroundClass: {
@@ -190,13 +190,19 @@ export default {
 		areaClassname: {
 			type: String,
 			validator(value) {
-				return replacedProp(value, 'areaClassname', 'areaClass');
+				return replacedProp(value, 'areaClassname', 'boundariesClass');
 			},
 		},
 		backgroundClassname: {
 			type: String,
 			validator(value) {
 				return replacedProp(value, 'backgroundClassname', 'backgroundClass');
+			},
+		},
+		areaClass: {
+			type: String,
+			validator(value) {
+				return replacedProp(value, 'areaClass', 'boundariesClass');
 			},
 		},
 	},
@@ -298,7 +304,7 @@ export default {
 			return {
 				cropper: classnames(cn(), this.classname),
 				image: classnames(cn('image'), this.imageClass || this.imageClassname),
-				area: classnames(cn('area'), this.areaClass || this.areaClassname),
+				boundaries: classnames(cn('boundaries'), this.boundariesClass || this.areaClass || this.areaClassname),
 				stretcher: classnames(cn('stretcher')),
 				background: classnames(cn('background'), this.backgroundClass || this.backgroundClassname),
 				imageWrapper: classnames(cn('image-wrapper')),
@@ -335,7 +341,7 @@ export default {
 				top: `${this.stencilCoordinates.top}px`,
 			};
 		},
-		areaStyle() {
+		boundariesStyle() {
 			return {
 				width: this.boundaries.width ? `${this.boundaries.width}px` : 'auto',
 				height: this.boundaries.height ? `${this.boundaries.height}px` : 'auto',
@@ -410,11 +416,11 @@ export default {
 	},
 	methods: {
 		// External methods
-		getResult() {
+		getResult(canvas) {
 			const coordinates = this.initialized
 				? this.prepareResult({ ...this.coordinates })
 				: this.defaultCoordinates();
-			if (this.canvas && this.src && this.imageLoaded) {
+			if ((canvas || this.canvas) && this.src && this.imageLoaded) {
 				this.updateCanvas();
 				return {
 					coordinates,
@@ -733,7 +739,7 @@ export default {
 
 			if (this.src) {
 				const promise = parseImage(this.src);
-				if (isCrossOriginURL(this.src) && this.canvas) {
+				if (isCrossOriginURL(this.src)) {
 					this.imageAttributes.crossOrigin = this.crossOrigin;
 				}
 				setTimeout(() => {
@@ -861,10 +867,10 @@ export default {
 
 <template>
 	<div ref="cropper" :class="classes.cropper">
-		<div :class="classes.background" :style="areaStyle" />
+		<div :class="classes.background" :style="boundariesStyle" />
 		<div ref="stretcher" :class="classes.stretcher" />
 
-		<div ref="area" :class="classes.area" :style="areaStyle">
+		<div :class="classes.boundaries" :style="boundariesStyle">
 			<cropper-wrapper
 				:class="classes.cropperWrapper"
 				:wheel-resize="settings.wheelResize"
@@ -899,8 +905,8 @@ export default {
 					@resize="onResize"
 					@move="onMove"
 				/>
-				<canvas v-if="canvas" ref="canvas" :style="{ display: 'none' }" />
-				<canvas v-if="canvas" ref="sourceCanvas" :style="{ display: 'none' }" />
+				<canvas ref="canvas" :style="{ display: 'none' }" />
+				<canvas ref="sourceCanvas" :style="{ display: 'none' }" />
 			</cropper-wrapper>
 		</div>
 	</div>
@@ -931,7 +937,7 @@ export default {
 		// rule applied to img (Vuepress for example)
 		max-width: unset !important;
 	}
-	&__area {
+	&__boundaries {
 		position: absolute;
 		left: 50%;
 		transform: translate(-50%, -50%);

@@ -46,12 +46,12 @@ export function defaultVisibleArea(params: DefaultVisibleAreaParams): VisibleAre
 
 		const limits: Limits = {};
 
-		if (!coordinatesIntersection.left && !coordinatesIntersection.right) {
+		if (!coordinatesIntersection.left && !coordinatesIntersection.right && visibleArea.width <= imageSize.width) {
 			limits.left = 0;
 			limits.right = imageSize.width;
 		}
 
-		if (!coordinatesIntersection.top && !coordinatesIntersection.bottom) {
+		if (!coordinatesIntersection.top && !coordinatesIntersection.bottom && visibleArea.height <= imageSize.height) {
 			limits.top = 0;
 			limits.bottom = imageSize.height;
 		}
