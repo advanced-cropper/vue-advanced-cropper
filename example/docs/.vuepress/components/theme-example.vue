@@ -233,6 +233,13 @@ export default {
 			}
 		}
 	}
+
+	.vue-circle-stencil {
+		&__preview {
+			border: dashed 1px rgba(white, 0.3);
+		}
+	}
+
 	.vue-simple-handler {
 		$length: 22px;
 		$border-width: 2px;

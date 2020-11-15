@@ -11,19 +11,9 @@ export default {
 		return {
 			zoom: 0,
 			img: require('../assets/pictures/girl-in-hat.jpg'),
-			originalWidth: 0,
-			originalHeight: 0,
 		};
 	},
 	methods: {
-		// Full boundaries
-		defaultBoundaries({ cropper, imageSize }) {
-			return {
-				width: cropper.clientWidth,
-				height: cropper.clientHeight,
-			};
-		},
-		// Full size
 		defaultSize({ imageSize }) {
 			if (imageSize.width < imageSize.height) {
 				return {
@@ -76,9 +66,6 @@ export default {
 				areaProperties.width = areaProperties.height * boundariesRatio;
 			}
 
-			this.originalWidth = areaProperties.width;
-			this.originalHeight = areaProperties.height;
-
 			return {
 				left: imageSize.width / 2 - areaProperties.width / 2,
 				top: imageSize.height / 2 - areaProperties.height / 2,
@@ -94,34 +81,34 @@ export default {
 				maxHeight: maxHeight,
 			};
 		},
-		onChange() {
+		onChange(result) {
 			const cropper = this.$refs.cropper;
 			if (cropper) {
-				if (this.originalHeight < this.originalWidth) {
+				if (cropper.imageSize.height < cropper.imageSize.width) {
 					this.zoom =
-						(this.originalHeight - cropper.visibleArea.height) /
-						(this.originalHeight - cropper.sizeRestrictions.minHeight);
+						(cropper.imageSize.height - cropper.coordinates.height) /
+						(cropper.imageSize.height - cropper.sizeRestrictions.minHeight);
 				} else {
 					this.zoom =
-						(this.originalWidth - cropper.visibleArea.width) /
-						(this.originalWidth - cropper.sizeRestrictions.minWidth);
+						(cropper.imageSize.width - cropper.coordinates.width) /
+						(cropper.imageSize.width - cropper.sizeRestrictions.minWidth);
 				}
 			}
 		},
 		onZoom(value) {
 			const cropper = this.$refs.cropper;
 			if (cropper) {
-				if (this.originalHeight < this.originalWidth) {
+				if (cropper.imageSize.height < cropper.imageSize.width) {
 					const minHeight = cropper.sizeRestrictions.minHeight;
 					cropper.zoom(
-						((1 - this.zoom) * this.originalHeight + minHeight) /
-							((1 - value) * this.originalHeight + minHeight),
+						((1 - this.zoom) * cropper.imageSize.height + minHeight) /
+							((1 - value) * cropper.imageSize.height + minHeight),
 					);
 				} else {
 					const minWidth = cropper.sizeRestrictions.minWidth;
 					cropper.zoom(
-						((1 - this.zoom) * this.originalWidth + minWidth) /
-							((1 - value) * this.originalWidth + minWidth),
+						((1 - this.zoom) * cropper.imageSize.width + minWidth) /
+							((1 - value) * cropper.imageSize.width + minWidth),
 					);
 				}
 			}
@@ -137,6 +124,7 @@ export default {
 			class="twitter-cropper"
 			background-class="twitter-cropper__background"
 			image-restriction="stencil"
+			default-boundaries="fill"
 			:stencil-props="{
 				handlers: {},
 				movable: false,
@@ -144,17 +132,15 @@ export default {
 				aspectRatio: 1,
 				previewClass: 'twitter-cropper__stencil',
 			}"
-			:debounce="false"
 			:canvas="false"
+			:debounce="false"
 			:fit-visible-area="fitVisibleArea"
 			:default-visible-area="defaultVisibleArea"
 			:default-size="defaultSize"
-			:default-boundaries="defaultBoundaries"
 			:size-restrictions-algorithm="pixelsRestriction"
 			:min-width="150"
 			:min-height="150"
 			:src="img"
-			priority="visibleArea"
 			@change="onChange"
 		/>
 		<Navigation :zoom="zoom" @change="onZoom" />
