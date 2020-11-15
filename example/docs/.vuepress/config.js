@@ -28,7 +28,7 @@ module.exports = {
 					'/guides/advanced-recipes',
 					'/guides/theming',
 					'/guides/customize-appearance',
-					'/guides/custom-stencil',
+					'/guides/advanced-stencil',
 					'/guides/showcase',
 				],
 			},

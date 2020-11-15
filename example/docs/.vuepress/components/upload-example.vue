@@ -16,7 +16,7 @@ export default {
 		reset() {
 			this.image = null;
 		},
-		uploadImage(event) {
+		loadImage(event) {
 			// Reference to the DOM input element
 			var input = event.target;
 			// Ensure that you have a file before attempting to read it
@@ -47,7 +47,7 @@ export default {
 		</div>
 		<div class="button-wrapper">
 			<span class="button" @click="$refs.file.click()">
-				<input ref="file" type="file" accept="image/*" @change="uploadImage($event)" />
+				<input ref="file" type="file" accept="image/*" @change="loadImage($event)" />
 				Upload image
 			</span>
 		</div>

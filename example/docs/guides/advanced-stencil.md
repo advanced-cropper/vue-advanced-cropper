@@ -47,7 +47,12 @@ First of all, it's need to descripe service props
 
 ### `img`
 
-This prop is the link to image. You can use it as, for example, `src` attribute for `img`.
+This prop is the object, that describes the properties of image and has following properties:
+
+- `src` - the link to the image 
+- `size` - the actual image size
+- `transforms` - the transforms applied to image
+- `coefficient` - the ratio of visible area width to boundaries width
 
 ### `resultCoordinates`
 
@@ -365,7 +370,7 @@ It's is pretty easy:
 ```js
 onHandlerMove(dragEvent) {
 	const shift = dragEvent.shift()
-	const widthResize = shift.left
+	const widthResize = shift.leftz
 	const heightResize = -shift.top
 	this.$emit('resize', new ResizeEvent(
 		dragEvent.nativeEvent,
@@ -380,6 +385,8 @@ onHandlerMove(dragEvent) {
 ```
 
 ## Result
+
+The full ready-to-use source code of this example is [here](https://codesandbox.io/s/vue-advanced-cropper-custom-stencil-omseq?file=/src/Stencil.vue).
 
 <advanced-stencil-example></advanced-stencil-example>
 

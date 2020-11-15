@@ -366,13 +366,13 @@ export default {
 		src() {
 			this.onChangeImage();
 		},
-		minWidth() {
-			this.onPropsChange();
-		},
 		stencilComponent() {
 			this.$nextTick(() => {
 				this.resetCoordinates();
 			});
+		},
+		minWidth() {
+			this.onPropsChange();
 		},
 		maxWidth() {
 			this.onPropsChange();
@@ -396,12 +396,8 @@ export default {
 	mounted() {
 		this.debouncedUpdate = debounce(this.update, this.debounce);
 
-		this.$refs.image.addEventListener('load', () => {
-			this.onSuccessLoadImage();
-		});
-		this.$refs.image.addEventListener('error', () => {
-			this.onFailLoadImage();
-		});
+		this.$refs.image.addEventListener('load', this.onSuccessLoadImage);
+		this.$refs.image.addEventListener('error', this.onFailLoadImage);
 		this.onChangeImage();
 
 		// Add listeners to window to adapt the cropper to window changes
@@ -874,7 +870,7 @@ export default {
 				:wheel-resize="settings.wheelResize"
 				:touch-resize="settings.touchResize"
 				:touch-move="settings.touchMove"
-				:mouse-move="settings.touchMove"
+				:mouse-move="settings.mouseMove"
 				@move="onManipulateImage"
 				@resize="onManipulateImage"
 			>

@@ -94,6 +94,9 @@ export default {
 	methods: {
 		onChange({ coordinates, canvas, }) {
 			this.coordinates = coordinates;
+			// You able to do different manipulations at a canvas
+			// but there we just get a cropped image, that can be used 
+			// as src for <img/> to preview result
 			this.image = canvas.toDataURL();
 		},
 	},
@@ -139,7 +142,8 @@ export default {
 			const { coordinates, canvas, } = this.$refs.cropper.getResult();
 			this.coordinates = coordinates;
 			// You able to do different manipulations at a canvas
-			// but there we just get a cropped image
+			// but there we just get a cropped image, that can be used 
+			// as src for <img/> to preview result
 			this.image = canvas.toDataURL();
 		},
 	},
@@ -181,7 +185,7 @@ export default {
 		reset() {
 			this.image = null;
 		},
-		uploadImage(event) {
+		loadImage(event) {
 			// Reference to the DOM input element
 			var input = event.target;
 			// Ensure that you have a file before attempting to read it
@@ -211,8 +215,8 @@ export default {
 		/>
 		<div class="button-wrapper">
 			<span class="button" @click="$refs.file.click()">
-				<input type="file" ref="file" @change="uploadImage($event)" accept="image/*">
-				Upload image
+				<input type="file" ref="file" @change="loadImage($event)" accept="image/*">
+				Load image
 			</span>
 		</div>
 	</div>
@@ -278,7 +282,7 @@ export default {
 		reset() {
 			this.image = null;
 		},
-		uploadImage(event) {
+		uploadImage() {
 			const { canvas } = this.$refs.cropper.getResult();
 			if (canvas) {
 				const form = new FormData();
@@ -289,6 +293,7 @@ export default {
 						method: 'POST',
 						body: form,
 					});
+					// Perhaps you should add the setting appropriate file format here
 				}, 'image/jpeg');
 			}
 		},
