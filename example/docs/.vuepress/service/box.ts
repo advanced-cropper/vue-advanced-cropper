@@ -87,13 +87,23 @@ export function elementToCoordinates(element: HTMLElement | null) {
 	}
 }
 
-export function boxStyle(coordinates: Coordinates) {
-	return {
-		width: `${coordinates.width}px`,
-		height: `${coordinates.height}px`,
-		left: `${coordinates.left}px`,
-		top: `${coordinates.top}px`,
-	};
+export function boxStyle(coordinates: Coordinates, area?: Coordinates) {
+	if (!area) {
+		return {
+			width: `${coordinates.width}px`,
+			height: `${coordinates.height}px`,
+			left: `${coordinates.left}px`,
+			top: `${coordinates.top}px`,
+		};
+	} else {
+		return {
+			width: `${coordinates.width}px`,
+			height: `${coordinates.height}px`,
+			left: `${coordinates.left - area.left}px`,
+			top: `${coordinates.top - area.top}px`,
+		};
+	}
+
 }
 
 export function emptyBox() {

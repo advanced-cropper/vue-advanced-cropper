@@ -50,7 +50,7 @@ module.exports = {
 			{
 				title: 'Algorithms',
 				collapsable: true,
-				children: ['/algorithms/init-stretcher', '/algorithms/default-boundaries'],
+				children: ['/algorithms/resize', '/algorithms/init-stretcher', '/algorithms/default-boundaries'],
 			},
 		],
 	},

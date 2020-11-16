@@ -27,6 +27,7 @@
 		max-width: 100%;
 		text-overflow: ellipsis;
 		overflow: hidden;
+		white-space: nowrap;
 	}
 }
 </style>

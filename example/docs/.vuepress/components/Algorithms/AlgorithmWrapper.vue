@@ -25,5 +25,8 @@
 		padding: 10px;
 		border-left: solid 1px #eee;
 	}
+	@media (max-width: 1200px) {
+		display: block;
+	}
 }
 </style>
