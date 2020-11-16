@@ -160,6 +160,18 @@ export interface ResizeParams {
 	positionRestrictions: PositionRestrictions;
 }
 
+function distributeOverlap(overlap: number, first: number, second: number) {
+	if (first == 0 && second == 0) {
+		return overlap / 2;
+	} else if (first == 0) {
+		return 0;
+	} else if (second == 0) {
+		return overlap;
+	} else {
+		return overlap * Math.abs(first / (first + second));
+	}
+}
+
 export function resize(params: ResizeParams): Coordinates {
 	const { event, coordinates, aspectRatio, positionRestrictions, sizeRestrictions } = params;
 	const actualCoordinates = {
@@ -226,8 +238,9 @@ export function resize(params: ResizeParams): Coordinates {
 		if (respectDirection === 'width') {
 			const overlapHeight = currentWidth / ratioBroken - actualCoordinates.height;
 			if (allowedDirections.top && allowedDirections.bottom) {
-				directions.bottom = overlapHeight / 2;
-				directions.top = overlapHeight / 2;
+				const { top, bottom } = directions;
+				directions.bottom = distributeOverlap(overlapHeight, bottom, top);
+				directions.top = distributeOverlap(overlapHeight, top, bottom);
 			} else if (allowedDirections.bottom) {
 				directions.bottom = overlapHeight;
 			} else if (allowedDirections.top) {
@@ -240,8 +253,9 @@ export function resize(params: ResizeParams): Coordinates {
 		} else if (respectDirection === 'height') {
 			const overlapWidth = actualCoordinates.width - currentHeight * ratioBroken;
 			if (allowedDirections.left && allowedDirections.right) {
-				directions.left = -overlapWidth / 2;
-				directions.right = -overlapWidth / 2;
+				const { left, right } = directions;
+				directions.left = -distributeOverlap(overlapWidth, left, right);
+				directions.right = -distributeOverlap(overlapWidth, right, left);
 			} else if (allowedDirections.left) {
 				directions.left = -overlapWidth;
 			} else if (allowedDirections.right) {

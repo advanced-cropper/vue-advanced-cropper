@@ -212,7 +212,7 @@
 		</template>
 		<template v-slot:panel>
 			<group>
-				<group-checkbox label="Realtime" v-model="realTime" />
+				<group-checkbox label="Realtime" @change="refineCoordinates"  v-model="realTime" />
 			</group>
 
 			<group>

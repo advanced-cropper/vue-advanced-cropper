@@ -35,6 +35,9 @@
 		&--cropper {
 			background: $cropper-color;
 		}
+		&--stencil {
+			background: $cropper-color;
+		}
 	}
 	&__label {
 		font-size: 10px;
@@ -48,6 +51,9 @@
 			color: $boundaries-color;
 		}
 		&--cropper {
+			color: $cropper-color;
+		}
+		&--stencil {
 			color: $cropper-color;
 		}
 	}
