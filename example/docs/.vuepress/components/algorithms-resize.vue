@@ -1,83 +1,135 @@
 <script>
-	import { Cropper, BoundingBox } from 'vue-advanced-cropper';
-	import { ResizeEvent } from "../../../../dist/index.es";
-	import { approximatedSize, fillBoundaries, fitBoundaries, initStretcher, refineSizeRestrictions, resize } from '../../../../src/core/algorithms';
-	import { applyMove, diff, fitToLimits, getCenter, toLimits } from "../../../../src/core/service";
-	import { centerResizeBox } from '../service/box';
-	import { resizeBox, boxStyle, elementToCoordinates, emptyBox } from '../service/box.ts';
-	import AlgorithmWrapper from './Algorithms/AlgorithmWrapper';
-	import DynamicCropper from './Algorithms/DynamicCropper';
-	import GroupCheckbox from "./Algorithms/GroupCheckbox";
-	import StaticCropper from './Algorithms/StaticCropper';
-	import StaticBoundaries from './Algorithms/StaticBoundaries';
-	import ElementsLegend from './Algorithms/ElementsLegend';
-	import Group from './Algorithms/Group';
-	import RunButton from './Algorithms/RunButton';
-	import GroupInput from './Algorithms/GroupInput';
-	import GroupSelect from './Algorithms/GroupSelect';
-	import Stretcher from './Algorithms/Stretcher';
+import { Cropper, BoundingBox } from 'vue-advanced-cropper';
+import { ResizeEvent } from '../../../../dist/index.es';
+import {
+	approximatedSize,
+	fillBoundaries,
+	fitBoundaries,
+	initStretcher,
+	refineSizeRestrictions,
+	resize,
+} from '../../../../src/core/algorithms';
+import { applyMove, diff, fitToLimits, getCenter, toLimits } from '../../../../src/core/service';
+import { centerResizeBox } from '../service/box';
+import { resizeBox, boxStyle, elementToCoordinates, emptyBox } from '../service/box.ts';
+import AlgorithmWrapper from './Algorithms/AlgorithmWrapper';
+import DynamicCropper from './Algorithms/DynamicCropper';
+import GroupCheckbox from './Algorithms/GroupCheckbox';
+import StaticCropper from './Algorithms/StaticCropper';
+import StaticBoundaries from './Algorithms/StaticBoundaries';
+import ElementsLegend from './Algorithms/ElementsLegend';
+import Group from './Algorithms/Group';
+import RunButton from './Algorithms/RunButton';
+import GroupInput from './Algorithms/GroupInput';
+import GroupSelect from './Algorithms/GroupSelect';
+import Stretcher from './Algorithms/Stretcher';
 
-	export default {
-		components: {
-			GroupCheckbox,
-			DynamicCropper,
-			Cropper,
-			AlgorithmWrapper,
-			BoundingBox,
-			StaticCropper,
-			StaticBoundaries,
-			RunButton,
-			GroupInput,
-			GroupSelect,
-			Group,
-			ElementsLegend,
-			Stretcher,
+export default {
+	components: {
+		GroupCheckbox,
+		DynamicCropper,
+		Cropper,
+		AlgorithmWrapper,
+		BoundingBox,
+		StaticCropper,
+		StaticBoundaries,
+		RunButton,
+		GroupInput,
+		GroupSelect,
+		Group,
+		ElementsLegend,
+		Stretcher,
+	},
+	data() {
+		return {
+			cropper: emptyBox(),
+			algorithm: 'fit',
+			stencil: {
+				left: 0,
+				top: 0,
+				width: 100,
+				height: 100,
+			},
+			stencilResize: {
+				left: 0,
+				top: 0,
+				width: 100,
+				height: 100,
+			},
+			boundaries: {
+				left: 0,
+				top: 0,
+				width: 0,
+				height: 0,
+			},
+			aspectRatio: {
+				minimum: null,
+				maximum: null,
+			},
+			realTime: true,
+			minWidth: null,
+			minHeight: null,
+			maxWidth: null,
+			maxHeight: null,
+			params: {
+				allowedDirections: {
+					left: true,
+					right: true,
+					top: true,
+					bottom: true,
+				},
+				respectDirection: null,
+				preserveRatio: false,
+				compensate: false,
+			},
+		};
+	},
+	mounted() {
+		const { container } = this.$refs;
+		if (container) {
+			this.boundaries.width = container.clientWidth * 0.8;
+			this.boundaries.height = container.clientHeight * 0.8;
+			this.boundaries.left = container.clientWidth / 2 - this.boundaries.width / 2;
+			this.boundaries.top = container.clientHeight / 2 - this.boundaries.height / 2;
+
+			this.stencil.left = container.clientWidth / 2 - this.stencil.width / 2;
+			this.stencil.top = container.clientHeight / 2 - this.stencil.height / 2;
+			this.stencilResize = { ...this.stencil };
+		}
+		window.addEventListener('resize', this.updateContainer);
+		window.addEventListener('orientationchange', this.updateContainer);
+	},
+	destroyed() {
+		window.removeEventListener('resize', this.updateContainer);
+		window.removeEventListener('orientationchange', this.updateContainer);
+	},
+	computed: {
+		boundariesStyle() {
+			return boxStyle(this.boundaries);
 		},
-		data() {
-			return {
-				cropper: emptyBox(),
-				algorithm: 'fit',
-				stencil: {
-					left: 0,
-					top: 0,
-					width: 100,
-					height: 100,
-				},
-				stencilResize: {
-					left: 0,
-					top: 0,
-					width: 100,
-					height: 100,
-				},
-				boundaries: {
-					left: 0,
-					top: 0,
-					width: 0,
-					height: 0
-				},
-				aspectRatio: {
-					minimum: null,
-					maximum: null
-				},
-				realTime: true,
-				minWidth: null,
-				minHeight: null,
-				maxWidth: null,
-				maxHeight: null,
-				params: {
-					allowedDirections: {
-						left: true,
-						right: true,
-						top: true,
-						bottom: true
-					},
-					respectDirection: null,
-					preserveRatio: false,
-					compensate: false
-				}
-			};
+		stencilStyle() {
+			return boxStyle(this.stencil, this.boundaries);
 		},
-		mounted() {
+		resizeStyle() {
+			return boxStyle(this.stencilResize, this.boundaries);
+		},
+		sizeRestrictions() {
+			return refineSizeRestrictions({
+				sizeRestrictions: {
+					minWidth: this.minWidth,
+					minHeight: this.minHeight,
+					maxWidth: this.maxWidth,
+					maxHeight: this.maxHeight,
+				},
+				positionRestrictions: toLimits(this.boundaries),
+				imageSize: this.boundaries,
+				boundaries: this.boundaries,
+				imageRestriction: 'area',
+			});
+		},
+	},
+	methods: {
+		updateContainer() {
 			const { container } = this.$refs;
 			if (container) {
 				this.boundaries.width = container.clientWidth * 0.8;
@@ -85,120 +137,87 @@
 				this.boundaries.left = container.clientWidth / 2 - this.boundaries.width / 2;
 				this.boundaries.top = container.clientHeight / 2 - this.boundaries.height / 2;
 
-				this.stencil.left = container.clientWidth / 2 - this.stencil.width / 2;
-				this.stencil.top = container.clientHeight / 2 - this.stencil.height / 2;
-				this.stencilResize = {...this.stencil}
-			}
-			window.addEventListener('resize', this.updateContainer);
-			window.addEventListener('orientationchange', this.updateContainer);
-		},
-		destroyed() {
-			window.removeEventListener('resize', this.updateContainer);
-			window.removeEventListener('orientationchange', this.updateContainer);
-		},
-		computed: {
-			boundariesStyle() {
-				return boxStyle(this.boundaries);
-			},
-			stencilStyle() {
-				return boxStyle(this.stencil, this.boundaries);
-			},
-			resizeStyle() {
-				return boxStyle(this.stencilResize, this.boundaries);
-			},
-			sizeRestrictions() {
-				return refineSizeRestrictions({
-					sizeRestrictions: {
-						minWidth: this.minWidth,
-						minHeight: this.minHeight,
-						maxWidth: this.maxWidth,
-						maxHeight: this.maxHeight,
-					},
-					positionRestrictions: toLimits(this.boundaries),
-					imageSize: this.boundaries,
-					boundaries: this.boundaries,
-					imageRestriction: 'area',
-				})
+				this.refineCoordinates();
+
+				this.stencilResize.width = Math.min(this.stencilResize.width, container.clientWidth);
+				this.stencilResize.height = Math.min(this.stencilResize.height, container.clientHeight);
+				this.stencilResize.left -= Math.max(
+					0,
+					this.stencilResize.width + this.stencilResize.left - container.clientWidth,
+				);
 			}
 		},
-		methods: {
-			updateContainer() {
-				const { container } = this.$refs;
-				if (container) {
-					this.boundaries.width = container.clientWidth * 0.8;
-					this.boundaries.height = container.clientHeight * 0.8;
-					this.boundaries.left = container.clientWidth / 2 - this.boundaries.width / 2;
-					this.boundaries.top = container.clientHeight / 2 - this.boundaries.height / 2;
-
-					this.refineCoordinates()
-
-					this.stencilResize.width = Math.min(this.stencilResize.width, container.clientWidth);
-					this.stencilResize.height = Math.min(this.stencilResize.height, container.clientHeight);
-					this.stencilResize.left -= Math.max(0, this.stencilResize.width + this.stencilResize.left - container.clientWidth);
-				}
-			},
-			refineCoordinates() {
-				const center = getCenter(this.stencil);
-				this.stencil = {
-					...this.stencil,
-					...approximatedSize({
-						width: this.stencil.width,
-						height: this.stencil.height,
-						sizeRestrictions: this.sizeRestrictions,
-						aspectRatio: this.aspectRatio
-					})
-				};
-				this.stencil = applyMove(this.stencil, diff(center, getCenter(this.stencil)));
-				this.stencil = fitToLimits(this.stencil, toLimits(this.boundaries));
-				if (this.realTime) {
-					this.runAlgorithm();
-				}
-			},
-			onResizeStencil(event) {
-				this.stencilResize = resizeBox(this.stencilResize, event, elementToCoordinates(this.$refs.container));
-				if (this.realTime) {
-					this.runAlgorithm();
-				}
-			},
-			runAlgorithm() {
-				console.log({...this.stencil}, {...this.stencilResize}, {
+		refineCoordinates() {
+			const center = getCenter(this.stencil);
+			this.stencil = {
+				...this.stencil,
+				...approximatedSize({
+					width: this.stencil.width,
+					height: this.stencil.height,
+					sizeRestrictions: this.sizeRestrictions,
+					aspectRatio: this.aspectRatio,
+				}),
+			};
+			this.stencil = applyMove(this.stencil, diff(center, getCenter(this.stencil)));
+			this.stencil = fitToLimits(this.stencil, toLimits(this.boundaries));
+			if (this.realTime) {
+				this.runAlgorithm();
+			}
+		},
+		onResizeStencil(event) {
+			this.stencilResize = resizeBox(this.stencilResize, event, elementToCoordinates(this.$refs.container));
+			if (this.realTime) {
+				this.runAlgorithm();
+			}
+		},
+		runAlgorithm() {
+			console.log(
+				{ ...this.stencil },
+				{ ...this.stencilResize },
+				{
 					top: this.stencil.top - this.stencilResize.top,
 					left: this.stencil.left - this.stencilResize.left,
-					bottom: (this.stencilResize.top + this.stencilResize.height) - (this.stencil.top + this.stencil.height),
-					right: (this.stencilResize.left + this.stencilResize.width) - (this.stencil.left + this.stencil.width),
-				})
-				this.stencil = resize({
-					coordinates: this.stencil,
-					sizeRestrictions: this.sizeRestrictions,
-					event: new ResizeEvent({
+					bottom:
+						this.stencilResize.top + this.stencilResize.height - (this.stencil.top + this.stencil.height),
+					right:
+						this.stencilResize.left + this.stencilResize.width - (this.stencil.left + this.stencil.width),
+				},
+			);
+			this.stencil = resize({
+				coordinates: this.stencil,
+				sizeRestrictions: this.sizeRestrictions,
+				event: new ResizeEvent(
+					{
 						top: this.stencil.top - this.stencilResize.top,
 						left: this.stencil.left - this.stencilResize.left,
-						bottom: (this.stencilResize.top + this.stencilResize.height) - (this.stencil.top + this.stencil.height),
-						right: (this.stencilResize.left + this.stencilResize.width) - (this.stencil.left + this.stencil.width),
-					}, this.params),
-					aspectRatio: this.aspectRatio,
-					positionRestrictions: toLimits(this.boundaries),
-				})
-				this.stencilResize = {
-					...this.stencil
-				}
-			},
+						bottom:
+							this.stencilResize.top +
+							this.stencilResize.height -
+							(this.stencil.top + this.stencil.height),
+						right:
+							this.stencilResize.left +
+							this.stencilResize.width -
+							(this.stencil.left + this.stencil.width),
+					},
+					this.params,
+				),
+				aspectRatio: this.aspectRatio,
+				positionRestrictions: toLimits(this.boundaries),
+			});
+			this.stencilResize = {
+				...this.stencil,
+			};
 		},
-	};
+	},
+};
 </script>
 
 <template>
 	<algorithm-wrapper class="algorithms-resize">
 		<template v-slot:content>
 			<div class="algorithms-resize__area" ref="container">
-				<static-boundaries
-					class="algorithms-resize__boundaries"
-					:style="boundariesStyle"
-				>
-					<static-cropper
-						class="algorithms-resize__stencil"
-						:style="stencilStyle"
-					/>
+				<static-boundaries class="algorithms-resize__boundaries" :style="boundariesStyle">
+					<static-cropper class="algorithms-resize__stencil" :style="stencilStyle" />
 					<dynamic-cropper
 						class="algorithms-resize__stencil-resize"
 						ref="stencil"
@@ -206,13 +225,12 @@
 						@resize="onResizeStencil"
 					/>
 				</static-boundaries>
-
 			</div>
 			<run-button @click="runAlgorithm" />
 		</template>
 		<template v-slot:panel>
 			<group>
-				<group-checkbox label="Realtime" @change="refineCoordinates"  v-model="realTime" />
+				<group-checkbox label="Realtime" @change="refineCoordinates" v-model="realTime" />
 			</group>
 
 			<group>
@@ -250,24 +268,24 @@
 </template>
 
 <style lang="scss">
-	.algorithms-resize {
-		&__area {
-			width: 100%;
-			min-height: 500px;
-			height: 100%;
-			position: relative;
-			padding: 6px;
-		}
-		&__stencil-resize {
-			position: absolute;
-		}
-		&__stencil {
-			position: absolute;
-			border-color: #555;
-			border-style: dashed;
-		}
-		&__boundaries {
-			position: absolute;
-		}
+.algorithms-resize {
+	&__area {
+		width: 100%;
+		min-height: 500px;
+		height: 100%;
+		position: relative;
+		padding: 6px;
 	}
+	&__stencil-resize {
+		position: absolute;
+	}
+	&__stencil {
+		position: absolute;
+		border-color: #555;
+		border-style: dashed;
+	}
+	&__boundaries {
+		position: absolute;
+	}
+}
 </style>

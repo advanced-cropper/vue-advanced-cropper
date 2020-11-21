@@ -10,7 +10,7 @@ export default {
 	data() {
 		return {
 			image:
-				'https://images.unsplash.com/photo-1540784945875-cd0b362a2093?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80',
+				'https://images.unsplash.com/photo-1604335079441-274c03ad99a1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1024&q=80',
 		};
 	},
 	methods: {

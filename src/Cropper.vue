@@ -431,6 +431,7 @@ export default {
 				return {
 					coordinates,
 					visibleArea: this.visibleArea ? { ...this.visibleArea } : null,
+					canvas: undefined,
 				};
 			}
 		},
