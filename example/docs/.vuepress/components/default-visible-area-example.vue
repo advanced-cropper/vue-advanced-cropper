@@ -33,7 +33,10 @@ export default {
 </script>
 
 <template>
-	<example-wrapper class="default-visible-area-example">
+	<example-wrapper
+		class="default-visible-area-example"
+		href="https://github.com/Norserium/vue-advanced-cropper/blob/master/example/docs/.vuepress/components/default-visible-area-example.vue"
+	>
 		<cropper
 			:src="img"
 			:default-visible-area="defaultVisibleArea"

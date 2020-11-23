@@ -17,7 +17,10 @@ export default {
 </script>
 
 <template>
-	<example-wrapper class="mobile-fixed-example">
+	<example-wrapper
+		class="mobile-fixed-example"
+		href="https://github.com/Norserium/vue-advanced-cropper/blob/master/example/docs/.vuepress/components/mobile-fixed-example.vue"
+	>
 		<cropper
 			:src="img"
 			:stencil-props="{

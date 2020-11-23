@@ -17,7 +17,10 @@ export default {
 </script>
 
 <template>
-	<example-wrapper class="blurred-background-cropper">
+	<example-wrapper
+		class="blurred-background-cropper"
+		href="https://github.com/Norserium/vue-advanced-cropper/blob/master/example/docs/.vuepress/components/blurred-background-example.vue"
+	>
 		<div class="cropper-wrapper">
 			<div :style="{ backgroundImage: 'url(' + img + ')' }" class="cropper-background" />
 			<Cropper :src="img" background-class="image-background" />

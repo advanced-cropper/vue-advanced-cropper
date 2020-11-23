@@ -70,7 +70,10 @@ export default {
 </script>
 
 <template>
-	<example-wrapper class="set-coordinates-example">
+	<example-wrapper
+		class="set-coordinates-example"
+		href="https://github.com/Norserium/vue-advanced-cropper/blob/master/example/docs/.vuepress/components/set-coordinates-example.vue"
+	>
 		<cropper
 			ref="cropper"
 			class="coodinates-cropper"

@@ -1,9 +1,11 @@
 <script>
 import { Cropper } from 'vue-advanced-cropper';
 import Navigation from './Components/Twitter/Navigation';
+import ExampleWrapper from './Components/ExampleWrapper';
 
 export default {
 	components: {
+		ExampleWrapper,
 		Cropper,
 		Navigation,
 	},
@@ -27,18 +29,29 @@ export default {
 				};
 			}
 		},
-		fitVisibleArea({ visibleArea: previousVisibleArea, boundaries, coordinates, coefficient }) {
+		pixelsRestriction({ minWidth, minHeight, maxWidth, maxHeight }) {
+			return {
+				minWidth: minWidth,
+				minHeight: minHeight,
+				maxWidth: maxWidth,
+				maxHeight: maxHeight,
+			};
+		},
+		squareVisibleArea({ visibleArea, coordinates, imageSize, boundaries }) {
 			const ratio = boundaries.width / boundaries.height;
-
-			if (boundaries.width / boundaries.height < coordinates.width / coordinates.height) {
+			if (ratio < coordinates.width / coordinates.height) {
 				const coefficient = coordinates.width / (boundaries.width - 48);
 				const width = coordinates.width + 48 * coefficient;
 				const height = width / ratio;
 				return {
 					width,
 					height,
-					left: previousVisibleArea.left + (previousVisibleArea.width - width) / 2,
-					top: previousVisibleArea.top + (previousVisibleArea.height - height) / 2,
+					left: visibleArea
+						? visibleArea.left + (visibleArea.width - width) / 2
+						: imageSize.width / 2 - width / 2,
+					top: visibleArea
+						? visibleArea.top + (visibleArea.height - height) / 2
+						: imageSize.height / 2 - height / 2,
 				};
 			} else {
 				const coefficient = coordinates.height / (boundaries.height - 48);
@@ -47,39 +60,14 @@ export default {
 				return {
 					width,
 					height,
-					left: previousVisibleArea.left + (previousVisibleArea.width - width) / 2,
-					top: previousVisibleArea.top + (previousVisibleArea.height - height) / 2,
+					left: visibleArea
+						? visibleArea.left + (visibleArea.width - width) / 2
+						: imageSize.width / 2 - width / 2,
+					top: visibleArea
+						? visibleArea.top + (visibleArea.height - height) / 2
+						: imageSize.height / 2 - height / 2,
 				};
 			}
-		},
-		defaultVisibleArea({ imageSize, boundaries }) {
-			const boundariesRatio = boundaries.width / boundaries.height;
-			const boundariesWidth = Math.max(0, boundaries.width - boundaries.height) + 48;
-			const desiredSize = boundaries.width - boundariesWidth;
-
-			const areaProperties = {};
-			if (imageSize.height > imageSize.width) {
-				areaProperties.width = (boundaries.width / desiredSize) * imageSize.width;
-				areaProperties.height = areaProperties.width / boundariesRatio;
-			} else {
-				areaProperties.height = (boundaries.height / desiredSize) * imageSize.height;
-				areaProperties.width = areaProperties.height * boundariesRatio;
-			}
-
-			return {
-				left: imageSize.width / 2 - areaProperties.width / 2,
-				top: imageSize.height / 2 - areaProperties.height / 2,
-				width: areaProperties.width,
-				height: areaProperties.height,
-			};
-		},
-		pixelsRestriction({ minWidth, minHeight, maxWidth, maxHeight }) {
-			return {
-				minWidth: minWidth,
-				minHeight: minHeight,
-				maxWidth: maxWidth,
-				maxHeight: maxHeight,
-			};
 		},
 		onChange(result) {
 			const cropper = this.$refs.cropper;
@@ -118,7 +106,7 @@ export default {
 </script>
 
 <template>
-	<div>
+	<example-wrapper :no-border="true" href="https://codesandbox.io/s/vue-advanced-cropper-twitter-suoyc">
 		<cropper
 			ref="cropper"
 			class="twitter-cropper"
@@ -134,8 +122,8 @@ export default {
 			}"
 			:canvas="false"
 			:debounce="false"
-			:fit-visible-area="fitVisibleArea"
-			:default-visible-area="defaultVisibleArea"
+			:fit-visible-area="squareVisibleArea"
+			:default-visible-area="squareVisibleArea"
 			:default-size="defaultSize"
 			:size-restrictions-algorithm="pixelsRestriction"
 			:min-width="150"
@@ -143,8 +131,8 @@ export default {
 			:src="img"
 			@change="onChange"
 		/>
-		<Navigation :zoom="zoom" @change="onZoom" />
-	</div>
+		<navigation :zoom="zoom" @change="onZoom" />
+	</example-wrapper>
 </template>
 
 <style lang="scss">

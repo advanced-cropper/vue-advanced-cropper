@@ -17,7 +17,9 @@ export default {
 </script>
 
 <template>
-	<example-wrapper>
+	<example-wrapper
+		href="https://github.com/Norserium/vue-advanced-cropper/blob/master/example/docs/.vuepress/components/circle-example.vue"
+	>
 		<cropper
 			:src="img"
 			:stencil-props="{

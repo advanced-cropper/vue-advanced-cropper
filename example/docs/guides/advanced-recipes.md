@@ -408,12 +408,12 @@ This situation may seems unlikely, but in fact if your cropper was in a containe
 
 There is a minimal example:
 ```html
-	<cropper ref="cropper"/>
+<cropper ref="cropper"/>
 ```
 
 ```js
-	// On some change, that causes container's size change
-	this.$refs.cropper.refresh();
+// On some change, that causes container's size change
+this.$refs.cropper.refresh();
 ```
 
 

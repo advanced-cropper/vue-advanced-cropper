@@ -3,6 +3,40 @@ home: true
 layout: home-page
 ---
 
+::: slot minimum-example
+```html
+<template>
+	<cropper
+		:src="img"
+		@change="change"
+	/>
+</template>
+
+<script>
+import { Cropper } from 'vue-advanced-cropper';
+
+export default {
+	components: {
+		Cropper,
+	},
+	data() {
+		return {
+			img: 'https://images.pexels.com/photos/4323307/pexels-photo-4323307.jpeg',
+		};
+	},
+	methods: {
+		change({ coordinates, canvas }) {
+			console.log(coordinates, canvas);
+		},
+	},
+};
+</script>
+```
+:::
+
+
+
+
 ::: slot custom-stencil
 
 ```html

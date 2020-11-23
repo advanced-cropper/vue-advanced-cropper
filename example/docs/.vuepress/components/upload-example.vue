@@ -38,7 +38,11 @@ export default {
 </script>
 
 <template>
-	<div class="upload-example">
+	<example-wrapper
+		:no-border="true"
+		class="upload-example"
+		href="https://github.com/Norserium/vue-advanced-cropper/blob/master/example/docs/.vuepress/components/upload-example.vue"
+	>
 		<div class="cropper-wrapper">
 			<Cropper class="upload-example-cropper" check-orientation :src="image" />
 			<div class="reset-button" title="Reset Image" @click="reset()">
@@ -51,7 +55,7 @@ export default {
 				Upload image
 			</span>
 		</div>
-	</div>
+	</example-wrapper>
 </template>
 
 <style lang="scss">

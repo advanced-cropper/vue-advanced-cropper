@@ -19,7 +19,7 @@ export default {
 </script>
 
 <template>
-	<example-wrapper>
+	<example-wrapper href="https://codesandbox.io/s/vue-advanced-cropper-custom-stencil-omseq?file=/src/Stencil.vue">
 		<cropper :src="img" :stencil-component="stencil" />
 	</example-wrapper>
 </template>

@@ -51,7 +51,10 @@ export default {
 </script>
 
 <template>
-	<example-wrapper class="manipulate-image-example">
+	<example-wrapper
+		class="manipulate-image-example"
+		href="https://github.com/Norserium/vue-advanced-cropper/blob/master/example/docs/.vuepress/components/manipulate-image-example.vue"
+	>
 		<cropper
 			ref="cropper"
 			class="coordinates-cropper"

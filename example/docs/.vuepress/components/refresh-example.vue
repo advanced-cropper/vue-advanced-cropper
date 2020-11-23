@@ -85,7 +85,10 @@ export default {
 </script>
 
 <template>
-	<example-wrapper class="refresh-example">
+	<example-wrapper
+		class="refresh-example"
+		href="https://github.com/Norserium/vue-advanced-cropper/blob/master/example/docs/.vuepress/components/refresh-example.vue"
+	>
 		<div class="container" ref="container">
 			<bounding-box
 				@resize="onResize"

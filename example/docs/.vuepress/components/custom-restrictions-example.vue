@@ -56,7 +56,10 @@ export default {
 </script>
 
 <template>
-	<example-wrapper class="custom-restrictions-example">
+	<example-wrapper
+		class="custom-restrictions-example"
+		href="https://github.com/Norserium/vue-advanced-cropper/blob/master/example/docs/.vuepress/components/custom-restrictions-example.vue"
+	>
 		<cropper
 			class="custom-restrictions-cropper"
 			check-orientation

@@ -40,7 +40,10 @@ export default {
 </script>
 
 <template>
-	<example-wrapper class="events-example">
+	<example-wrapper
+		class="events-example"
+		href="https://github.com/Norserium/vue-advanced-cropper/blob/master/example/docs/.vuepress/components/events-example.vue"
+	>
 		<input v-model="img.src" />
 		<div class="cropper-wrapper">
 			<img class="cropper-wrapper__loading" src="../assets/tutorials/loading.svg" v-if="img.loading" />

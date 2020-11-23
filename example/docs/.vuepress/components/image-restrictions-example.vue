@@ -28,7 +28,10 @@ export default {
 </script>
 
 <template>
-	<example-wrapper class="image-restriction-example">
+	<example-wrapper
+		class="image-restriction-example"
+		href="https://github.com/Norserium/vue-advanced-cropper/blob/master/example/docs/.vuepress/components/image-restrictions-example.vue"
+	>
 		<cropper
 			check-orientation
 			backgroundClass="background"

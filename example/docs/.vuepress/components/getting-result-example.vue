@@ -32,7 +32,10 @@ export default {
 </script>
 
 <template>
-	<example-wrapper class="getting-result-example">
+	<example-wrapper
+		class="getting-result-example"
+		href="https://github.com/Norserium/vue-advanced-cropper/blob/master/example/docs/.vuepress/components/getting-result-example.vue"
+	>
 		<cropper
 			:src="img"
 			:stencil-props="{

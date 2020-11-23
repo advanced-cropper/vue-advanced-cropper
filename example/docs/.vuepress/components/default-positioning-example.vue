@@ -30,7 +30,9 @@ export default {
 };
 </script>
 <template>
-	<example-wrapper>
+	<example-wrapper
+		href="https://github.com/Norserium/vue-advanced-cropper/blob/master/example/docs/.vuepress/components/default-positioning-example.vue"
+	>
 		<cropper :src="img" :default-position="defaultPosition" :default-size="defaultSize" />
 	</example-wrapper>
 </template>

@@ -35,7 +35,11 @@ export default {
 </script>
 
 <template>
-	<example-wrapper class="upload-to-server-example">
+	<example-wrapper
+		:no-border="true"
+		class="upload-to-server-example"
+		href="https://github.com/Norserium/vue-advanced-cropper/blob/master/example/docs/.vuepress/components/upload-to-server-example.vue"
+	>
 		<div class="cropper-wrapper">
 			<cropper ref="cropper" :src="image" />
 		</div>
