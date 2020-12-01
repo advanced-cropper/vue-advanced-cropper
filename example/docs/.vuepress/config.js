@@ -30,6 +30,7 @@ module.exports = {
 					'/guides/customize-appearance',
 					'/guides/advanced-stencil',
 					'/guides/showcase',
+					'/guides/cross-origin',
 				],
 			},
 			{
