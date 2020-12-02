@@ -18,26 +18,27 @@ interface VisibleAreaDefaultSizeParams extends DefaultSizeBasicParams {
 	visibleArea: VisibleArea;
 }
 
-export type DefaultSizeParams = VisibleAreaDefaultSizeParams | ImageDefaultSizeParams
+export type DefaultSizeParams = VisibleAreaDefaultSizeParams | ImageDefaultSizeParams;
 
 export function defaultSize({
 	imageSize,
 	visibleArea,
-	boundaries,
 	aspectRatio,
 	sizeRestrictions,
 }: DefaultSizeParams): Size {
 	const area = (visibleArea || imageSize) as Size;
 
+	const optimalRatio = Math.min(aspectRatio.maximum || Infinity, Math.max(aspectRatio.minimum || 0, ratio(area)));
+
 	const size =
-		boundaries.width > boundaries.height
+		area.width < area.height
 			? {
 					width: area.width * 0.8,
-					height: (area.width * 0.8) / ratio(boundaries),
+					height: (area.width * 0.8) / optimalRatio,
 			  }
 			: {
 					height: area.height * 0.8,
-					width: area.height * 0.8 * ratio(boundaries),
+					width: area.height * 0.8 * optimalRatio,
 			  };
 
 	return approximatedSize({
