@@ -9,18 +9,18 @@ import {
 	ratio,
 	toLimits,
 } from '../service';
-import { Coordinates, AreaRestrictions, VisibleArea, Boundaries } from '../typings';
+import { Coordinates, AreaRestrictions, VisibleArea, Boundaries, GetAreaRestrictions } from '../typings';
 
 // This function updates visible area with respect to current transformations and fits
 // coordinates to the new visible area
 export interface FitVisibleAreaParams {
+	getAreaRestrictions: GetAreaRestrictions;
 	coordinates: Coordinates;
 	visibleArea: VisibleArea;
 	boundaries: Boundaries;
-	areaRestrictions: AreaRestrictions;
 }
 export function fitVisibleArea(params: FitVisibleAreaParams): VisibleArea {
-	const { visibleArea: previousVisibleArea, boundaries, areaRestrictions, coordinates } = params;
+	const { visibleArea: previousVisibleArea, boundaries, getAreaRestrictions, coordinates } = params;
 
 	let visibleArea = { ...previousVisibleArea };
 
@@ -37,7 +37,7 @@ export function fitVisibleArea(params: FitVisibleAreaParams): VisibleArea {
 	}
 
 	// Scale visible area to prevent overlap area restrictions
-	const intersections = getIntersections(visibleArea, areaRestrictions);
+	const intersections = getIntersections(visibleArea, getAreaRestrictions({ visibleArea, type: 'resize' }));
 
 	if (intersections.left + intersections.right + intersections.top + intersections.bottom) {
 		if (intersections.left + intersections.right > intersections.top + intersections.bottom) {
@@ -45,7 +45,7 @@ export function fitVisibleArea(params: FitVisibleAreaParams): VisibleArea {
 				visibleArea,
 				Math.min(
 					(visibleArea.width + intersections.left + intersections.right) / visibleArea.width,
-					maxScale(visibleArea, areaRestrictions),
+					maxScale(visibleArea, getAreaRestrictions({ visibleArea, type: 'resize' })),
 				),
 			);
 		} else {
@@ -53,7 +53,7 @@ export function fitVisibleArea(params: FitVisibleAreaParams): VisibleArea {
 				visibleArea,
 				Math.min(
 					(visibleArea.height + intersections.top + intersections.bottom) / visibleArea.height,
-					maxScale(visibleArea, areaRestrictions),
+					maxScale(visibleArea, getAreaRestrictions({ visibleArea, type: 'resize' })),
 				),
 			);
 		}
@@ -70,7 +70,7 @@ export function fitVisibleArea(params: FitVisibleAreaParams): VisibleArea {
 	visibleArea = applyMove(visibleArea, move);
 
 	// Move visible area to prevent overlap the area restrictions
-	visibleArea = fitToLimits(visibleArea, areaRestrictions);
+	visibleArea = fitToLimits(visibleArea, getAreaRestrictions({ visibleArea, type: 'move' }));
 
 	return visibleArea;
 }

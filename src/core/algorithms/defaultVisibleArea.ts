@@ -1,14 +1,14 @@
-import { Size, VisibleArea, Coordinates, AreaRestrictions, Limits, Falsy } from '../typings';
+import { Size, VisibleArea, Coordinates, GetAreaRestrictions, Limits, Falsy } from '../typings';
 import { ratio, toLimits, intersectionLimits, fitToLimits, getIntersections, fitSize, limitsToSize } from '../service';
 
 export interface DefaultVisibleAreaParams {
 	imageSize: Size;
 	boundaries: Size;
 	coordinates?: Coordinates | Falsy;
-	areaRestrictions: AreaRestrictions;
+	getAreaRestrictions: GetAreaRestrictions;
 }
 export function defaultVisibleArea(params: DefaultVisibleAreaParams): VisibleArea {
-	const { areaRestrictions, coordinates, imageSize, boundaries } = params;
+	const { getAreaRestrictions, coordinates, imageSize, boundaries } = params;
 
 	const boundaryRatio = ratio(boundaries);
 
@@ -25,7 +25,7 @@ export function defaultVisibleArea(params: DefaultVisibleAreaParams): VisibleAre
 				width: referenceRatio > boundaryRatio ? reference.width : reference.height * boundaryRatio,
 				height: referenceRatio > boundaryRatio ? reference.width / boundaryRatio : reference.height,
 			},
-			limitsToSize(areaRestrictions),
+			limitsToSize(getAreaRestrictions()),
 		);
 
 		const visibleArea = {
@@ -56,7 +56,7 @@ export function defaultVisibleArea(params: DefaultVisibleAreaParams): VisibleAre
 			limits.bottom = imageSize.height;
 		}
 
-		return fitToLimits(visibleArea, intersectionLimits(limits, areaRestrictions));
+		return fitToLimits(visibleArea, intersectionLimits(limits, getAreaRestrictions()));
 	} else {
 		const imageRatio = ratio(imageSize);
 

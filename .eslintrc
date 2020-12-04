@@ -10,6 +10,8 @@
 	},
 	"extends": [
 		"plugin:prettier/recommended",
+		"plugin:@typescript-eslint/eslint-recommended",
+		"plugin:@typescript-eslint/recommended",
 		"eslint:recommended",
 		"plugin:vue/recommended",
 		"prettier/@typescript-eslint",
@@ -22,6 +24,7 @@
 	"rules": {
 		"no-mixed-spaces-and-tabs": 0,
 		"vue/require-default-prop": "off",
+		"no-unused-vars": "off",
 		"no-console": ["error", {
 			"allow": ["warn", "error"]
 		}]

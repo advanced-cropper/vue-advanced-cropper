@@ -250,6 +250,9 @@ Sometime you should set the default position and default size of cropper. For ex
 
 <default-positioning-example></default-positioning-example>
 
+Notice, you can use either a function or object to set the default position and size. 
+
+The function:
 ```js
 import { Cropper } from 'vue-advanced-cropper';
 
@@ -282,6 +285,21 @@ export default {
 	:default-size="defaultSize"
 />
 ```
+The object:
+
+```html
+<cropper
+	:src="https://images.unsplash.com/photo-1527199372136-dff50c10ea34?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80"
+	:default-position="{
+		left: 100,
+		top: 100
+	}"
+	:default-size="{
+		width: 400,
+		height: 400
+	}"
+/>
+```
 
 ## Default visible area
 
@@ -294,8 +312,8 @@ prop [priority](/components/cropper.html#priority) that can be either `'coordina
 
 ::: tip 
 If you define only the visible area coordinates it may be easier to set priority to `visibleArea`. It eliminates the necessity
-to set default size and default position by yourself (default algorithms handle this situation).
-:::
+   to set default size and default position by yourself (default algorithms handle this situation).
+   :::
 
 <default-visible-area-example></default-visible-area-example>
 

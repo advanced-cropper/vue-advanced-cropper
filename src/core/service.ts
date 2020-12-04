@@ -187,8 +187,9 @@ export function fitSize(firstSize: Size, secondSize: Size): Size {
 	}
 }
 
-export function fitToLimits(coordinates: Coordinates, area: Limits) {
-	return applyMove(coordinates, fit(coordinates, area));
+export function fitToLimits(coordinates: Coordinates, area: Limits, inverse = false) {
+	const move = fit(coordinates, area);
+	return applyMove(coordinates, inverse ? inverseMove(move) : move);
 }
 
 export function limitsToSize(area: Limits) {

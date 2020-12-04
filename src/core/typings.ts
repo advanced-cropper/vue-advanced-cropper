@@ -23,8 +23,11 @@ export interface SizeRestrictions {
 	heightFrozen?: boolean;
 }
 
+export type VisibleAreaChange = 'move' | 'resize';
+
 export type PositionRestrictions = Limits;
 export type AreaRestrictions = Limits;
+export type GetAreaRestrictions = (params?: { visibleArea?: VisibleArea, type?: VisibleAreaChange}) => Limits;
 
 export interface ResizeDirections {
 	top: number;
@@ -49,6 +52,7 @@ export interface Size {
 }
 export type ImageSize = Size;
 export type Boundaries = Size;
+
 
 export interface Intersections {
 	left: number;
@@ -83,7 +87,7 @@ export type MainDirections = 'left' | 'top';
 
 export type EventType = 'resize' | 'move' | 'drag' | 'manipulateImage';
 
-export type ImageRestriction = 'area' | 'stencil' | 'none';
+export type ImageRestriction = 'area' | 'borders' |'stencil' | 'none';
 
 export interface Scale {
 	factor: number;

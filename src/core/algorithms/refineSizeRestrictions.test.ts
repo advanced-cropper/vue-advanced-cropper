@@ -22,7 +22,6 @@ test('Should sets correct restrictions in ANY situation', () => {
 				complete: false,
 			}),
 			boundaries,
-			visibleArea,
 			imageRestriction,
 			imageSize,
 			positionRestrictions: positionRestrictions({ imageRestriction, imageSize }),

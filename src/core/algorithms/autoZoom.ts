@@ -1,18 +1,18 @@
 import { applyMove, applyScale, fit, inverseMove, maxScale, toLimits } from '../service';
-import { Coordinates, AreaRestrictions, VisibleArea } from '../typings';
+import { Coordinates, GetAreaRestrictions, VisibleArea } from '../typings';
 
 // The main point of this feature is calculating the needed position of stencil and parameters of world transforms
 // Real coordinates don't changes here
 interface AutoZoomParams {
 	coordinates: Coordinates;
 	visibleArea: VisibleArea;
-	areaRestrictions: AreaRestrictions;
+	getAreaRestrictions: GetAreaRestrictions;
 }
 interface AutoZoomResult {
 	visibleArea: VisibleArea;
 }
 export function autoZoom(params: AutoZoomParams): AutoZoomResult {
-	const { coordinates: originalCoordinates, visibleArea: originalVisibleArea, areaRestrictions } = params;
+	const { coordinates: originalCoordinates, visibleArea: originalVisibleArea, getAreaRestrictions } = params;
 
 	let visibleArea = { ...originalVisibleArea };
 	const coordinates = { ...originalCoordinates };
@@ -23,18 +23,24 @@ export function autoZoom(params: AutoZoomParams): AutoZoomResult {
 	if (widthIntersections > heightIntersections) {
 		visibleArea = applyScale(
 			visibleArea,
-			Math.min(coordinates.width / visibleArea.width, maxScale(visibleArea, areaRestrictions)),
+			Math.min(
+				coordinates.width / visibleArea.width,
+				maxScale(visibleArea, getAreaRestrictions({ visibleArea, type: 'resize' })),
+			),
 		);
 	} else if (heightIntersections > widthIntersections) {
 		visibleArea = applyScale(
 			visibleArea,
-			Math.min(coordinates.height / visibleArea.height, maxScale(visibleArea, areaRestrictions)),
+			Math.min(
+				coordinates.height / visibleArea.height,
+				maxScale(visibleArea, getAreaRestrictions({ visibleArea, type: 'resize' })),
+			),
 		);
 	}
 
 	visibleArea = applyMove(visibleArea, inverseMove(fit(coordinates, toLimits(visibleArea))));
 
-	visibleArea = applyMove(visibleArea, fit(visibleArea, areaRestrictions));
+	visibleArea = applyMove(visibleArea, fit(visibleArea, getAreaRestrictions({ visibleArea, type: 'move' })));
 
 	return {
 		visibleArea,

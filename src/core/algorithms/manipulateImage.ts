@@ -1,6 +1,16 @@
 import { ManipulateImageEvent } from '../events';
-import { AreaRestrictions, Coordinates, PositionRestrictions, SizeRestrictions, VisibleArea } from '../typings';
-import { applyMove, applyScale, fit, getCenter, maxScale } from '../service';
+import { GetAreaRestrictions, Coordinates, PositionRestrictions, SizeRestrictions, VisibleArea } from '../typings';
+import {
+	applyMove,
+	applyScale,
+	fit,
+	fitToLimits,
+	getCenter,
+	intersectionLimits,
+	inverseMove,
+	maxScale,
+	toLimits,
+} from '../service';
 
 interface ManipulateImageParams {
 	event: ManipulateImageEvent;
@@ -8,10 +18,8 @@ interface ManipulateImageParams {
 	visibleArea: VisibleArea;
 	sizeRestrictions: SizeRestrictions;
 	positionRestrictions: PositionRestrictions;
-	areaRestrictions: AreaRestrictions;
-	settings: {
-		stencil?: boolean;
-	};
+	getAreaRestrictions: GetAreaRestrictions;
+	adjustStencil: boolean;
 }
 interface ManipulateImageResult {
 	visibleArea: VisibleArea;
@@ -23,15 +31,15 @@ export function manipulateImage(params: ManipulateImageParams): ManipulateImageR
 		coordinates: originalCoordinates,
 		visibleArea: originalVisibleArea,
 		sizeRestrictions,
-		areaRestrictions,
+		getAreaRestrictions,
 		positionRestrictions,
-		settings = {},
+		adjustStencil,
 	} = params;
 
 	const { scale, move } = event;
 
 	let visibleArea = { ...originalVisibleArea };
-	const coordinates = { ...originalCoordinates };
+	let coordinates = { ...originalCoordinates };
 
 	let areaScale = 1;
 	let stencilScale = 1;
@@ -55,7 +63,7 @@ export function manipulateImage(params: ManipulateImageParams): ManipulateImageR
 			),
 		},
 		area: {
-			maximum: maxScale(visibleArea, areaRestrictions),
+			maximum: maxScale(visibleArea, getAreaRestrictions({ visibleArea, type: 'resize' })),
 		},
 	};
 
@@ -96,31 +104,27 @@ export function manipulateImage(params: ManipulateImageParams): ManipulateImageR
 			(originalCoordinates.height + originalCoordinates.top),
 	};
 
-	// Move the area to fit to area limits:
-	visibleArea = applyMove(visibleArea, fit(visibleArea, areaRestrictions));
-
 	// Move the area to fit to coordinates limits:
 	visibleArea = applyMove(
 		visibleArea,
 		fit(visibleArea, {
 			left:
-				positionRestrictions.left !== undefined
-					? positionRestrictions.left - relativeCoordinates.left * stencilScale
-					: undefined,
+				positionRestrictions.left !== undefined &&
+				positionRestrictions.left - relativeCoordinates.left * stencilScale,
 			top:
-				positionRestrictions.top !== undefined
-					? positionRestrictions.top - relativeCoordinates.top * stencilScale
-					: undefined,
+				positionRestrictions.top !== undefined &&
+				positionRestrictions.top - relativeCoordinates.top * stencilScale,
 			bottom:
-				positionRestrictions.bottom !== undefined
-					? positionRestrictions.bottom + relativeCoordinates.bottom * stencilScale
-					: undefined,
+				positionRestrictions.bottom !== undefined &&
+				positionRestrictions.bottom + relativeCoordinates.bottom * stencilScale,
 			right:
-				positionRestrictions.right !== undefined
-					? positionRestrictions.right + relativeCoordinates.right * stencilScale
-					: undefined,
+				positionRestrictions.right !== undefined &&
+				positionRestrictions.right + relativeCoordinates.right * stencilScale,
 		}),
 	);
+
+	// But the more important to fit are to the area restrictions, so we should fit it to that restrictions:
+	visibleArea = fitToLimits(visibleArea, getAreaRestrictions({ visibleArea, type: 'move' }));
 
 	// Set the same coordinates of stencil inside visible area
 	coordinates.width = coordinates.width * stencilScale;
@@ -128,20 +132,25 @@ export function manipulateImage(params: ManipulateImageParams): ManipulateImageR
 	coordinates.left = visibleArea.left + relativeCoordinates.left * stencilScale;
 	coordinates.top = visibleArea.top + relativeCoordinates.top * stencilScale;
 
+	// Move the coordinates to prevent the intersection with visible area and position restrictions
+	coordinates = fitToLimits(coordinates, intersectionLimits(toLimits(visibleArea), positionRestrictions));
+
 	// Resize only area if stencil can't be resized and stencil resize is disabled
-	if (scale.factor && allowedScale && settings.stencil) {
+	if (scale.factor && allowedScale && adjustStencil) {
 		if (scale.factor > 1) {
 			areaScale = Math.min(scaleRestrictions.area.maximum, scale.factor) / stencilScale;
 		} else if (scale.factor < 1) {
-			areaScale = Math.max(coordinates.height / visibleArea.height, scale.factor) / stencilScale;
+			areaScale = Math.max(coordinates.height / visibleArea.height, scale.factor / stencilScale);
 		}
-		visibleArea = applyScale(
-			visibleArea,
-			areaScale,
-			getCenter(coordinates),
-			Math.pow(scale.factor > 1 ? scaleRestrictions.area.maximum : coordinates.height / visibleArea.height, 2),
-		);
-		visibleArea = applyMove(visibleArea, fit(visibleArea, areaRestrictions));
+		if (areaScale !== 1) {
+			visibleArea = applyScale(visibleArea, areaScale, scale.factor > 1 ? scale.center : getCenter(coordinates));
+
+			// Move to prevent the breaking of the area restrictions:
+			visibleArea = fitToLimits(visibleArea, getAreaRestrictions({ visibleArea, type: 'move' }));
+
+			// Move to prevent the intersection with coordinates:
+			visibleArea = applyMove(visibleArea, inverseMove(fit(coordinates, toLimits(visibleArea))));
+		}
 	}
 
 	return {

@@ -81,18 +81,46 @@ export default {
 		wheelResize: {
 			type: [Boolean, Object],
 			default: true,
+			validator(value) {
+				return replacedProp(
+					value,
+					'wheelResize',
+					'resizeImage (https://norserium.github.io/vue-advanced-cropper/components/cropper.html#resizeimage)',
+				);
+			},
 		},
 		touchResize: {
 			type: [Boolean, Object],
 			default: true,
+			validator(value) {
+				return replacedProp(
+					value,
+					'touchResize',
+					'resizeImage (https://norserium.github.io/vue-advanced-cropper/components/cropper.html#resizeimage)',
+				);
+			},
 		},
 		touchMove: {
 			type: [Boolean, Object],
 			default: true,
+			validator(value) {
+				return replacedProp(
+					value,
+					'touchMove',
+					'moveImage (https://norserium.github.io/vue-advanced-cropper/components/cropper.html#moveimage)',
+				);
+			},
 		},
 		mouseMove: {
 			type: [Boolean, Object],
 			default: true,
+			validator(value) {
+				return replacedProp(
+					value,
+					'mouseMove',
+					'moveImage (https://norserium.github.io/vue-advanced-cropper/components/cropper.html#moveimage)',
+				);
+			},
 		},
 		imageRestriction: {
 			type: String,
@@ -154,7 +182,7 @@ export default {
 		},
 		areaRestrictionsAlgorithm: {
 			type: Function,
-			default: algorithms.areaRestrictions,
+			default: algorithms.dynamicAreaRestrictions,
 		},
 		sizeRestrictionsAlgorithm: {
 			type: Function,
@@ -258,6 +286,7 @@ export default {
 				return this.areaRestrictionsAlgorithm({
 					imageSize: this.imageSize,
 					imageRestriction: this.imageRestriction,
+					boundaries: this.boundaries,
 				});
 			} else {
 				return {};
@@ -467,6 +496,12 @@ export default {
 				}
 			});
 		},
+		setVisibleArea(previousVisibleArea) {
+			const visibleArea = { ...previousVisibleArea };
+			if (visibleArea.width < visibleArea.height) {
+				//if (visibleArea.width / this.coefficient < )
+			}
+		},
 		refresh() {
 			const image = this.$refs.image;
 			if (this.src && image) {
@@ -494,8 +529,11 @@ export default {
 		},
 		autoZoom(coordinates) {
 			const { visibleArea } = algorithms.autoZoom({
-				...this.getPublicProperties(),
 				coordinates,
+				visibleArea: this.visibleArea,
+				getAreaRestrictions: this.getAreaRestrictions,
+				// Deprecated
+				areaRestrictions: this.areaRestrictions,
 			});
 
 			this.visibleArea = visibleArea;
@@ -672,17 +710,22 @@ export default {
 						this.visibleArea = null;
 						this.resetCoordinates();
 					}
+
+					this.visibleArea = isFunction(this.defaultVisibleArea)
+						? this.defaultVisibleArea({
+								imageSize: this.imageSize,
+								boundaries: this.boundaries,
+								coordinates: this.priority !== 'visibleArea' ? this.coordinates : null,
+								getAreaRestrictions: this.getAreaRestrictions,
+								// Deprecated
+								areaRestrictions: this.areaRestrictions,
+						  })
+						: this.defaultVisibleArea;
+
 					this.visibleArea = algorithms.refineVisibleArea({
-						visibleArea: isFunction(this.defaultVisibleArea)
-							? this.defaultVisibleArea({
-									imageSize: this.imageSize,
-									boundaries: this.boundaries,
-									coordinates: this.priority !== 'visibleArea' ? this.coordinates : null,
-									areaRestrictions: this.areaRestrictions,
-							  })
-							: this.defaultVisibleArea,
+						visibleArea: this.visibleArea,
 						boundaries: this.boundaries,
-						areaRestrictions: this.areaRestrictions,
+						getAreaRestrictions: this.getAreaRestrictions,
 					});
 
 					if (this.priority === 'visibleArea') {
@@ -709,6 +752,8 @@ export default {
 						boundaries: this.boundaries,
 						visibleArea: this.visibleArea,
 						coordinates: this.coordinates,
+						getAreaRestrictions: this.getAreaRestrictions,
+						// Deprecated
 						areaRestrictions: this.areaRestrictions,
 					});
 					this.coordinates = this.fitCoordinates({
@@ -824,10 +869,11 @@ export default {
 			const { visibleArea, coordinates } = algorithms.manipulateImage({
 				...this.getPublicProperties(),
 				event: normalize ? this.normalizeEvent(event) : event,
+				getAreaRestrictions: this.getAreaRestrictions,
 				imageRestriction: this.imageRestriction,
-				settings: {
-					resize: this.settings.resize.stencil,
-				},
+				adjustStencil: this.adjustStencil,
+				// Deprecated
+				areaRestrictions: this.areaRestrictions,
 			});
 
 			this.visibleArea = visibleArea;
@@ -835,6 +881,15 @@ export default {
 		},
 		onPropsChange() {
 			this.applyTransform(this.coordinates, true, true);
+		},
+		getAreaRestrictions({ visibleArea, type = 'move' } = {}) {
+			return this.areaRestrictionsAlgorithm({
+				boundaries: this.boundaries,
+				imageSize: this.imageSize,
+				imageRestriction: this.imageRestriction,
+				visibleArea,
+				type,
+			});
 		},
 		getAspectRatio() {
 			if (this.$refs.stencil.aspectRatios) {
@@ -854,7 +909,6 @@ export default {
 				boundaries: this.boundaries,
 				sizeRestrictions: this.sizeRestrictions,
 				positionRestrictions: this.positionRestrictions,
-				areaRestrictions: this.areaRestrictions,
 				aspectRatio: this.getAspectRatio(),
 				imageRestriction: this.imageRestriction,
 			};

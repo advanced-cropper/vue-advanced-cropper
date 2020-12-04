@@ -35,12 +35,12 @@ It described [here](/tutorials/recipes.html#second-method).
 
 ### `refresh()`
 
-::: warning Experimental method
-It may change its name or may be deleted in the future.
-:::
-
 This method [refreshes cropper](/introduction/under-the-hood.html#refresh-image). This method is called on every window resize and can be
-useful if external container width is changed, but window's size isn't changed.
+useful if the external container width is changed, but window's size isn't changed.
+
+### `reset()`
+
+This method resets the cropper to the initial state.
 
 ### `zoom(factor, center)`
 
@@ -95,10 +95,10 @@ Default: `''`
 The optional class name for the cropping image
 
 
-### `areaClass`
+### `boundariesClass`
 Default: `''`
 
-The optional class name for the area. Probably you should not use this prop.
+The optional class name for the boundaries. Probably you should not use this prop.
 
 
 ### `backgroundClass`
@@ -124,10 +124,54 @@ The flag that indicates if EXIF orientation should be checked
 ### `imageRestriction`
 Default: `'area'`
 
+::: warning Notice!
+Be careful when use `fit-area` setting, it's the experimental feature.
+:::
+
 This parameter sets different restrictions of an image position:
-- `area` prevents resizing and moving the image beyond the area
+- `fill-area` fill area by image and prevents resizing and moving the image beyond the area
+- `fit-area` fit image to area and prevents resizing and moving the image beyond the area as much as possible ([example](/introduction/news.html#new-image-restriction-type-borders))
 - `stencil` prevents resizing and moving the image beyond the stencil
 - `none` allows free resizing and moving the image
+
+### `resizeImage`
+
+::: warning Notice!
+Be careful when you set `adjustStencil` setting, it's the experimental feature.
+:::
+
+This prop is either boolean flag or object settings. The default object:
+```js
+{
+	touch: true,
+	wheel: {
+		ratio: 0.1
+	},
+	adjustStencil: false
+}
+```
+
+The fields:
+- `touch` is a flag that checks if image should be resized by a pinch gesture 
+- `wheel` is either boolean flag or object (the object currently support only one option: `ratio`, i.e. speed of resizing by wheel)
+- `adjustStencil` is a flag checks if stencil size can be changed during resize ([example](http://localhost:8080/vue-advanced-cropper/introduction/news.html#release-0-18-0))
+
+Notice, that `adjustStencil` make cropper more convenient especially when you have the limitations of width / height, but you probably shouldn't
+use it if you have fixed stencil, because it will change its size. 
+
+### `moveImage`
+
+This prop is either boolean flag or object settings. The default object:
+```js
+{
+	touch: true,
+	mouse: true
+}
+```
+
+The fields:
+- `touch` is a flag that checks if image should be dragged by a touch 
+- `mouse` is a flag that checks if image should be dragged by a mouse 
 
 ### `minWidth`
 Default: `10`
@@ -149,41 +193,29 @@ Default: `100`
 
 The maximum height of the stencil in percents
 
-### `touchMove`
-Default: `true`
-
-The flag that indicates if image should be dragged by a touch
-
-### `touchResize`
-Default: `true`
-
-The flag that indicates if image should be resized by a pinch gesture
-
-### `mouseMove`
-Default: `true`
-
-The flag that indicates if image should be dragged by a mouse
-
-### `wheelResize`
-Default: `true`
-
-The flag that indicates if image should be resized by a mouse wheel
-
 ### `priority`
 Default: `'coordinates'`
 
-It can be `'coordinates'` or `'visibleArea'`. Sets the priority of initialization default values.
-
-If it set to `'coordinates'` the coordinates will be initialized first, but `defaultSize` and `defaultPosition` algorithms
+It can be either `'coordinates'` or `'visibleArea'`. It sets the priority of initialization default values.
+- If it set to `'coordinates'` the coordinates will be initialized first, but `defaultSize` and `defaultPosition` algorithms
 will know nothing about visible area. 
-
-If it set to `'visibleArea'` then the visible area will be initialized first, but `defaultVisibleArea` algorithm
+- If it set to `'visibleArea'` then the visible area will be initialized first, but `defaultVisibleArea` algorithm
 will know nothing about coordinates.
 
 ### `defaultPosition`
 Default: `core.defaultPosition`
 
-The static function that accepts the only argument, the object with following fields:
+It's either an object or static function.
+
+The object should correspond the following scheme:
+```js
+{
+	left: 142,
+	top: 73
+}
+```
+
+The static function should accept the only argument, the object with following fields:
 - `coordinates` (`{ width, height }`),
 - `visibleArea` (`{ left, top, width, height }`),
 
@@ -192,7 +224,17 @@ It should return an object with `left` and `top` fields, i.e. default position o
 ### `defaultSize`
 Default: `core.defaultSize`
 
-The static function that accepts the only argument, the object with following fields:
+It's either an object or static function.
+
+The object should correspond the following scheme:
+```js
+{
+	width: 142,
+	height: 73
+}
+```
+
+The static function should accept the only argument, the object with the following fields:
 - `visibleArea` (`{ left, top, width, height }`),
 - `imageSize` (`{ width, height }`),
 - `stencilRatio` (`{ minimum, maximum }`)
