@@ -14,14 +14,14 @@ export function dynamicAreaRestrictions(params: DynamicAreaRestrictionsParams): 
 
 	let limits: Limits = {};
 
-	if (imageRestriction === 'area') {
+	if (imageRestriction === 'fill-area') {
 		limits = {
 			left: 0,
 			top: 0,
 			right: imageSize.width,
 			bottom: imageSize.height,
 		};
-	} else if (imageRestriction === 'borders') {
+	} else if (imageRestriction === 'fit-area') {
 		if (ratio(boundaries) > ratio(imageSize)) {
 			limits = {
 				top: 0,

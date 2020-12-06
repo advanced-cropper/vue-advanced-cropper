@@ -4,7 +4,7 @@ export const ALL_DIRECTIONS: PositionDirection[] = ['left', 'right', 'top', 'bot
 export const HORIZONTAL_DIRECTIONS: HorizontalDirection[] = ['left', 'right'];
 export const VERTICAL_DIRECTIONS: VerticalDirection[] = ['top', 'bottom'];
 export const MAIN_DIRECTIONS: MainDirections[] = ['left', 'top'];
-export const IMAGE_RESTRICTIONS = ['area', 'borders', 'stencil', 'none'];
+export const IMAGE_RESTRICTIONS = ['fill-area', 'fit-area', 'stencil', 'none'];
 export const XHR_DONE = 4;
 
 export const DEFAULT_COORDINATES = {

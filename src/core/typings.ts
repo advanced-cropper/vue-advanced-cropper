@@ -89,7 +89,7 @@ export type MainDirections = 'left' | 'top';
 
 export type EventType = 'resize' | 'move' | 'drag' | 'manipulateImage';
 
-export type ImageRestriction = 'area' | 'borders' | 'stencil' | 'none';
+export type ImageRestriction = 'fill-area' | 'fit-area' | 'stencil' | 'none';
 
 export interface Scale {
 	factor: number;

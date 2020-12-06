@@ -15,7 +15,7 @@ export class MockFactory {
 	}
 
 	imageRestriction() {
-		const variants = ['image', 'area', 'none'] as ImageRestriction[];
+		const variants = ['image', 'fill-area', 'none'] as ImageRestriction[];
 		return variants[Math.round(this.random() * 2)];
 	}
 

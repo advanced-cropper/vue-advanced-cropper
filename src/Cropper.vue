@@ -94,7 +94,7 @@ export default {
 		},
 		imageRestriction: {
 			type: String,
-			default: 'area',
+			default: 'fill-area',
 			validator(value) {
 				return IMAGE_RESTRICTIONS.indexOf(value) !== -1;
 			},
@@ -622,7 +622,7 @@ export default {
 			}
 		},
 		autoZoom(event, params = {}) {
-			const { transitions = true } = params;
+			const { transitions = false } = params;
 			let algorithm = this.autoZoomAlgorithm;
 
 			if (!algorithm) {
@@ -645,14 +645,14 @@ export default {
 				stencilSize: this.getStencilSize(),
 			});
 
-			if (this.transitions) {
+			if (this.transitions && transitions) {
 				this.enableTransitions();
 			}
 
 			this.visibleArea = visibleArea;
 			this.coordinates = coordinates;
 
-			if (this.transitions) {
+			if (this.transitions && transitions) {
 				this.debouncedDisableTransitions();
 			}
 		},
