@@ -47,12 +47,22 @@ export default {
 		onLeave() {
 			this.hover = false;
 		},
+		onDragEnd() {
+			this.$emit('drag-end');
+		},
 	},
 };
 </script>
 
 <template>
-	<LineWrapper :position="position" :disabled="disabled" @enter="onEnter" @leave="onLeave" @drag="onDrag">
+	<LineWrapper
+		:position="position"
+		:disabled="disabled"
+		@drag="onDrag"
+		@drag-end="onDragEnd"
+		@enter="onEnter"
+		@leave="onLeave"
+	>
 		<div :class="classes.root" />
 	</LineWrapper>
 </template>

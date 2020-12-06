@@ -61,6 +61,9 @@ export default {
 		onLeave() {
 			this.hover = false;
 		},
+		onDragEnd() {
+			this.$emit('drag-end');
+		},
 	},
 };
 </script>
@@ -71,6 +74,7 @@ export default {
 		:horizontal-position="horizontalPosition"
 		:disabled="disabled"
 		@drag="onDrag"
+		@drag-end="onDragEnd"
 		@enter="onEnter"
 		@leave="onLeave"
 	>

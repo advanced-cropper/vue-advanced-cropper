@@ -1,4 +1,4 @@
-import { Boundaries, ImageRestriction, PositionRestrictions, Size, SizeRestrictions } from '../typings';
+import { Boundaries, ImageRestriction, PositionRestrictions, Size, SizeRestrictions, VisibleArea } from '../typings';
 import { fitSize } from '../service';
 
 interface RefineSizeRestrictionsParams {
@@ -38,8 +38,8 @@ export function refineSizeRestrictions({
 	// The situation when stencil larger than maximum visible area or image should be avoided if imageRestriction != 'none':
 	if (imageRestriction !== 'none') {
 		const areaMaximum = fitSize(boundaries, imageSize);
-		const maxWidth = imageRestriction === 'area' ? areaMaximum.width : imageSize.width;
-		const maxHeight = imageRestriction === 'area' ? areaMaximum.height : imageSize.height;
+		const maxWidth = imageRestriction !== 'stencil' ? areaMaximum.width : imageSize.width;
+		const maxHeight = imageRestriction !== 'stencil' ? areaMaximum.height : imageSize.height;
 		if (!restrictions.maxWidth || restrictions.maxWidth > maxWidth) {
 			restrictions.maxWidth = maxWidth;
 		}

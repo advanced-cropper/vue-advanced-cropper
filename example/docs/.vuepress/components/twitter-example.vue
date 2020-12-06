@@ -37,36 +37,17 @@ export default {
 				maxHeight: maxHeight,
 			};
 		},
-		squareVisibleArea({ visibleArea, coordinates, imageSize, boundaries }) {
-			const ratio = boundaries.width / boundaries.height;
-			if (ratio < coordinates.width / coordinates.height) {
-				const coefficient = coordinates.width / (boundaries.width - 48);
-				const width = coordinates.width + 48 * coefficient;
-				const height = width / ratio;
+		stencilSize({ boundaries }) {
+			if (boundaries.width < boundaries.height) {
 				return {
-					width,
-					height,
-					left: visibleArea
-						? visibleArea.left + (visibleArea.width - width) / 2
-						: imageSize.width / 2 - width / 2,
-					top: visibleArea
-						? visibleArea.top + (visibleArea.height - height) / 2
-						: imageSize.height / 2 - height / 2,
-				};
+					width: boundaries.width - 48,
+					height: boundaries.width - 48,
+				}
 			} else {
-				const coefficient = coordinates.height / (boundaries.height - 48);
-				const height = coordinates.height + 48 * coefficient;
-				const width = height * ratio;
 				return {
-					width,
-					height,
-					left: visibleArea
-						? visibleArea.left + (visibleArea.width - width) / 2
-						: imageSize.width / 2 - width / 2,
-					top: visibleArea
-						? visibleArea.top + (visibleArea.height - height) / 2
-						: imageSize.height / 2 - height / 2,
-				};
+					width: boundaries.height - 48,
+					height: boundaries.height - 48,
+				}
 			}
 		},
 		onChange(result) {
@@ -113,6 +94,8 @@ export default {
 			background-class="twitter-cropper__background"
 			image-restriction="stencil"
 			default-boundaries="fill"
+			:size-restrictions-algorithm="pixelsRestriction"
+			:stencil-size="stencilSize"
 			:stencil-props="{
 				handlers: {},
 				movable: false,
@@ -122,10 +105,7 @@ export default {
 			}"
 			:canvas="false"
 			:debounce="false"
-			:fit-visible-area="squareVisibleArea"
-			:default-visible-area="squareVisibleArea"
 			:default-size="defaultSize"
-			:size-restrictions-algorithm="pixelsRestriction"
 			:min-width="150"
 			:min-height="150"
 			:src="img"

@@ -143,6 +143,7 @@ export default {
 		processEnd() {
 			this.touches = [];
 			if (this.hovered) {
+				this.$emit('end');
 				this.$emit('leave');
 				this.hovered = false;
 			}

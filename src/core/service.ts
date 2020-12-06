@@ -88,27 +88,31 @@ export function applyMove(object: Coordinates, move: MoveDirections): Coordinate
 }
 
 export function applyScale(object: Coordinates, scaleFactor: number, center?: Point, progress?: number): Coordinates {
-	if (center) {
-		const currentCenter = getCenter(object);
-		return {
-			width: object.width * scaleFactor,
-			height: object.height * scaleFactor,
-			left:
-				object.left +
-				(object.width * (1 - scaleFactor)) / 2 +
-				(center.left - currentCenter.left) * (progress || 1 - scaleFactor),
-			top:
-				object.top +
-				(object.height * (1 - scaleFactor)) / 2 +
-				(center.top - currentCenter.top) * (progress || 1 - scaleFactor),
-		};
+	if (scaleFactor !== 1) {
+		if (center) {
+			const currentCenter = getCenter(object);
+			return {
+				width: object.width * scaleFactor,
+				height: object.height * scaleFactor,
+				left:
+					object.left +
+					(object.width * (1 - scaleFactor)) / 2 +
+					(center.left - currentCenter.left) * (progress || 1 - scaleFactor),
+				top:
+					object.top +
+					(object.height * (1 - scaleFactor)) / 2 +
+					(center.top - currentCenter.top) * (progress || 1 - scaleFactor),
+			};
+		} else {
+			return {
+				width: object.width * scaleFactor,
+				height: object.height * scaleFactor,
+				left: object.left + (object.width * (1 - scaleFactor)) / 2,
+				top: object.top + (object.height * (1 - scaleFactor)) / 2,
+			};
+		}
 	} else {
-		return {
-			width: object.width * scaleFactor,
-			height: object.height * scaleFactor,
-			left: object.left + (object.width * (1 - scaleFactor)) / 2,
-			top: object.top + (object.height * (1 - scaleFactor)) / 2,
-		};
+		return object;
 	}
 }
 
@@ -185,6 +189,25 @@ export function fitSize(firstSize: Size, secondSize: Size): Size {
 	} else {
 		return firstSize;
 	}
+}
+
+export function adjustSize(coordinates: Coordinates, area: Limits) {
+	const intersections = getIntersections(coordinates, area);
+
+	if (intersections.left + intersections.right + intersections.top + intersections.bottom) {
+		if (intersections.left + intersections.right > intersections.top + intersections.bottom) {
+			return Math.min(
+				(coordinates.width + intersections.left + intersections.right) / coordinates.width,
+				maxScale(coordinates, area),
+			);
+		} else {
+			return Math.min(
+				(coordinates.height + intersections.top + intersections.bottom) / coordinates.height,
+				maxScale(coordinates, area),
+			);
+		}
+	}
+	return 1;
 }
 
 export function fitToLimits(coordinates: Coordinates, area: Limits, inverse = false) {

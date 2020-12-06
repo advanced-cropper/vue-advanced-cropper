@@ -180,6 +180,9 @@ export default {
 		this.touches = [];
 	},
 	methods: {
+		onEnd() {
+			this.$emit('resize-end');
+		},
 		onHandlerDrag(dragEvent, horizontalDirection, verticalDirection) {
 			const { left, top } = dragEvent.shift();
 
@@ -241,6 +244,7 @@ export default {
 				:position="line.name"
 				:disabled="line.disabled"
 				@drag="onHandlerDrag($event, line.horizontalDirection, line.verticalDirection)"
+				@drag-end="onEnd()"
 			/>
 		</div>
 		<div>
@@ -254,6 +258,7 @@ export default {
 				:vertical-position="handler.verticalDirection"
 				:disabled="handler.disabled"
 				@drag="onHandlerDrag($event, handler.horizontalDirection, handler.verticalDirection)"
+				@drag-end="onEnd()"
 			/>
 		</div>
 	</div>

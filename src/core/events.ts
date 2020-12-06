@@ -1,6 +1,6 @@
-import { CropperEvent, Diff, MoveDirections, Point, ResizeDirections, Scale } from './typings';
+import { StencilEvent, Diff, MoveDirections, Point, ResizeDirections, Scale } from './typings';
 
-export class ManipulateImageEvent implements CropperEvent {
+export class ManipulateImageEvent implements StencilEvent {
 	type: 'manipulateImage';
 	nativeEvent: Event;
 	move: Partial<MoveDirections>;
@@ -19,7 +19,7 @@ export interface ResizeEventParams {
 	respectDirection?: 'width' | 'height';
 }
 
-export class ResizeEvent implements CropperEvent {
+export class ResizeEvent implements StencilEvent {
 	type: 'resize';
 	directions: ResizeDirections;
 	params: ResizeEventParams;
@@ -31,7 +31,7 @@ export class ResizeEvent implements CropperEvent {
 	}
 }
 
-export class MoveEvent implements CropperEvent {
+export class MoveEvent implements StencilEvent {
 	type: 'move';
 	directions: MoveDirections;
 
@@ -41,7 +41,7 @@ export class MoveEvent implements CropperEvent {
 	}
 }
 
-export class DragEvent implements CropperEvent {
+export class DragEvent implements StencilEvent {
 	type: 'drag';
 	nativeEvent: Event;
 	position: Point;

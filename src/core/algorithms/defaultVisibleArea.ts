@@ -13,21 +13,21 @@ export function defaultVisibleArea(params: DefaultVisibleAreaParams): VisibleAre
 	const boundaryRatio = ratio(boundaries);
 
 	if (coordinates) {
+		// Visible area will try to fit reference:
 		const reference = {
 			height: Math.max(coordinates.height, imageSize.height),
 			width: Math.max(coordinates.width, imageSize.width),
 		};
 
-		const referenceRatio = ratio(reference);
-
 		const areaProperties = fitSize(
 			{
-				width: referenceRatio > boundaryRatio ? reference.width : reference.height * boundaryRatio,
-				height: referenceRatio > boundaryRatio ? reference.width / boundaryRatio : reference.height,
+				width: ratio(reference) > boundaryRatio ? reference.width : reference.height * boundaryRatio,
+				height: ratio(reference) > boundaryRatio ? reference.width / boundaryRatio : reference.height,
 			},
 			limitsToSize(getAreaRestrictions()),
 		);
 
+		// Visible area will try to center stencil:
 		const visibleArea = {
 			left: coordinates.left + coordinates.width / 2 - areaProperties.width / 2,
 			top: coordinates.top + coordinates.height / 2 - areaProperties.height / 2,
@@ -35,6 +35,8 @@ export function defaultVisibleArea(params: DefaultVisibleAreaParams): VisibleAre
 			height: areaProperties.height,
 		};
 
+		// TODO: Controversial behavior:
+		// If the coordinates are beyond image visible area will be allowed to be beyond image alike:
 		const coordinatesIntersection = getIntersections(
 			coordinates,
 			toLimits({
@@ -56,7 +58,7 @@ export function defaultVisibleArea(params: DefaultVisibleAreaParams): VisibleAre
 			limits.bottom = imageSize.height;
 		}
 
-		return fitToLimits(visibleArea, intersectionLimits(limits, getAreaRestrictions()));
+		return fitToLimits(visibleArea, limits);
 	} else {
 		const imageRatio = ratio(imageSize);
 

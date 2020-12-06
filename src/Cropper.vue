@@ -4,10 +4,10 @@ import bem from 'easy-bem';
 import debounce from 'debounce';
 import { RectangleStencil } from './components/stencils';
 import { CropperWrapper } from './components/service';
-import { fillBoundaries, fitBoundaries, isFunction, isLoadedImage, limitBy, replacedProp } from './core';
+import { fillBoundaries, fitBoundaries, isFunction, isLoadedImage, isNumber, limitBy, replacedProp } from './core';
 import { updateCanvas } from './core/canvas';
 import { ManipulateImageEvent } from './core/events';
-import { limitSizeRestrictions } from './core/service';
+import { limitSizeRestrictions, limitsToSize, ratio } from './core/service';
 import { isLocal, isCrossOriginURL, isUndefined, getSettings, parseNumber } from './core/utils';
 import { arrayBufferToDataURL, getImageTransforms, getStyleTransforms, prepareSource, parseImage } from './core/image';
 import { IMAGE_RESTRICTIONS, DEFAULT_COORDINATES } from './core/constants';
@@ -180,6 +180,9 @@ export default {
 				return !invalid;
 			},
 		},
+		autoZoomAlgorithm: {
+			type: Function,
+		},
 		areaRestrictionsAlgorithm: {
 			type: Function,
 			default: algorithms.dynamicAreaRestrictions,
@@ -195,6 +198,9 @@ export default {
 		priority: {
 			type: String,
 			default: 'coordinates',
+		},
+		stencilSize: {
+			type: [Object, Function],
 		},
 		// Deprecated props
 		restrictions: {
@@ -294,7 +300,7 @@ export default {
 		},
 		sizeRestrictions() {
 			if (this.boundaries.width && this.boundaries.height) {
-				const sizeRestrictions = (this.restrictions || this.sizeRestrictionsAlgorithm)({
+				let sizeRestrictions = (this.restrictions || this.sizeRestrictionsAlgorithm)({
 					imageSize: this.imageSize,
 					minWidth: !isUndefined(this.minWidth) ? parseNumber(this.minWidth) : 0,
 					minHeight: !isUndefined(this.minHeight) ? parseNumber(this.minHeight) : 0,
@@ -306,13 +312,31 @@ export default {
 					props: this.$props,
 				});
 
-				return algorithms.refineSizeRestrictions({
+				sizeRestrictions = algorithms.refineSizeRestrictions({
 					sizeRestrictions,
 					imageSize: this.imageSize,
 					boundaries: this.boundaries,
 					positionRestrictions: this.positionRestrictions,
 					imageRestriction: this.imageRestriction,
+					visibleArea: this.visibleArea,
+					stencilSize: this.getStencilSize(),
 				});
+
+				if (this.visibleArea && this.stencilSize) {
+					const stencilSize = this.getStencilSize();
+					const areaRestrictions = limitsToSize(
+						this.getAreaRestrictions({ visibleArea: this.visibleArea, type: 'resize' }),
+					);
+					sizeRestrictions.maxWidth = Math.min(
+						sizeRestrictions.maxWidth,
+						(areaRestrictions.width * stencilSize.width) / this.boundaries.width,
+					);
+					sizeRestrictions.maxHeight = Math.min(
+						sizeRestrictions.maxHeight,
+						(areaRestrictions.height * stencilSize.height) / this.boundaries.height,
+					);
+				}
+				return sizeRestrictions;
 			} else {
 				return {
 					minWidth: 0,
@@ -404,6 +428,8 @@ export default {
 		stencilComponent() {
 			this.$nextTick(() => {
 				this.resetCoordinates();
+				this.autoZoom('setCoordinates');
+				this.onChange();
 			});
 		},
 		minWidth() {
@@ -428,9 +454,10 @@ export default {
 			}
 		},
 	},
-	mounted() {
+	created() {
 		this.debouncedUpdate = debounce(this.update, this.debounce);
-
+	},
+	mounted() {
 		this.$refs.image.addEventListener('load', this.onSuccessLoadImage);
 		this.$refs.image.addEventListener('error', this.onFailLoadImage);
 		this.onChangeImage();
@@ -492,15 +519,10 @@ export default {
 				if (!this.imageLoaded) {
 					this.delayedTransforms = transforms;
 				} else {
-					this.applyTransform(transforms, autoZoom);
+					this.coordinates = this.applyTransform(transforms, autoZoom);
 				}
+				this.autoZoom('setCoordinates');
 			});
-		},
-		setVisibleArea(previousVisibleArea) {
-			const visibleArea = { ...previousVisibleArea };
-			if (visibleArea.width < visibleArea.height) {
-				//if (visibleArea.width / this.coefficient < )
-			}
 		},
 		refresh() {
 			const image = this.$refs.image;
@@ -527,16 +549,31 @@ export default {
 				return coordinates;
 			}
 		},
-		autoZoom(coordinates) {
-			const { visibleArea } = algorithms.autoZoom({
-				coordinates,
+		autoZoom(event) {
+			let algorithm = this.autoZoomAlgorithm;
+
+			if (!algorithm) {
+				if (this.stencilSize) {
+					algorithm = algorithms.fixedStencilAutoZoom;
+				} else {
+					algorithm = algorithms.simplestAutoZoom;
+				}
+			}
+
+			const { coordinates, visibleArea } = algorithm({
+				event,
 				visibleArea: this.visibleArea,
+				coordinates: this.coordinates,
+				boundaries: this.boundaries,
+				aspectRatio: this.getAspectRatio(),
+				positionRestrictions: this.positionRestrictions,
 				getAreaRestrictions: this.getAreaRestrictions,
-				// Deprecated
-				areaRestrictions: this.areaRestrictions,
+				sizeRestrictions: this.sizeRestrictions,
+				stencilSize: this.getStencilSize(),
 			});
 
 			this.visibleArea = visibleArea;
+			this.coordinates = coordinates;
 		},
 		normalizeEvent(event) {
 			return algorithms.normalizeEvent({
@@ -571,7 +608,7 @@ export default {
 					? limitBy(this.positionRestrictions, this.visibleArea)
 					: this.positionRestrictions;
 
-			const coordinates = algorithms.applyTransform({
+			return algorithms.applyTransform({
 				transform,
 				coordinates: this.coordinates,
 				imageSize: this.imageSize,
@@ -579,14 +616,6 @@ export default {
 				positionRestrictions,
 				aspectRatio: this.getAspectRatio(),
 			});
-
-			if (autoZoom) {
-				this.autoZoom(coordinates);
-			}
-
-			this.onChangeCoordinates(coordinates, false);
-
-			return coordinates;
 		},
 		resetCoordinates() {
 			// This function can be asynchronously called after completion of refreshing image promise
@@ -604,6 +633,7 @@ export default {
 							imageSize: this.imageSize,
 							aspectRatio: this.getAspectRatio(),
 							sizeRestrictions: this.sizeRestrictions,
+							stencilSize: this.getStencilSize(),
 							visibleArea: this.visibleArea,
 							// Deprecated params
 							cropper,
@@ -655,7 +685,7 @@ export default {
 						...(Array.isArray(this.delayedTransforms) ? this.delayedTransforms : [this.delayedTransforms]),
 					);
 				}
-				this.applyTransform(transforms, false, true);
+				this.coordinates = this.applyTransform(transforms, false, true);
 				this.delayedTransforms = null;
 			}
 		},
@@ -739,6 +769,7 @@ export default {
 							sizeRestrictions: this.sizeRestrictions,
 						});
 					}
+					this.autoZoom('resetVisibleArea');
 				})
 				.catch(() => {
 					this.visibleArea = null;
@@ -763,13 +794,13 @@ export default {
 						positionRestrictions: this.positionRestrictions,
 						sizeRestrictions: this.sizeRestrictions,
 					});
+					this.autoZoom('updateVisibleArea');
 				})
 				.catch(() => {
 					this.visibleArea = null;
 				});
 		},
-		onChangeCoordinates(newCoordinates, debounce = true) {
-			this.coordinates = newCoordinates;
+		onChange(debounce = true) {
 			if (this.$listeners && this.$listeners.change) {
 				if (debounce && this.debounce) {
 					this.debouncedUpdate();
@@ -835,15 +866,20 @@ export default {
 				}
 			});
 		},
+		onResizeEnd() {
+			this.autoZoom('resize');
+		},
+		onMoveEnd() {
+			this.autoZoom('move');
+		},
 		onMove(event) {
-			this.onChangeCoordinates(
-				this.moveAlgorithm({
-					...this.getPublicProperties(),
-					positionRestrictions: algorithms.limitBy(this.positionRestrictions, this.visibleArea),
-					coordinates: this.coordinates,
-					event: this.normalizeEvent(event),
-				}),
-			);
+			this.coordinates = this.moveAlgorithm({
+				...this.getPublicProperties(),
+				positionRestrictions: algorithms.limitBy(this.positionRestrictions, this.visibleArea),
+				coordinates: this.coordinates,
+				event: this.normalizeEvent(event),
+			});
+			this.onChange();
 		},
 		onResize(event) {
 			const sizeRestrictions = this.sizeRestrictions;
@@ -852,18 +888,17 @@ export default {
 			// Temporary solution that should be improved in the future
 			const minimumSize = Math.min(this.coordinates.width, this.coordinates.height, 20 * this.coefficient);
 
-			this.onChangeCoordinates(
-				this.resizeAlgorithm({
-					...this.getPublicProperties(),
-					positionRestrictions: algorithms.limitBy(this.positionRestrictions, this.visibleArea),
-					sizeRestrictions: {
-						...sizeRestrictions,
-						minWidth: Math.max(sizeRestrictions.minWidth, minimumSize),
-						minHeight: Math.max(sizeRestrictions.minHeight, minimumSize),
-					},
-					event: this.normalizeEvent(event),
-				}),
-			);
+			this.coordinates = this.resizeAlgorithm({
+				...this.getPublicProperties(),
+				positionRestrictions: algorithms.limitBy(this.positionRestrictions, this.visibleArea),
+				sizeRestrictions: {
+					...sizeRestrictions,
+					minWidth: Math.max(sizeRestrictions.minWidth, minimumSize),
+					minHeight: Math.max(sizeRestrictions.minHeight, minimumSize),
+				},
+				event: this.normalizeEvent(event),
+			});
+			this.onChange();
 		},
 		onManipulateImage(event, normalize = true) {
 			const { visibleArea, coordinates } = algorithms.manipulateImage({
@@ -871,16 +906,18 @@ export default {
 				event: normalize ? this.normalizeEvent(event) : event,
 				getAreaRestrictions: this.getAreaRestrictions,
 				imageRestriction: this.imageRestriction,
-				adjustStencil: this.adjustStencil,
+				adjustStencil: !this.stencilSize,
 				// Deprecated
 				areaRestrictions: this.areaRestrictions,
 			});
 
 			this.visibleArea = visibleArea;
-			this.onChangeCoordinates(coordinates);
+			this.coordinates = coordinates;
+
+			this.onChange();
 		},
 		onPropsChange() {
-			this.applyTransform(this.coordinates, true, true);
+			this.coordinates = this.applyTransform(this.coordinates, true, true);
 		},
 		getAreaRestrictions({ visibleArea, type = 'move' } = {}) {
 			return this.areaRestrictionsAlgorithm({
@@ -891,14 +928,49 @@ export default {
 				type,
 			});
 		},
-		getAspectRatio() {
+		getAspectRatio(ignoreStencil) {
+			let minimum, maximum;
+			const { aspectRatio, minAspectRatio, maxAspectRatio } = this.stencilProps;
+
 			if (this.$refs.stencil.aspectRatios) {
-				return this.$refs.stencil.aspectRatios();
-			} else {
-				return {
-					minimum: this.stencilProps.aspectRatio || this.stencilProps.minAspectRatio,
-					maximum: this.stencilProps.aspectRatio || this.stencilProps.maxAspectRatio,
-				};
+				({ minimum, maximum } = this.$refs.stencil.aspectRatios());
+			}
+
+			if (isUndefined(minimum)) {
+				minimum = !isUndefined(aspectRatio) ? aspectRatio : minAspectRatio;
+			}
+			if (isUndefined(maximum)) {
+				maximum = !isUndefined(aspectRatio) ? aspectRatio : maxAspectRatio;
+			}
+
+			if (!ignoreStencil && (isUndefined(minimum) || isUndefined(maximum))) {
+				const stencilSize = this.getStencilSize();
+				const stencilRatio = stencilSize ? ratio(stencilSize) : null;
+				if (isUndefined(minimum)) {
+					minimum = isNumber(stencilRatio) ? stencilRatio : undefined;
+				}
+				if (isUndefined(maximum)) {
+					maximum = isNumber(stencilRatio) ? stencilRatio : undefined;
+				}
+			}
+			return {
+				minimum,
+				maximum,
+			};
+		},
+		getStencilSize() {
+			if (this.stencilSize) {
+				return algorithms.calculateStencilSize({
+					currentStencilSize: {
+						width: this.stencilCoordinates.width,
+						height: this.stencilCoordinates.height,
+					},
+					stencilSize: this.stencilSize,
+					boundaries: this.boundaries,
+					coefficient: this.coefficient,
+					coordinates: this.coordinates,
+					aspectRatio: this.getAspectRatio(true),
+				});
 			}
 		},
 		getPublicProperties() {
@@ -958,7 +1030,9 @@ export default {
 					:stencil-coordinates="stencilCoordinates"
 					v-bind="stencilProps"
 					@resize="onResize"
+					@resize-end="onResizeEnd"
 					@move="onMove"
+					@move-end="onMoveEnd"
 				/>
 				<canvas ref="canvas" :style="{ display: 'none' }" />
 				<canvas ref="sourceCanvas" :style="{ display: 'none' }" />

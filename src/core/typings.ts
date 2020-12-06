@@ -23,6 +23,8 @@ export interface SizeRestrictions {
 	heightFrozen?: boolean;
 }
 
+export type CropperEvent = 'fitVisibleArea' | 'resetVisibleArea' | 'setCoordinates' | 'resize';
+
 export type VisibleAreaChange = 'move' | 'resize';
 
 export type PositionRestrictions = Limits;
@@ -66,7 +68,7 @@ export interface AspectRatio {
 	maximum?: number;
 }
 
-export interface CropperEvent {
+export interface StencilEvent {
 	type: EventType;
 }
 
@@ -87,7 +89,7 @@ export type MainDirections = 'left' | 'top';
 
 export type EventType = 'resize' | 'move' | 'drag' | 'manipulateImage';
 
-export type ImageRestriction = 'area' | 'borders' |'stencil' | 'none';
+export type ImageRestriction = 'area' | 'borders' | 'stencil' | 'none';
 
 export interface Scale {
 	factor: number;
@@ -113,5 +115,11 @@ export interface WheelResizeSettings {
 export type Transform =
 	| ((coordinates: Coordinates, imageSize: ImageSize) => Partial<Coordinates>)
 	| Partial<Coordinates>;
+
+export interface StencilCalculationParams {
+	boundaries: Boundaries;
+	aspectRatio?: AspectRatio;
+}
+export type StencilSize = Size | ((params: StencilCalculationParams) => Size);
 
 export type Falsy = false | 0 | '' | null | undefined;

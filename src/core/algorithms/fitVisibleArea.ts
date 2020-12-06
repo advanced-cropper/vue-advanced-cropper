@@ -1,4 +1,5 @@
 import {
+	adjustSize,
 	applyMove,
 	applyScale,
 	fit,
@@ -37,27 +38,10 @@ export function fitVisibleArea(params: FitVisibleAreaParams): VisibleArea {
 	}
 
 	// Scale visible area to prevent overlap area restrictions
-	const intersections = getIntersections(visibleArea, getAreaRestrictions({ visibleArea, type: 'resize' }));
-
-	if (intersections.left + intersections.right + intersections.top + intersections.bottom) {
-		if (intersections.left + intersections.right > intersections.top + intersections.bottom) {
-			visibleArea = applyScale(
-				visibleArea,
-				Math.min(
-					(visibleArea.width + intersections.left + intersections.right) / visibleArea.width,
-					maxScale(visibleArea, getAreaRestrictions({ visibleArea, type: 'resize' })),
-				),
-			);
-		} else {
-			visibleArea = applyScale(
-				visibleArea,
-				Math.min(
-					(visibleArea.height + intersections.top + intersections.bottom) / visibleArea.height,
-					maxScale(visibleArea, getAreaRestrictions({ visibleArea, type: 'resize' })),
-				),
-			);
-		}
-	}
+	visibleArea = applyScale(
+		visibleArea,
+		adjustSize(visibleArea, getAreaRestrictions({ visibleArea, type: 'resize' })),
+	);
 
 	// Move visible are to prevent moving of the coordinates:
 	const move = inverseMove(fit(coordinates, toLimits(visibleArea)));

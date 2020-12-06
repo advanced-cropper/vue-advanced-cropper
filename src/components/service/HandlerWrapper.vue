@@ -55,6 +55,7 @@ export default {
 			:class="classes.draggable"
 			:disabled="disabled"
 			@drag="$emit('drag', $event)"
+			@end="$emit('drag-end')"
 			@leave="$emit('leave')"
 			@enter="$emit('enter')"
 		>

@@ -1,6 +1,16 @@
-import { AspectRatio, Boundaries, Falsy, ImageSize, Size, SizeRestrictions, VisibleArea } from '../typings';
+import {
+	AspectRatio,
+	Boundaries,
+	Falsy,
+	ImageSize,
+	Size,
+	SizeRestrictions,
+	StencilSize,
+	VisibleArea,
+} from '../typings';
 import { approximatedSize } from './approximatedSize';
 import { ratio } from '../service';
+import { isNumber } from '../utils';
 
 interface DefaultSizeBasicParams {
 	aspectRatio: AspectRatio;
@@ -20,12 +30,9 @@ interface VisibleAreaDefaultSizeParams extends DefaultSizeBasicParams {
 
 export type DefaultSizeParams = VisibleAreaDefaultSizeParams | ImageDefaultSizeParams;
 
-export function defaultSize({
-	imageSize,
-	visibleArea,
-	aspectRatio,
-	sizeRestrictions,
-}: DefaultSizeParams): Size {
+export function defaultSize(params: DefaultSizeParams): Size {
+	const { imageSize, visibleArea, aspectRatio, sizeRestrictions } = params;
+
 	const area = (visibleArea || imageSize) as Size;
 
 	const optimalRatio = Math.min(aspectRatio.maximum || Infinity, Math.max(aspectRatio.minimum || 0, ratio(area)));

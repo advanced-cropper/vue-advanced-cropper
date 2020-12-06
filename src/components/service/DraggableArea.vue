@@ -106,7 +106,7 @@ export default {
 			}
 		},
 		onMouseUp() {
-			this.touches = [];
+			this.processEnd();
 		},
 		initAnchor(touch) {
 			const container = this.$refs.container;
@@ -134,6 +134,9 @@ export default {
 			}
 		},
 		processEnd() {
+			if (this.touches.length) {
+				this.$emit('move-end');
+			}
 			this.touches = [];
 		},
 	},

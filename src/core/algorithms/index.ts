@@ -19,3 +19,5 @@ export * from './refineVisibleArea';
 export * from './resize';
 export * from './roundCoordinates';
 export * from './fitVisibleArea';
+export * from './adjustStencil';
+export * from './stencil';

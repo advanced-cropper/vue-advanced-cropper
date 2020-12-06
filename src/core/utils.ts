@@ -66,7 +66,7 @@ export function isObject(obj) {
 	return typeof obj === 'object' && obj !== null;
 }
 
-export function getSettings<T extends {}>(param, defaultParams?:T ) {
+export function getSettings<T extends {}>(param, defaultParams?: T) {
 	let result = {
 		enabled: Boolean(param),
 		...defaultParams,
@@ -97,10 +97,33 @@ export function isEmpty(obj) {
 	return (!obj || Object.keys(obj).length === 0) && typeof obj !== 'function';
 }
 
+export function isObjectLike(value) {
+	return typeof value === 'object' && value !== null;
+}
+
+export function isNumber(value) {
+	return (
+		typeof (value == 'number' || (isObjectLike(value) && toString.call(value) == '[object Number]')) &&
+		!isNaN(value)
+	);
+}
+
+export function isNaN(value) {
+	return value !== value;
+}
+
 export function isLoadedImage(image) {
 	return Boolean(image.naturalWidth);
 }
 
 export function distance(firstPoint, secondPoint) {
 	return Math.sqrt(Math.pow(firstPoint.x - secondPoint.x, 2) + Math.pow(firstPoint.y - secondPoint.y, 2));
+}
+
+export function isApproximatelyEqual(a: number, b: number, precision = 0.001) {
+	if (a === 0 || b === 0) {
+		return Math.abs(b - a) < precision;
+	} else {
+		return Math.abs(b / a) < 1 + precision && Math.abs(b / a) > 1 - precision;
+	}
 }
