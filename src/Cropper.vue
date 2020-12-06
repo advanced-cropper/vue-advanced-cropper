@@ -4,7 +4,17 @@ import bem from 'easy-bem';
 import debounce from 'debounce';
 import { RectangleStencil } from './components/stencils';
 import { CropperWrapper } from './components/service';
-import { fillBoundaries, fitBoundaries, isFunction, isLoadedImage, isNumber, limitBy, replacedProp } from './core';
+import {
+	fillBoundaries,
+	fitBoundaries,
+	getOptions,
+	isFunction,
+	isLoadedImage,
+	isNumber,
+	isObject,
+	limitBy,
+	replacedProp,
+} from './core';
 import { updateCanvas } from './core/canvas';
 import { ManipulateImageEvent } from './core/events';
 import { limitSizeRestrictions, limitsToSize, ratio } from './core/service';
@@ -81,50 +91,6 @@ export default {
 		transitionTime: {
 			type: Number,
 			default: 300,
-		},
-		wheelResize: {
-			type: [Boolean, Object],
-			default: true,
-			validator(value) {
-				return replacedProp(
-					value,
-					'wheelResize',
-					'resizeImage (https://norserium.github.io/vue-advanced-cropper/components/cropper.html#resizeimage)',
-				);
-			},
-		},
-		touchResize: {
-			type: [Boolean, Object],
-			default: true,
-			validator(value) {
-				return replacedProp(
-					value,
-					'touchResize',
-					'resizeImage (https://norserium.github.io/vue-advanced-cropper/components/cropper.html#resizeimage)',
-				);
-			},
-		},
-		touchMove: {
-			type: [Boolean, Object],
-			default: true,
-			validator(value) {
-				return replacedProp(
-					value,
-					'touchMove',
-					'moveImage (https://norserium.github.io/vue-advanced-cropper/components/cropper.html#moveimage)',
-				);
-			},
-		},
-		mouseMove: {
-			type: [Boolean, Object],
-			default: true,
-			validator(value) {
-				return replacedProp(
-					value,
-					'mouseMove',
-					'moveImage (https://norserium.github.io/vue-advanced-cropper/components/cropper.html#moveimage)',
-				);
-			},
 		},
 		imageRestriction: {
 			type: String,
@@ -206,6 +172,14 @@ export default {
 		stencilSize: {
 			type: [Object, Function],
 		},
+		resizeImage: {
+			type: [Boolean, Object],
+			default: true,
+		},
+		moveImage: {
+			type: [Boolean, Object],
+			default: true,
+		},
 		// Deprecated props
 		restrictions: {
 			type: Function,
@@ -243,6 +217,42 @@ export default {
 				return replacedProp(value, 'areaClass', 'boundariesClass');
 			},
 		},
+		wheelResize: {
+			validator(value) {
+				return replacedProp(
+					value,
+					'wheelResize',
+					'resizeImage (https://norserium.github.io/vue-advanced-cropper/components/cropper.html#resizeimage)',
+				);
+			},
+		},
+		touchResize: {
+			validator(value) {
+				return replacedProp(
+					value,
+					'touchResize',
+					'resizeImage (https://norserium.github.io/vue-advanced-cropper/components/cropper.html#resizeimage)',
+				);
+			},
+		},
+		touchMove: {
+			validator(value) {
+				return replacedProp(
+					value,
+					'touchMove',
+					'moveImage (https://norserium.github.io/vue-advanced-cropper/components/cropper.html#moveimage)',
+				);
+			},
+		},
+		mouseMove: {
+			validator(value) {
+				return replacedProp(
+					value,
+					'mouseMove',
+					'moveImage (https://norserium.github.io/vue-advanced-cropper/components/cropper.html#moveimage)',
+				);
+			},
+		},
 	},
 	data() {
 		return {
@@ -276,16 +286,55 @@ export default {
 			return Boolean(this.visibleArea && this.imageLoaded);
 		},
 		settings() {
+			// Deprecated
+			const resizeImageSettings = isUndefined(this.resizeImage)
+				? {
+						touch: getSettings(this.touchResize),
+						wheel: getSettings(this.wheelResize, {
+							ratio: 0.1,
+						}),
+				  }
+				: this.resizeImage;
+
+			const resizeImage = getOptions(
+				resizeImageSettings,
+				{
+					touch: true,
+					wheel: {
+						ratio: 0.1,
+					},
+					adjustStencil: false,
+				},
+				{
+					touch: false,
+					wheel: false,
+					adjustStencil: false,
+				},
+			);
+
+			// Deprecated
+			const moveImageSettings = isUndefined(this.moveImage)
+				? {
+						touch: getSettings(this.touchMove),
+						mouse: getSettings(this.mouseMove),
+				  }
+				: this.moveImage;
+
+			const moveImage = getOptions(
+				moveImageSettings,
+				{
+					touch: true,
+					mouse: true,
+				},
+				{
+					touch: false,
+					mouse: false,
+				},
+			);
+
 			return {
-				resize: getSettings(this.resize, {
-					stencil: false,
-				}),
-				touchResize: getSettings(this.touchResize),
-				touchMove: getSettings(this.touchMove),
-				mouseMove: getSettings(this.mouseMove),
-				wheelResize: getSettings(this.wheelResize, {
-					ratio: 0.1,
-				}),
+				moveImage,
+				resizeImage,
 			};
 		},
 		coefficient() {
@@ -523,15 +572,26 @@ export default {
 				false,
 			);
 		},
+		withTransitions(callback) {
+			if (!this.transitions) {
+				return callback();
+			} else {
+				this.enableTransitions();
+				callback();
+				this.debouncedDisableTransitions();
+			}
+		},
 		setCoordinates(transforms, params = {}) {
-			const { autoZoom = true } = params;
+			const { autoZoom = true, transitions = true } = params;
 			this.$nextTick(() => {
 				if (!this.imageLoaded) {
 					this.delayedTransforms = transforms;
 				} else {
 					this.coordinates = this.applyTransform(transforms);
 					if (autoZoom) {
-						this.autoZoom('setCoordinates');
+						this.autoZoom('setCoordinates', {
+							transitions: true,
+						});
 					}
 				}
 			});
@@ -561,7 +621,8 @@ export default {
 				return coordinates;
 			}
 		},
-		autoZoom(event) {
+		autoZoom(event, params = {}) {
+			const { transitions = true } = params;
 			let algorithm = this.autoZoomAlgorithm;
 
 			if (!algorithm) {
@@ -570,10 +631,6 @@ export default {
 				} else {
 					algorithm = algorithms.simplestAutoZoom;
 				}
-			}
-
-			if ((event === 'setCoordinates' || event === 'resize' || event === 'move') && this.transitions) {
-				this.enableTransitions();
 			}
 
 			const { coordinates, visibleArea } = algorithm({
@@ -588,9 +645,16 @@ export default {
 				stencilSize: this.getStencilSize(),
 			});
 
+			if (this.transitions) {
+				this.enableTransitions();
+			}
+
 			this.visibleArea = visibleArea;
 			this.coordinates = coordinates;
-			this.debouncedDisableTransitions();
+
+			if (this.transitions) {
+				this.debouncedDisableTransitions();
+			}
 		},
 		normalizeEvent(event) {
 			return algorithms.normalizeEvent({
@@ -892,10 +956,14 @@ export default {
 			});
 		},
 		onResizeEnd() {
-			this.autoZoom('resize');
+			this.autoZoom('resize', {
+				transitions: true,
+			});
 		},
 		onMoveEnd() {
-			this.autoZoom('move');
+			this.autoZoom('move', {
+				transitions: true,
+			});
 		},
 		onMove(event) {
 			if (!this.transitionsEnabled) {
@@ -1031,10 +1099,10 @@ export default {
 		<div :class="classes.boundaries" :style="boundariesStyle">
 			<cropper-wrapper
 				:class="classes.cropperWrapper"
-				:wheel-resize="settings.wheelResize"
-				:touch-resize="settings.touchResize"
-				:touch-move="settings.touchMove"
-				:mouse-move="settings.mouseMove"
+				:wheel-resize="settings.resizeImage.wheel"
+				:touch-resize="settings.resizeImage.touch"
+				:touch-move="settings.moveImage.touch"
+				:mouse-move="settings.moveImage.mouse"
 				@move="onManipulateImage"
 				@resize="onManipulateImage"
 			>

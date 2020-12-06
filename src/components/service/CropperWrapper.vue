@@ -6,19 +6,19 @@ export default {
 	name: 'CropperWrapper',
 	props: {
 		touchMove: {
-			type: Object,
+			type: Boolean,
 			required: true,
 		},
 		mouseMove: {
-			type: Object,
+			type: Boolean,
 			required: true,
 		},
 		touchResize: {
-			type: Object,
+			type: Boolean,
 			required: true,
 		},
 		wheelResize: {
-			type: Object,
+			type: [Boolean, Object],
 			required: true,
 		},
 	},
@@ -39,7 +39,7 @@ export default {
 	},
 	methods: {
 		onTouchStart(e) {
-			if (e.cancelable && (this.touchMove.enabled || (this.touchResize.enabled && e.touches.length > 1))) {
+			if (e.cancelable && (this.touchMove || (this.touchResize && e.touches.length > 1))) {
 				const container = this.$refs.container;
 				const { left, top, bottom, right } = container.getBoundingClientRect();
 				this.touches = [...e.touches].filter(
@@ -105,7 +105,7 @@ export default {
 		},
 		processMove(event, newTouches) {
 			if (this.touches.length) {
-				if (this.touches.length === 1 && newTouches.length === 1 && this.touchMove.enabled) {
+				if (this.touches.length === 1 && newTouches.length === 1) {
 					this.$emit(
 						'move',
 						new ManipulateImageEvent({
@@ -141,7 +141,7 @@ export default {
 			this.touches = [];
 		},
 		onWheel(event) {
-			if (this.wheelResize.enabled) {
+			if (this.wheelResize) {
 				const container = this.$refs.container;
 				const { left, top } = container.getBoundingClientRect();
 				const factor = 1 + this.wheelResize.ratio * Math.sign(event.deltaY || event.detail || event.wheelDelta);

@@ -66,6 +66,34 @@ export function isObject(obj) {
 	return typeof obj === 'object' && obj !== null;
 }
 
+export function getOptions(options: any, defaultScheme: any, falseScheme: any) {
+	const result: any = {};
+	if (isObject(options)) {
+		Object.keys(defaultScheme).forEach((key) => {
+			if (isUndefined(options[key])) {
+				result[key] = defaultScheme[key];
+			} else if (isObject(defaultScheme[key])) {
+				if (isObject(options[key])) {
+					result[key] = getOptions(options[key], defaultScheme[key], falseScheme[key]);
+				} else {
+					result[key] = options[key] ? defaultScheme[key] : falseScheme[key];
+				}
+			} else if (defaultScheme[key] === true || defaultScheme[key] === false) {
+				result[key] = Boolean(options[key]);
+			} else {
+				result[key] = options[key];
+			}
+		});
+		return result;
+	} else {
+		if (options) {
+			return defaultScheme;
+		} else {
+			return falseScheme;
+		}
+	}
+}
+
 export function getSettings<T extends {}>(param, defaultParams?: T) {
 	let result = {
 		enabled: Boolean(param),
