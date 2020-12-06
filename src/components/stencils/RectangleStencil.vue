@@ -60,6 +60,10 @@ export default {
 			type: Boolean,
 			default: true,
 		},
+		transitions: {
+			type: Boolean,
+			default: true,
+		},
 		previewClass: {
 			type: String,
 		},
@@ -120,12 +124,18 @@ export default {
 		},
 		style() {
 			const { height, width, left, top } = this.stencilCoordinates;
-			return {
+
+			const style = {
 				width: `${width}px`,
 				height: `${height}px`,
 				left: `${left}px`,
 				top: `${top}px`,
 			};
+
+			if (this.transitions) {
+				style.transition = '0.25s';
+			}
+			return style;
 		},
 	},
 	methods: {
@@ -168,7 +178,7 @@ export default {
 			@resize-end="onEndResize"
 		>
 			<DraggableArea :movable="movable" @move="onMove" @move-end="onEndMove">
-				<PreviewResult :img="img" :class="classes.preview" :stencil-coordinates="stencilCoordinates" />
+				<PreviewResult :img="img" :class="classes.preview" :transitions="transitions" :stencil-coordinates="stencilCoordinates" />
 			</DraggableArea>
 		</BoundingBox>
 	</div>

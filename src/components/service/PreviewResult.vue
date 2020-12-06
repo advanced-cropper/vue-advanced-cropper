@@ -3,6 +3,7 @@ import bem from 'easy-bem';
 import classnames from 'classnames';
 import { replacedProp } from '../../core';
 import { getStyleTransforms } from '../../core/image';
+import { getCenter } from '../../core/service';
 
 const cn = bem('vue-preview-result');
 
@@ -11,6 +12,9 @@ export default {
 	props: {
 		img: {
 			type: Object,
+		},
+		transitions: {
+			type: Boolean,
 		},
 		stencilCoordinates: {
 			type: Object,
@@ -39,6 +43,15 @@ export default {
 				return replacedProp(value, 'imageClassname', 'imageClass');
 			},
 		},
+	},
+	data() {
+		return {
+			params: {
+				stencilCoordinates: { ...this.stencilCoordinates },
+				imageTransforms: { ...this.img.transforms },
+				coefficient: this.img.coefficient,
+			},
+		};
 	},
 	computed: {
 		classes() {
@@ -77,6 +90,11 @@ export default {
 				result.left = `${-this.stencilCoordinates.left - imageTransforms.translateX}px`;
 				result.top = `${-this.stencilCoordinates.top - imageTransforms.translateY}px`;
 			}
+
+			if (this.transitions) {
+				result.transition = '0.25s';
+			}
+
 			result.transform = getStyleTransforms(imageTransforms);
 			return result;
 		},
@@ -86,8 +104,8 @@ export default {
 
 <template>
 	<div :class="classes.root">
-		<div ref="wrapper" :class="classes.wrapper" :style="wrapperStyle">
-			<img ref="image" :src="img.src" :class="classes.image" :style="imageStyle" />
+		<div ref="wrapper" :class="classes.wrapper" :style="imageStyle">
+			<img ref="image" :src="img.src" :class="classes.image" />
 		</div>
 	</div>
 </template>
@@ -104,6 +122,10 @@ export default {
 	}
 
 	&__image {
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
 		pointer-events: none;
 		position: absolute;
 		user-select: none;

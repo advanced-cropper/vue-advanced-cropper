@@ -141,12 +141,14 @@ export default {
 			}
 		},
 		processEnd() {
-			this.touches = [];
+			if (this.touches.length) {
+				this.$emit('drag-end');
+			}
 			if (this.hovered) {
-				this.$emit('end');
 				this.$emit('leave');
 				this.hovered = false;
 			}
+			this.touches = [];
 		},
 	},
 };

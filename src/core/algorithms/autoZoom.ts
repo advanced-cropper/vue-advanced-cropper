@@ -115,10 +115,7 @@ export function fixedStencilAutoZoom(params: AutoZoomParams): AutoZoomResult {
 	}
 
 	// First of all try to resize visible area as much as possible:
-	visibleArea = applyScale(
-		visibleArea,
-		(coordinates.width * boundaries.width) / (visibleArea.width * stencil.width)
-	);
+	visibleArea = applyScale(visibleArea, (coordinates.width * boundaries.width) / (visibleArea.width * stencil.width));
 
 	// Check that visible area doesn't break the area restrictions:
 	const scale = adjustSize(visibleArea, getAreaRestrictions({ visibleArea, type: 'resize' }));
@@ -132,6 +129,65 @@ export function fixedStencilAutoZoom(params: AutoZoomParams): AutoZoomResult {
 	// Center stencil in visible area:
 	visibleArea = fitToLimits(visibleArea, getAreaRestrictions({ visibleArea, type: 'move' }));
 	coordinates = fitToLimits(coordinates, intersectionLimits(toLimits(visibleArea), positionRestrictions));
+
+	return {
+		coordinates,
+		visibleArea,
+	};
+}
+
+export function hybridStencilAutoZoom(params: AutoZoomParams): AutoZoomResult {
+	const {
+		event,
+		getAreaRestrictions,
+		boundaries,
+		coordinates: originalCoordinates,
+		visibleArea: originalVisibleArea,
+		aspectRatio,
+		stencilSize,
+		sizeRestrictions,
+		positionRestrictions,
+		stencilReference,
+	} = params;
+
+	let coordinates = { ...originalCoordinates };
+	let visibleArea = { ...originalVisibleArea };
+
+	if (originalCoordinates && originalVisibleArea) {
+		// Checks that coordinates has the same ratio that coordinates:
+		let stencil: Size = {
+			width: 0,
+			height: 0,
+		};
+
+		const coefficient = visibleArea.width / boundaries.width;
+
+		if (ratio(boundaries) > ratio(coordinates)) {
+			stencil.height = Math.max(coordinates.height / coefficient, boundaries.height * 0.8);
+			stencil.width = stencil.height * ratio(coordinates);
+		} else {
+			stencil.width = Math.max(coordinates.width / coefficient, boundaries.width * 0.8);
+			stencil.height = stencil.width * ratio(coordinates);
+		}
+
+		// First of all try to resize visible area as much as possible:
+		visibleArea = applyScale(
+			visibleArea,
+			(coordinates.width * boundaries.width) / (visibleArea.width * stencil.width),
+		);
+
+		// Check that visible area doesn't break the area restrictions:
+		visibleArea = applyScale(
+			visibleArea,
+			adjustSize(visibleArea, getAreaRestrictions({ visibleArea, type: 'resize' })),
+		);
+
+		visibleArea = applyMove(visibleArea, diff(getCenter(coordinates), getCenter(visibleArea)));
+
+		// Center stencil in visible area:
+		visibleArea = fitToLimits(visibleArea, getAreaRestrictions({ visibleArea, type: 'move' }));
+		coordinates = fitToLimits(coordinates, intersectionLimits(toLimits(visibleArea), positionRestrictions));
+	}
 
 	return {
 		coordinates,

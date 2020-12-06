@@ -62,6 +62,10 @@ export default {
 			type: [Boolean, Number],
 			default: 500,
 		},
+		transitions: {
+			type: Boolean,
+			default: true,
+		},
 		canvas: {
 			type: Boolean,
 			default: true,
@@ -261,6 +265,7 @@ export default {
 				height: 0,
 			},
 			visibleArea: null,
+			transitionsEnabled: false,
 			coordinates: {
 				...DEFAULT_COORDINATES,
 			},
@@ -410,6 +415,10 @@ export default {
 				transform: 'translate(-50%, -50%)' + getStyleTransforms(this.imageTransforms),
 			};
 
+			if (this.transitionsEnabled) {
+				result.transition = '0.25s';
+			}
+
 			const { flipped } = this.imageTransforms;
 			if (flipped) {
 				result.width = `${this.imageSize.height / this.coefficient}px`;
@@ -456,6 +465,7 @@ export default {
 	},
 	created() {
 		this.debouncedUpdate = debounce(this.update, this.debounce);
+		this.debouncedDisableTransitions = debounce(this.disableTransitions, 250);
 	},
 	mounted() {
 		this.$refs.image.addEventListener('load', this.onSuccessLoadImage);
@@ -519,9 +529,11 @@ export default {
 				if (!this.imageLoaded) {
 					this.delayedTransforms = transforms;
 				} else {
-					this.coordinates = this.applyTransform(transforms, autoZoom);
+					this.coordinates = this.applyTransform(transforms);
+					if (autoZoom) {
+						this.autoZoom('setCoordinates');
+					}
 				}
-				this.autoZoom('setCoordinates');
 			});
 		},
 		refresh() {
@@ -560,6 +572,10 @@ export default {
 				}
 			}
 
+			if ((event === 'setCoordinates' || event === 'resize' || event === 'move') && this.transitions) {
+				this.enableTransitions();
+			}
+
 			const { coordinates, visibleArea } = algorithm({
 				event,
 				visibleArea: this.visibleArea,
@@ -574,6 +590,7 @@ export default {
 
 			this.visibleArea = visibleArea;
 			this.coordinates = coordinates;
+			this.debouncedDisableTransitions();
 		},
 		normalizeEvent(event) {
 			return algorithms.normalizeEvent({
@@ -703,6 +720,14 @@ export default {
 					height: 0,
 				};
 			}, this.transitionTime);
+		},
+		enableTransitions() {
+			if (this.transitions) {
+				this.transitionsEnabled = true;
+			}
+		},
+		disableTransitions() {
+			this.transitionsEnabled = false;
 		},
 		updateBoundaries() {
 			const stretcher = this.$refs.stretcher;
@@ -873,32 +898,36 @@ export default {
 			this.autoZoom('move');
 		},
 		onMove(event) {
-			this.coordinates = this.moveAlgorithm({
-				...this.getPublicProperties(),
-				positionRestrictions: algorithms.limitBy(this.positionRestrictions, this.visibleArea),
-				coordinates: this.coordinates,
-				event: this.normalizeEvent(event),
-			});
-			this.onChange();
+			if (!this.transitionsEnabled) {
+				this.coordinates = this.moveAlgorithm({
+					...this.getPublicProperties(),
+					positionRestrictions: algorithms.limitBy(this.positionRestrictions, this.visibleArea),
+					coordinates: this.coordinates,
+					event: this.normalizeEvent(event),
+				});
+				this.onChange();
+			}
 		},
 		onResize(event) {
-			const sizeRestrictions = this.sizeRestrictions;
+			if (!this.transitionsEnabled) {
+				const sizeRestrictions = this.sizeRestrictions;
 
-			// The magic number is the approximation of the handler size
-			// Temporary solution that should be improved in the future
-			const minimumSize = Math.min(this.coordinates.width, this.coordinates.height, 20 * this.coefficient);
+				// The magic number is the approximation of the handler size
+				// Temporary solution that should be improved in the future
+				const minimumSize = Math.min(this.coordinates.width, this.coordinates.height, 20 * this.coefficient);
 
-			this.coordinates = this.resizeAlgorithm({
-				...this.getPublicProperties(),
-				positionRestrictions: algorithms.limitBy(this.positionRestrictions, this.visibleArea),
-				sizeRestrictions: {
-					...sizeRestrictions,
-					minWidth: Math.max(sizeRestrictions.minWidth, minimumSize),
-					minHeight: Math.max(sizeRestrictions.minHeight, minimumSize),
-				},
-				event: this.normalizeEvent(event),
-			});
-			this.onChange();
+				this.coordinates = this.resizeAlgorithm({
+					...this.getPublicProperties(),
+					positionRestrictions: algorithms.limitBy(this.positionRestrictions, this.visibleArea),
+					sizeRestrictions: {
+						...sizeRestrictions,
+						minWidth: Math.max(sizeRestrictions.minWidth, minimumSize),
+						minHeight: Math.max(sizeRestrictions.minHeight, minimumSize),
+					},
+					event: this.normalizeEvent(event),
+				});
+				this.onChange();
+			}
 		},
 		onManipulateImage(event, normalize = true) {
 			const { visibleArea, coordinates } = algorithms.manipulateImage({
@@ -913,6 +942,8 @@ export default {
 
 			this.visibleArea = visibleArea;
 			this.coordinates = coordinates;
+
+			this.autoZoom('manipulateImage');
 
 			this.onChange();
 		},
@@ -1026,6 +1057,7 @@ export default {
 						transforms: imageTransforms,
 						coefficient: coefficient,
 					}"
+					:transitions="transitionsEnabled ? transitions : null"
 					:result-coordinates="coordinates"
 					:stencil-coordinates="stencilCoordinates"
 					v-bind="stencilProps"
