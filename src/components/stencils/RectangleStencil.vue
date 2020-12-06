@@ -19,6 +19,9 @@ export default {
 		img: {
 			type: Object,
 		},
+		resultCoordinates: {
+			type: Object,
+		},
 		stencilCoordinates: {
 			type: Object,
 		},
