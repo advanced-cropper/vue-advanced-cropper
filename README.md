@@ -71,34 +71,34 @@ new Vue({
 
 ## Cropper
 
-| Prop                      | Type               | Description                                                     			 | Default
-| ------------------------- | ------------------ | ------------------------------------------------------------------------- | ---------------
-| src                       | `String`           | The cropping image (link / base64)                              			 |
-| stencilComponent          | `String`, `Object` | The stencil component                                           			 | `RectangleStencil`
-| stencilProps              | `Object`           | The props for the stencil component                             			 | `{}`
-| class                     | `String`           | The optional class for the root cropper block                   			 |
-| imageClass                | `String`           | The optional class for the cropping image                       			 |
-| boundariesClass           | `String`           | The optional class for the area.                                			 |
-| backgroundClass           | `String`           | The optional class for the background under the image           			 |
-| autoZoom                  | `Boolean`          | Enable / disabled transitions                                    		 | `false`
-| transitions               | `Boolean`          | Enable / disabled auto zoom                                    			 | `false`
-| stencilSize               | `Object `          | The size of the stencil in pixels                                         | 
-| debounce                  | `String`, `Number` | The time before change event will be emitted after changes (ms) 			 | `500`
-| canvas                    | `Boolean`          | The flag that indicates if canvas should be used                			 | `true`
-| minWidth                  | `String`, `Number` | The minimum width of the stencil (percents)                     			 | 
-| minHeight                 | `String`, `Number` | The minimum height of the stencil (percents)                    			 | 
-| maxWidth                  | `String`, `Number` | The maximum width of the stencil (percents)                     			 | 
-| maxHeight                 | `String`, `Number` | The maximum height of the stencil (percents)                    			 | 
-| checkOrientation          | `Boolean`          | Check if EXIF orientation should be checked                     			 | `true`
-| resizeImage               | `Boolean`, `Object`| The options for the image resizing ([details](https://norserium.github.io/vue-advanced-cropper/components/cropper.html#resize-image)) | `true`
-| moveImage                 | `Boolean`, `Object`| The options for the image moving ([details](https://norserium.github.io/vue-advanced-cropper/components/cropper.html#move-image)) | `true`
-| imageRestriction          | `String`           | Set restrictions for image position ('borders' 'area', 'stencil', 'none') | `'area'`
-| defaultSize               | `Function`         | The function that returns the default size of the stencil         		 | `core.defaultSize`
-| defaultPosition           | `Function`         | The function that returns the default position of the stencil     		 | `core.defaultPosition`
-| defaultBoundaries         | `Function`         | The function that determines the boundaries size                  		 | `core.defaultBoundaries`
-| sizeRestrictionsAlgorithm | `Function`         | The function that returns the restrictions object                 		 | `core.percentRestrictions`
-| resizeAlgorithm           | `Function`         | The function that determines the resize algorithm                 		 | `core.resize`
-| moveAlgorithm             | `Function`         | The function that determines the move algorithm                   		 | `core.move`
+| Prop                      | Type                 | Description                                                     			      | Default
+| ------------------------- | ------------------   | ---------------------------------------------------------------------------      | ---------------
+| src                       | `String`             | The cropping image (link / base64)                              			      |
+| stencilComponent          | `String`, `Object`   | The stencil component                                           			      | `RectangleStencil`
+| stencilProps              | `Object`             | The props for the stencil component                             			      | `{}`
+| class                     | `String`             | The optional class for the root cropper block                   			      |
+| imageClass                | `String`             | The optional class for the cropping image                       			      |
+| boundariesClass           | `String`             | The optional class for the area.                                			      |
+| backgroundClass           | `String`             | The optional class for the background under the image           			      |
+| autoZoom                  | `Boolean`            | Enable / disable transitions                                     		          | `false`
+| transitions               | `Boolean`            | Enable / disable auto zoom                                     			      | `false`
+| stencilSize               | `Object `            | The size of the stencil in pixels                                                | 
+| debounce                  | `String`, `Number`   | The time before change event will be emitted after changes (ms) 			      | `500`
+| canvas                    | `Boolean`            | The flag that indicates if canvas should be used                			      | `true`
+| minWidth                  | `String`, `Number`   | The minimum width of the stencil (percents)                     			      | 
+| minHeight                 | `String`, `Number`   | The minimum height of the stencil (percents)                    			      | 
+| maxWidth                  | `String`, `Number`   | The maximum width of the stencil (percents)                     			      | 
+| maxHeight                 | `String`, `Number`   | The maximum height of the stencil (percents)                    			      | 
+| checkOrientation          | `Boolean`            | Check if EXIF orientation should be checked                     			      | `true`
+| resizeImage               | `Boolean`, `Object`  | The options for the image resizing ([details](https://norserium.github.io/vue-advanced-cropper/components/cropper.html#resizeimage)) | `true`
+| moveImage                 | `Boolean`, `Object`  | The options for the image moving ([details](https://norserium.github.io/vue-advanced-cropper/components/cropper.html#moveimage)) | `true`
+| imageRestriction          | `String`             | Set restrictions for image position ('fill-area' 'fit-area', 'stencil', 'none')  | `'fill-area'`
+| defaultSize               | `Object`, `Function` | The function that returns the default size of the stencil or object              | `core.defaultSize`
+| defaultPosition           | `Object`, `Function` | The function that returns the default position of the stencil or object          | `core.defaultPosition`
+| defaultBoundaries         | `String`, `Function` | The function that determines the boundaries size or string (`'fill'`, `'fit'`)   | `'fit'`
+| sizeRestrictionsAlgorithm | `Function`           | The function that returns the restrictions object                 		          | `core.percentRestrictions`
+| resizeAlgorithm           | `Function`           | The function that determines the resize algorithm                 		          | `core.resize`
+| moveAlgorithm             | `Function`           | The function that determines the move algorithm                   		          | `core.move`
  
 | Event                     | Description
 | ------------------------  | --------------------------------------------------------------
