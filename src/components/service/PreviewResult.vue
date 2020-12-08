@@ -88,6 +88,10 @@ export default {
 				result.top = `${-this.stencilCoordinates.top - imageTransforms.translateY}px`;
 			}
 
+			if (this.transitions) {
+				result.transition = '0.25s';
+			}
+
 			result.transform =
 				getStyleTransforms(imageTransforms) + ` translate(-${this.shift.width}px, -${this.shift.height}px)`;
 
