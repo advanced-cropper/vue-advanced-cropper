@@ -23,7 +23,12 @@ export interface SizeRestrictions {
 	heightFrozen?: boolean;
 }
 
-export type CropperEvent = 'fitVisibleArea' | 'resetVisibleArea' | 'setCoordinates' | 'resize';
+export type CropperEventType = 'fitVisibleArea' | 'resetVisibleArea' | 'setCoordinates' | 'resize' | 'manipulateImage';
+
+export interface CropperEvent {
+	type: CropperEventType;
+	params: any;
+}
 
 export type VisibleAreaChange = 'move' | 'resize';
 
@@ -89,7 +94,7 @@ export type MainDirections = 'left' | 'top';
 
 export type EventType = 'resize' | 'move' | 'drag' | 'manipulateImage';
 
-export type ImageRestriction = 'fill-area' | 'fit-area' | 'stencil' | 'none';
+export type ImageRestriction = 'area' | 'fill-area' | 'fit-area' | 'stencil' | 'none';
 
 export interface Scale {
 	factor: number;

@@ -46,10 +46,9 @@ export default {
 	},
 	data() {
 		return {
-			params: {
-				stencilCoordinates: { ...this.stencilCoordinates },
-				imageTransforms: { ...this.img.transforms },
-				coefficient: this.img.coefficient,
+			shift: {
+				width: 0,
+				height: 0,
 			},
 		};
 	},
@@ -65,8 +64,6 @@ export default {
 			return {
 				width: `${this.stencilCoordinates.width}px`,
 				height: `${this.stencilCoordinates.height}px`,
-				left: `calc(50% - ${this.stencilCoordinates.width / 2}px)`,
-				top: `calc(50% - ${this.stencilCoordinates.height / 2}px)`,
 			};
 		},
 		imageStyle() {
@@ -96,15 +93,24 @@ export default {
 			}
 
 			result.transform = getStyleTransforms(imageTransforms);
+
+			result.transform += ` translate(-${this.shift.width}px, -${this.shift.height}px)`;
 			return result;
 		},
+	},
+	updated() {
+		const { wrapper } = this.$refs;
+		if (wrapper && !this.transitions) {
+			this.shift.width = (this.stencilCoordinates.width - wrapper.clientWidth) / 2;
+			this.shift.height = (this.stencilCoordinates.height - wrapper.clientHeight) / 2;
+		}
 	},
 };
 </script>
 
 <template>
-	<div :class="classes.root">
-		<div ref="wrapper" :class="classes.wrapper" :style="imageStyle">
+	<div ref="wrapper" :class="classes.root">
+		<div ref="imageWrapper" :class="classes.wrapper" :style="imageStyle">
 			<img ref="image" :src="img.src" :class="classes.image" />
 		</div>
 	</div>

@@ -108,6 +108,16 @@ export default {
 					:stencil-props="{
 						aspectRatio: 1,
 					}"
+					:min-width="200"
+					:min-height="300"
+					:size-restrictions-algorithm="({ minWidth, minHeight, maxWidth, maxHeight, imageWidth, imageHeight }) => {
+			return {
+				minWidth: minWidth,
+				minHeight: minHeight,
+				maxWidth: maxWidth,
+				maxHeight: maxHeight,
+			};
+		}"
 					default-boundaries="fill"
 				/>
 			</bounding-box>

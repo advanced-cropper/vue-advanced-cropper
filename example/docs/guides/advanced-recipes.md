@@ -74,7 +74,8 @@ export default {
 ## Different image restrictions
 
 You are able to set different the restrictions of an image position by passing the following string to the `imageRestriction` prop:
-- `area` (default) prevents resizing and moving the image beyond the area
+- `fill-area` fill area by image and prevents resizing and moving the image beyond the area
+- `fit-area` fit image to area and prevents resizing and moving the image beyond the area as much as possible ([example](/introduction/news.html#new-image-restriction-type-borders))
 - `stencil` prevents resizing and moving the image beyond the stencil
 - `none` allows free resizing and moving the image
 

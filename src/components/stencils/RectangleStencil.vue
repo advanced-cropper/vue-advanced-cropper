@@ -142,13 +142,13 @@ export default {
 		onMove(moveEvent) {
 			this.$emit('move', moveEvent);
 		},
-		onEndMove() {
+		onMoveEnd() {
 			this.$emit('move-end');
 		},
 		onResize(resizeEvent) {
 			this.$emit('resize', resizeEvent);
 		},
-		onEndResize() {
+		onResizeEnd() {
 			this.$emit('resize-end');
 		},
 		aspectRatios() {
@@ -175,9 +175,9 @@ export default {
 			:lines-classes="linesClasses"
 			:scalable="scalable"
 			@resize="onResize"
-			@resize-end="onEndResize"
+			@resize-end="onResizeEnd"
 		>
-			<DraggableArea :movable="movable" @move="onMove" @move-end="onEndMove">
+			<DraggableArea :movable="movable" @move="onMove" @move-end="onMoveEnd">
 				<PreviewResult :img="img" :class="classes.preview" :transitions="transitions" :stencil-coordinates="stencilCoordinates" />
 			</DraggableArea>
 		</BoundingBox>

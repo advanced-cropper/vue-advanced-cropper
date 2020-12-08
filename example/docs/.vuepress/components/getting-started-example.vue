@@ -25,8 +25,6 @@ export default {
 	<example-wrapper>
 		<cropper
 			class="cropper"
-			default-boundaries="fill"
-			image-restriction="borders"
 			:src="img"
 			:stencil-props="{
 				aspectRatio: 10 / 12,

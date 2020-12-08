@@ -80,6 +80,9 @@ new Vue({
 | imageClass                | `String`           | The optional class for the cropping image                       			 |
 | boundariesClass           | `String`           | The optional class for the area.                                			 |
 | backgroundClass           | `String`           | The optional class for the background under the image           			 |
+| autoZoom                  | `Boolean`          | Enable / disabled transitions                                    		 | `false`
+| transitions               | `Boolean`          | Enable / disabled auto zoom                                    			 | `false`
+| stencilSize               | `Object `          | The size of the stencil in pixels                                         | 
 | debounce                  | `String`, `Number` | The time before change event will be emitted after changes (ms) 			 | `500`
 | canvas                    | `Boolean`          | The flag that indicates if canvas should be used                			 | `true`
 | minWidth                  | `String`, `Number` | The minimum width of the stencil (percents)                     			 | 
@@ -87,11 +90,8 @@ new Vue({
 | maxWidth                  | `String`, `Number` | The maximum width of the stencil (percents)                     			 | 
 | maxHeight                 | `String`, `Number` | The maximum height of the stencil (percents)                    			 | 
 | checkOrientation          | `Boolean`          | Check if EXIF orientation should be checked                     			 | `true`
-| touchMove                 | `Boolean`          | Check if image should be dragged by a touch                     			 | `true`
-| touchResize               | `Boolean`          | Check if image should be resized by a pinch gesture             			 | `true`
-| mouseMove                 | `Boolean`          | Check if image should be dragged by a mouse                     			 | `true`
-| wheelResize               | `Boolean`          | Check if image should be resized by a mouse wheel               			 | `true`
-| adjustStencil             | `Boolean`          | Check if stencil size can be changed on image resize            			 | `false`
+| resizeImage               | `Boolean`, `Object`| The options for the image resizing ([details](https://norserium.github.io/vue-advanced-cropper/components/cropper.html#resize-image)) | `true`
+| moveImage                 | `Boolean`, `Object`| The options for the image moving ([details](https://norserium.github.io/vue-advanced-cropper/components/cropper.html#move-image)) | `true`
 | imageRestriction          | `String`           | Set restrictions for image position ('borders' 'area', 'stencil', 'none') | `'area'`
 | defaultSize               | `Function`         | The function that returns the default size of the stencil         		 | `core.defaultSize`
 | defaultPosition           | `Function`         | The function that returns the default position of the stencil     		 | `core.defaultPosition`

@@ -18,7 +18,7 @@ module.exports = {
 			{
 				title: 'Introduction',
 				collapsable: false,
-				children: ['/introduction/news', '/introduction/getting-started', '/introduction/concepts'],
+				children: ['/introduction/getting-started', '/introduction/types', '/introduction/concepts'],
 			},
 			{
 				title: 'Guides',

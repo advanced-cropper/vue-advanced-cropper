@@ -26,7 +26,6 @@ import {
 import { isApproximatelyEqual } from '../utils';
 import { approximatedSize } from './approximatedSize';
 import { ALL_DIRECTIONS } from '../constants';
-import apply = Reflect.apply;
 
 interface AutoZoomResult {
 	visibleArea: VisibleArea;
@@ -153,7 +152,7 @@ export function hybridStencilAutoZoom(params: AutoZoomParams): AutoZoomResult {
 	let coordinates = { ...originalCoordinates };
 	let visibleArea = { ...originalVisibleArea };
 
-	if (originalCoordinates && originalVisibleArea) {
+	if (originalCoordinates && originalVisibleArea && event.type !== 'manipulateImage') {
 		// Checks that coordinates has the same ratio that coordinates:
 		let stencil: Size = {
 			width: 0,
@@ -163,10 +162,10 @@ export function hybridStencilAutoZoom(params: AutoZoomParams): AutoZoomResult {
 		const coefficient = visibleArea.width / boundaries.width;
 
 		if (ratio(boundaries) > ratio(coordinates)) {
-			stencil.height = Math.max(coordinates.height / coefficient, boundaries.height * 0.8);
+			stencil.height = boundaries.height * 0.8;
 			stencil.width = stencil.height * ratio(coordinates);
 		} else {
-			stencil.width = Math.max(coordinates.width / coefficient, boundaries.width * 0.8);
+			stencil.width = boundaries.width * 0.8;
 			stencil.height = stencil.width * ratio(coordinates);
 		}
 
@@ -177,10 +176,13 @@ export function hybridStencilAutoZoom(params: AutoZoomParams): AutoZoomResult {
 		);
 
 		// Check that visible area doesn't break the area restrictions:
-		visibleArea = applyScale(
-			visibleArea,
-			adjustSize(visibleArea, getAreaRestrictions({ visibleArea, type: 'resize' })),
-		);
+		const scale = adjustSize(visibleArea, getAreaRestrictions({ visibleArea, type: 'resize' }));
+		visibleArea = applyScale(visibleArea, scale);
+
+		if (scale !== 1) {
+			stencil.height /= scale;
+			stencil.width /= scale;
+		}
 
 		visibleArea = applyMove(visibleArea, diff(getCenter(coordinates), getCenter(visibleArea)));
 
@@ -209,7 +211,7 @@ export function simplestAutoZoom(params: SimplestAutoZoomParams): AutoZoomResult
 	let visibleArea = { ...originalVisibleArea };
 	const coordinates = { ...originalCoordinates };
 
-	if (event === 'setCoordinates') {
+	if (event.type === 'setCoordinates') {
 		const widthIntersections = Math.max(0, coordinates.width - visibleArea.width);
 		const heightIntersections = Math.max(0, coordinates.height - visibleArea.height);
 

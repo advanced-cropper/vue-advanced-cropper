@@ -47,6 +47,10 @@ export default {
 				return {};
 			},
 		},
+		autoZoom: {
+			type: Boolean,
+			default: false,
+		},
 		imageClass: {
 			type: String,
 		},
@@ -74,7 +78,7 @@ export default {
 		},
 		transitions: {
 			type: Boolean,
-			default: true,
+			default: false,
 		},
 		canvas: {
 			type: Boolean,
@@ -486,7 +490,7 @@ export default {
 		stencilComponent() {
 			this.$nextTick(() => {
 				this.resetCoordinates();
-				this.autoZoom('setCoordinates');
+				this.runAutoZoom('setCoordinates');
 				this.onChange();
 			});
 		},
@@ -582,14 +586,14 @@ export default {
 			}
 		},
 		setCoordinates(transforms, params = {}) {
-			const { autoZoom = true, transitions = true } = params;
+			const { runAutoZoom = true, transitions = true } = params;
 			this.$nextTick(() => {
 				if (!this.imageLoaded) {
 					this.delayedTransforms = transforms;
 				} else {
 					this.coordinates = this.applyTransform(transforms);
-					if (autoZoom) {
-						this.autoZoom('setCoordinates', {
+					if (runAutoZoom) {
+						this.runAutoZoom('setCoordinates', {
 							transitions: true,
 						});
 					}
@@ -621,20 +625,25 @@ export default {
 				return coordinates;
 			}
 		},
-		autoZoom(event, params = {}) {
-			const { transitions = false } = params;
+		runAutoZoom(event, params = {}) {
+			const { transitions = false, ...payload } = params;
 			let algorithm = this.autoZoomAlgorithm;
 
 			if (!algorithm) {
 				if (this.stencilSize) {
 					algorithm = algorithms.fixedStencilAutoZoom;
+				} else if (this.autoZoom) {
+					algorithm = algorithms.hybridStencilAutoZoom;
 				} else {
 					algorithm = algorithms.simplestAutoZoom;
 				}
 			}
 
 			const { coordinates, visibleArea } = algorithm({
-				event,
+				event: {
+					type: event,
+					params: payload,
+				},
 				visibleArea: this.visibleArea,
 				coordinates: this.coordinates,
 				boundaries: this.boundaries,
@@ -678,7 +687,7 @@ export default {
 		update() {
 			this.$emit('change', this.getResult());
 		},
-		applyTransform(transform, autoZoom = false, limited = false) {
+		applyTransform(transform, limited = false) {
 			const sizeRestrictions =
 				this.visibleArea && limited
 					? limitSizeRestrictions(this.sizeRestrictions, this.visibleArea)
@@ -766,7 +775,7 @@ export default {
 						...(Array.isArray(this.delayedTransforms) ? this.delayedTransforms : [this.delayedTransforms]),
 					);
 				}
-				this.coordinates = this.applyTransform(transforms, false, true);
+				this.coordinates = this.applyTransform(transforms, true);
 				this.delayedTransforms = null;
 			}
 		},
@@ -858,7 +867,7 @@ export default {
 							sizeRestrictions: this.sizeRestrictions,
 						});
 					}
-					this.autoZoom('resetVisibleArea');
+					this.runAutoZoom('resetVisibleArea');
 				})
 				.catch(() => {
 					this.visibleArea = null;
@@ -883,7 +892,7 @@ export default {
 						positionRestrictions: this.positionRestrictions,
 						sizeRestrictions: this.sizeRestrictions,
 					});
-					this.autoZoom('updateVisibleArea');
+					this.runAutoZoom('updateVisibleArea');
 				})
 				.catch(() => {
 					this.visibleArea = null;
@@ -934,6 +943,7 @@ export default {
 				this.imageLoaded = true;
 				this.reset().then(() => {
 					this.$emit('ready');
+					this.onChange(false);
 				});
 			}
 		},
@@ -956,12 +966,12 @@ export default {
 			});
 		},
 		onResizeEnd() {
-			this.autoZoom('resize', {
+			this.runAutoZoom('resize', {
 				transitions: true,
 			});
 		},
 		onMoveEnd() {
-			this.autoZoom('move', {
+			this.runAutoZoom('move', {
 				transitions: true,
 			});
 		},
@@ -977,7 +987,7 @@ export default {
 			}
 		},
 		onResize(event) {
-			if (!this.transitionsEnabled) {
+			if (!this.transitionsEnabled && (!this.stencilSize || this.autoZoom)) {
 				const sizeRestrictions = this.sizeRestrictions;
 
 				// The magic number is the approximation of the handler size
@@ -988,7 +998,8 @@ export default {
 					...this.getPublicProperties(),
 					positionRestrictions: algorithms.limitBy(this.positionRestrictions, this.visibleArea),
 					sizeRestrictions: {
-						...sizeRestrictions,
+						maxWidth: Math.min(sizeRestrictions.maxWidth, this.visibleArea.width),
+						maxHeight: Math.min(sizeRestrictions.maxHeight, this.visibleArea.height),
 						minWidth: Math.max(sizeRestrictions.minWidth, minimumSize),
 						minHeight: Math.max(sizeRestrictions.minHeight, minimumSize),
 					},
@@ -1003,7 +1014,7 @@ export default {
 				event: normalize ? this.normalizeEvent(event) : event,
 				getAreaRestrictions: this.getAreaRestrictions,
 				imageRestriction: this.imageRestriction,
-				adjustStencil: !this.stencilSize,
+				adjustStencil: !this.stencilSize && this.settings.resizeImage.adjustStencil,
 				// Deprecated
 				areaRestrictions: this.areaRestrictions,
 			});
@@ -1011,12 +1022,12 @@ export default {
 			this.visibleArea = visibleArea;
 			this.coordinates = coordinates;
 
-			this.autoZoom('manipulateImage');
+			this.runAutoZoom('manipulateImage');
 
 			this.onChange();
 		},
 		onPropsChange() {
-			this.coordinates = this.applyTransform(this.coordinates, true, true);
+			this.coordinates = this.applyTransform(this.coordinates, true);
 		},
 		getAreaRestrictions({ visibleArea, type = 'move' } = {}) {
 			return this.areaRestrictionsAlgorithm({

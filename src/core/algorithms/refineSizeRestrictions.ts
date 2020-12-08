@@ -38,14 +38,14 @@ export function refineSizeRestrictions({
 	// The situation when stencil larger than maximum visible area or image should be avoided if imageRestriction != 'none':
 	if (imageRestriction !== 'none') {
 		const areaMaximum = fitSize(boundaries, imageSize);
-		const maxWidth = imageRestriction === 'fill-area' ? areaMaximum.width : imageSize.width;
-		const maxHeight = imageRestriction === 'fill-area' ? areaMaximum.height : imageSize.height;
+		const maxWidth = (imageRestriction === 'fill-area' || imageRestriction === 'area') ? areaMaximum.width : imageSize.width;
+		const maxHeight =( imageRestriction === 'fill-area' || imageRestriction === 'area') ? areaMaximum.height : imageSize.height;
 
 		if (!restrictions.maxWidth || restrictions.maxWidth > maxWidth) {
-			restrictions.maxWidth = maxWidth;
+			restrictions.maxWidth = Math.min(restrictions.maxWidth, maxWidth);
 		}
 		if (!restrictions.maxHeight || restrictions.maxHeight > maxHeight) {
-			restrictions.maxHeight = maxHeight;
+			restrictions.maxHeight = Math.min(restrictions.maxHeight, maxHeight);
 		}
 	}
 

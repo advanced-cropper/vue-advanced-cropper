@@ -44,7 +44,8 @@ export default {
 				<div class="input">
 					<span class="input__label">Image Restriction Type</span>
 					<select v-model="restrictionType" class="input__control" type="text">
-						<option value="area">area</option>
+						<option value="fill-area">fill-area</option>
+						<option value="fit-area">fit-area</option>
 						<option value="stencil">stencil</option>
 						<option value="none">none</option>
 					</select>

@@ -111,6 +111,10 @@ Default: `500`
 
 The time before `change` event will be emitted after moving or resizing stencil.
 
+### `stencilSize`
+
+The size of the stencil in pixels       
+
 ### `canvas`
 Default: `true`
 
@@ -193,6 +197,26 @@ Default: `100`
 
 The maximum height of the stencil in percents
 
+### `transitions`
+
+::: warning Notice!
+Be careful when use this props, it's the experimental feature.
+:::
+
+Default: `false`
+
+This flag indicates if transitions should be enabled.
+
+### `autoZoom`
+
+::: warning Notice!
+Be careful when use this props, it's the experimental feature.
+:::
+
+Default: `false`
+
+This flag indicates if auto zoom should be enabled.
+
 ### `priority`
 Default: `'coordinates'`
 
@@ -243,7 +267,14 @@ The static function should accept the only argument, the object with the followi
 It should return an object with `height` and `width` fields, i.e. default size of the stencil (relative to original image size)
 
 ### `defaultBoundaries`
-Default: `core.defaultBoundaries`
+Default: `'fit'"`
+
+It's either an string or static function.
+
+There are available two string values:
+
+- `'fit'`, boundaries should have image aspect ratio and should be fitted to the cropper
+- `'fill'`, boundaries should fill the cropper (recommended)
 
 The static function that accepts the only argument, the object with following fields:
 - `cropper` (DOM Element)

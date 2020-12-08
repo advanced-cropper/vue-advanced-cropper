@@ -43,7 +43,7 @@ export default {
 
 <template>
 	<div class="theme-example" :class="{ [theme]: true }">
-		<cropper :src="image" :stencil-component="stencil" />
+		<cropper :src="image" :stencil-component="stencil"/>
 		<div class="buttons">
 			<div class="button" title="Set Rectangle Stencil" @click="setRectangleStencil()">
 				<img :src="require('../assets/icons/rectangle-stencil.svg')" />
@@ -236,7 +236,7 @@ export default {
 
 	.vue-circle-stencil {
 		&__preview {
-			border: dashed 1px rgba(white, 0.3);
+			border: dashed 2px rgba(white, 0.3);
 		}
 	}
 

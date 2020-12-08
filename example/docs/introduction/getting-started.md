@@ -55,7 +55,7 @@ export default {
 	@change="change"
 />
 ```
-``` css
+```css
 /*
 	Maybe you need to set the limits for the cropper sizes or its container sizes
 	otherwise a cropping image will try to fill all available space
@@ -67,6 +67,35 @@ export default {
 ```
 
 <getting-started-example/>
+
+## Recommended Example
+
+The default cropper settings are outdated now. They will be changed in the next major release, but you already
+can improve user experience by setting some settings in the template of component above:
+
+```html
+<cropper
+	class="cropper"
+	:src="img"
+	:stencil-props="{
+		aspectRatio: 10/12
+	}"
+	@change="change"
+
+	image-restriction="fit-area"
+	default-boundaries="fill"
+	:resize-image="{
+		adjustStencil: true
+	}"
+	:auto-zoom="true"
+    :transitions="true"
+/>
+```
+
+<getting-started-example-improved/>
+
+It's the example of **hybrid static cropper**. If you want to find out the other cropper types
+please read [this detailed article](/introduction/types.html).
 
 ## Using CDN
 

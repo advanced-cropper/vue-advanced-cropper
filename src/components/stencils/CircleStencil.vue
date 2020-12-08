@@ -56,6 +56,10 @@ export default {
 			type: Boolean,
 			default: true,
 		},
+		transitions: {
+			type: Boolean,
+			default: true,
+		},
 		previewClass: {
 			type: String,
 		},
@@ -116,20 +120,32 @@ export default {
 		},
 		style() {
 			const { height, width, left, top } = this.stencilCoordinates;
-			return {
+
+			const style = {
 				width: `${width}px`,
 				height: `${height}px`,
 				left: `${left}px`,
 				top: `${top}px`,
 			};
+
+			if (this.transitions) {
+				style.transition = '0.25s';
+			}
+			return style;
 		},
 	},
 	methods: {
 		onMove(moveEvent) {
 			this.$emit('move', moveEvent);
 		},
+		onMoveEnd() {
+			this.$emit('move-end');
+		},
 		onResize(resizeEvent) {
 			this.$emit('resize', resizeEvent);
+		},
+		onResizeEnd() {
+			this.$emit('resize-end');
 		},
 		aspectRatios() {
 			return {
@@ -155,9 +171,10 @@ export default {
 			:lines-classnames="linesClassnames"
 			:scalable="scalable"
 			@resize="onResize"
+			@resize-end="onResizeEnd"
 		>
-			<DraggableArea :movable="movable" @move="onMove">
-				<PreviewResult :img="img" :class="classes.preview" :stencil-coordinates="stencilCoordinates" />
+			<DraggableArea :movable="movable" @move="onMove" @move-end="onMoveEnd">
+				<PreviewResult :img="img" :transitions="transitions"  :class="classes.preview" :stencil-coordinates="stencilCoordinates" />
 			</DraggableArea>
 		</BoundingBox>
 	</div>
