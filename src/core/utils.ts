@@ -155,3 +155,11 @@ export function isApproximatelyEqual(a: number, b: number, precision = 0.001) {
 		return Math.abs(b / a) < 1 + precision && Math.abs(b / a) > 1 - precision;
 	}
 }
+
+export function sign(value) {
+	const number = +value;
+	if (number === 0 || isNaN(number)) {
+		return number;
+	}
+	return number > 0 ? 1 : -1;
+}

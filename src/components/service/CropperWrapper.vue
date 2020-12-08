@@ -1,6 +1,7 @@
 <script>
 import { ManipulateImageEvent } from '../../core/events.ts';
 import { calculateGeometricProperties } from '../../core/touch';
+import { sign } from '../../core/utils';
 
 export default {
 	name: 'CropperWrapper',
@@ -144,7 +145,7 @@ export default {
 			if (this.wheelResize) {
 				const container = this.$refs.container;
 				const { left, top } = container.getBoundingClientRect();
-				const factor = 1 + this.wheelResize.ratio * Math.sign(event.deltaY || event.detail || event.wheelDelta);
+				const factor = 1 + this.wheelResize.ratio * sign(event.deltaY || event.detail || event.wheelDelta);
 				const center = {
 					left: event.clientX - left,
 					top: event.clientY - top,
