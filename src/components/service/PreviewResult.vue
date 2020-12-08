@@ -14,7 +14,7 @@ export default {
 			type: Object,
 		},
 		transitions: {
-			type: Boolean,
+			type: Object,
 		},
 		stencilCoordinates: {
 			type: Object,
@@ -88,8 +88,8 @@ export default {
 				result.top = `${-this.stencilCoordinates.top - imageTransforms.translateY}px`;
 			}
 
-			if (this.transitions) {
-				result.transition = '0.25s';
+			if (this.transitions && this.transitions.enabled) {
+				result.transition = `${this.transitions.time}ms`;
 			}
 
 			result.transform =
@@ -100,7 +100,7 @@ export default {
 	},
 	updated() {
 		const { wrapper } = this.$refs;
-		if (wrapper && !this.transitions) {
+		if (wrapper && (!this.transitions || !this.transitions.enabled)) {
 			this.shift.width = (this.stencilCoordinates.width - wrapper.clientWidth) / 2;
 			this.shift.height = (this.stencilCoordinates.height - wrapper.clientHeight) / 2;
 		}

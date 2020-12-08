@@ -87,15 +87,13 @@ can improve user experience by setting some settings in the template of componen
 	:resize-image="{
 		adjustStencil: true
 	}"
-	:auto-zoom="true"
-    :transitions="true"
 />
 ```
 
 <getting-started-example-improved/>
 
-It's the example of **hybrid static cropper**. If you want to find out the other cropper types
-please read [this detailed article](/introduction/types.html).
+If you need to change the behavior of cropper (for example, you want to create a fixed one for mobile devices),
+please read [this detailed article](/introduction/types.html) about different types of croppers.
 
 ## Using CDN
 

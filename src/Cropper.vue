@@ -278,8 +278,8 @@ export default {
 				width: 0,
 				height: 0,
 			},
+			transitionsActive: false,
 			visibleArea: null,
-			transitionsEnabled: false,
 			coordinates: {
 				...DEFAULT_COORDINATES,
 			},
@@ -355,6 +355,12 @@ export default {
 			} else {
 				return {};
 			}
+		},
+		transitionsOptions() {
+			return {
+				enabled: this.transitionsActive,
+				time: 250,
+			};
 		},
 		sizeRestrictions() {
 			if (this.boundaries.width && this.boundaries.height) {
@@ -468,8 +474,8 @@ export default {
 				transform: 'translate(-50%, -50%)' + getStyleTransforms(this.imageTransforms),
 			};
 
-			if (this.transitionsEnabled) {
-				result.transition = '0.25s';
+			if (this.transitionsOptions.enabled) {
+				result.transition = `${this.transitionsOptions.time}ms`;
 			}
 
 			const { flipped } = this.imageTransforms;
@@ -575,15 +581,6 @@ export default {
 				}),
 				false,
 			);
-		},
-		withTransitions(callback) {
-			if (!this.transitions) {
-				return callback();
-			} else {
-				this.enableTransitions();
-				callback();
-				this.debouncedDisableTransitions();
-			}
 		},
 		setCoordinates(transforms, params = {}) {
 			const { runAutoZoom = true, transitions = true } = params;
@@ -796,11 +793,11 @@ export default {
 		},
 		enableTransitions() {
 			if (this.transitions) {
-				this.transitionsEnabled = true;
+				this.transitionsActive = true;
 			}
 		},
 		disableTransitions() {
-			this.transitionsEnabled = false;
+			this.transitionsActive = false;
 		},
 		updateBoundaries() {
 			const stretcher = this.$refs.stretcher;
@@ -976,7 +973,7 @@ export default {
 			});
 		},
 		onMove(event) {
-			if (!this.transitionsEnabled) {
+			if (!this.transitionsOptions.enabled) {
 				this.coordinates = this.moveAlgorithm({
 					...this.getPublicProperties(),
 					positionRestrictions: algorithms.limitBy(this.positionRestrictions, this.visibleArea),
@@ -987,7 +984,7 @@ export default {
 			}
 		},
 		onResize(event) {
-			if (!this.transitionsEnabled && (!this.stencilSize || this.autoZoom)) {
+			if (!this.transitionsOptions.enabled && (!this.stencilSize || this.autoZoom)) {
 				const sizeRestrictions = this.sizeRestrictions;
 
 				// The magic number is the approximation of the handler size
@@ -1136,7 +1133,7 @@ export default {
 						transforms: imageTransforms,
 						coefficient: coefficient,
 					}"
-					:transitions="transitionsEnabled ? transitions : null"
+					:transitions="transitionsOptions"
 					:result-coordinates="coordinates"
 					:stencil-coordinates="stencilCoordinates"
 					v-bind="stencilProps"

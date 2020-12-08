@@ -61,8 +61,7 @@ export default {
 			default: true,
 		},
 		transitions: {
-			type: Boolean,
-			default: true,
+			type: Object,
 		},
 		previewClass: {
 			type: String,
@@ -132,8 +131,8 @@ export default {
 				top: `${top}px`,
 			};
 
-			if (this.transitions) {
-				style.transition = '0.25s';
+			if (this.transitions && this.transitions.enabled) {
+				style.transition = `${this.transitions.time}ms`;
 			}
 			return style;
 		},
@@ -178,7 +177,12 @@ export default {
 			@resize-end="onResizeEnd"
 		>
 			<DraggableArea :movable="movable" @move="onMove" @move-end="onMoveEnd">
-				<PreviewResult :img="img" :class="classes.preview" :transitions="transitions" :stencil-coordinates="stencilCoordinates" />
+				<PreviewResult
+					:img="img"
+					:class="classes.preview"
+					:transitions="transitions"
+					:stencil-coordinates="stencilCoordinates"
+				/>
 			</DraggableArea>
 		</BoundingBox>
 	</div>
