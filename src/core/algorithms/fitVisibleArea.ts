@@ -33,7 +33,7 @@ export function fitVisibleArea(params: FitVisibleAreaParams): VisibleArea {
 	if (coordinates.height - visibleArea.height > 0 || coordinates.width - visibleArea.width > 0) {
 		visibleArea = applyScale(
 			visibleArea,
-			Math.max(coordinates.height / visibleArea.height, coordinates.width / visibleArea.height),
+			Math.max(coordinates.height / visibleArea.height, coordinates.width / visibleArea.width),
 		);
 	}
 
