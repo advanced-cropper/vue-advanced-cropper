@@ -109,17 +109,21 @@ export function manipulateImage(params: ManipulateImageParams): ManipulateImageR
 		visibleArea,
 		fit(visibleArea, {
 			left:
-				positionRestrictions.left !== undefined &&
-				positionRestrictions.left - relativeCoordinates.left * stencilScale,
+				positionRestrictions.left !== undefined
+					? positionRestrictions.left - relativeCoordinates.left * stencilScale
+					: undefined,
 			top:
-				positionRestrictions.top !== undefined &&
-				positionRestrictions.top - relativeCoordinates.top * stencilScale,
+				positionRestrictions.top !== undefined
+					? positionRestrictions.top - relativeCoordinates.top * stencilScale
+					: undefined,
 			bottom:
-				positionRestrictions.bottom !== undefined &&
-				positionRestrictions.bottom + relativeCoordinates.bottom * stencilScale,
+				positionRestrictions.bottom !== undefined
+					? positionRestrictions.bottom + relativeCoordinates.bottom * stencilScale
+					: undefined,
 			right:
-				positionRestrictions.right !== undefined &&
-				positionRestrictions.right + relativeCoordinates.right * stencilScale,
+				positionRestrictions.right !== undefined
+					? positionRestrictions.right + relativeCoordinates.right * stencilScale
+					: undefined,
 		}),
 	);
 
