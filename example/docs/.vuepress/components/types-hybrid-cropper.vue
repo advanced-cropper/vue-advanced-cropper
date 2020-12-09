@@ -42,6 +42,9 @@
 			},
 			smallHeight: {
 				type: Boolean
+			},
+			priority: {
+				type: String
 			}
 		},
 	};
@@ -52,6 +55,7 @@
 		<cropper
 			:src="src"
 			class="types-hybrid-cropper"
+			:priority="priority"
 			:class="{'types-hybrid-cropper--small-height': smallHeight}"
 			:default-boundaries="defaultBoundaries"
 			:resize-image="resizeImage"
@@ -72,7 +76,7 @@
 		max-height: 500px;
 		background: black;
 		&--small-height {
-			max-height: 400px;
+			max-height: 350px;
 		}
 	}
 </style>

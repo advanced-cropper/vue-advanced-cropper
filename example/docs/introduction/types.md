@@ -264,7 +264,7 @@ automatically resized and moved. It makes it more closer to static cropper, beca
 Note, that `transitions` prop is added. It is needed to make auto zoom smoother, but it's the part of experimental API, so use it careful.
 
 <types-hybrid-cropper 
-	src="https://images.unsplash.com/photo-1583853287541-6e82b3d5ea12?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80"
+	src="https://images.unsplash.com/photo-1586598901893-8ac605430b78?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80"
 	default-boundaries="fill"
 	image-restriction="fit-area"
 	:resize-image="{
@@ -293,13 +293,15 @@ the size and position of cropper.
 ```
 
 <types-hybrid-cropper 
-	src="https://images.unsplash.com/photo-1588805309715-0a5f66e9e8aa?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=667&q=80"
+	src="https://images.unsplash.com/photo-1583853287541-6e82b3d5ea12?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=2048&q=80"
+	priority="visibleArea"
 	:auto-zoom="true"
 	:transitions="true"
 	:stencil-size="{
 		width: 280,
 		height: 280
 	}"
+	:small-height="true"
 	image-restriction="stencil"
 	default-boundaries="fill"
 ></types-hybrid-cropper>

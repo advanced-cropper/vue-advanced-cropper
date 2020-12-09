@@ -842,6 +842,7 @@ export default {
 								boundaries: this.boundaries,
 								coordinates: this.priority !== 'visibleArea' ? this.coordinates : null,
 								getAreaRestrictions: this.getAreaRestrictions,
+								stencilSize: this.getStencilSize(),
 								// Deprecated
 								areaRestrictions: this.areaRestrictions,
 						  })

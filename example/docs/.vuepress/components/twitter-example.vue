@@ -17,17 +17,10 @@ export default {
 	},
 	methods: {
 		defaultSize({ imageSize }) {
-			if (imageSize.width < imageSize.height) {
-				return {
-					width: imageSize.width,
-					height: imageSize.width,
-				};
-			} else {
-				return {
-					width: imageSize.height,
-					height: imageSize.height,
-				};
-			}
+			return {
+				width: Math.min(imageSize.height, imageSize.width),
+				height: Math.min(imageSize.height, imageSize.width),
+			};
 		},
 		pixelsRestriction({ minWidth, minHeight, maxWidth, maxHeight }) {
 			return {
@@ -38,17 +31,10 @@ export default {
 			};
 		},
 		stencilSize({ boundaries }) {
-			if (boundaries.width < boundaries.height) {
-				return {
-					width: boundaries.width - 48,
-					height: boundaries.width - 48,
-				}
-			} else {
-				return {
-					width: boundaries.height - 48,
-					height: boundaries.height - 48,
-				}
-			}
+			return {
+				width: Math.min(boundaries.height, boundaries.width) - 48,
+				height: Math.min(boundaries.height, boundaries.width) - 48,
+			};
 		},
 		onChange(result) {
 			const cropper = this.$refs.cropper;
