@@ -1,4 +1,5 @@
 <script>
+import debounce from 'debounce';
 import bem from 'easy-bem';
 import classnames from 'classnames';
 import { radians, replacedProp } from '../../core';
@@ -30,6 +31,10 @@ export default {
 		imageClass: {
 			type: String,
 		},
+		refreshDebounce: {
+			type: Number,
+			default: 500,
+		},
 		// Deprecated props
 		classname: {
 			type: String,
@@ -46,9 +51,10 @@ export default {
 	},
 	data() {
 		return {
+			loaded: false,
 			shift: {
-				width: 0,
-				height: 0,
+				left: 0,
+				top: 0,
 			},
 		};
 	},
@@ -56,8 +62,9 @@ export default {
 		classes() {
 			return {
 				root: classnames(cn(), this.classname),
-				image: classnames(cn('image'), this.imageClass || this.imageClassname),
 				wrapper: cn('wrapper'),
+				imageWrapper: cn('image-wrapper'),
+				image: classnames(cn('image'), this.imageClass || this.imageClassname),
 			};
 		},
 		wrapperStyle() {
@@ -73,17 +80,26 @@ export default {
 
 			const virtualSize = rotateSize(imageSize, imageTransforms.rotate);
 
-			const shift = {
+			const borderShift = this.shift;
+
+			const imageShift = {
 				left:
-					-this.stencilCoordinates.left - imageTransforms.translateX + virtualSize.width / (2 * coefficient),
-				top: -this.stencilCoordinates.top - imageTransforms.translateY + virtualSize.height / (2 * coefficient),
+					-this.stencilCoordinates.left -
+					imageTransforms.translateX +
+					virtualSize.width / (2 * coefficient) -
+					borderShift.left,
+				top:
+					-this.stencilCoordinates.top -
+					imageTransforms.translateY +
+					virtualSize.height / (2 * coefficient) -
+					borderShift.top,
 			};
 
 			const result = {
 				width: `${imageSize.width / coefficient}px`,
 				height: `${imageSize.height / coefficient}px`,
-				left: `${shift.left}px`,
-				top: `${shift.top}px`,
+				left: `${imageShift.left}px`,
+				top: `${imageShift.top}px`,
 			};
 
 			result.transform = ` translate(-50%, -50%)` + getStyleTransforms(imageTransforms);
@@ -95,20 +111,40 @@ export default {
 			return result;
 		},
 	},
+	created() {
+		this.debouncedRefresh = debounce(this.refresh, this.refreshDebounce);
+		this.$watch('img.coefficient', this.refresh);
+	},
 	updated() {
-		const { wrapper } = this.$refs;
-		if (wrapper && (!this.transitions || !this.transitions.enabled)) {
-			this.shift.width = (this.stencilCoordinates.width - wrapper.clientWidth) / 2;
-			this.shift.height = (this.stencilCoordinates.height - wrapper.clientHeight) / 2;
-		}
+		this.debouncedRefresh();
+	},
+	mounted() {
+		this.refresh();
+	},
+	methods: {
+		refresh() {
+			const { wrapper } = this.$refs;
+			if (wrapper) {
+				if (!this.transitions || !this.transitions.enabled) {
+					const { width, height } = wrapper.getBoundingClientRect();
+					this.shift = {
+						left: (this.stencilCoordinates.width - width) / 2,
+						top: (this.stencilCoordinates.height - height) / 2,
+					};
+				}
+				this.loaded = Boolean(this.img.coefficient);
+			}
+		},
 	},
 };
 </script>
 
 <template>
-	<div ref="wrapper" :class="classes.root">
-		<div ref="imageWrapper" :class="classes.wrapper" :style="imageWrapperStyle">
-			<img ref="image" :src="img.src" :class="classes.image" />
+	<div :class="classes.root">
+		<div ref="wrapper" :class="classes.wrapper">
+			<div v-if="loaded" ref="imageWrapper" :class="classes.imageWrapper" :style="imageWrapperStyle">
+				<img ref="image" :src="img.src" :class="classes.image" />
+			</div>
 		</div>
 	</div>
 </template>
@@ -121,6 +157,11 @@ export default {
 	height: 100%;
 	width: 100%;
 	&__wrapper {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+	}
+	&__image-wrapper {
 		position: absolute;
 	}
 

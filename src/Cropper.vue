@@ -1262,7 +1262,6 @@ export default {
 					ref="stencil"
 					:transitions="transitionsOptions"
 					:stencil-coordinates="stencilCoordinates"
-					:coefficient="coefficient"
 					:img="{
 						src: imageAttributes.src,
 						size: {
