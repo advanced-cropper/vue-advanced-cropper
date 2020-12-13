@@ -79,7 +79,7 @@ export default {
 		},
 		transitions: {
 			type: Boolean,
-			default: false,
+			default: true,
 		},
 		canvas: {
 			type: Boolean,
