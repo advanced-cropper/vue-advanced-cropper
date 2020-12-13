@@ -94,7 +94,8 @@
 	"lint-staged": {
 		"*.{js,vue,ts}": [
 			"prettier --write",
-			"eslint"
+			"eslint",
+			"git add"
 		]
 	},
 	"husky": {
