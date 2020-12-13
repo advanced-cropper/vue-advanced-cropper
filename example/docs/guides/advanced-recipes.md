@@ -223,7 +223,7 @@ export default {
 />
 ```
 
-## Rotate / reflect image
+## Rotate / flip image
 
 To rotate image use `rotate` method, it accepts the only argument: `angle` (in degrees).
 
