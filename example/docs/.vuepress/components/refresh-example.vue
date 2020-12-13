@@ -110,16 +110,6 @@ export default {
 					}"
 					:min-width="200"
 					:min-height="300"
-					:size-restrictions-algorithm="
-						({ minWidth, minHeight, maxWidth, maxHeight, imageWidth, imageHeight }) => {
-							return {
-								minWidth: minWidth,
-								minHeight: minHeight,
-								maxWidth: maxWidth,
-								maxHeight: maxHeight,
-							};
-						}
-					"
 					image-restriction="fill-area"
 				/>
 			</bounding-box>

@@ -151,7 +151,7 @@ export default {
 		},
 		sizeRestrictionsAlgorithm: {
 			type: Function,
-			default: algorithms.percentRestrictions,
+			default: algorithms.pixelsRestrictions,
 		},
 		positionRestrictionsAlgorithm: {
 			type: Function,
