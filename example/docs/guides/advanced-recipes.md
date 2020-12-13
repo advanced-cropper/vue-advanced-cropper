@@ -223,6 +223,49 @@ export default {
 />
 ```
 
+## Rotate / reflect image
+
+To rotate image use `rotate` method, it accepts the only argument: `angle` (in degrees).
+
+::: warning Available Angles
+It's strongly recommended to use an angle multiple of 90. Otherwise, the different restrictions may be broken.
+:::
+
+To flip an image use `flip` method, it accepts two boolean arguments. If first is equal to `true`
+then image will be flipped horizontally, if the second is equal to `true` then image will be flipped vertically and etc.
+
+<rotate-image-example></rotate-image-example>
+
+The minimal working example:
+
+```html
+<script>
+import { Cropper } from 'vue-advanced-cropper';
+
+export default {
+	components: {
+		Cropper,
+	},
+	methods: {
+		flip(x,y) {
+			this.$refs.cropper.flip(x,y);
+		},
+		rotate(angle) {
+			this.$refs.cropper.rotate(angle);
+		},
+	},
+};
+</script>
+```
+
+```html
+<cropper
+	ref="cropper"
+	:src="image"
+/>
+```
+
+
 ### Methods
 
 #### `move(left, top)`

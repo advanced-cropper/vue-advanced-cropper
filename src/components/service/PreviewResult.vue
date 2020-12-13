@@ -1,9 +1,9 @@
 <script>
 import bem from 'easy-bem';
 import classnames from 'classnames';
-import { replacedProp } from '../../core';
+import { radians, replacedProp } from '../../core';
 import { getStyleTransforms } from '../../core/image';
-import { getCenter } from '../../core/service';
+import { getCenter, rotateSize } from '../../core/service';
 
 const cn = bem('vue-preview-result');
 
@@ -66,34 +66,31 @@ export default {
 				height: `${this.stencilCoordinates.height}px`,
 			};
 		},
-		imageStyle() {
+		imageWrapperStyle() {
 			const imageTransforms = this.img.transforms;
-			const flipped = imageTransforms.flipped;
 			const coefficient = this.img.coefficient;
-			const height = this.img.size.height / coefficient;
-			const width = this.img.size.width / coefficient;
+			const imageSize = this.img.size;
 
-			const result = {
-				width: `${width}px`,
-				height: `${height}px`,
+			const virtualSize = rotateSize(imageSize, imageTransforms.rotate);
+
+			const shift = {
+				left:
+					-this.stencilCoordinates.left - imageTransforms.translateX + virtualSize.width / (2 * coefficient),
+				top: -this.stencilCoordinates.top - imageTransforms.translateY + virtualSize.height / (2 * coefficient),
 			};
 
-			if (flipped) {
-				result.width = `${height}px`;
-				result.height = `${width}px`;
-				result.left = `${-this.stencilCoordinates.left - imageTransforms.translateX - (height - width) / 2}px`;
-				result.top = `${-this.stencilCoordinates.top - imageTransforms.translateY - (width - height) / 2}px`;
-			} else {
-				result.left = `${-this.stencilCoordinates.left - imageTransforms.translateX}px`;
-				result.top = `${-this.stencilCoordinates.top - imageTransforms.translateY}px`;
-			}
+			const result = {
+				width: `${imageSize.width / coefficient}px`,
+				height: `${imageSize.height / coefficient}px`,
+				left: `${shift.left}px`,
+				top: `${shift.top}px`,
+			};
+
+			result.transform = ` translate(-50%, -50%)` + getStyleTransforms(imageTransforms);
 
 			if (this.transitions && this.transitions.enabled) {
-				result.transition = `${this.transitions.time}ms`;
+				result.transition = `${this.transitions.time}ms ${this.transitions.timingFunction}`;
 			}
-
-			result.transform =
-				getStyleTransforms(imageTransforms) + ` translate(-${this.shift.width}px, -${this.shift.height}px)`;
 
 			return result;
 		},
@@ -110,7 +107,7 @@ export default {
 
 <template>
 	<div ref="wrapper" :class="classes.root">
-		<div ref="imageWrapper" :class="classes.wrapper" :style="imageStyle">
+		<div ref="imageWrapper" :class="classes.wrapper" :style="imageWrapperStyle">
 			<img ref="image" :src="img.src" :class="classes.image" />
 		</div>
 	</div>

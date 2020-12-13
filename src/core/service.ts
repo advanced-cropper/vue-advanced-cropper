@@ -191,8 +191,24 @@ export function fitSize(firstSize: Size, secondSize: Size): Size {
 	}
 }
 
+export function rotateSize(size: Size, angle: number) {
+	const radians = (angle * Math.PI) / 180;
+	return {
+		width: Math.abs(size.width * Math.cos(radians)) + Math.abs(size.height * Math.sin(radians)),
+		height: Math.abs(size.width * Math.sin(radians)) + Math.abs(size.height * Math.cos(radians)),
+	};
+}
+
+export function rotatePoint(point: Point, angle: number) {
+	const radians = (angle * Math.PI) / 180;
+	return {
+		left: point.left * Math.cos(radians) - point.top * Math.sin(radians),
+		top: point.left * Math.sin(radians) + point.top * Math.cos(radians),
+	};
+}
+
 export function adjustSize(coordinates: Coordinates, area: Limits) {
-	const intersections = getIntersections(coordinates, area);
+	const intersections = getIntersections(fitToLimits(coordinates, area), area);
 
 	if (intersections.left + intersections.right + intersections.top + intersections.bottom) {
 		if (intersections.left + intersections.right > intersections.top + intersections.bottom) {

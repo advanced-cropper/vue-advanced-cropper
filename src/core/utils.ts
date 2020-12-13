@@ -163,3 +163,7 @@ export function sign(value) {
 	}
 	return number > 0 ? 1 : -1;
 }
+
+export function radians(angle: number) {
+	return (angle * Math.PI) / 180;
+}

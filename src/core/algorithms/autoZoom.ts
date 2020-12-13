@@ -45,32 +45,6 @@ interface AutoZoomParams {
 	getAreaRestrictions: GetAreaRestrictions;
 }
 
-export function autoZoom(params: AutoZoomParams): AutoZoomResult {
-	const {
-		event,
-		coordinates,
-		visibleArea,
-		boundaries,
-		aspectRatio,
-		stencilReference,
-		stencilSize,
-		sizeRestrictions,
-		positionRestrictions,
-		getAreaRestrictions,
-	} = params;
-
-	if (stencilSize) {
-		return fixedStencilAutoZoom(params);
-	} else {
-		return simplestAutoZoom({
-			event,
-			coordinates,
-			visibleArea,
-			getAreaRestrictions,
-		});
-	}
-}
-
 export function fixedStencilAutoZoom(params: AutoZoomParams): AutoZoomResult {
 	const {
 		event,

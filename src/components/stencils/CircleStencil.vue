@@ -128,7 +128,7 @@ export default {
 			};
 
 			if (this.transitions && this.transitions.enabled) {
-				style.transition = `${this.transitions.time}ms`;
+				style.transition = `${this.transitions.time}ms ${this.transitions.timingFunction}`;
 			}
 			return style;
 		},

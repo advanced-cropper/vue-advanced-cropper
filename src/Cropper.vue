@@ -13,6 +13,7 @@ import {
 	isNumber,
 	isObject,
 	limitBy,
+	radians,
 	replacedProp,
 } from './core';
 import { updateCanvas } from './core/canvas';
@@ -262,17 +263,24 @@ export default {
 		return {
 			imageLoaded: false,
 			imageAttributes: {
+				width: null,
+				height: null,
 				crossOrigin: false,
 				src: null,
 			},
-			basicImageTransforms: {
-				rotate: null,
-				scaleX: null,
-				scaleY: null,
+			customImageTransforms: {
+				rotate: 0,
+				flip: {
+					horizontal: false,
+					vertical: false,
+				},
 			},
-			imageSize: {
-				width: 0,
-				height: 0,
+			basicImageTransforms: {
+				rotate: 0,
+				flip: {
+					horizontal: false,
+					vertical: false,
+				},
 			},
 			boundaries: {
 				width: 0,
@@ -286,6 +294,33 @@ export default {
 		};
 	},
 	computed: {
+		imageTransforms() {
+			return {
+				rotate: this.basicImageTransforms.rotate + this.customImageTransforms.rotate,
+				flip: {
+					horizontal: Boolean(
+						this.basicImageTransforms.flip.horizontal ^ this.customImageTransforms.flip.horizontal,
+					),
+					vertical: Boolean(
+						this.basicImageTransforms.flip.vertical ^ this.customImageTransforms.flip.vertical,
+					),
+				},
+				translateX: this.visibleArea ? this.visibleArea.left / this.coefficient : 0,
+				translateY: this.visibleArea ? this.visibleArea.top / this.coefficient : 0,
+			};
+		},
+		imageSize() {
+			const transforms = this.imageTransforms;
+			const angle = radians(transforms.rotate);
+			return {
+				width:
+					Math.abs(this.imageAttributes.width * Math.cos(angle)) +
+					Math.abs(this.imageAttributes.height * Math.sin(angle)),
+				height:
+					Math.abs(this.imageAttributes.width * Math.sin(angle)) +
+					Math.abs(this.imageAttributes.height * Math.cos(angle)),
+			};
+		},
 		initialized() {
 			return Boolean(this.visibleArea && this.imageLoaded);
 		},
@@ -359,7 +394,8 @@ export default {
 		transitionsOptions() {
 			return {
 				enabled: this.transitionsActive,
-				time: 250,
+				timingFunction: 'ease-in-out',
+				time: 350,
 			};
 		},
 		sizeRestrictions() {
@@ -428,15 +464,6 @@ export default {
 				cropperWrapper: classnames(cn('cropper-wrapper')),
 			};
 		},
-		imageTransforms() {
-			return {
-				...this.basicImageTransforms,
-				scaleX: this.basicImageTransforms.scaleX || 1,
-				scaleY: this.basicImageTransforms.scaleY || 1,
-				translateX: this.visibleArea ? this.visibleArea.left / this.coefficient : 0,
-				translateY: this.visibleArea ? this.visibleArea.top / this.coefficient : 0,
-			};
-		},
 		stencilCoordinates() {
 			if (this.initialized) {
 				const { width, height, left, top } = this.coordinates;
@@ -471,21 +498,15 @@ export default {
 			const result = {
 				left: `${this.imageSize.width / (2 * this.coefficient) - this.imageTransforms.translateX}px`,
 				top: `${this.imageSize.height / (2 * this.coefficient) - this.imageTransforms.translateY}px`,
-				transform: 'translate(-50%, -50%)' + getStyleTransforms(this.imageTransforms),
+				transform: `translate(-50%, -50%)` + getStyleTransforms(this.imageTransforms),
 			};
 
 			if (this.transitionsOptions.enabled) {
-				result.transition = `${this.transitionsOptions.time}ms`;
+				result.transition = `${this.transitionsOptions.time}ms ${this.transitionsOptions.timingFunction}`;
 			}
 
-			const { flipped } = this.imageTransforms;
-			if (flipped) {
-				result.width = `${this.imageSize.height / this.coefficient}px`;
-				result.height = `${this.imageSize.width / this.coefficient}px`;
-			} else {
-				result.width = `${this.imageSize.width / this.coefficient}px`;
-				result.height = `${this.imageSize.height / this.coefficient}px`;
-			}
+			result.width = `${this.imageAttributes.width / this.coefficient}px`;
+			result.height = `${this.imageAttributes.height / this.coefficient}px`;
 			return result;
 		},
 	},
@@ -524,7 +545,7 @@ export default {
 	},
 	created() {
 		this.debouncedUpdate = debounce(this.update, this.debounce);
-		this.debouncedDisableTransitions = debounce(this.disableTransitions, 250);
+		this.debouncedDisableTransitions = debounce(this.disableTransitions, this.transitionsOptions.time);
 	},
 	mounted() {
 		this.$refs.image.addEventListener('load', this.onSuccessLoadImage);
@@ -545,18 +566,26 @@ export default {
 			const coordinates = this.initialized
 				? this.prepareResult({ ...this.coordinates })
 				: this.defaultCoordinates();
+			const imageTransforms = {
+				rotate: this.imageTransforms.rotate % 360,
+				flip: {
+					...this.imageTransforms.flip,
+				},
+			};
 			if ((canvas || this.canvas) && this.src && this.imageLoaded) {
 				this.updateCanvas();
 				return {
 					coordinates,
 					visibleArea: this.visibleArea ? { ...this.visibleArea } : null,
 					canvas: this.$refs.canvas,
+					imageTransforms,
 				};
 			} else {
 				return {
 					coordinates,
 					visibleArea: this.visibleArea ? { ...this.visibleArea } : null,
 					canvas: undefined,
+					imageTransforms,
 				};
 			}
 		},
@@ -583,15 +612,15 @@ export default {
 			);
 		},
 		setCoordinates(transforms, params = {}) {
-			const { runAutoZoom = true, transitions = true } = params;
+			const { autoZoom = true, transitions = true } = params;
 			this.$nextTick(() => {
 				if (!this.imageLoaded) {
 					this.delayedTransforms = transforms;
 				} else {
 					this.coordinates = this.applyTransform(transforms);
-					if (runAutoZoom) {
+					if (autoZoom) {
 						this.runAutoZoom('setCoordinates', {
-							transitions: true,
+							transitions,
 						});
 					}
 				}
@@ -622,8 +651,7 @@ export default {
 				return coordinates;
 			}
 		},
-		runAutoZoom(event, params = {}) {
-			const { transitions = false, ...payload } = params;
+		processAutoZoom(type, visibleArea, coordinates, params) {
 			let algorithm = this.autoZoomAlgorithm;
 
 			if (!algorithm) {
@@ -636,13 +664,13 @@ export default {
 				}
 			}
 
-			const { coordinates, visibleArea } = algorithm({
+			return algorithm({
 				event: {
-					type: event,
-					params: payload,
+					type,
+					params,
 				},
-				visibleArea: this.visibleArea,
-				coordinates: this.coordinates,
+				visibleArea,
+				coordinates,
 				boundaries: this.boundaries,
 				aspectRatio: this.getAspectRatio(),
 				positionRestrictions: this.positionRestrictions,
@@ -650,15 +678,25 @@ export default {
 				sizeRestrictions: this.sizeRestrictions,
 				stencilSize: this.getStencilSize(),
 			});
+		},
+		runAutoZoom(event, params = {}) {
+			const { transitions = false, ...payload } = params;
 
-			if (this.transitions && transitions) {
+			if (transitions) {
 				this.enableTransitions();
 			}
+
+			const { visibleArea, coordinates } = this.processAutoZoom(
+				event,
+				this.visibleArea,
+				this.coordinates,
+				payload,
+			);
 
 			this.visibleArea = visibleArea;
 			this.coordinates = coordinates;
 
-			if (this.transitions && transitions) {
+			if (transitions) {
 				this.debouncedDisableTransitions();
 			}
 		},
@@ -674,7 +712,11 @@ export default {
 			if (this.$refs.canvas) {
 				const canvas = this.$refs.canvas;
 				const image = this.$refs.image;
-				const source = this.checkOrientation
+				const imageTransformed =
+					this.imageTransforms.rotate !== 0 ||
+					this.imageTransforms.flip.horizontal ||
+					this.imageTransforms.flip.vertical;
+				const source = imageTransformed
 					? prepareSource(this.$refs.sourceCanvas, image, this.imageTransforms)
 					: image;
 
@@ -931,13 +973,8 @@ export default {
 			// Therefore there is a workaround to prevent processing the following code
 			const image = this.$refs.image;
 			if (image && !this.imageLoaded) {
-				if (this.imageTransforms.flipped) {
-					this.imageSize.height = image.naturalWidth;
-					this.imageSize.width = image.naturalHeight;
-				} else {
-					this.imageSize.height = image.naturalHeight;
-					this.imageSize.width = image.naturalWidth;
-				}
+				this.imageAttributes.height = image.naturalHeight;
+				this.imageAttributes.width = image.naturalWidth;
 				this.imageLoaded = true;
 				this.reset().then(() => {
 					this.$emit('ready');
@@ -951,7 +988,17 @@ export default {
 			} else {
 				this.imageAttributes.src = source;
 			}
-			this.basicImageTransforms = getImageTransforms(orientation);
+			this.customImageTransforms = {
+				rotate: 0,
+				flip: {
+					horizontal: false,
+					vertical: false,
+				},
+			};
+			this.basicImageTransforms = {
+				...this.customImageTransforms,
+				...getImageTransforms(orientation),
+			};
 			this.$nextTick(() => {
 				const image = this.$refs.image;
 				if (image && image.complete) {
@@ -1096,6 +1143,83 @@ export default {
 		defaultCoordinates() {
 			return { ...DEFAULT_COORDINATES };
 		},
+		flip(horizontal, vertical, options = {}) {
+			const { transitions = true } = options;
+			if (!this.transitionsActive) {
+				if (transitions) {
+					this.enableTransitions();
+				}
+
+				const previousFlip = {
+					...this.imageTransforms.flip,
+				};
+
+				let { visibleArea, coordinates } = algorithms.flipImage({
+					flip: {
+						horizontal: horizontal ? !previousFlip.horizontal : previousFlip.horizontal,
+						vertical: vertical ? !previousFlip.vertical : previousFlip.vertical,
+					},
+					previousFlip,
+					rotate: this.imageTransforms.rotate,
+					visibleArea: this.visibleArea,
+					coordinates: this.coordinates,
+					imageSize: this.imageSize,
+					positionRestrictions: this.positionRestrictions,
+					sizeRestrictions: this.sizeRestrictions,
+					getAreaRestrictions: this.getAreaRestrictions,
+					aspectRatio: this.getAspectRatio(),
+				});
+
+				if (horizontal) {
+					this.customImageTransforms.flip.horizontal = !this.customImageTransforms.flip.horizontal;
+				}
+				if (vertical) {
+					this.customImageTransforms.flip.vertical = !this.customImageTransforms.flip.vertical;
+				}
+
+				this.visibleArea = visibleArea;
+				this.coordinates = coordinates;
+
+				this.onChange();
+				if (transitions) {
+					this.debouncedDisableTransitions();
+				}
+			}
+		},
+		rotate(angle, options = {}) {
+			const { transitions = true } = options;
+
+			if (!this.transitionsActive) {
+				if (transitions) {
+					this.enableTransitions();
+				}
+				const previousImageSize = { ...this.imageSize };
+
+				this.customImageTransforms.rotate += angle;
+				let { visibleArea, coordinates } = algorithms.rotateImage({
+					visibleArea: this.visibleArea,
+					coordinates: this.coordinates,
+					previousImageSize,
+					imageSize: this.imageSize,
+					angle,
+					positionRestrictions: this.positionRestrictions,
+					sizeRestrictions: this.sizeRestrictions,
+					getAreaRestrictions: this.getAreaRestrictions,
+					aspectRatio: this.getAspectRatio(),
+				});
+
+				({ visibleArea, coordinates } = this.processAutoZoom('rotateImage', visibleArea, coordinates));
+
+				this.visibleArea = visibleArea;
+				this.coordinates = coordinates;
+
+				this.onChange();
+
+				if (transitions) {
+					this.debouncedDisableTransitions();
+				}
+			}
+		},
 	},
 };
 </script>
@@ -1128,15 +1252,18 @@ export default {
 				<component
 					:is="stencilComponent"
 					ref="stencil"
+					:transitions="transitionsOptions"
+					:stencil-coordinates="stencilCoordinates"
+					:coefficient="coefficient"
 					:img="{
 						src: imageAttributes.src,
-						size: imageSize,
+						size: {
+							width: imageAttributes.width,
+							height: imageAttributes.height,
+						},
 						transforms: imageTransforms,
 						coefficient: coefficient,
 					}"
-					:transitions="transitionsOptions"
-					:result-coordinates="coordinates"
-					:stencil-coordinates="stencilCoordinates"
 					v-bind="stencilProps"
 					@resize="onResize"
 					@resize-end="onResizeEnd"

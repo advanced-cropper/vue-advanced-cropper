@@ -1,48 +1,45 @@
 import { ImageTransforms } from './typings';
+import { getCenter, rotatePoint, rotateSize } from './service';
 
 export const XHR_DONE = 4;
 
-export function prepareSource(canvas, image, { flipped, orientation }) {
-	const width = image.naturalWidth;
-	const height = image.naturalHeight;
+export function prepareSource(canvas, image, { rotate, flip }) {
+	const originalSize = {
+		width: image.naturalWidth,
+		height: image.naturalHeight,
+	};
+
+	const transformedSize = rotateSize(originalSize, rotate);
 
 	const ctx = canvas.getContext('2d');
-	canvas.width = width;
-	canvas.height = height;
+	canvas.height = transformedSize.height;
+	canvas.width = transformedSize.width;
 
 	ctx.save();
 
-	if (flipped) {
-		canvas.width = height;
-		canvas.height = width;
-	}
+	// Rotation:
+	const originalCenter = {
+		left: originalSize.width / 2,
+		top: originalSize.height / 2,
+	};
 
-	// TODO: refactor this
-	if (orientation == 2) {
-		ctx.translate(width, 0);
-		ctx.scale(-1, 1);
-	} else if (orientation == 3) {
-		ctx.translate(width, height);
-		ctx.rotate((180 / 180) * Math.PI);
-	} else if (orientation == 4) {
-		ctx.translate(0, height);
-		ctx.scale(1, -1);
-	} else if (orientation == 5) {
-		ctx.rotate((90 / 180) * Math.PI);
-		ctx.scale(1, -1);
-	} else if (orientation == 6) {
-		ctx.rotate((90 / 180) * Math.PI);
-		ctx.translate(0, -height);
-	} else if (orientation == 7) {
-		ctx.rotate((270 / 180) * Math.PI);
-		ctx.translate(-width, height);
-		ctx.scale(1, -1);
-	} else if (orientation == 8) {
-		ctx.translate(0, width);
-		ctx.rotate((270 / 180) * Math.PI);
-	}
+	let canvasCenter = rotatePoint(
+		getCenter({
+			left: 0,
+			top: 0,
+			...originalSize,
+		}),
+		rotate,
+	);
 
-	ctx.drawImage(image, 0, 0, width, height);
+	ctx.translate(-(canvasCenter.left - transformedSize.width / 2), -(canvasCenter.top - transformedSize.height / 2));
+	ctx.rotate((rotate * Math.PI) / 180);
+
+	// Reflection;
+	ctx.translate(flip.horizontal ? originalSize.width : 0, flip.vertical ? originalSize.height : 0);
+	ctx.scale(flip.horizontal ? -1 : 1, flip.vertical ? -1 : 1);
+
+	ctx.drawImage(image, 0, 0, originalSize.width, originalSize.height);
 	ctx.restore();
 
 	return canvas;
@@ -74,37 +71,38 @@ function objectURLToBlob(url, callback) {
 
 export function getImageTransforms(orientation: number) {
 	const result: ImageTransforms = {
-		orientation,
+		flip: {
+			horizontal: false,
+			vertical: false,
+		},
+		rotate: 0,
 	};
 	if (orientation) {
 		switch (orientation) {
 			case 2:
-				result.scaleX = -1;
+				result.flip.horizontal = true;
 				break;
 			case 3:
 				result.rotate = -180;
 				break;
 			case 4:
-				result.scaleY = -1;
+				result.flip.vertical = true;
 				break;
 			case 5:
 				result.rotate = 90;
-				result.scaleY = -1;
+				result.flip.vertical = true;
 				break;
 			case 6:
 				result.rotate = 90;
 				break;
 			case 7:
 				result.rotate = 90;
-				result.scaleX = -1;
+				result.flip.horizontal = true;
 				break;
 			case 8:
 				result.rotate = -90;
 				break;
 		}
-	}
-	if (result.rotate === 90 || result.rotate === -90) {
-		result.flipped = true;
 	}
 	return result;
 }
@@ -157,18 +155,14 @@ function getImageData(img) {
 	});
 }
 
-export function getStyleTransforms({ rotate, scaleX, scaleY }) {
+export function getStyleTransforms({ rotate, flip }) {
 	let transform = '';
-	if (rotate || scaleX || scaleY) {
+	if (rotate || flip.horizontal || flip.vertical) {
 		if (rotate) {
 			transform += ` rotate(${rotate}deg) `;
 		}
-		if (scaleX) {
-			transform += ` scaleX(${scaleX}) `;
-		}
-		if (scaleY) {
-			transform += ` scaleY(${scaleY}) `;
-		}
+		transform += ` scaleX(${flip.horizontal ? -1 : 1}) `;
+		transform += ` scaleY(${flip.vertical ? -1 : 1}) `;
 	}
 	return transform;
 }

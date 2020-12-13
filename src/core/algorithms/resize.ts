@@ -21,58 +21,58 @@ export function fitConditions({
 	preserveRatio,
 	compensate,
 }: FitConditionsParams): ResizeDirections {
-	const fixedDirections = { ...directions };
+	const fittedDirections = { ...directions };
 
-	let currentWidth = applyDirections(coordinates, fixedDirections).width;
-	let currentHeight = applyDirections(coordinates, fixedDirections).height;
+	let currentWidth = applyDirections(coordinates, fittedDirections).width;
+	let currentHeight = applyDirections(coordinates, fittedDirections).height;
 
 	// Prevent strange resizes when the width or height of stencil becomes smaller than 0
 	if (currentWidth < 0) {
-		if (fixedDirections.left < 0 && fixedDirections.right < 0) {
-			fixedDirections.left =
-				-(coordinates.width - sizeRestrictions.minWidth) / (fixedDirections.left / fixedDirections.right);
-			fixedDirections.right =
-				-(coordinates.width - sizeRestrictions.minWidth) / (fixedDirections.right / fixedDirections.left);
-		} else if (fixedDirections.left < 0) {
-			fixedDirections.left = -(coordinates.width - sizeRestrictions.minWidth);
-		} else if (fixedDirections.right < 0) {
-			fixedDirections.right = -(coordinates.width - sizeRestrictions.minWidth);
+		if (fittedDirections.left < 0 && fittedDirections.right < 0) {
+			fittedDirections.left =
+				-(coordinates.width - sizeRestrictions.minWidth) / (fittedDirections.left / fittedDirections.right);
+			fittedDirections.right =
+				-(coordinates.width - sizeRestrictions.minWidth) / (fittedDirections.right / fittedDirections.left);
+		} else if (fittedDirections.left < 0) {
+			fittedDirections.left = -(coordinates.width - sizeRestrictions.minWidth);
+		} else if (fittedDirections.right < 0) {
+			fittedDirections.right = -(coordinates.width - sizeRestrictions.minWidth);
 		}
 	}
 	if (currentHeight < 0) {
-		if (fixedDirections.top < 0 && fixedDirections.bottom < 0) {
-			fixedDirections.top =
-				-(coordinates.height - sizeRestrictions.minHeight) / (fixedDirections.top / fixedDirections.bottom);
-			fixedDirections.bottom =
-				-(coordinates.height - sizeRestrictions.minHeight) / (fixedDirections.bottom / fixedDirections.top);
-		} else if (fixedDirections.top < 0) {
-			fixedDirections.top = -(coordinates.height - sizeRestrictions.minHeight);
-		} else if (fixedDirections.bottom < 0) {
-			fixedDirections.bottom = -(coordinates.height - sizeRestrictions.minHeight);
+		if (fittedDirections.top < 0 && fittedDirections.bottom < 0) {
+			fittedDirections.top =
+				-(coordinates.height - sizeRestrictions.minHeight) / (fittedDirections.top / fittedDirections.bottom);
+			fittedDirections.bottom =
+				-(coordinates.height - sizeRestrictions.minHeight) / (fittedDirections.bottom / fittedDirections.top);
+		} else if (fittedDirections.top < 0) {
+			fittedDirections.top = -(coordinates.height - sizeRestrictions.minHeight);
+		} else if (fittedDirections.bottom < 0) {
+			fittedDirections.bottom = -(coordinates.height - sizeRestrictions.minHeight);
 		}
 	}
 
 	// Prevent breaking limits
-	let breaks = getIntersections(applyDirections(coordinates, fixedDirections), positionRestrictions);
+	let breaks = getIntersections(applyDirections(coordinates, fittedDirections), positionRestrictions);
 
 	if (compensate) {
 		if (breaks.left && breaks.left > 0 && breaks.right === 0) {
-			fixedDirections.right += breaks.left;
-			fixedDirections.left -= breaks.left;
+			fittedDirections.right += breaks.left;
+			fittedDirections.left -= breaks.left;
 		} else if (breaks.right && breaks.right > 0 && breaks.left === 0) {
-			fixedDirections.left += breaks.right;
-			fixedDirections.right -= breaks.right;
+			fittedDirections.left += breaks.right;
+			fittedDirections.right -= breaks.right;
 		}
 
 		if (breaks.top && breaks.top > 0 && breaks.bottom === 0) {
-			fixedDirections.bottom += breaks.top;
-			fixedDirections.top -= breaks.top;
+			fittedDirections.bottom += breaks.top;
+			fittedDirections.top -= breaks.top;
 		} else if (breaks.bottom && breaks.bottom > 0 && breaks.top === 0) {
-			fixedDirections.top += breaks.bottom;
-			fixedDirections.bottom -= breaks.bottom;
+			fittedDirections.top += breaks.bottom;
+			fittedDirections.bottom -= breaks.bottom;
 		}
 
-		breaks = getIntersections(applyDirections(coordinates, fixedDirections), positionRestrictions);
+		breaks = getIntersections(applyDirections(coordinates, fittedDirections), positionRestrictions);
 	}
 
 	const maxResize = {
@@ -86,8 +86,8 @@ export function fitConditions({
 
 	ALL_DIRECTIONS.forEach((direction) => {
 		const intersection = breaks[direction];
-		if (intersection && fixedDirections[direction]) {
-			maxResize[direction] = Math.max(0, 1 - intersection / fixedDirections[direction]);
+		if (intersection && fittedDirections[direction]) {
+			maxResize[direction] = Math.max(0, 1 - intersection / fittedDirections[direction]);
 		}
 	});
 
@@ -95,37 +95,37 @@ export function fitConditions({
 		const multiplier = Math.min(...ALL_DIRECTIONS.map((direction) => maxResize[direction]));
 		if (multiplier !== Infinity) {
 			ALL_DIRECTIONS.forEach((direction) => {
-				fixedDirections[direction] *= multiplier;
+				fittedDirections[direction] *= multiplier;
 			});
 		}
 	} else {
 		ALL_DIRECTIONS.forEach((direction) => {
 			if (maxResize[direction] !== Infinity) {
-				fixedDirections[direction] *= maxResize[direction];
+				fittedDirections[direction] *= maxResize[direction];
 			}
 		});
 	}
 
-	currentWidth = applyDirections(coordinates, fixedDirections).width;
-	currentHeight = applyDirections(coordinates, fixedDirections).height;
+	currentWidth = applyDirections(coordinates, fittedDirections).width;
+	currentHeight = applyDirections(coordinates, fittedDirections).height;
 
-	if (fixedDirections.right + fixedDirections.left) {
+	if (fittedDirections.right + fittedDirections.left) {
 		if (currentWidth > sizeRestrictions.maxWidth) {
 			maxResize.width =
-				(sizeRestrictions.maxWidth - coordinates.width) / (fixedDirections.right + fixedDirections.left);
+				(sizeRestrictions.maxWidth - coordinates.width) / (fittedDirections.right + fittedDirections.left);
 		} else if (currentWidth < sizeRestrictions.minWidth) {
 			maxResize.width =
-				(sizeRestrictions.minWidth - coordinates.width) / (fixedDirections.right + fixedDirections.left);
+				(sizeRestrictions.minWidth - coordinates.width) / (fittedDirections.right + fittedDirections.left);
 		}
 	}
 
-	if (fixedDirections.bottom + fixedDirections.top) {
+	if (fittedDirections.bottom + fittedDirections.top) {
 		if (currentHeight > sizeRestrictions.maxHeight) {
 			maxResize.height =
-				(sizeRestrictions.maxHeight - coordinates.height) / (fixedDirections.bottom + fixedDirections.top);
+				(sizeRestrictions.maxHeight - coordinates.height) / (fittedDirections.bottom + fittedDirections.top);
 		} else if (currentHeight < sizeRestrictions.minHeight) {
 			maxResize.height =
-				(sizeRestrictions.minHeight - coordinates.height) / (fixedDirections.bottom + fixedDirections.top);
+				(sizeRestrictions.minHeight - coordinates.height) / (fittedDirections.bottom + fittedDirections.top);
 		}
 	}
 
@@ -133,23 +133,23 @@ export function fitConditions({
 		const multiplier = Math.min(maxResize.width, maxResize.height);
 		if (multiplier !== Infinity) {
 			ALL_DIRECTIONS.forEach((direction) => {
-				fixedDirections[direction] *= multiplier;
+				fittedDirections[direction] *= multiplier;
 			});
 		}
 	} else {
 		if (maxResize.width !== Infinity) {
 			HORIZONTAL_DIRECTIONS.forEach((direction) => {
-				fixedDirections[direction] *= maxResize.width;
+				fittedDirections[direction] *= maxResize.width;
 			});
 		}
 		if (maxResize.height !== Infinity) {
 			VERTICAL_DIRECTIONS.forEach((direction) => {
-				fixedDirections[direction] *= maxResize.height;
+				fittedDirections[direction] *= maxResize.height;
 			});
 		}
 	}
 
-	return fixedDirections;
+	return fittedDirections;
 }
 
 export interface ResizeParams {

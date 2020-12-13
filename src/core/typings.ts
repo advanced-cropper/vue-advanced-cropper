@@ -34,7 +34,7 @@ export type VisibleAreaChange = 'move' | 'resize';
 
 export type PositionRestrictions = Limits;
 export type AreaRestrictions = Limits;
-export type GetAreaRestrictions = (params?: { visibleArea?: VisibleArea, type?: VisibleAreaChange}) => Limits;
+export type GetAreaRestrictions = (params?: { visibleArea?: VisibleArea; type?: VisibleAreaChange }) => Limits;
 
 export interface ResizeDirections {
 	top: number;
@@ -59,7 +59,6 @@ export interface Size {
 }
 export type ImageSize = Size;
 export type Boundaries = Size;
-
 
 export interface Intersections {
 	left: number;
@@ -102,11 +101,11 @@ export interface Scale {
 }
 
 export interface ImageTransforms {
-	orientation: number;
-	scaleX?: number;
-	scaleY?: number;
-	rotate?: number;
-	flipped?: boolean;
+	rotate: number;
+	flip: {
+		horizontal: boolean;
+		vertical: boolean;
+	};
 }
 
 export interface ResizeSettings {
