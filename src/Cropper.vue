@@ -134,7 +134,6 @@ export default {
 		},
 		defaultSize: {
 			type: [Function, Object],
-			default: algorithms.defaultSize,
 		},
 		defaultPosition: {
 			type: [Function, Object],
@@ -754,10 +753,19 @@ export default {
 				const cropper = this.$refs.cropper;
 				const image = this.$refs.image;
 
+				let defaultSizeAlgorithm = this.defaultSize;
+				if (!defaultSizeAlgorithm) {
+					if (this.stencilSize) {
+						defaultSizeAlgorithm = algorithms.fixedDefaultSize;
+					} else {
+						defaultSizeAlgorithm = algorithms.defaultSize;
+					}
+				}
+
 				const { minWidth, minHeight, maxWidth, maxHeight } = this.sizeRestrictions;
 
-				const defaultSize = isFunction(this.defaultSize)
-					? this.defaultSize({
+				const defaultSize = isFunction(defaultSizeAlgorithm)
+					? defaultSizeAlgorithm({
 							boundaries: this.boundaries,
 							imageSize: this.imageSize,
 							aspectRatio: this.getAspectRatio(),
@@ -772,7 +780,7 @@ export default {
 							props: this.$props,
 							...this.sizeRestrictions,
 					  })
-					: this.defaultSize;
+					: defaultSizeAlgorithm;
 
 				if (
 					process.env.NODE_ENV === 'development' &&

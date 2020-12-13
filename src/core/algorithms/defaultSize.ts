@@ -54,3 +54,27 @@ export function defaultSize(params: DefaultSizeParams): Size {
 		sizeRestrictions: sizeRestrictions,
 	});
 }
+
+export type FixedDefaultSizeParams = DefaultSizeParams & { stencilSize: Size };
+
+export function fixedDefaultSize(params: FixedDefaultSizeParams): Size {
+	const { imageSize, visibleArea, boundaries, aspectRatio, sizeRestrictions, stencilSize } = params;
+
+	const area = (visibleArea || imageSize) as Size;
+
+	let height, width;
+	if (ratio(area) > ratio(boundaries)) {
+		height = (stencilSize.height * area.height) / boundaries.height;
+		width = height * ratio(stencilSize);
+	} else {
+		width = (stencilSize.width * area.width) / boundaries.width;
+		height = width / ratio(stencilSize);
+	}
+
+	return approximatedSize({
+		width,
+		height,
+		aspectRatio,
+		sizeRestrictions: sizeRestrictions,
+	});
+}

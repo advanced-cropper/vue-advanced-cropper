@@ -44,7 +44,7 @@ export default {
 		href="https://github.com/Norserium/vue-advanced-cropper/blob/master/example/docs/.vuepress/components/upload-example.vue"
 	>
 		<div class="cropper-wrapper">
-			<Cropper class="upload-example-cropper" check-orientation :src="image" />
+			<cropper class="upload-example-cropper" check-orientation :src="image" />
 			<div class="reset-button" title="Reset Image" @click="reset()">
 				<img :src="require('../assets/icons/reset.svg')" />
 			</div>
