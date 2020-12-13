@@ -5,9 +5,9 @@ import replace from '@rollup/plugin-replace';
 import resolve from '@rollup/plugin-node-resolve';
 import url from '@rollup/plugin-url';
 import external from 'rollup-plugin-peer-deps-external';
-import Vue from 'rollup-plugin-vue';
-import css from 'rollup-plugin-merge-and-inject-css';
+import vue from 'rollup-plugin-vue';
 import minify from 'rollup-plugin-babel-minify';
+import scss from 'rollup-plugin-scss';
 import typescript from '@rollup/plugin-typescript';
 import pkg from './package.json';
 
@@ -17,30 +17,30 @@ export default {
 		{
 			file: pkg.main,
 			format: 'cjs',
-			sourcemap: process.env.NODE_ENV !== 'production'
+			sourcemap: process.env.NODE_ENV !== 'production',
 		},
 		{
 			file: pkg.module,
 			format: 'es',
-			sourcemap: process.env.NODE_ENV !== 'production'
+			sourcemap: process.env.NODE_ENV !== 'production',
 		},
 		{
 			file: pkg.umd,
 			format: 'umd',
 			sourcemap: process.env.NODE_ENV !== 'production',
-			name: 'vue-advanced-cropper'
-		}
+			name: 'vue-advanced-cropper',
+		},
 	],
 	plugins: [
 		external(),
-		Vue({
+		scss({
+			output: './dist/style.css',
+		}),
+		vue({
 			css: false,
 			style: {
-				postcssPlugins: [autoprefixer]
-			}
-		}),
-		css({
-			id: 'vue-advanced-cropper'
+				postcssPlugins: [autoprefixer],
+			},
 		}),
 		url(),
 		babel({
@@ -50,11 +50,11 @@ export default {
 		resolve(),
 		commonjs(),
 		minify({
-			comments: false
+			comments: false,
 		}),
 		typescript(),
 		replace({
-			'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
+			'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
 		}),
-	]
+	],
 };
