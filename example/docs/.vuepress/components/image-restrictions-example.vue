@@ -10,7 +10,7 @@ export default {
 	data() {
 		return {
 			image:
-				'https://images.pexels.com/photos/3304973/pexels-photo-3304973.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260',
+				'https://images.pexels.com/photos/1758144/pexels-photo-1758144.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
 			restrictionType: 'none',
 			result: null,
 		};
@@ -33,7 +33,9 @@ export default {
 		href="https://github.com/Norserium/vue-advanced-cropper/blob/master/example/docs/.vuepress/components/image-restrictions-example.vue"
 	>
 		<cropper
+			class="cropper"
 			check-orientation
+			default-boundaries="fill"
 			backgroundClass="background"
 			:src="image"
 			:image-restriction="restrictionType"
@@ -60,10 +62,6 @@ export default {
 
 <style lang="scss">
 .image-restriction-example {
-	.background {
-		background: #c6bfaf;
-	}
-
 	.panel {
 		color: white;
 		display: flex;
@@ -116,6 +114,10 @@ export default {
 		input {
 			display: none;
 		}
+	}
+
+	.cropper {
+		height: 600px;
 	}
 }
 </style>
