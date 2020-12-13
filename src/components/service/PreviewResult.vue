@@ -1,7 +1,7 @@
 <script>
 import bem from 'easy-bem';
 import classnames from 'classnames';
-import { replacedProp } from '../../core';
+import { radians } from '../../core';
 import { getStyleTransforms } from '../../core/image';
 import { rotateSize } from '../../core/service';
 
@@ -30,26 +30,18 @@ export default {
 		imageClass: {
 			type: String,
 		},
-		// Deprecated props
-		classname: {
-			type: String,
-			validator(value) {
-				return replacedProp(value, 'classname', 'class');
-			},
-		},
-		imageClassname: {
-			type: String,
-			validator(value) {
-				return replacedProp(value, 'imageClassname', 'imageClass');
-			},
+		refreshDebounce: {
+			type: Number,
+			default: 500,
 		},
 	},
 	computed: {
 		classes() {
 			return {
-				root: classnames(cn(), this.classname),
-				image: classnames(cn('image'), this.imageClass || this.imageClassname),
+				root: cn(),
 				wrapper: cn('wrapper'),
+				imageWrapper: cn('image-wrapper'),
+				image: classnames(cn('image'), this.imageClass),
 			};
 		},
 		wrapperStyle() {

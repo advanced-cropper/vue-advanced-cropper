@@ -4,6 +4,7 @@ export interface DefaultBoundariesParams {
 	cropper: HTMLElement;
 	imageSize: Size;
 }
+
 export function fitBoundaries({ cropper, imageSize }: DefaultBoundariesParams): Boundaries {
 	const areaHeight = cropper.clientHeight;
 	const areaWidth = cropper.clientWidth;
@@ -21,6 +22,7 @@ export function fitBoundaries({ cropper, imageSize }: DefaultBoundariesParams): 
 		height: currentHeight,
 	};
 }
+
 export function fillBoundaries({ cropper }: DefaultBoundariesParams): Boundaries {
 	return {
 		width: cropper.clientWidth,

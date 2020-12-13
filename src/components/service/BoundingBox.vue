@@ -30,7 +30,7 @@ export default {
 				};
 			},
 		},
-		handlerComponent: {
+		handlersComponent: {
 			type: [Object, String],
 			default() {
 				return SimpleHandler;
@@ -59,7 +59,7 @@ export default {
 				};
 			},
 		},
-		lineComponent: {
+		linesComponent: {
 			type: [Object, String],
 			default() {
 				return SimpleLine;
@@ -80,31 +80,6 @@ export default {
 		scalable: {
 			type: Boolean,
 			default: true,
-		},
-		// Deprecated props:
-		classname: {
-			type: String,
-			validator(value) {
-				return replacedProp(value, 'classname', 'class');
-			},
-		},
-		linesClassnames: {
-			type: Object,
-			default() {
-				return {};
-			},
-			validator(value) {
-				return replacedProp(value, 'linesClassnames', 'linesClasses');
-			},
-		},
-		handlersClassnames: {
-			type: Object,
-			default() {
-				return {};
-			},
-			validator(value) {
-				return replacedProp(value, 'handlersClassnames', 'handlersClasses');
-			},
 		},
 	},
 	data() {
@@ -128,13 +103,13 @@ export default {
 	},
 	computed: {
 		classes() {
-			const handlers = isEmpty(this.handlersClasses) ? this.handlersClassnames : this.handlersClasses;
+			const handlers = this.handlersClasses;
 			const handlersWrappers = this.handlersWrappersClasses;
-			const lines = isEmpty(this.linesClasses) ? this.linesClassnames : this.linesClasses;
+			const lines = this.linesClasses;
 			const linesWrappers = this.linesWrappersClasses;
 
 			return {
-				root: classnames(cn(), this.classname),
+				root: cn(),
 				handlers,
 				handlersWrappers,
 				lines,
@@ -147,7 +122,7 @@ export default {
 				if ((!point.horizontalDirection || !point.verticalDirection) && this.lines[point.name]) {
 					lines.push({
 						name: point.name,
-						component: this.lineComponent,
+						component: this.linesComponent,
 						class: classnames(
 							this.classes.lines.default,
 							this.classes.lines[point.name],
@@ -173,7 +148,7 @@ export default {
 				if (this.handlers[point.name]) {
 					handlers.push({
 						name: point.name,
-						component: this.handlerComponent,
+						component: this.handlersComponent,
 						class: classnames(this.classes.handlers.default, this.classes.handlers[point.name]),
 						wrapperClass: classnames(
 							this.classes.handlersWrappers.default,

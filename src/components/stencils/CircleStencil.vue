@@ -1,7 +1,6 @@
 <script>
 import classnames from 'classnames';
 import bem from 'easy-bem';
-import { replacedProp } from '../../core';
 import { PreviewResult, BoundingBox, DraggableArea } from '../service';
 import { SimpleHandler } from '../handlers';
 import { SimpleLine } from '../lines';
@@ -33,19 +32,31 @@ export default {
 				};
 			},
 		},
-		handlerComponent: {
+		handlersComponent: {
 			type: [Object, String],
 			default() {
 				return SimpleHandler;
 			},
 		},
+		handlersClasses: {
+			type: Object,
+			default() {
+				return {};
+			},
+		},
 		lines: {
 			type: Object,
 		},
-		lineComponent: {
+		linesComponent: {
 			type: [Object, String],
 			default() {
 				return SimpleLine;
+			},
+		},
+		linesClasses: {
+			type: Object,
+			default() {
+				return {};
 			},
 		},
 		movable: {
@@ -65,49 +76,6 @@ export default {
 		boundingBoxClass: {
 			type: String,
 		},
-		linesClasses: {
-			type: Object,
-			default() {
-				return {};
-			},
-		},
-		handlersClasses: {
-			type: Object,
-			default() {
-				return {};
-			},
-		},
-		// Deprecated props
-		classname: {
-			type: String,
-			validator(value) {
-				return replacedProp(value, 'classname', 'class');
-			},
-		},
-		previewClassname: {
-			type: String,
-			validator(value) {
-				return replacedProp(value, 'previewClassname', 'previewClass');
-			},
-		},
-		boundingBoxClassname: {
-			type: String,
-			validator(value) {
-				return replacedProp(value, 'boundingBoxClassname', 'boundingBoxClass');
-			},
-		},
-		linesClassnames: {
-			type: Object,
-			validator(value) {
-				return replacedProp(value, 'linesClassnames', 'linesClasses');
-			},
-		},
-		handlersClassnames: {
-			type: Object,
-			validator(value) {
-				return replacedProp(value, 'handlersClassnames', 'handlersClasses');
-			},
-		},
 	},
 	data() {
 		return {
@@ -119,11 +87,10 @@ export default {
 			return {
 				stencil: classnames(
 					cn({ movable: this.movable, dragging: this.dragging }),
-					this.classname,
 					this.dragging && this.draggingClass,
 				),
-				preview: classnames(cn('preview'), this.previewClass || this.previewClassname),
-				boundingBox: classnames(cn('bounding-box'), this.boundingBoxClass || this.boundingBoxClassname),
+				preview: classnames(cn('preview'), this.previewClass),
+				boundingBox: classnames(cn('bounding-box'), this.boundingBoxClass),
 			};
 		},
 		style() {
@@ -174,14 +141,12 @@ export default {
 		<BoundingBox
 			:class="classes.boundingBox"
 			:handlers="handlers"
-			:handler-component="handlerComponent"
+			:handlers-component="handlersComponent"
 			:handlers-classes="handlersClasses"
-			:handlers-classnames="handlersClassnames"
 			:handlers-wrappers-classes="handlersWrappersClasses"
 			:lines="lines"
-			:line-component="lineComponent"
+			:lines-component="linesComponent"
 			:lines-classes="linesClasses"
-			:lines-classnames="linesClassnames"
 			:lines-wrappers-classes="linesWrappersClasses"
 			:scalable="scalable"
 			@resize="onResize"

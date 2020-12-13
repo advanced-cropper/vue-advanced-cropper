@@ -14,7 +14,7 @@ export function dynamicAreaRestrictions(params: DynamicAreaRestrictionsParams): 
 
 	let limits: Limits = {};
 
-	if (imageRestriction === 'fill-area' || imageRestriction === 'area') {
+	if (imageRestriction === 'fill-area') {
 		limits = {
 			left: 0,
 			top: 0,

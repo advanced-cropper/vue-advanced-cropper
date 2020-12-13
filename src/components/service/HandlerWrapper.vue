@@ -1,7 +1,6 @@
 <script>
 import bem from 'easy-bem';
 import classnames from 'classnames';
-import { replacedProp } from '../../core';
 import { directionNames } from '../../core/utils';
 import DraggableElement from './DraggableElement.vue';
 
@@ -22,13 +21,6 @@ export default {
 		disabled: {
 			type: Boolean,
 			default: false,
-		},
-		// Deprecated props:
-		classname: {
-			type: String,
-			validator(value) {
-				return replacedProp(value, 'classname', 'class');
-			},
 		},
 	},
 	computed: {

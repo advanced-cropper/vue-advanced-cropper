@@ -1,7 +1,7 @@
 <script>
 import bem from 'easy-bem';
 import classnames from 'classnames';
-import { isLoadedImage, replacedProp } from '../../core';
+import { isLoadedImage } from '../../core';
 import { updateCanvas } from '../../core/canvas';
 import { getStyleTransforms, prepareSource } from '../../core/image';
 
@@ -46,7 +46,7 @@ export default {
 	computed: {
 		classes() {
 			return {
-				root: classnames(cn(), this.classname),
+				root: cn(),
 				image: cn('image'),
 				wrapper: cn('wrapper'),
 			};

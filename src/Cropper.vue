@@ -99,7 +99,7 @@ export default {
 		},
 		imageRestriction: {
 			type: String,
-			default: 'fill-area',
+			default: 'fit-area',
 			validator(value) {
 				return IMAGE_RESTRICTIONS.indexOf(value) !== -1;
 			},
@@ -140,19 +140,7 @@ export default {
 			default: algorithms.defaultPosition,
 		},
 		defaultBoundaries: {
-			type: [Function, String],
-			default: algorithms.fitBoundaries,
-			validator(value) {
-				const invalid = typeof value === 'string' && value !== 'fill' && value !== 'fit';
-				if (invalid) {
-					if (process.env.NODE_ENV !== 'production') {
-						console.warn(
-							`Warning: prop "defaultBoundaries" gets incorrect string value ${value}. It should be either function, 'fill' or 'fit'`,
-						);
-					}
-				}
-				return !invalid;
-			},
+			type: [Function],
 		},
 		autoZoomAlgorithm: {
 			type: Function,
@@ -183,79 +171,6 @@ export default {
 		moveImage: {
 			type: [Boolean, Object],
 			default: true,
-		},
-		// Deprecated props
-		restrictions: {
-			type: Function,
-			validator(value) {
-				return replacedProp(value, 'restrictions', 'sizeRestrictionsAlgorithm');
-			},
-		},
-		classname: {
-			type: String,
-			validator(value) {
-				return replacedProp(value, 'classname', 'class');
-			},
-		},
-		imageClassname: {
-			type: String,
-			validator(value) {
-				return replacedProp(value, 'imageClassname', 'imageClass');
-			},
-		},
-		areaClassname: {
-			type: String,
-			validator(value) {
-				return replacedProp(value, 'areaClassname', 'boundariesClass');
-			},
-		},
-		backgroundClassname: {
-			type: String,
-			validator(value) {
-				return replacedProp(value, 'backgroundClassname', 'backgroundClass');
-			},
-		},
-		areaClass: {
-			type: String,
-			validator(value) {
-				return replacedProp(value, 'areaClass', 'boundariesClass');
-			},
-		},
-		wheelResize: {
-			validator(value) {
-				return replacedProp(
-					value,
-					'wheelResize',
-					'resizeImage (https://norserium.github.io/vue-advanced-cropper/components/cropper.html#resizeimage)',
-				);
-			},
-		},
-		touchResize: {
-			validator(value) {
-				return replacedProp(
-					value,
-					'touchResize',
-					'resizeImage (https://norserium.github.io/vue-advanced-cropper/components/cropper.html#resizeimage)',
-				);
-			},
-		},
-		touchMove: {
-			validator(value) {
-				return replacedProp(
-					value,
-					'touchMove',
-					'moveImage (https://norserium.github.io/vue-advanced-cropper/components/cropper.html#moveimage)',
-				);
-			},
-		},
-		mouseMove: {
-			validator(value) {
-				return replacedProp(
-					value,
-					'mouseMove',
-					'moveImage (https://norserium.github.io/vue-advanced-cropper/components/cropper.html#moveimage)',
-				);
-			},
 		},
 	},
 	data() {
@@ -324,18 +239,8 @@ export default {
 			return Boolean(this.visibleArea && this.imageLoaded);
 		},
 		settings() {
-			// Deprecated
-			const resizeImageSettings = isUndefined(this.resizeImage)
-				? {
-						touch: getSettings(this.touchResize),
-						wheel: getSettings(this.wheelResize, {
-							ratio: 0.1,
-						}),
-				  }
-				: this.resizeImage;
-
 			const resizeImage = getOptions(
-				resizeImageSettings,
+				this.resizeImage,
 				{
 					touch: true,
 					wheel: {
@@ -350,16 +255,8 @@ export default {
 				},
 			);
 
-			// Deprecated
-			const moveImageSettings = isUndefined(this.moveImage)
-				? {
-						touch: getSettings(this.touchMove),
-						mouse: getSettings(this.mouseMove),
-				  }
-				: this.moveImage;
-
 			const moveImage = getOptions(
-				moveImageSettings,
+				this.moveImage,
 				{
 					touch: true,
 					mouse: true,
@@ -405,10 +302,6 @@ export default {
 					minHeight: !isUndefined(this.minHeight) ? parseNumber(this.minHeight) : 0,
 					maxWidth: !isUndefined(this.maxWidth) ? parseNumber(this.maxWidth) : Infinity,
 					maxHeight: !isUndefined(this.maxHeight) ? parseNumber(this.maxHeight) : Infinity,
-					// Deprecated params
-					imageWidth: this.imageSize.width,
-					imageHeight: this.imageSize.height,
-					props: this.$props,
 				});
 
 				sizeRestrictions = algorithms.refineSizeRestrictions({
@@ -455,10 +348,10 @@ export default {
 		classes() {
 			return {
 				cropper: classnames(cn(), this.classname),
-				image: classnames(cn('image'), this.imageClass || this.imageClassname),
-				boundaries: classnames(cn('boundaries'), this.boundariesClass || this.areaClass || this.areaClassname),
+				image: classnames(cn('image'), this.imageClass),
+				boundaries: classnames(cn('boundaries'), this.boundariesClass),
 				stretcher: classnames(cn('stretcher')),
-				background: classnames(cn('background'), this.backgroundClass || this.backgroundClassname),
+				background: classnames(cn('background'), this.backgroundClass),
 				imageWrapper: classnames(cn('image-wrapper')),
 				cropperWrapper: classnames(cn('cropper-wrapper')),
 			};
@@ -792,13 +685,6 @@ export default {
 							sizeRestrictions: this.sizeRestrictions,
 							stencilSize: this.getStencilSize(),
 							visibleArea: this.visibleArea,
-							// Deprecated params
-							cropper,
-							image,
-							imageWidth: this.imageSize.width,
-							imageHeight: this.imageSize.height,
-							props: this.$props,
-							...this.sizeRestrictions,
 					  })
 					: defaultSizeAlgorithm;
 
@@ -824,14 +710,6 @@ export default {
 									coordinates,
 									imageSize: this.imageSize,
 									visibleArea: this.visibleArea,
-									// Deprecated params
-									cropper,
-									image,
-									stencilWidth: coordinates.width,
-									stencilHeight: coordinates.height,
-									imageWidth: this.imageSize.width,
-									imageHeight: this.imageSize.height,
-									props: this.$props,
 							  })
 							: this.defaultPosition),
 					}),
@@ -887,10 +765,8 @@ export default {
 
 				if (isFunction(this.defaultBoundaries)) {
 					this.boundaries = this.defaultBoundaries(params);
-				} else if (this.defaultBoundaries === 'fill') {
-					this.boundaries = fillBoundaries(params);
 				} else {
-					this.boundaries = fitBoundaries(params);
+					this.boundaries = fillBoundaries(params);
 				}
 
 				if (!this.boundaries.width || !this.boundaries.height) {
@@ -913,8 +789,6 @@ export default {
 								coordinates: this.priority !== 'visibleArea' ? this.coordinates : null,
 								getAreaRestrictions: this.getAreaRestrictions,
 								stencilSize: this.getStencilSize(),
-								// Deprecated
-								areaRestrictions: this.areaRestrictions,
 						  })
 						: this.defaultVisibleArea;
 
@@ -950,8 +824,6 @@ export default {
 						visibleArea: this.visibleArea,
 						coordinates: this.coordinates,
 						getAreaRestrictions: this.getAreaRestrictions,
-						// Deprecated
-						areaRestrictions: this.areaRestrictions,
 					});
 					this.coordinates = this.fitCoordinates({
 						visibleArea: this.visibleArea,
@@ -1092,8 +964,6 @@ export default {
 					getAreaRestrictions: this.getAreaRestrictions,
 					imageRestriction: this.imageRestriction,
 					adjustStencil: !this.stencilSize && this.settings.resizeImage.adjustStencil,
-					// Deprecated
-					areaRestrictions: this.areaRestrictions,
 				});
 
 				this.visibleArea = visibleArea;
