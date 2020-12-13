@@ -15,7 +15,7 @@ export default {
 		DraggableArea,
 	},
 	props: {
-		img: {
+		image: {
 			type: Object,
 		},
 		resultCoordinates: {
@@ -173,7 +173,7 @@ export default {
 		>
 			<DraggableArea :movable="movable" @move="onMove" @move-end="onMoveEnd">
 				<PreviewResult
-					:img="img"
+					:image="image"
 					:class="classes.preview"
 					:transitions="transitions"
 					:stencil-coordinates="stencilCoordinates"

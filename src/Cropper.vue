@@ -1162,14 +1162,12 @@ export default {
 					ref="stencil"
 					:transitions="transitionsOptions"
 					:stencil-coordinates="stencilCoordinates"
-					:img="{
+					:image="{
 						src: imageAttributes.src,
-						size: {
-							width: imageAttributes.width,
-							height: imageAttributes.height,
-						},
+						width: imageAttributes.width / coefficient,
+						height: imageAttributes.height / coefficient,
 						transforms: imageTransforms,
-						coefficient: coefficient,
+						loaded: imageLoaded,
 					}"
 					v-bind="stencilProps"
 					@resize="onResize"

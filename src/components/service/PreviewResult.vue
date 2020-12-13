@@ -10,7 +10,7 @@ const cn = bem('vue-preview-result');
 export default {
 	name: 'PreviewResult',
 	props: {
-		img: {
+		image: {
 			type: Object,
 		},
 		transitions: {
@@ -57,26 +57,28 @@ export default {
 			return result;
 		},
 		imageStyle() {
-			const imageTransforms = this.img.transforms;
-			const flipped = imageTransforms.flipped;
-			const coefficient = this.img.coefficient;
-			const height = this.img.size.height / coefficient;
-			const width = this.img.size.width / coefficient;
+			const imageTransforms = this.image.transforms;
 
-			const virtualSize = rotateSize(this.img.size, imageTransforms.rotate);
+			const virtualSize = rotateSize(
+				{
+					width: this.image.width,
+					height: this.image.height,
+				},
+				imageTransforms.rotate,
+			);
 
 			const result = {
-				width: `${this.img.size.width / coefficient}px`,
-				height: `${this.img.size.height / coefficient}px`,
+				width: `${this.image.width}px`,
+				height: `${this.image.height}px`,
 				left: `${
 					-this.stencilCoordinates.left -
 					imageTransforms.translateX +
-					(virtualSize.width - this.img.size.width) / (2 * coefficient)
+					(virtualSize.width - this.image.width) / 2
 				}px`,
 				top: `${
 					-this.stencilCoordinates.top -
 					imageTransforms.translateY +
-					(virtualSize.height - this.img.size.height) / (2 * coefficient)
+					(virtualSize.height - this.image.height) / 2
 				}px`,
 			};
 			result.transform = getStyleTransforms(imageTransforms);
@@ -93,7 +95,7 @@ export default {
 <template>
 	<div :class="classes.root">
 		<div ref="wrapper" :class="classes.wrapper" :style="wrapperStyle">
-			<img ref="image" :src="img.src" :class="classes.image" :style="imageStyle" />
+			<img ref="image" :src="image.src" :class="classes.image" :style="imageStyle" />
 		</div>
 	</div>
 </template>
