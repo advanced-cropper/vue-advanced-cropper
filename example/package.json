@@ -10,7 +10,7 @@
 		"bootstrap-vue": "^2.18.1",
 		"core-js": "^2.6.5",
 		"easy-bem": "^1.0.2",
-		"vue": "^2.6.6",
+		"vue": "^2.6.12",
 		"vue-advanced-cropper": "file:.."
 	},
 	"devDependencies": {
@@ -19,8 +19,8 @@
 		"node-sass": "^4.12.0",
 		"sass-loader": "^7.1.0",
 		"typescript": "^4.0.5",
-		"vue-template-compiler": "^2.5.21",
-		"vuepress": "1.0.1",
+		"vue-template-compiler": "^2.6.12",
+		"vuepress": "^1.7.1",
 		"vuepress-plugin-typescript": "^0.3.1"
 	},
 	"postcss": {
