@@ -75,6 +75,7 @@
 							hover: 'demo-cropper__handler--hover',
 						},
 					}"
+					default-boundaries="fit"
 				/>
 			</div>
 			<div class="section-border section-border--hide-mobile">
