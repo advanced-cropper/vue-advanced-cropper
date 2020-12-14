@@ -9,7 +9,7 @@ export default {
 		DraggableElement,
 	},
 	props: {
-		img: {
+		image: {
 			type: Object,
 		},
 		resultCoordinates: {
@@ -71,7 +71,7 @@ export default {
 		<DraggableArea @move="onMove">
 			<PreviewResult
 				class="circle-stencil__preview"
-				:img="img"
+				:image="image"
 				:result-coordinates="resultCoordinates"
 				:stencil-coordinates="stencilCoordinates"
 			/>
