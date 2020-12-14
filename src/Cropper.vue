@@ -61,6 +61,9 @@ export default {
 		backgroundClass: {
 			type: String,
 		},
+		foregroundClass: {
+			type: String,
+		},
 		minWidth: {
 			type: [Number, String],
 		},
@@ -352,6 +355,7 @@ export default {
 				boundaries: classnames(cn('boundaries'), this.boundariesClass),
 				stretcher: classnames(cn('stretcher')),
 				background: classnames(cn('background'), this.backgroundClass),
+				foreground: classnames(cn('foreground'), this.foregroundClass),
 				imageWrapper: classnames(cn('image-wrapper')),
 				cropperWrapper: classnames(cn('cropper-wrapper')),
 			};
@@ -378,13 +382,16 @@ export default {
 			};
 		},
 		boundariesStyle() {
-			return {
+			const styles = {
 				width: this.boundaries.width ? `${this.boundaries.width}px` : 'auto',
 				height: this.boundaries.height ? `${this.boundaries.height}px` : 'auto',
-				opacity: this.imageLoaded ? 1 : 0,
 				transition: `opacity ${this.transitionTime}ms`,
 				pointerEvents: this.imageLoaded ? 'all' : 'none',
 			};
+			if (!this.imageLoaded) {
+				styles.opacity = '0';
+			}
+			return styles;
 		},
 		imageStyle() {
 			const result = {
@@ -1133,7 +1140,6 @@ export default {
 
 <template>
 	<div ref="cropper" :class="classes.cropper">
-		<div :class="classes.background" :style="boundariesStyle" />
 		<div ref="stretcher" :class="classes.stretcher" />
 
 		<div :class="classes.boundaries" :style="boundariesStyle">
@@ -1146,6 +1152,7 @@ export default {
 				@move="onManipulateImage"
 				@resize="onManipulateImage"
 			>
+				<div :class="classes.background" :style="boundariesStyle"></div>
 				<div :class="classes.imageWrapper">
 					<img
 						ref="image"
@@ -1156,6 +1163,7 @@ export default {
 						@mousedown.prevent
 					/>
 				</div>
+				<div :class="classes.foreground" :style="boundariesStyle"></div>
 				<component
 					:is="stencilComponent"
 					v-show="imageLoaded"
@@ -1199,7 +1207,6 @@ export default {
 	}
 
 	&__image {
-		opacity: 0.5;
 		user-select: none;
 		position: absolute;
 		transform-origin: center;
@@ -1207,18 +1214,24 @@ export default {
 		// rule applied to img (Vuepress for example)
 		max-width: unset !important;
 	}
-	&__boundaries {
-		position: absolute;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		top: 50%;
-	}
-	&__background {
-		position: absolute;
+	&__background,
+	&__foreground {
+		opacity: 1;
 		background: black;
+		transform: translate(-50%, -50%);
+		position: absolute;
 		top: 50%;
 		left: 50%;
+	}
+	&__foreground {
+		opacity: 0.5;
+	}
+	&__boundaries {
+		opacity: 1;
 		transform: translate(-50%, -50%);
+		position: absolute;
+		left: 50%;
+		top: 50%;
 	}
 	&__cropper-wrapper {
 		width: 100%;
