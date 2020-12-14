@@ -143,7 +143,18 @@ export default {
 			default: algorithms.defaultPosition,
 		},
 		defaultBoundaries: {
-			type: [Function],
+			type: [Function, String],
+			validator(value) {
+				const invalid = typeof value === 'string' && value !== 'fill' && value !== 'fit';
+				if (invalid) {
+					if (process.env.NODE_ENV !== 'production') {
+						console.warn(
+							`Warning: prop "defaultBoundaries" gets incorrect string value ${value}. It should be either function, 'fill' or 'fit'`,
+						);
+					}
+				}
+				return !invalid;
+			},
 		},
 		autoZoomAlgorithm: {
 			type: Function,
@@ -772,6 +783,8 @@ export default {
 
 				if (isFunction(this.defaultBoundaries)) {
 					this.boundaries = this.defaultBoundaries(params);
+				} else if (this.defaultBoundaries === 'fit') {
+					this.boundaries = fitBoundaries(params);
 				} else {
 					this.boundaries = fillBoundaries(params);
 				}
