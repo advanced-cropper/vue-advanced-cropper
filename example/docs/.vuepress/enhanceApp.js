@@ -1,1 +1,1 @@
-import 'vue-advanced-cropper/style.css';
+import 'vue-advanced-cropper/dist/style.css';
