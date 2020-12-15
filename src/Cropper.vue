@@ -616,11 +616,17 @@ export default {
 				if (!this.imageLoaded) {
 					this.delayedTransforms = transforms;
 				} else {
-					this.coordinates = this.applyTransform(transforms);
-					if (autoZoom) {
-						this.runAutoZoom('setCoordinates', {
-							transitions,
-						});
+					if (!this.transitionsActive) {
+						if (transitions) {
+							this.enableTransitions();
+						}
+						this.coordinates = this.applyTransform(transforms);
+						if (autoZoom) {
+							this.runAutoZoom('setCoordinates');
+						}
+						if (transitions) {
+							this.debouncedDisableTransitions();
+						}
 					}
 				}
 			});
@@ -958,7 +964,6 @@ export default {
 		onChangeImage() {
 			this.imageLoaded = false;
 			this.delayedTransforms = null;
-			this.imageAttributes.src = null;
 
 			if (this.src) {
 				const promise = parseImage(this.src);
@@ -1259,6 +1264,7 @@ export default {
 				</div>
 				<component
 					:is="stencilComponent"
+					v-show="imageLoaded"
 					ref="stencil"
 					:transitions="transitionsOptions"
 					:stencil-coordinates="stencilCoordinates"

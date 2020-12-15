@@ -81,6 +81,7 @@ export default {
 			:stencil-props="{
 				minAspectRatio: 10 / 20,
 			}"
+			:transitions="true"
 			@change="updateSize"
 		/>
 		<vertical-buttons>
