@@ -4,7 +4,6 @@ import commonjs from '@rollup/plugin-commonjs';
 import replace from '@rollup/plugin-replace';
 import resolve from '@rollup/plugin-node-resolve';
 import url from '@rollup/plugin-url';
-import external from 'rollup-plugin-peer-deps-external';
 import vue from 'rollup-plugin-vue';
 import { terser } from 'rollup-plugin-terser';
 import scss from 'rollup-plugin-scss';
@@ -12,6 +11,7 @@ import typescript from '@rollup/plugin-typescript';
 import pkg from './package.json';
 
 export default {
+	external: ['vue'],
 	input: 'src/index.js',
 	output: [
 		{
@@ -30,9 +30,13 @@ export default {
 			sourcemap: process.env.NODE_ENV !== 'production',
 			name: 'vue-advanced-cropper',
 		},
+		{
+			file: './testing-vue-next/node_modules/vue-advanced-cropper/dist/index.js',
+			format: 'cjs',
+			sourcemap: process.env.NODE_ENV !== 'production',
+		},
 	],
 	plugins: [
-		external(),
 		scss({
 			output: './dist/style.css',
 		}),
