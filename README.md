@@ -2,7 +2,7 @@
 <br/>
 <p align="center">
   <a href="https://npmcharts.com/compare/vue-advanced-cropper?minimal=true"><img src="https://img.shields.io/npm/dm/vue-advanced-cropper.svg?sanitize=true" alt="Downloads"></a>
-  <a href="https://www.npmjs.com/package/vue-advanced-cropper"><img src="https://img.shields.io/npm/v/vue-advanced-cropper.svg" alt="Version"></a>
+  <a href="https://www.npmjs.com/package/vue-advanced-cropper"><img src="https://img.shields.io/npm/v/vue-advanced-cropper/next.svg?sanitize=true" alt="Version"></a>
   <a href="https://www.npmjs.com/package/vue-advanced-cropper">
   <br>
   <a href="https://norserium.github.io/vue-advanced-cropper/">Documentation</a target="_blank" rel="noopener noreferrer"> /  
@@ -20,7 +20,7 @@
 
 ---
 
-:fire: **HEADS UP!** You're currently looking at the branch for Vue 2. If you're looking for the branch for Vue 3, [please check out `vue-next` branch](https://github.com/Norserium/vue-advanced-cropper/tree/vue-next).
+:fire: **HEADS UP!** You're currently looking at the branch for Vue 3. If you're looking for the branch for Vue 2, [please check out `master` branch](https://github.com/Norserium/vue-advanced-cropper).
 
 ---
 
@@ -42,11 +42,11 @@ The codesandbox for [mobile](https://codesandbox.io/s/vue-advanced-cropper-mobil
 ## Install
 
 ```bash
-npm install --save vue-advanced-cropper
+npm install --save vue-advanced-cropper@next
 ```
 
 ```bash
-yarn add vue-advanced-cropper
+yarn add vue-advanced-cropper@next
 ```
 
 If you would to use CDN read the corresponding [documentation section](https://norserium.github.io/vue-advanced-cropper/introduction/getting-started.html#using-cdn)
