@@ -131,11 +131,9 @@ export default {
 		},
 		defaultPosition: {
 			type: [Function, Object],
-			default: algorithms.defaultPosition,
 		},
 		defaultVisibleArea: {
 			type: [Function, Object],
-			default: algorithms.defaultVisibleArea,
 		},
 		defaultTransforms: {
 			type: [Function, Object],
@@ -535,7 +533,7 @@ export default {
 		window.addEventListener('resize', this.refresh);
 		window.addEventListener('orientationchange', this.refresh);
 	},
-	destroyed() {
+	unmounted() {
 		window.removeEventListener('resize', this.refresh);
 		window.removeEventListener('orientationchange', this.refresh);
 		if (this.imageAttributes.revoke && this.imageAttributes.src) {
@@ -859,11 +857,13 @@ export default {
 					);
 				}
 
+				const defaultPositionAlgorithm = this.defaultPosition || algorithms.defaultPosition;
+
 				const transforms = [
 					defaultSize,
 					({ coordinates }) => ({
-						...(isFunction(this.defaultPosition)
-							? this.defaultPosition({
+						...(isFunction(defaultPositionAlgorithm)
+							? defaultPositionAlgorithm({
 									coordinates,
 									imageSize: this.imageSize,
 									visibleArea: this.visibleArea,
@@ -948,8 +948,10 @@ export default {
 						this.resetCoordinates();
 					}
 
-					this.visibleArea = isFunction(this.defaultVisibleArea)
-						? this.defaultVisibleArea({
+					let algorithm = this.defaultVisibleArea || algorithms.defaultVisibleArea;
+
+					this.visibleArea = isFunction(algorithm)
+						? algorithm({
 								imageSize: this.imageSize,
 								boundaries: this.boundaries,
 								coordinates: this.priority !== 'visible-area' ? this.coordinates : null,
@@ -1330,6 +1332,7 @@ export default {
 			}
 		},
 	},
+	emits: ['change', 'error', 'ready'],
 };
 </script>
 

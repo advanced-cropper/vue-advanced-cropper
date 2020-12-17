@@ -59,11 +59,18 @@ export class DragEvent implements StencilEvent {
 	}
 	public shift(): Diff {
 		const { element, anchor, position } = this;
-		const { left, top } = element.getBoundingClientRect();
 
-		return {
-			left: position.left - left - anchor.left,
-			top: position.top - top - anchor.top,
-		};
+		if (element) {
+			const { left, top } = element.getBoundingClientRect();
+			return {
+				left: position.left - left - anchor.left,
+				top: position.top - top - anchor.top,
+			};
+		} else {
+			return {
+				left: 0,
+				top: 0,
+			};
+		}
 	}
 }
