@@ -22,7 +22,10 @@ yarn-debug.log*
 yarn-error.log*
 
 testing-internet-explorer/
+testing-vue-next/
 example/package-lock.json
 stats.html
 
 .idea
+.cache
+.temp

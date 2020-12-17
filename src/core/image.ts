@@ -157,9 +157,7 @@ function getImageData(img) {
 
 export function getStyleTransforms({ rotate, flip }) {
 	let transform = '';
-	if (rotate) {
-		transform += ` rotate(${rotate}deg) `;
-	}
+	transform += ` rotate(${rotate}deg) `;
 	transform += ` scaleX(${flip.horizontal ? -1 : 1}) `;
 	transform += ` scaleY(${flip.vertical ? -1 : 1}) `;
 	return transform;
