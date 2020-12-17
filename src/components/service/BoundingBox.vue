@@ -170,7 +170,7 @@ export default {
 		window.addEventListener('touchmove', this.onTouchMove, { passive: false });
 		window.addEventListener('touchend', this.onTouchEnd, { passive: false });
 	},
-	beforeDestroy() {
+	beforeUnmount() {
 		window.removeEventListener('mouseup', this.onMouseUp);
 		window.removeEventListener('mousemove', this.onMouseMove);
 		window.removeEventListener('touchmove', this.onTouchMove);
@@ -228,6 +228,7 @@ export default {
 			}
 		},
 	},
+	emits: ['resize', 'resize-end'],
 };
 </script>
 

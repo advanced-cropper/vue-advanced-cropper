@@ -26,6 +26,8 @@ testing-vue-next/
 example/package-lock.json
 stats.html
 
+.cache
+.temp
 .idea
 .cache
 .temp

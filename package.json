@@ -1,6 +1,6 @@
 {
 	"name": "vue-advanced-cropper",
-	"version": "1.0.1",
+	"version": "2.0.0",
 	"description": "The advanced library to create your own croppers suited for any website design",
 	"author": "Norserium",
 	"license": "MIT",
@@ -33,7 +33,7 @@
 		"lint:fix": "eslint --fix src/**/*.{js,vue}"
 	},
 	"peerDependencies": {
-		"vue": "^2.6.6"
+		"vue": "3.0.3"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.11.6",
@@ -48,6 +48,7 @@
 		"@typescript-eslint/eslint-plugin": "^2.34.0",
 		"@typescript-eslint/parser": "^4.6.0",
 		"@vue/babel-preset-app": "^3.12.1",
+		"@vue/compiler-sfc": "^3.0.3",
 		"autoprefixer": "^9.8.6",
 		"babel-eslint": "^9.0.0",
 		"babel-jest": "^24.9.0",
@@ -71,17 +72,15 @@
 		"lint-staged": "^9.5.0",
 		"prettier": "^2.1.2",
 		"rollup": "^2.26.10",
-		"rollup-plugin-peer-deps-external": "^2.2.3",
 		"rollup-plugin-scss": "^2.6.1",
 		"rollup-plugin-terser": "^7.0.2",
 		"rollup-plugin-visualizer": "^1.1.1",
-		"rollup-plugin-vue": "^5.1.9",
+		"rollup-plugin-vue": "^6.0.0",
 		"sass": "^1.26.10",
 		"sass-loader": "^7.3.1",
 		"ts-jest": "^26.4.3",
 		"typescript": "^4.0.5",
-		"vue": "^2.6.12",
-		"vue-template-compiler": "^2.6.12"
+		"vue": "3.0.3"
 	},
 	"dependencies": {
 		"classnames": "^2.2.6",
