@@ -67,6 +67,7 @@ export default {
 			this.$emit('drag-end');
 		},
 	},
+	emits: ['drag', 'drag-end'],
 };
 </script>
 

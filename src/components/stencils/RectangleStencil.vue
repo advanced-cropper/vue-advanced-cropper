@@ -156,6 +156,7 @@ export default {
 			};
 		},
 	},
+	emits: ['resize', 'resize-end', 'move', 'move-end'],
 };
 </script>
 

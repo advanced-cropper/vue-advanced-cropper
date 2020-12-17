@@ -15,7 +15,7 @@
 
 ---
 
-:fire: **HEADS UP!** You're currently looking at the branch for Vue 2. For the Vue 3 branch, [please check out the `vue-next` branch](https://github.com/advanced-cropper/vue-advanced-cropper/tree/vue-next).
+:fire: **HEADS UP!** You're currently looking at the branch for Vue 3. For the Vue 2, [please check out `master` branch](https://github.com/advanced-cropper/vue-advanced-cropper).
 
 ---
 
@@ -39,11 +39,11 @@ The codesandbox for [mobile](https://codesandbox.io/s/vue-advanced-cropper-mobil
 ### Vue 3.0
 
 ```bash
-npm install --save vue-advanced-cropper
+npm install --save vue-advanced-cropper@next
 ```
 
 ```bash
-yarn add vue-advanced-cropper
+yarn add vue-advanced-cropper@next
 ```
 
 ### Vue 2.0
