@@ -798,7 +798,7 @@ export default {
 		resetVisibleArea() {
 			return this.updateBoundaries()
 				.then(() => {
-					if (this.priority !== 'visibleArea') {
+					if (this.priority !== 'visible-area') {
 						this.visibleArea = null;
 						this.resetCoordinates();
 					}
@@ -807,7 +807,7 @@ export default {
 						? this.defaultVisibleArea({
 								imageSize: this.imageSize,
 								boundaries: this.boundaries,
-								coordinates: this.priority !== 'visibleArea' ? this.coordinates : null,
+								coordinates: this.priority !== 'visible-area' ? this.coordinates : null,
 								getAreaRestrictions: this.getAreaRestrictions,
 								stencilSize: this.getStencilSize(),
 						  })
@@ -819,7 +819,7 @@ export default {
 						getAreaRestrictions: this.getAreaRestrictions,
 					});
 
-					if (this.priority === 'visibleArea') {
+					if (this.priority === 'visible-area') {
 						this.resetCoordinates();
 					} else {
 						this.coordinates = this.fitCoordinates({

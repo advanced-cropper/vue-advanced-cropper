@@ -2,7 +2,7 @@
 title: Migration
 ---
 
-# Migration
+# Migration to 1.0
 
 On the one hand I want to minimize the breaking-changes in this release, but on the other hand
 due the beta-testing I realize that much aspects should be changed. The library have became
@@ -56,6 +56,8 @@ the limitations in the pixels now (before they set limitations in the percents).
 3. Renamed `lineComponent`, `handlerComponent` to `linesComponent`, `handlersComponent`
 
 4. Renamed `restrictions` to `size-restrictions-algorithm`
+
+5. The priority prop now accepts `visible-area` instead of `visibleArea`.
 
 ## Changed methods
 
