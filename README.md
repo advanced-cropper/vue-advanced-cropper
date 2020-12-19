@@ -12,7 +12,7 @@
 
 <h2 align="center"> </h2>
 
-Vue Advanced Cropper is **the advanced library** that gives you opportunity to create your own croppers suited for any website design.
+**Vue Advanced Cropper** is the advanced library that gives you opportunity to create your own croppers suited for any website design.
 It means that you are able to change not only the cropper appearance, you area able to customize its behavior also.
 
 Features:
