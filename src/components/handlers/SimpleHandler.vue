@@ -3,7 +3,8 @@ import classnames from 'classnames';
 import bem from 'easy-bem';
 import { HandlerWrapper } from '../service';
 
-const cn = bem('vue-simple-handler');
+const block = bem('vue-simple-handler');
+const wrapper = bem('vue-simple-handler-wrapper');
 
 export default {
 	name: 'SimpleHandler',
@@ -11,10 +12,13 @@ export default {
 		HandlerWrapper,
 	},
 	props: {
-		classname: {
+		defaultClass: {
 			type: String,
 		},
-		hoverClassname: {
+		hoverClass: {
+			type: String,
+		},
+		wrapperClass: {
 			type: String,
 		},
 		horizontalPosition: {
@@ -34,20 +38,18 @@ export default {
 		};
 	},
 	computed: {
-		classnames() {
-			return {
-				default: classnames(
-					cn({
-						[this.horizontalPosition]: Boolean(this.horizontalPosition),
-						[this.verticalPosition]: Boolean(this.verticalPosition),
-						[`${this.horizontalPosition}-${this.verticalPosition}`]: Boolean(
-							this.verticalPosition && this.horizontalPosition,
-						),
-						hover: this.hover,
-					}),
-					this.classname,
-					this.hover && this.hoverClassname,
+		classes() {
+			const options = {
+				[this.horizontalPosition]: Boolean(this.horizontalPosition),
+				[this.verticalPosition]: Boolean(this.verticalPosition),
+				[`${this.horizontalPosition}-${this.verticalPosition}`]: Boolean(
+					this.verticalPosition && this.horizontalPosition,
 				),
+				hover: this.hover,
+			};
+			return {
+				default: classnames(block(options), this.defaultClass, this.hover && this.hoverClass),
+				wrapper: classnames(wrapper(options), this.wrapperClass),
 			};
 		},
 	},
@@ -70,6 +72,7 @@ export default {
 
 <template>
 	<HandlerWrapper
+		:class="classes.wrapper"
 		:vertical-position="verticalPosition"
 		:horizontal-position="horizontalPosition"
 		:disabled="disabled"
@@ -78,7 +81,7 @@ export default {
 		@enter="onEnter"
 		@leave="onLeave"
 	>
-		<div :class="classnames.default" />
+		<div :class="classes.default" />
 	</HandlerWrapper>
 </template>
 

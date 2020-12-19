@@ -42,6 +42,12 @@ export default {
 				return {};
 			},
 		},
+		handlersWrappersClasses: {
+			type: Object,
+			default() {
+				return {};
+			},
+		},
 		lines: {
 			type: Object,
 			default() {
@@ -60,6 +66,12 @@ export default {
 			},
 		},
 		linesClasses: {
+			type: Object,
+			default() {
+				return {};
+			},
+		},
+		linesWrappersClasses: {
 			type: Object,
 			default() {
 				return {};
@@ -117,12 +129,16 @@ export default {
 	computed: {
 		classes() {
 			const handlers = isEmpty(this.handlersClasses) ? this.handlersClassnames : this.handlersClasses;
+			const handlersWrappers = this.handlersWrappersClasses;
 			const lines = isEmpty(this.linesClasses) ? this.linesClassnames : this.linesClasses;
+			const linesWrappers = this.linesWrappersClasses;
 
 			return {
 				root: classnames(cn(), this.classname),
 				handlers,
+				handlersWrappers,
 				lines,
+				linesWrappers,
 			};
 		},
 		lineNodes() {
@@ -136,6 +152,11 @@ export default {
 							this.classes.lines.default,
 							this.classes.lines[point.name],
 							!this.scalable && this.classes.lines.disabled,
+						),
+						wrapperClass: classnames(
+							this.classes.linesWrappers.default,
+							this.classes.linesWrappers[point.name],
+							!this.scalable && this.classes.linesWrappers.disabled,
 						),
 						hoverClass: this.classes.lines.hover,
 						verticalDirection: point.verticalDirection,
@@ -154,6 +175,10 @@ export default {
 						name: point.name,
 						component: this.handlerComponent,
 						class: classnames(this.classes.handlers.default, this.classes.handlers[point.name]),
+						wrapperClass: classnames(
+							this.classes.handlersWrappers.default,
+							this.classes.handlersWrappers[point.name],
+						),
 						hoverClass: this.classes.handlers.hover,
 						verticalDirection: point.verticalDirection,
 						horizontalDirection: point.horizontalDirection,
@@ -239,8 +264,9 @@ export default {
 				:is="line.component"
 				v-for="line in lineNodes"
 				:key="line.name"
-				:classname="line.class"
-				:hover-classname="line.hoverClass"
+				:default-class="line.class"
+				:hover-class="line.hoverClass"
+				:wrapper-class="line.wrapperClass"
 				:position="line.name"
 				:disabled="line.disabled"
 				@drag="onHandlerDrag($event, line.horizontalDirection, line.verticalDirection)"
@@ -252,8 +278,9 @@ export default {
 				:is="handler.component"
 				v-for="handler in handlerNodes"
 				:key="handler.name"
-				:classname="handler.class"
-				:hover-classname="handler.hoverClass"
+				:default-class="handler.class"
+				:hover-class="handler.hoverClass"
+				:wrapper-class="handler.wrapperClass"
 				:horizontal-position="handler.horizontalDirection"
 				:vertical-position="handler.verticalDirection"
 				:disabled="handler.disabled"

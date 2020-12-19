@@ -3,7 +3,8 @@ import bem from 'easy-bem';
 import classnames from 'classnames';
 import { LineWrapper } from '../service';
 
-const cn = bem('vue-simple-line');
+const block = bem('vue-simple-line');
+const wrapper = bem('vue-simple-line-wrapper');
 
 export default {
 	name: 'SimpleLine',
@@ -11,10 +12,13 @@ export default {
 		LineWrapper,
 	},
 	props: {
-		classname: {
+		defaultClass: {
 			type: String,
 		},
-		hoverClassname: {
+		hoverClass: {
+			type: String,
+		},
+		wrapperClass: {
 			type: String,
 		},
 		position: {
@@ -33,7 +37,8 @@ export default {
 	computed: {
 		classes() {
 			return {
-				root: classnames(cn({ [this.position]: true }), this.classname, this.hover && this.hoverClassname),
+				root: classnames(block({ [this.position]: true }), this.defaultClass, this.hover && this.hoverClass),
+				wrapper: classnames(wrapper({ [this.position]: true }), this.wrapperClass),
 			};
 		},
 	},
@@ -56,6 +61,7 @@ export default {
 
 <template>
 	<LineWrapper
+		:class="classes.wrapper"
 		:position="position"
 		:disabled="disabled"
 		@drag="onDrag"
@@ -94,10 +100,10 @@ export default {
 		border-left-width: 1px;
 	}
 	&--south {
-		border-top-width: 1px;
+		border-bottom-width: 1px;
 	}
 	&--north {
-		border-bottom-width: 1px;
+		border-top-width: 1px;
 	}
 
 	&--hover {

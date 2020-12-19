@@ -63,6 +63,9 @@ export default {
 		transitions: {
 			type: Object,
 		},
+		draggingClass: {
+			type: String,
+		},
 		previewClass: {
 			type: String,
 		},
@@ -75,7 +78,19 @@ export default {
 				return {};
 			},
 		},
+		linesWrappersClasses: {
+			type: Object,
+			default() {
+				return {};
+			},
+		},
 		handlersClasses: {
+			type: Object,
+			default() {
+				return {};
+			},
+		},
+		handlersWrappersClasses: {
 			type: Object,
 			default() {
 				return {};
@@ -113,10 +128,19 @@ export default {
 			},
 		},
 	},
+	data() {
+		return {
+			dragging: false,
+		};
+	},
 	computed: {
 		classes() {
 			return {
-				stencil: classnames(cn({ movable: this.movable }), this.classname),
+				stencil: classnames(
+					cn({ movable: this.movable, dragging: this.dragging }),
+					this.classname,
+					this.dragging && this.draggingClass,
+				),
 				preview: classnames(cn('preview'), this.previewClass || this.previewClassname),
 				boundingBox: classnames(cn('bounding-box'), this.boundingBoxClass || this.boundingBoxClassname),
 			};
@@ -140,15 +164,19 @@ export default {
 	methods: {
 		onMove(moveEvent) {
 			this.$emit('move', moveEvent);
+			this.dragging = true;
 		},
 		onMoveEnd() {
 			this.$emit('move-end');
+			this.dragging = false;
 		},
 		onResize(resizeEvent) {
 			this.$emit('resize', resizeEvent);
+			this.dragging = true;
 		},
 		onResizeEnd() {
 			this.$emit('resize-end');
+			this.dragging = false;
 		},
 		aspectRatios() {
 			return {
@@ -168,10 +196,12 @@ export default {
 			:handler-component="handlerComponent"
 			:handlers-classnames="handlersClassnames"
 			:handlers-classes="handlersClasses"
+			:handlers-wrappers-classes="handlersWrappersClasses"
 			:lines="lines"
 			:line-component="lineComponent"
 			:lines-classnames="linesClassnames"
 			:lines-classes="linesClasses"
+			:lines-wrappers-classes="linesWrappersClasses"
 			:scalable="scalable"
 			@resize="onResize"
 			@resize-end="onResizeEnd"

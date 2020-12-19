@@ -109,10 +109,19 @@ export default {
 			},
 		},
 	},
+	data() {
+		return {
+			dragging: false,
+		};
+	},
 	computed: {
 		classes() {
 			return {
-				stencil: classnames(cn(), this.classname),
+				stencil: classnames(
+					cn({ movable: this.movable, dragging: this.dragging }),
+					this.classname,
+					this.dragging && this.draggingClass,
+				),
 				preview: classnames(cn('preview'), this.previewClass || this.previewClassname),
 				boundingBox: classnames(cn('bounding-box'), this.boundingBoxClass || this.boundingBoxClassname),
 			};
@@ -136,15 +145,19 @@ export default {
 	methods: {
 		onMove(moveEvent) {
 			this.$emit('move', moveEvent);
+			this.dragging = true;
 		},
 		onMoveEnd() {
 			this.$emit('move-end');
+			this.dragging = false;
 		},
 		onResize(resizeEvent) {
 			this.$emit('resize', resizeEvent);
+			this.dragging = true;
 		},
 		onResizeEnd() {
 			this.$emit('resize-end');
+			this.dragging = false;
 		},
 		aspectRatios() {
 			return {
@@ -164,10 +177,12 @@ export default {
 			:handler-component="handlerComponent"
 			:handlers-classes="handlersClasses"
 			:handlers-classnames="handlersClassnames"
+			:handlers-wrappers-classes="handlersWrappersClasses"
 			:lines="lines"
 			:line-component="lineComponent"
 			:lines-classes="linesClasses"
 			:lines-classnames="linesClassnames"
+			:lines-wrappers-classes="linesWrappersClasses"
 			:scalable="scalable"
 			@resize="onResize"
 			@resize-end="onResizeEnd"

@@ -52,6 +52,14 @@ import 'vue-advanced-cropper/theme.classic.css';
 ```
 <theme-example theme="classic"/>
 
+### Compact
+
+The simple classic theme
+```js
+import 'vue-advanced-cropper/theme.compact.css';
+```
+<theme-example theme="compact"/>
+
 ### Bubble
 
 The bright and light theme. 

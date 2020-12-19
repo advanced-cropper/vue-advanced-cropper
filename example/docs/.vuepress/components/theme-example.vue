@@ -25,6 +25,8 @@ export default {
 				return 'https://images.unsplash.com/photo-1520927640400-f9e83b1bc43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1024&q=80';
 			} else if (this.theme === 'engineer') {
 				return 'https://images.unsplash.com/photo-1517976487492-5750f3195933?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80';
+			} else if (this.theme === 'compact') {
+				return 'https://images.pexels.com/photos/573238/pexels-photo-573238.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940';
 			} else {
 				return 'https://images.unsplash.com/photo-1583149577728-9ab503747013?ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80';
 			}
@@ -43,7 +45,7 @@ export default {
 
 <template>
 	<div class="theme-example" :class="{ [theme]: true }">
-		<cropper :src="image" :stencil-component="stencil"/>
+		<cropper :src="image" :stencil-component="stencil" />
 		<div class="buttons">
 			<div class="button" title="Set Rectangle Stencil" @click="setRectangleStencil()">
 				<img :src="require('../assets/icons/rectangle-stencil.svg')" />
@@ -57,6 +59,146 @@ export default {
 </template>
 
 <style lang="scss">
+.compact {
+	$length: 16px;
+	$border-width: 2px;
+
+	.vue-advanced-cropper {
+		&__background {
+			background: #05070c;
+		}
+		&__image {
+			opacity: 0.3;
+		}
+	}
+	.vue-circle-stencil,
+	.vue-rectangle-stencil {
+		&__preview {
+			&:after,
+			&:before {
+				content: '';
+				opacity: 0;
+				transition: opacity 0.25s;
+				position: absolute;
+				pointer-events: none;
+				z-index: 1;
+			}
+			&:after {
+				border-left: solid 1px white;
+				border-right: solid 1px white;
+				width: 33%;
+				height: 100%;
+				transform: translateX(-50%);
+				left: 50%;
+				top: 0;
+			}
+			&:before {
+				border-top: solid 1px white;
+				border-bottom: solid 1px white;
+				height: 33%;
+				width: 100%;
+				transform: translateY(-50%);
+				top: 50%;
+				left: 0;
+			}
+		}
+
+		&--dragging {
+			.vue-rectangle-stencil__preview,
+			.vue-circle-stencil__preview {
+				&:after,
+				&:before {
+					opacity: 0.7;
+				}
+			}
+		}
+	}
+	.vue-simple-line {
+		border-color: rgba(white, 0.8);
+	}
+	.vue-simple-handler-wrapper {
+		width: 24px;
+		height: 24px;
+		&--west-north {
+			transform: translate(0, 0);
+		}
+		&--east-south {
+			transform: translate(-100%, -100%);
+		}
+		&--west-south {
+			transform: translate(0, -100%);
+		}
+		&--east-north {
+			transform: translate(-100%, 0);
+		}
+	}
+	.vue-simple-handler {
+		display: block;
+		position: relative;
+		flex-shrink: 0;
+		transition: opacity 0.5s;
+		border: none;
+		background: white;
+		top: auto;
+		left: auto;
+		height: 4px;
+		width: 4px;
+		opacity: 0;
+
+		&--west-north,
+		&--east-south,
+		&--west-south,
+		&--east-north {
+			display: block;
+			height: $length;
+			width: $length;
+			background: none;
+			opacity: 0.7;
+		}
+		&--west-north {
+			border-left: solid 2px white;
+			border-top: solid 2px white;
+		}
+		&--east-south {
+			border-right: solid 2px white;
+			border-bottom: solid 2px white;
+		}
+
+		&--west-south {
+			border-left: solid 2px white;
+			border-bottom: solid 2px white;
+		}
+		&--east-north {
+			border-right: solid 2px white;
+			border-top: solid 2px white;
+		}
+
+		&--hover {
+			opacity: 1;
+		}
+	}
+
+	.vue-circle-stencil {
+		&__preview {
+			border: solid 2px rgba(white, 0.7);
+		}
+		.vue-simple-line {
+			border-color: rgba(white, 0.3);
+		}
+		.vue-simple-handler {
+			&--west-north,
+			&--east-south,
+			&--west-south,
+			&--east-north {
+				opacity: 0.4;
+			}
+
+			&--hover {
+				opacity: 1;
+			}
+		}
+	}
+}
 .classic {
 	$length: 22px;
 	$border-width: 2px;
