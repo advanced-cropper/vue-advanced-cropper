@@ -1,12 +1,27 @@
-# Vue Advanced Cropper
+<p align="center"><a href="https://norserium.github.io/vue-advanced-cropper/" target="_blank" rel="noopener noreferrer"><img width="133" src="https://github.com/norserium/vue-advanced-cropper/blob/master/example/readme/logo.svg?raw=true&timestamp=1608385818575" alt="Vue Advanced Cropper logo"></a></p>
+<br/>
+<p align="center">
+  <a href="https://npmcharts.com/compare/vue?minimal=true"><img src="https://img.shields.io/npm/dm/vue-advanced-cropper.svg?sanitize=true" alt="Downloads"></a>
+  <a href="https://www.npmjs.com/package/vue-advanced-cropper"><img src="https://img.shields.io/npm/v/vue-advanced-cropper.svg?sanitize=true" alt="Version"></a>
+  <a href="https://www.npmjs.com/package/vue-advanced-cropper">
+  <br>
+  <a href="https://norserium.github.io/vue-advanced-cropper/">Documentation</a target="_blank" rel="noopener noreferrer"> /  
+  <a href="https://norserium.github.io/vue-advanced-cropper/guides/recipes.html">Examples</a target="_blank" rel="noopener noreferrer"> /
+  <a href="https://codesandbox.io/s/vue-avanced-cropper-basic-jfy5w">Sandbox</a target="_blank" rel="noopener noreferrer">
+</p>
 
-> The advanced library that gives you opportunity to create your own croppers suited for any website design
+<h2 align="center"> </h2>
 
-[Documentation](https://norserium.github.io/vue-advanced-cropper/) / [Examples](https://norserium.github.io/vue-advanced-cropper/guides/recipes.html) / [Sandbox](https://codesandbox.io/s/vue-avanced-cropper-basic-jfy5w)
+Vue Advanced Cropper is **the advanced library** that gives you opportunity to create your own croppers suited for any website design.
+It means that you are able to change not only the cropper appearance, you area able to customize its behavior also.
 
-[![NPM](https://img.shields.io/npm/v/vue-advanced-cropper.svg)](https://www.npmjs.com/package/vue-advanced-cropper)
+Features:
 
-> **WARNING**: This library is in beta test stage. API can be changed in the future.
+- full mobile / desktop support
+- support [all three main types of croppers](https://norserium.github.io/vue-advanced-cropper/introduction/types.html) right out of the box
+- support both canvas and coordinates modes, minimum and maximum aspect ratios, custom size restrictions
+- zoom, rotate, resize image
+- auto-zoom, transitions
 
 ![](https://github.com/norserium/vue-advanced-cropper/blob/master/example/readme/example.gif?raw=true)
 
