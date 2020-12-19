@@ -64,9 +64,6 @@ export default {
 	$border-width: 2px;
 
 	.vue-advanced-cropper {
-		&__background {
-			background: #05070c;
-		}
 		&__image {
 			opacity: 0.3;
 		}
@@ -204,11 +201,8 @@ export default {
 	$border-width: 2px;
 
 	.vue-advanced-cropper {
-		&__background {
-			background: #05070c;
-		}
-		&__image {
-			opacity: 0.3;
+		&__foreground {
+			opacity: 0.7;
 		}
 	}
 	.vue-simple-handler {
@@ -434,11 +428,12 @@ export default {
 }
 .bubble {
 	.vue-advanced-cropper {
+		&__foreground,
 		&__background {
 			background: #59b3ff;
 		}
-		&__image {
-			opacity: 0.3;
+		&__foreground {
+			opacity: 0.7;
 		}
 	}
 	.vue-rectangle-stencil,

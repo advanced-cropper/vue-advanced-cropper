@@ -4,6 +4,11 @@ title: Migration
 
 # Migration to 1.0
 
+::: danger Not Released
+The next release is not ready. However I've already began to write the migration guide, to commit
+every breaking-changes. 
+:::
+
 On the one hand I want to minimize the breaking-changes in this release, but on the other hand
 due the beta-testing I realize that much aspects should be changed. The library have became
 much larger and much difficult that it was before, so the breaking-changes became inevitable.
@@ -19,7 +24,7 @@ Now the styles are not injected automatically. You should import the styles dire
 ```js
 import { Cropper } from 'vue-advanced-cropper';
 // Add the following line to import the cropper styles
-import 'vue-advanced-cropper/style.css';
+import 'vue-advanced-cropper/dist/style.css';
 ```
 
 ### Using CDN
@@ -57,7 +62,7 @@ the limitations in the pixels now (before they set limitations in the percents).
 
 4. Renamed `restrictions` to `size-restrictions-algorithm`
 
-5. The priority prop now accepts `visible-area` instead of `visibleArea`.
+5. The priority prop now accepts `'visible-area'` instead of `'visibleArea'`.
 
 ## Changed methods
 

@@ -19,7 +19,7 @@ They define global rules for such classes as `vue-advanced-cropper`, `vue-rectan
 
 When you import the styles, you load both service styles that required to correct displaying of components and the simplest default theme.
 ```js
-import 'vue-advanced-cropper/style.css';
+import 'vue-advanced-cropper/dist/style.css';
 ```
 
 It's the deliberate decision to reduce the count of operations needed to start work with this library. 
@@ -35,11 +35,12 @@ If you loaded styles as written earlier it will be enabled by default. This them
 <theme-example theme="default"/>
 
 
-### Compact
+### Compact Theme
 
-The simple classic theme
+The compact theme inspired by some of Android croppers. It's well suited
+for mobile devices.
 ```js
-import 'vue-advanced-cropper/theme.compact.css';
+import 'vue-advanced-cropper/dist/themes/compact.css';
 ```
 <theme-example theme="compact"/>
 
@@ -47,7 +48,7 @@ import 'vue-advanced-cropper/theme.compact.css';
 
 The strict and classic theme
 ```js
-import 'vue-advanced-cropper/theme.engineer.css';
+import 'vue-advanced-cropper/dist/themes/engineer.css';
 ```
 <theme-example theme="engineer"/>
 
@@ -55,7 +56,7 @@ import 'vue-advanced-cropper/theme.engineer.css';
 
 The simple classic theme
 ```js
-import 'vue-advanced-cropper/theme.classic.css';
+import 'vue-advanced-cropper/dist/themes/classic.css';
 ```
 <theme-example theme="classic"/>
 
@@ -63,7 +64,7 @@ import 'vue-advanced-cropper/theme.classic.css';
 
 The bright and light theme. 
 ```js
-import 'vue-advanced-cropper/theme.bubble.css';
+import 'vue-advanced-cropper/dist/themes/bubble.css';
 ```
 <theme-example theme="bubble"/>
 
@@ -71,6 +72,6 @@ import 'vue-advanced-cropper/theme.bubble.css';
 
 The noire, shaded theme.
 ```js
-import 'vue-advanced-cropper/theme.noire.css';
+import 'vue-advanced-cropper/dist/themes/noire.css';
 ```
 <theme-example theme="noire"/>
