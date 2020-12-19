@@ -35,6 +35,13 @@ If you loaded styles as written earlier it will be enabled by default. This them
 <theme-example theme="default"/>
 
 
+### Compact
+
+The simple classic theme
+```js
+import 'vue-advanced-cropper/theme.compact.css';
+```
+<theme-example theme="compact"/>
 
 ### Engineer
 
@@ -51,14 +58,6 @@ The simple classic theme
 import 'vue-advanced-cropper/theme.classic.css';
 ```
 <theme-example theme="classic"/>
-
-### Compact
-
-The simple classic theme
-```js
-import 'vue-advanced-cropper/theme.compact.css';
-```
-<theme-example theme="compact"/>
 
 ### Bubble
 

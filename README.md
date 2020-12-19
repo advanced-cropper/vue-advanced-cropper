@@ -25,6 +25,8 @@ Features:
 
 ![](https://github.com/norserium/vue-advanced-cropper/blob/master/example/readme/example.gif?raw=true)
 
+The codesandbox for [mobile](https://codesandbox.io/s/vue-advanced-cropper-mobile-without-theme-h33bf) / [desktop](https://codesandbox.io/s/vue-advanced-cropper-desktop-without-theme-4pp9f?file=/src/App.vue) examples above.
+
 ## Install
 
 ```bash
