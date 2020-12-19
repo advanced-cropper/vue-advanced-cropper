@@ -56,3 +56,15 @@ the limitations in the pixels now (before they set limitations in the percents).
 3. Renamed `lineComponent`, `handlerComponent` to `linesComponent`, `handlersComponent`
 
 4. Renamed `restrictions` to `size-restrictions-algorithm`
+
+## Changed methods
+
+1. The callback in `setCoordinates` method now should accept only one argument: the object with fields `coordinates`, `imageSize` and `visibleArea`. 
+```js
+this.$refs.cropper.setCoordinates(({ coordinates, imageSize, visibleArea}) => {
+	return {
+		width: visibleArea.width,
+		height: visibleArea.height
+	}
+})
+```

@@ -29,21 +29,21 @@ export default {
 		resize(width = 1, height = 1) {
 			let startCoordinates;
 			this.$refs.cropper.setCoordinates([
-				(coordinates, imageSize) => {
+				({ coordinates, imageSize }) => {
 					startCoordinates = coordinates;
 					return {
 						width: coordinates.width * width,
 						height: coordinates.height * height,
 					};
 				},
-				(coordinates, imageSize) => ({
+				({ coordinates, imageSize }) => ({
 					left: startCoordinates.left + (startCoordinates.width - coordinates.width) / 2,
 					top: startCoordinates.top + (startCoordinates.height - coordinates.height) / 2,
 				}),
 			]);
 		},
 		center() {
-			this.$refs.cropper.setCoordinates((coordinates, imageSize) => ({
+			this.$refs.cropper.setCoordinates(({ coordinates, imageSize }) => ({
 				left: imageSize.width / 2 - coordinates.width / 2,
 				top: imageSize.height / 2 - coordinates.height / 2,
 			}));
@@ -55,11 +55,11 @@ export default {
 				top: cropper.coordinates.top + cropper.coordinates.height / 2,
 			};
 			cropper.setCoordinates([
-				(coordinates, imageSize) => ({
+				({ coordinates, imageSize }) => ({
 					width: imageSize.width,
 					height: imageSize.height,
 				}),
-				(coordinates, imageSize) => ({
+				({ coordinates, imageSize }) => ({
 					left: center.left - coordinates.width / 2,
 					top: center.top - coordinates.height / 2,
 				}),

@@ -1,4 +1,12 @@
-import { AspectRatio, PositionRestrictions, SizeRestrictions, Transform, Coordinates, Size } from '../typings';
+import {
+	AspectRatio,
+	PositionRestrictions,
+	SizeRestrictions,
+	Transform,
+	Coordinates,
+	Size,
+	VisibleArea,
+} from '../typings';
 import { MoveEvent } from '../events';
 import { approximatedSize } from './approximatedSize';
 import { isUndefined } from '../utils';
@@ -10,6 +18,7 @@ interface ApplyTransformParams {
 	sizeRestrictions: SizeRestrictions;
 	positionRestrictions: PositionRestrictions;
 	imageSize: Size;
+	visibleArea: VisibleArea;
 	aspectRatio?: AspectRatio;
 }
 
@@ -21,6 +30,7 @@ export function applyTransform(params: ApplyTransformParams) {
 		sizeRestrictions,
 		positionRestrictions,
 		aspectRatio,
+		visibleArea,
 	} = params;
 
 	const moveAlgorithm = (prevCoordinates, newCoordinates) => {
@@ -60,7 +70,7 @@ export function applyTransform(params: ApplyTransformParams) {
 	transforms.forEach((transform) => {
 		let changes: Partial<Coordinates> = {};
 		if (typeof transform === 'function') {
-			changes = transform({ ...coordinates }, imageSize);
+			changes = transform({ coordinates, imageSize, visibleArea });
 		} else {
 			changes = transform;
 		}

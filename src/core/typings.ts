@@ -116,9 +116,13 @@ export interface WheelResizeSettings {
 	ratio?: number;
 }
 
-export type Transform =
-	| ((coordinates: Coordinates, imageSize: ImageSize) => Partial<Coordinates>)
-	| Partial<Coordinates>;
+export interface TransformParams {
+	coordinates: Coordinates;
+	imageSize: ImageSize;
+	visibleArea: VisibleArea;
+}
+
+export type Transform = ((params: TransformParams) => Partial<Coordinates>) | Partial<Coordinates>;
 
 export interface StencilCalculationParams {
 	boundaries: Boundaries;

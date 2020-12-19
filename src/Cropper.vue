@@ -674,6 +674,7 @@ export default {
 				sizeRestrictions,
 				positionRestrictions,
 				aspectRatio: this.getAspectRatio(),
+				visibleArea: this.visibleArea,
 			});
 		},
 		resetCoordinates() {
@@ -722,7 +723,7 @@ export default {
 
 				const transforms = [
 					defaultSize,
-					(coordinates) => ({
+					({ coordinates }) => ({
 						...(isFunction(this.defaultPosition)
 							? this.defaultPosition({
 									coordinates,
