@@ -1,1 +1,0 @@
-(window.webpackJsonp=window.webpackJsonp||[]).push([[58],{333:function(t,n,s){},359:function(t,n,s){"use strict";s.r(n);s(372);var e=s(41),c=Object(e.a)({},(function(){var t=this.$createElement;return(this._self._c||t)("div",{staticClass:"static-cropper"},[this._t("default")],2)}),[],!1,null,null,null);n.default=c.exports},372:function(t,n,s){"use strict";s(333)}}]);
