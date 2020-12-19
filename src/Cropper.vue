@@ -18,7 +18,7 @@ import {
 } from './core';
 import { updateCanvas } from './core/canvas';
 import { ManipulateImageEvent } from './core/events';
-import { limitSizeRestrictions, limitsToSize, ratio } from './core/service';
+import { isEqual, limitSizeRestrictions, limitsToSize, ratio } from './core/service';
 import { isLocal, isCrossOriginURL, isUndefined, getSettings, parseNumber } from './core/utils';
 import { arrayBufferToDataURL, getImageTransforms, getStyleTransforms, prepareSource, parseImage } from './core/image';
 import { IMAGE_RESTRICTIONS, DEFAULT_COORDINATES } from './core/constants';
@@ -588,7 +588,9 @@ export default {
 				};
 			}
 		},
-		zoom(factor, center) {
+		zoom(factor, center, params = {}) {
+			const { transitions = true } = params;
+
 			this.onManipulateImage(
 				new ManipulateImageEvent(
 					{},
@@ -597,17 +599,24 @@ export default {
 						center,
 					},
 				),
-				false,
+				{
+					normalize: false,
+					transitions,
+				},
 			);
 		},
-		move(left, top) {
+		move(left, top, params = {}) {
+			const { transitions = true } = params;
 			this.onManipulateImage(
 				// Multiplying on coefficient is temporary solution
 				new ManipulateImageEvent({
 					left: left || 0,
 					top: top || 0,
 				}),
-				false,
+				{
+					normalize: false,
+					transitions,
+				},
 			);
 		},
 		setCoordinates(transforms, params = {}) {
@@ -669,7 +678,7 @@ export default {
 				}
 			}
 
-			return algorithm({
+			const result = algorithm({
 				event: {
 					type,
 					params,
@@ -683,25 +692,30 @@ export default {
 				sizeRestrictions: this.sizeRestrictions,
 				stencilSize: this.getStencilSize(),
 			});
+
+			return {
+				...result,
+				changed: !isEqual(result.visibleArea, visibleArea) || !isEqual(result.coordinates, coordinates),
+			};
 		},
 		runAutoZoom(event, params = {}) {
 			const { transitions = false, ...payload } = params;
 
-			if (transitions) {
-				this.enableTransitions();
-			}
-
-			const { visibleArea, coordinates } = this.processAutoZoom(
+			const { visibleArea, coordinates, changed } = this.processAutoZoom(
 				event,
 				this.visibleArea,
 				this.coordinates,
 				payload,
 			);
 
+			if (transitions && changed) {
+				this.enableTransitions();
+			}
+
 			this.visibleArea = visibleArea;
 			this.coordinates = coordinates;
 
-			if (transitions) {
+			if (transitions && changed) {
 				this.debouncedDisableTransitions();
 			}
 		},
@@ -1066,23 +1080,33 @@ export default {
 				this.onChange();
 			}
 		},
-		onManipulateImage(event, normalize = true) {
-			const { visibleArea, coordinates } = algorithms.manipulateImage({
-				...this.getPublicProperties(),
-				event: normalize ? this.normalizeEvent(event) : event,
-				getAreaRestrictions: this.getAreaRestrictions,
-				imageRestriction: this.imageRestriction,
-				adjustStencil: !this.stencilSize && this.settings.resizeImage.adjustStencil,
-				// Deprecated
-				areaRestrictions: this.areaRestrictions,
-			});
+		onManipulateImage(event, params = {}) {
+			if (!this.transitionsOptions.enabled) {
+				const { transitions = false, normalize = true } = params;
+				if (transitions) {
+					this.enableTransitions();
+				}
+				const { visibleArea, coordinates } = algorithms.manipulateImage({
+					...this.getPublicProperties(),
+					event: normalize ? this.normalizeEvent(event) : event,
+					getAreaRestrictions: this.getAreaRestrictions,
+					imageRestriction: this.imageRestriction,
+					adjustStencil: !this.stencilSize && this.settings.resizeImage.adjustStencil,
+					// Deprecated
+					areaRestrictions: this.areaRestrictions,
+				});
 
-			this.visibleArea = visibleArea;
-			this.coordinates = coordinates;
+				this.visibleArea = visibleArea;
+				this.coordinates = coordinates;
 
-			this.runAutoZoom('manipulateImage');
+				this.runAutoZoom('manipulateImage');
 
-			this.onChange();
+				this.onChange();
+
+				if (transitions) {
+					this.debouncedDisableTransitions();
+				}
+			}
 		},
 		onPropsChange() {
 			this.coordinates = this.applyTransform(this.coordinates, true);

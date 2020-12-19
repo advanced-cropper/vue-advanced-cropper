@@ -60,6 +60,7 @@ export default {
 			class="coordinates-cropper"
 			:src="image"
 			:default-boundaries="boundaries"
+			:transitions="true"
 			:stencil-props="{
 				minAspectRatio: 10 / 20,
 			}"
