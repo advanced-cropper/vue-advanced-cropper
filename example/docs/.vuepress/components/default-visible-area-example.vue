@@ -41,7 +41,7 @@ export default {
 			:src="img"
 			:default-visible-area="defaultVisibleArea"
 			default-boundaries="fill"
-			priority="visibleArea"
+			priority="visible-area"
 		/>
 	</example-wrapper>
 </template>

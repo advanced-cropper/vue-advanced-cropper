@@ -13,7 +13,7 @@ export default {
 		},
 		defaultBoundaries: {
 			type: String,
-			default: 'fit',
+			default: 'fill',
 		},
 		defaultSize: {
 			type: Object,
@@ -32,12 +32,9 @@ export default {
 		},
 		imageRestriction: {
 			type: String,
-			default: 'fill-area',
+			default: 'fit-area',
 		},
 		autoZoom: {
-			type: Boolean,
-		},
-		transitions: {
 			type: Boolean,
 		},
 		smallHeight: {
@@ -61,7 +58,6 @@ export default {
 			:resize-image="resizeImage"
 			:default-size="defaultSize"
 			:auto-zoom="autoZoom"
-			:transitions="transitions"
 			:stencil-size="stencilSize"
 			:stencil-props="stencilProps"
 			:default-visible-area="defaultVisibleArea"

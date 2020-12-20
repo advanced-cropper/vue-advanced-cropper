@@ -36,35 +36,30 @@ export default {
 ```
 
 Let's define basic requirements to a typical stencil:
-- it should receive and process service props from a cropper (`img`, `resultCoordinates`, `stencilCoordinates`)
+- it should receive and process service props from a cropper (`image`, `stencilCoordinates`)
 - it should provide `aspectRatios` method that returns the object with `minimum` and `maximum` fields
 - it should display the current cropped area
 - it should emit resize and move events
 
 ## Props
 
-First of all, it's need to descripe service props
+First of all, it's need to describe service props
 
-### `img`
+### `image`
 
 This prop is the object, that describes the properties of image and has following properties:
 
 - `src` - the link to the image 
-- `size` - the actual image size
+- `width` - the image width
+- `height` - the image height
 - `transforms` - the transforms applied to image
-- `coefficient` - the ratio of visible area width to boundaries width
-
-### `resultCoordinates`
-
-It's the object with `left`, `right`, `height` and `width` fields, that represent the absolute coordinates of cropped area relative to original image size.
-
-In other words, this coordinates defines a exact part of original image passed to `img` prop that is cropped now.
+- `loaded` - the flag that indicates if image is loaded
 
 ### `stencilCoordinates`
 
 It's the object with `left`, `right`, `height` and `width` fields, that represents desirable coordinates of stencil relative to visible area. In almost all cases you may use it as default coordinates for your absolute positioned stencil.
 
-You should set the coordinates of your stencil **himself**. It was done on purpose, to give you posibility to create the custom stencil more flexible.
+You should set the coordinates of your stencil **himself**. It was done on purpose, to give you possibility to create the custom stencil more flexible.
 
 So pay attention on the computed property `style`
 
@@ -73,7 +68,7 @@ So pay attention on the computed property `style`
 export default {
 	name: 'CircleStencil',
 	props: {
-		img: {
+		image: {
 			type: Object
 		},
 		resultCoordinates: {
@@ -111,7 +106,7 @@ Aspect ratios method should return an object with `minimum` and `maximum` fields
 export default {
 	name: 'CircleStencil',
 	props: {
-		img: {
+		image: {
 			type: Object
 		},
 		resultCoordinates: {
@@ -170,7 +165,7 @@ export default {
 		PreviewResult
 	},
 	props: {
-		img: {
+		image: {
 			type: Object
 		},
 		resultCoordinates: {
@@ -205,12 +200,10 @@ export default {
 <template>
   	<div class="circle-stencil" :style="style">
 	 	<img src="./handler.svg">
-        <PreviewResult
+        <preview-result
         	class="circle-stencil__preview"
-        	:img="img"
-        	:width="stencilCoordinates.width"
-        	:height="stencilCoordinates.height"
-		    :coordinates="resultCoordinates"
+			:image="image"
+			:stencil-coordinates="stencilCoordinates"
       	/>
   	</div>
 </template>
@@ -267,7 +260,7 @@ export default {
 		DraggableElement
 	},
 	props: {
-		img: {
+		image: {
 			type: Object
 		},
 		resultCoordinates: {
@@ -301,20 +294,19 @@ export default {
 
 <template>
   	<div class="circle-stencil" :style="style">
-		<DraggableElement
+		<draggableElement
 			class="circle-stencil__handler"
 			@drag="onHandlerMove"
 		>
 			<img :src="require('./assets/handler.svg')">
-		</DraggableElement>
-		<DraggableArea @move="onMove">
-			<PreviewResult
+		</draggable-element>
+		<draggable-area @move="onMove">
+			<preview-result
 				class="circle-stencil__preview"
-				:img="img"
-				:stencilCoordinates="stencilCoordinates"
-				:resultCoordinates="resultCoordinates"
+				:image="image"
+				:stencil-coordinates="stencilCoordinates"
 			/>
-		</DraggableArea>
+		</draggable-area>
  	</div>
 </template>
 ```
@@ -391,8 +383,7 @@ The full ready-to-use source code of this example is [here](https://codesandbox.
 <advanced-stencil-example></advanced-stencil-example>
 
 ```html
-<script>
-import {
+<script>-eimport {
 	DraggableElement,
 	DraggableArea,
 	PreviewResult,
@@ -407,7 +398,7 @@ export default {
 		DraggableElement
 	},
 	props: {
-		img: {
+		image: {
 			type: Object
 		},
 		resultCoordinates: {
@@ -463,7 +454,7 @@ export default {
     class="circle-stencil"
     :style="style"
   >
-    <DraggableElement
+    <draggable-element
       class="circle-stencil__handler"
       @drag="onHandlerMove"
     >
@@ -471,15 +462,14 @@ export default {
         :src="require('./assets/handler.svg')"
         alt=""
       >
-    </DraggableElement>
-    <DraggableArea @move="onMove">
-      <PreviewResult
+    </draggable-element>
+    <draggable-area @move="onMove">
+      <preview-result
         class="circle-stencil__preview"
-        :img="img"
-		:stencilCoordinates="stencilCoordinates"
-		:resultCoordinates="resultCoordinates"
+        :image="image"
+		:stencil-coordinates="stencilCoordinates"
       />
-    </DraggableArea>
+    </draggable-area>
   </div>
 </template>
 

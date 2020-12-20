@@ -19,282 +19,662 @@ Cropper will emit `error` event when image is unsuccessfully loaded.
 ## Methods
 
 ### `getResult()`
-Returns: current coordinates, canvas and visible area.
 
-The method that allow you to get the result of cropper programmatically, instead of listen `change` event.
+- **Returns:**  
+	- The object: `{ coordinates, imageTransforms, visibleArea, canvas }`
 
-It described [here](/tutorials/recipes.html#second-method).
 
+- **Usage:**
+
+	The method allows you to get the result of cropper programmatically, instead of listening the `change` event.
+	
+	```js
+	const { 
+		coordinates, imageTransforms, visibleArea, canvas 
+	} = this.$refs.cropper.getResult();
+	```
+
+	**See also: [Example](/guides/recipes.html#second-method)**
 
 ### `setCoordinates(transform)`
-Returns: new coordinates
 
-The method that allow you to set the coordinates programmatically. The transform argument can be: `Object`, `Function` or `Array` that contains objects or function in the case if you need consequence transforms.
+- **Arguments:**
+  - `{Object|Function|Array} transform`
 
-It described [here](/tutorials/recipes.html#second-method).
+- **Usage:**
 
+	The method allows you to set the coordinates programmatically. The transform argument can be: `Object`, `Function` or `Array` that contains objects or function in the case if you need consequence transforms.
+
+	The only argument `transform` can be: `Object`, `Function` or `Array` that contains objects or function in the case if you need consequence transforms.
+	
+	#### `Object`
+	
+	If you just want to set the known coordinates you can pass object to `setCoordinates` method
+	
+	```js
+	cropper.setCoordinates({
+		width: 32,
+		height: 42,
+		left: 102,
+		top: 74
+	})
+	```
+	
+	#### `Function`
+	
+	But mostly you need to set coordinates based at current coordinates or image size.
+	
+	1. Center stencil:
+	```js
+	cropper.setCoordinates(({ coordinates, imageSize }) => ({
+		left: imageSize.width/2 - coordinates.width/2,
+		top: imageSize.height/2 - coordinates.height/2
+	}))
+	
+	```
+	2. Maximize stencil:
+	```js
+	cropper.setCoordinates(({ coordinates, imageSize }) => ({
+		width: imageSize.width,
+		height: imageSize.height
+	}))
+	```
+	
+	#### `Array`
+	
+	Finally, there might be situations where you need to make consequence transforms. For example, resize stencil and then center it.
+	
+	That can appear to be superfluous, because you can set coordinates and size simultaneosly:
+	```js
+	cropper.setCoordinates(({ coordinates, imageSize }) => ({
+		width: newWidth,
+		height: newHeight,
+		left: imageSize.width/2 - newWidth.width/2,
+		top: imageSize.height/2 - newHeight.height/2
+	}))
+	```
+	
+	But there is a catch, `setCoordinates` method respects limitations, so the new width might be different than `newWidth` in this example.
+	
+	So the right way is do multiple consequence transforms:
+	```js
+	cropper.setCoordinates([
+		({ coordinates, imageSize }) => ({
+			width: newWidth,
+			height: newHeight,
+		}),
+		// There will be coordinates after first transformation
+		({ coordinates, imageSize }) => ({
+			left: imageSize.width/2 - coordinates.width/2,
+			top: imageSize.height/2 - coordinates.height/2
+		}),
+	])
+	```
+
+	**See also: [Example](/guides/advanced-recipes.html#set-coordinates)**
+	
 ### `refresh()`
 
-This method [refreshes cropper](/introduction/under-the-hood.html#refresh-image). This method is called on every window resize and can be
-useful if the external container width is changed, but window's size isn't changed.
+- **Usage:**
 
-### `reset()`
+	This method refreshes the cropper. This method is called on every window resize and can be
+	useful if the external container width is changed, but window's size isn't changed.
 
-This method resets the cropper to the initial state.
+	**See also: [Example](/guides/advanced-recipes.html#refresh-cropper)**
+
 
 ### `zoom(factor, center)`
 
-::: warning Experimental method
-It may change its name or may be deleted in the future.
-:::
+- **Arguments:**
+  - `{Number} factor`
+  - `{Object} [center]`
 
-This methods is used to scale visible area relative to its scale.
+- **Usage:**
+	
+	This methods is used to scale visible area relative to its scale.
+	
+	The first parameter `factor` is the number, that represents scale factor (i.e. `1.1` to resize to `110%`, `0.8` to resize to `80%`). 
+	
+	The second parameter `center` is the object `{ left, top }`.
+	
+	**See also: [Example](/guides/advanced-recipes.html#manipulate-image)**
 
-The first parameter `factor` is the number, that represents scale factor (i.e. `1.1` to resize to `110%`, `0.8` to resize to `80%`). 
-
-The second parameter `center` is the object `{ left, top }`.
 
 ### `move(left, top)`
 
-::: warning Experimental method
-It may change its name or may be deleted in the future.
-:::
+- **Arguments:**
+  - `{Number} left`
+  - `{Number} top`
 
-This methods is used to translate visible area relative to its position. The parameters
-`left` and `top` determine the relative shift at left and top.
+- **Usage:**
+	This methods is used to translate visible area relative to its position. The parameters
+	`left` and `top` determine the relative shift at left and top.
+	
+	**See also: [Example](/guides/advanced-recipes.html#manipulate-image)**
+	
+### `rotate(angle)`
+
+- **Arguments:**
+  - `{Number} angle`
+
+- **Usage:**
+	
+	This methods is used to rotate the image to a specific angle in **degrees**.
+	
+	**See also: [Example](/guides/advanced-recipes.html#rotate-image)**
+
+### `flip(horizontal, vertical)`
+
+- **Arguments:**
+  - `{Number} horizontal`
+  - `{Number} vertical`
+
+- **Usage:**
+	
+	This methods is used to flip the image horizontally and/or vertically.
+	
+	**See also: [Example](/guides/advanced-recipes.html#rotate-image)**
+
+
+### `reset()`
+
+- **Usage:**
+
+	This method resets the cropper to the initial state.
 
 
 ## Props
 
 ### `src`
-Default: `null`
 
-The link to cropping image or the image itself in base64 format
+- **Type:** `String | Null`
+
+- **Default:** `null`
+
+- **Details:**
+	
+	The link to cropping image or the image itself in base64 format
 
 ### `stencilComponent`
-Default: `RectangleStencil`
 
-The stencil component. For globally registered component just pass their name here, otherwise pass the component’s options object.
+- **Type:** `Component`
 
+- **Default:** `RectangleStencil`
 
+- **Details:**
+
+	The stencil component. For globally registered component just pass their name here, otherwise pass the component’s options object.
+
+	**See also: [Example](/guides/recipes.html#changing-a-stencil)**
+	
+	
 ### `stencilProps`
-Default: `{}`
 
-The props that will be passed to the stencil component
+- **Type:** `Object`
+
+- **Default:** `{}`
+
+- **Details:**
+
+	The props that will be passed to the stencil component. The usual scenario is passing
+	aspect ratio props [here](/components/rectangle-stencil.html#props).
 
 
 ### `class`
-Default: `''`
 
-The optional class name for the root cropper block
+- **Type:** `String`
+
+- **Details:**
+
+	The optional class for the entire cropper
 
 
 ### `imageClass`
-Default: `''`
 
-The optional class name for the cropping image
+- **Type:** `String`
+
+- **Details:**
+
+	The optional class for the cropper image
 
 
 ### `boundariesClass`
-Default: `''`
 
-The optional class name for the boundaries. Probably you should not use this prop.
+- **Type:** `String`
+
+- **Details:**
+
+	The optional class for the boundaries. Probably you should not use this prop.
 
 
 ### `backgroundClass`
-Default: `''`
 
-The optional class name for the background under the cropping image
+- **Type:** `String`
+
+- **Details:**
+
+	The optional class for the background that is placed under the cropper image.
+
+
+### `foregroundClass`
+
+- **Type:** `String`
+
+- **Details:**
+
+	The optional class for the foreground that is placed above the cropper image, but under the stencil.
+
 
 ### `debounce`
-Default: `500`
 
-The time before `change` event will be emitted after moving or resizing stencil.
+- **Type:** `Number`
+
+- **Default:** `500`
+
+- **Details:**
+
+	The time before `change` event will be emitted after moving or resizing stencil.
 
 ### `stencilSize`
 
-The size of the stencil in pixels       
+- **Type:** `Object | Function`
+
+- **Details:**
+
+	The size of the stencil in pixels (not relative to an image).
+	
+	#### `Object`
+	
+	If you just want to set the known size you can pass object to `stencilSize` prop:
+	
+	```js
+	{
+		width: 100,
+		height: 100,
+	}
+	```
+	
+	#### `Function`
+	
+	If you need to set the stencil size based on the boundaries size, you should pass a function.
+	For example:
+	
+	```js
+	({ boundaries }) => {
+		return {
+			width: boundaries.width - 100,
+			height: boundaries.height - 100,
+		}
+	}
+	```
+	
+	**See also: [Example](/guides/advanced-recipes.html#fixed-stencil)**
+	
 
 ### `canvas`
-Default: `true`
 
-This flag indicates if canvas should be used in cropper. If you need only the coordinates you should set `canvas = false` to get little optimization.
+- **Type:** `Boolean`
+
+- **Default:** `true`
+
+- **Details:**
+
+	This flag indicates if canvas should be used in cropper. If you need only the coordinates you should set `canvas`  to `false` to optimize performance.
+
 
 ### `checkOrientation`
-Default: `true`
 
-The flag that indicates if EXIF orientation should be checked
+- **Type:** `Boolean`
+
+- **Default:** `true`
+
+- **Details:**
+
+	The flag that indicates if EXIF orientation should be checked
+
 
 ### `imageRestriction`
-Default: `'area'`
 
-::: warning Notice!
-Be careful when use `fit-area` setting, it's the experimental feature.
-:::
+- **Type:** `String`
 
-This parameter sets different restrictions of an image position:
-- `fill-area` fill area by image and prevents resizing and moving the image beyond the area
-- `fit-area` fit image to area and prevents resizing and moving the image beyond the area as much as possible ([example](/introduction/news.html#new-image-restriction-type-borders))
-- `stencil` prevents resizing and moving the image beyond the stencil
-- `none` allows free resizing and moving the image
+- **Default:** `'fit-area'`
 
+- **Details:**
+	
+	This parameter sets different restrictions of an image position:
+	- `fill-area` fill area by image and prevents resizing and moving the image beyond the area
+	- `fit-area` fit image to area and prevents resizing and moving the image beyond the area as much as possible ([example](/introduction/news.html#new-image-restriction-type-borders))
+	- `stencil` prevents resizing and moving the image beyond the stencil
+	- `none` allows free resizing and moving the image
+
+	**See also: [Example](/guides/advanced-recipes.html#different-image-restrictions)**
+	
 ### `resizeImage`
 
-::: warning Notice!
-Be careful when you set `adjustStencil` setting, it's the experimental feature.
-:::
+- **Type:** `Boolean | Object`
 
-This prop is either boolean flag or object settings. The default object:
-```js
-{
-	touch: true,
-	wheel: {
-		ratio: 0.1
-	},
-	adjustStencil: false
-}
-```
+- **Default:** `true`
+	
+- **Details:**
 
-The fields:
-- `touch` is a flag that checks if image should be resized by a pinch gesture 
-- `wheel` is either boolean flag or object (the object currently support only one option: `ratio`, i.e. speed of resizing by wheel)
-- `adjustStencil` is a flag checks if stencil size can be changed during resize ([example](http://localhost:8080/vue-advanced-cropper/introduction/news.html#release-0-18-0))
+	This prop is either boolean flag or object settings. The default object used when `true` is passed to `resizeImage`:
+	```js
+	{
+		touch: true,
+		wheel: {
+			ratio: 0.1
+		},
+		adjustStencil: true
+	}
+	```
+	
+	The `touch` field checks if image should be resized by a pinch gesture.
+	
+	The `wheel` field is either boolean flag or object. The object currently support only one option: `ratio`, i.e. speed of resizing by wheel.
 
-Notice, that `adjustStencil` make cropper more convenient especially when you have the limitations of width / height, but you probably shouldn't
-use it if you have fixed stencil, because it will change its size. 
+	The particular attention should be focused on `adjustStencil` parameter. It enables or disables the adjusting
+	of the stencil size on resize image. It makes cropper more convenient especially when you have the limitations of width / height, 
+	but you probably shouldn't  use it if you have fixed stencil, because it will change its size. 
+
+	**See also: [Example](/guides/advanced-recipes.html#adjust-stencil)**
+
 
 ### `moveImage`
 
-This prop is either boolean flag or object settings. The default object:
-```js
-{
-	touch: true,
-	mouse: true
-}
-```
+- **Type:** `Boolean | Object`
 
-The fields:
-- `touch` is a flag that checks if image should be dragged by a touch 
-- `mouse` is a flag that checks if image should be dragged by a mouse 
+- **Default:** `true`
+
+- **Details:**
+
+	This prop is either boolean flag or object settings. The default object:
+    ```js
+    {
+    	touch: true,
+    	mouse: true
+    }
+    ```
+    
+    The fields:
+    - `touch` is a flag that checks if image should be moved by a touch 
+    - `mouse` is a flag that checks if image should be moved by a mouse 
+
 
 ### `minWidth`
-Default: `10`
 
-The minimum width of the stencil in percents
+- **Type:** `Number`
+
+- **Details:**
+
+	The minimum width of the cropped coordinates in pixels
 
 ### `minHeight`
-Default: `10`
 
-The minimum height of the stencil in percents
+- **Type:** `Number`
+
+- **Details:**
+
+	The minimum height of the cropped coordinates in pixels
 
 ### `maxWidth`
-Default: `100`
 
-The maximum width of the stencil in percents
+- **Type:** `Number`
+
+- **Details:**
+
+	The maximum width of the cropped coordinates in pixels
 
 ### `maxHeight`
-Default: `100`
 
-The maximum height of the stencil in percents
+- **Type:** `Number`
+
+- **Details:**
+
+	The maximum height of the cropped coordinates in pixels
 
 ### `transitions`
 
-::: warning Notice!
-Be careful when use this props, it's the experimental feature.
-:::
+- **Type:** `Boolean`
 
-Default: `false`
+- **Default:** `true`
 
-This flag indicates if transitions should be enabled.
+- **Details:**
+
+	This flag indicates if transitions should be enabled. 
+	The transitions are used during auto-zoom, rotate image, flip image, using `zoom` and `move` methods.
+
+### `roundResult`
+
+- **Type:** `Boolean`
+
+- **Default:** `true`
+
+- **Details:**
+
+	This flag indicates if the coordinates should be rounded when you getting the result.
 
 ### `autoZoom`
 
-::: warning Notice!
-Be careful when use this props, it's the experimental feature.
-:::
+- **Type:** `Boolean`
 
-Default: `false`
+- **Default:** `false`
 
-This flag indicates if auto zoom should be enabled.
+- **Details:**
 
+	This flag indicates if auto-zoom should be enabled.
+	
+	If the auto-zoom algorithm was not redefined, there are two algorithms used.
+	
+	1. If `stencilSize` is not defined, the default simple auto-zoom algorithm will be used. It resizes and move visible area to
+	when you setting the coordinates by `setCoordinates` method, to prevent overlap the coordinates and the visible area.
+	
+	2. If `stencilSize` is defined, the default fixed auto-zoom algorithm will be used. It adapts coordinates and visible area
+	to fit the `stencilSize` restrictions.
+	
+	**See also: [Example](/guides/advanced-recipes.html#auto-zoom)**
+	
 ### `priority`
-Default: `'coordinates'`
 
-It can be either `'coordinates'` or `'visibleArea'`. It sets the priority of initialization default values.
-- If it set to `'coordinates'` the coordinates will be initialized first, but `defaultSize` and `defaultPosition` algorithms
-will know nothing about visible area. 
-- If it set to `'visibleArea'` then the visible area will be initialized first, but `defaultVisibleArea` algorithm
-will know nothing about coordinates.
+- **Type:** `String`
+
+- **Default:** `'coordinates'`
+
+- **Details:**
+	
+	::: tip Rule of thumb
+	If you set the default coordinates it's better to set `'coordinates'`, if you set the default visible area it's better to set `'visible-area'`.
+	:::
+
+	It can be either `'coordinates'` or `'visible-area'`. It sets the priority of initialization default values.
+	
+	#### `'coordinates'`
+	The coordinates will be initialized first, but `defaultSize` and `defaultPosition` algorithms
+	will know nothing about visible area. 
+	
+	#### `'visible-area'`
+	
+	The visible area will be initialized first, but `defaultVisibleArea` algorithm
+	will know nothing about coordinates.
+
+	
 
 ### `defaultPosition`
-Default: `core.defaultPosition`
 
-It's either an object or static function.
+- **Type:** `Object | Function`
 
-The object should correspond the following scheme:
-```js
-{
-	left: 142,
-	top: 73
-}
-```
+- **Details:**
 
-The static function should accept the only argument, the object with following fields:
-- `coordinates` (`{ width, height }`),
-- `visibleArea` (`{ left, top, width, height }`),
+	It's either an object or static function.
+	
+	#### `Object`
+	
+	The object should correspond the following scheme:
+	```js
+	{
+		left: 142,
+		top: 73
+	}
+	```
+	
+	#### `Function`
+	
+	The static function should accept the only argument, the object with following fields:
+	- `visibleArea`: `{ left, top, width, height }` or `null` if the coordinates has [priority](/components/cropper.html#priority).
+	- `imageSize`: `{ width, height }`,
+	- `coordinates`: `{ width, height }`
+	
+	It should return an object with `left` and `top` fields, i.e. default position of the stencil (relative to original image size)
+	
+	```js
+	({ visibleArea, coordinates, imageSize }) => {
+		return {
+			left: imageSize.width / 2 - coordinates.width / 2,
+			top: imageSize.height / 2 - coordinates.height / 2,
+		}
+	}
+	```
 
-It should return an object with `left` and `top` fields, i.e. default position of the stencil (relative to original image size)
+	**See also: [Example](/guides/advanced-recipes.html#default-size-and-position)**
 
 ### `defaultSize`
-Default: `core.defaultSize`
 
-It's either an object or static function.
+- **Type:** `Object | Function`
 
-The object should correspond the following scheme:
-```js
-{
-	width: 142,
-	height: 73
-}
-```
+- **Details:**
+	
+	It's either an object or static function.
+	
+	#### `Object`
+	
+	The object should correspond the following scheme:
+	```js
+	{
+		width: 142,
+		height: 73
+	}
+	```
+	
+	The static function should accept the only argument, the object with the following fields:
+	- `visibleArea`: `{ left, top, width, height }` or `null` if the coordinates has [priority](/components/cropper.html#priority).,
+	- `imageSize`: `{ width, height }`,
+	- `stencilRatio`: `{ minimum, maximum }`,
+	- `sizeRestrictions`: `{ minWidth, minHeight, maxWidth, maxHeight }`
+	
+	It should return an object with `height` and `width` fields, i.e. default size of the stencil (relative to original image size)
+	
+	```js
+	({ visibleArea, imageSize, stencilRatio, sizeRestrictions }) => {
+		return {
+			width: imageSize.width,
+			height: imageSize.height,
+		}
+	}
+	```
+	**See also: [Example](/guides/advanced-recipes.html#default-size-and-position)**
+	
+### `defaultVisibleArea`
 
-The static function should accept the only argument, the object with the following fields:
-- `visibleArea` (`{ left, top, width, height }`),
-- `imageSize` (`{ width, height }`),
-- `stencilRatio` (`{ minimum, maximum }`)
-- `sizeRestrictions` (`{ minWidth, minHeight, maxWidth, maxHeight }`)
+- **Type:** `Object | Function`
 
-It should return an object with `height` and `width` fields, i.e. default size of the stencil (relative to original image size)
-
+- **Details:**
+	
+	It's either an object or static function.
+	
+	#### `Object`
+	
+	::: warning Remember!
+		
+	The visible area always have the aspect ratio as boundaries, so if they will not be the same,
+	cropper will resize the visible area vertically to fix it.
+	:::
+	
+	The object should correspond the following scheme:
+	```js
+	{
+		width: 200,
+		height: 200,
+		left: 0,
+		top: 0
+	}
+	```
+	
+	#### `Function`
+	
+	The static function that should accept the only argument, the object with the following fields:
+	- `coordinates`: `{ left, top, width, height }` or `null` if the visible area has [priority](/components/cropper.html#priority),
+	- `boundaries`: `{ width, height }`,
+	- `imageSize`: `{ width, height }`,
+	
+	It should return an object with the coordinates of visible area:
+	```js
+	({ coordinates, boundaries, imageSize }) => {
+		return {
+			left: coordinates.left - 50,
+			top: coordinates.top - 50,
+			width: coordinates.width + 100,
+			height: coordinates.height + 100,
+		}
+	}
+	```
+	**See also: [Example](/guides/advanced-recipes.html#default-visible-area)**
+	
+	
 ### `defaultBoundaries`
-Default: `'fit'"`
 
-It's either an string or static function.
+- **Type:** `String | Function`
 
-There are available two string values:
+- **Default:**  `'fill'`
 
-- `'fit'`, boundaries should have image aspect ratio and should be fitted to the cropper
-- `'fill'`, boundaries should fill the cropper (recommended)
+- **Details:**
 
-The static function that accepts the only argument, the object with following fields:
-- `cropper` (DOM Element)
-- `imageSize` (`{ width, height }`),
-
-It should return the object with `height` and `width` fields, i.e. width and height of the area.
+	It's either an string or static function.
+	
+	#### 'String'
+	
+	There are available two string values:
+	
+	- `'fill'`, boundaries should fill the cropper
+	- `'fit'`, boundaries should have the same aspect ratio as the image and should be fitted to the cropper
+	
+	#### 'Function'
+		
+	The static function that accepts the only argument, the object with following fields:
+	- `cropper` (DOM Element)
+	- `imageSize` (`{ width, height }`),
+	
+	It should return the object with `height` and `width` fields, i.e. width and height of the area.
+	
+	```js
+	({ cropper, imageSize  }) => {
+		return {
+			width: cropper.clientWidth,
+			height: cropper.clientHeight,
+		}
+	}
+	```
 
 ### `sizeRestrictionsAlgorithm`
-Default: `core.percentRestrictions`
 
-The static function that accepts the only argument, the object with following fields:
-- `minWidth`, `minHeight`, `maxWidth`, `maxHeight`
-- `imageSize` (`{ width, height}`)
+- **Type:** `Function`
 
-It should return the object with restrictions for stencil. For example something like this:
-```js
-{
-	maxWidth: 2048,
-	maxHeight: 2048,
-	minWidth: 256,
-	minHeight: 256
-}
-```
+- **Default:**  pixels restrictions algorithm.
+
+- **Details:**
+	
+	The static function that accepts the only argument, the object with following fields:
+	- `minWidth`, `minHeight`, `maxWidth`, `maxHeight`
+	- `imageSize` (`{ width, height}`)
+	
+	It should return the object with restrictions for stencil. For example something like this:
+	```js
+	({ minWidth, minHeight, maxWidth, maxHeight, imageSize }) => {
+		return {
+			maxWidth: imageSize.width * (maxWidth || 0) / 100,
+			maxHeight: imageSize.height * (maxHeight || 0) / 100,
+			minWidth: imageSize.width * (minWidth || 100) / 100,
+			minHeight: imageSize.height * (minHeight || 100) / 100,
+		}
+	}
+	```
+	*The example above change the interpretation of `minWidth`, `minHeight`, `maxWidth`, and `maxHeight` props. Now they
+	set the limitations in percents of the image.*

@@ -65,17 +65,12 @@ export default {
 
 <template>
 	<div class="circle-stencil" :style="style">
-		<DraggableElement class="circle-stencil__handler" @drag="onHandlerMove">
+		<draggable-element class="circle-stencil__handler" @drag="onHandlerMove">
 			<img :src="require('./assets/handler.svg')" class="circle-stencil__icon" alt="" />
-		</DraggableElement>
-		<DraggableArea @move="onMove">
-			<PreviewResult
-				class="circle-stencil__preview"
-				:image="image"
-				:result-coordinates="resultCoordinates"
-				:stencil-coordinates="stencilCoordinates"
-			/>
-		</DraggableArea>
+		</draggable-element>
+		<draggable-area @move="onMove">
+			<preview-result class="circle-stencil__preview" :image="image" :stencil-coordinates="stencilCoordinates" />
+		</draggable-area>
 	</div>
 </template>
 

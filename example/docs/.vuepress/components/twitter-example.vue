@@ -22,14 +22,6 @@ export default {
 				height: Math.min(imageSize.height, imageSize.width),
 			};
 		},
-		pixelsRestriction({ minWidth, minHeight, maxWidth, maxHeight }) {
-			return {
-				minWidth: minWidth,
-				minHeight: minHeight,
-				maxWidth: maxWidth,
-				maxHeight: maxHeight,
-			};
-		},
 		stencilSize({ boundaries }) {
 			return {
 				width: Math.min(boundaries.height, boundaries.width) - 48,
@@ -78,14 +70,15 @@ export default {
 			ref="cropper"
 			class="twitter-cropper"
 			background-class="twitter-cropper__background"
+			foreground-class="twitter-cropper__foreground"
 			image-restriction="stencil"
 			default-boundaries="fill"
-			:size-restrictions-algorithm="pixelsRestriction"
 			:stencil-size="stencilSize"
+			:transitions="false"
 			:stencil-props="{
 				handlers: {},
 				movable: false,
-				scalable: false,
+				resizable: false,
 				aspectRatio: 1,
 				previewClass: 'twitter-cropper__stencil',
 			}"
@@ -105,6 +98,9 @@ export default {
 .twitter-cropper {
 	height: 521px;
 	&__background {
+		background-color: #edf2f4;
+	}
+	&__foreground {
 		background-color: #edf2f4;
 	}
 	&__stencil {

@@ -4,10 +4,6 @@ title: Getting started
 
 # Getting started
 
-::: warning Warning!
-This library is in beta test stage. API can be changed in the future.
-:::
-
 ## Package installation
 To use the package you should install it with `npm` or `yarn`
 ```bash
@@ -20,6 +16,7 @@ yarn add vue-advanced-cropper
 Then you should add somewhere in your script file or block the import of `Cropper` component:
 ```js
 import { Cropper } from 'vue-advanced-cropper'
+import 'vue-advanced-cropper/dist/style.css';
 ```
 
 After that [register](https://vuejs.org/v2/guide/components-registration.html) this component locally or globally.
@@ -28,7 +25,8 @@ After that [register](https://vuejs.org/v2/guide/components-registration.html) t
 
 The following example is demonstrating the using of the cropper in a custom component:
 ```js
-import { Cropper } from 'vue-advanced-cropper'
+import { Cropper } from 'vue-advanced-cropper';
+import 'vue-advanced-cropper/dist/style.css';
 
 export default {
 	components: {
@@ -68,30 +66,6 @@ export default {
 
 <getting-started-example/>
 
-## Recommended Example
-
-The default cropper settings are outdated now. They will be changed in the next major release, but you already
-can improve user experience by setting some settings in the template of component above:
-
-```html
-<cropper
-	class="cropper"
-	:src="img"
-	:stencil-props="{
-		aspectRatio: 10/12
-	}"
-	@change="change"
-
-	image-restriction="fit-area"
-	default-boundaries="fill"
-	:resize-image="{
-		adjustStencil: true
-	}"
-/>
-```
-
-<getting-started-example-improved/>
-
 If you need to change the behavior of cropper (for example, you want to create a fixed one for mobile devices),
 please read [this detailed article](/introduction/types.html) about different types of croppers.
 
@@ -104,6 +78,7 @@ If you want to use the cropper without using, for example, different build syste
 Then add somewhere in `head` the link to this script:
 ```html
 <script src="https://unpkg.com/vue-advanced-cropper@latest/dist/index.umd.js" />
+<link rel="stylesheet" href="https://unpkg.com/vue-advanced-cropper@latest/dist/style.css" />
 ```
 
 And you can use globally registered components: `cropper`, `circle-stencil`, `rectangle-stencil`, `simple-handler`, `simple-line`.

@@ -55,7 +55,7 @@ export default {
 			type: Boolean,
 			default: true,
 		},
-		scalable: {
+		resizable: {
 			type: Boolean,
 			default: true,
 		},
@@ -167,7 +167,7 @@ export default {
 			:lines-component="linesComponent"
 			:lines-classes="linesClasses"
 			:lines-wrappers-classes="linesWrappersClasses"
-			:scalable="scalable"
+			:resizable="resizable"
 			@resize="onResize"
 			@resize-end="onResizeEnd"
 		>

@@ -46,29 +46,61 @@ The cause of this specificity is using the [dynamic components](https://vuejs.or
 
 <circle-example> </circle-example>
 
-## Passing props to a stencil
+## Passing props to the stencil
 
-To pass any props to stencil pass them as object to `stencilProps` prop.
+To pass any props to the stencil pass them as object to `stencilProps` prop. 
+
+For example, that's how you can set aspect ratio:
 
 ```html
 <cropper
 	:stencil-props="{
-		minAspectRatio: 8/8,
-		maxAspectRatio: 10/8
+		aspectRatio: 6/9,
+		movable: false,
+		resizable: false
 	}"
 />
 ```
 
 The list of available props varies from one stencil component to another. The props of default stencils are available at this site ([RectangleStencil](/components/rectangle-stencil.html), [CircleStencil](/components/circle-stencil.html))
 
-## Getting a result
+## Setting the aspect ratio
+
+This library supports setting either aspect ratio value or aspect ratio range (i.e. minimum and maximums aspect ratio values).
+
+Generally speaking, aspect ratio is the property of the stencil, not the cropper, so the possibility to set aspect ratio
+entirely depends of used stencil. For example, `CircleStencil` aspect ratio can't be customized, it's always circle, in the same time
+`RectangleStencil` has not any restrictions on aspect ratios.
+
+The examples below are written for `RectangleStencil`. 
+
+### Fixed aspect ratio
+```html
+<cropper
+	:stencil-props="{
+		aspectRatio: 1/1,
+	}"
+/>
+```
+
+### Aspect ratio range
+```html
+<cropper
+	:stencil-props="{
+		minAspectRatio: 16/8,
+		maxAspectRatio: 4/8
+	}"
+/>
+```
+
+## Getting the result
 
 ### First method
 
 You can get the coordinates of stencil and canvas with cropped image by processing `change` event.
 
 ::: tip
-Cropper will emit `change` event on mounting, resizing the stencil, moving the stencil and changing the image.
+Cropper will emit `change` event on clear or load (include initial) image, on resize and move the stencil, on resize, move, rotate and flip the image.
 :::
 
 <getting-result-example></getting-result-example>

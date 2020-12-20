@@ -23,10 +23,14 @@ export default {
 	>
 		<cropper
 			:src="img"
+			:stencil-size="{
+				width: 300,
+				height: 300,
+			}"
 			:stencil-props="{
 				handlers: {},
 				movable: false,
-				scalable: false,
+				resizable: false,
 				aspectRatio: 1,
 			}"
 			image-restriction="stencil"

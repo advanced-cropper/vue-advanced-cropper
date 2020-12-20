@@ -4,42 +4,6 @@ title: Advanced Recipes
 
 # Advanced Recipes
 
-## Custom size restrictions
-
-There may be situations, when you need to set the minimum and maximum sizes, for example, in pixels, not by percents. In that situations you should redefine the `sizeRestrictionsAlgorithm` functions by passing your custom function as [a corresponding prop](/components/cropper.html#sizeretrictionsalgorithm)
-
-
-<custom-restrictions-example></custom-restrictions-example>
- 
-```js
-import { Cropper } from 'vue-advanced-cropper';
-
-export default {
-	components: {
-		Cropper,
-	},
-	methods: {
-		pixelsRestriction({ minWidth, minHeight, maxWidth, maxHeight, imageWidth, imageHeight }) {
-			return {
-				minWidth: minWidth,
-				minHeight: minHeight,
-				maxWidth: maxWidth,
-				maxHeight: maxHeight,
-			};
-		}
-	}
-};
-```
-
-```html
-<cropper
-	:src="image"
-	:min-height="400"
-	:min-width="400"
-	:size-restrictions-algorithm="pixelsRestriction"
-/>
-```
-
 
 ## Fixed stencil
 
@@ -47,246 +11,21 @@ There is the example of a fixed stencil below, that may be useful for mobile dev
 <mobile-fixed-example></mobile-fixed-example>
 
 ```html
-<script>
-import { Cropper } from 'vue-advanced-cropper';
-
-export default {
-	components: {
-		Cropper,
-	},
-};
-</script>
-```
-
-```html
 <cropper
 	src="https://images.unsplash.com/photo-1527137342181-19aab11a8ee8?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80"
+	:stencil-size="{
+		width: 300,
+		height: 300
+	}"
 	:stencil-props="{
 		handlers: {},
 		movable: false,
-		scalable: false,
+		resizable: false,
 		aspectRatio: 1,
 	}"
     image-restriction="stencil"
 />
 ```
-
-## Different image restrictions
-
-You are able to set different the restrictions of an image position by passing the following string to the `imageRestriction` prop:
-- `fill-area` fill area by image and prevents resizing and moving the image beyond the area
-- `fit-area` fit image to area and prevents resizing and moving the image beyond the area as much as possible ([example](/introduction/news.html#new-image-restriction-type-borders))
-- `stencil` prevents resizing and moving the image beyond the stencil
-- `none` allows free resizing and moving the image
-
-<image-restrictions-example></image-restrictions-example>
-
-
-## Set coordinates
-
-Usually an user changes the coordinates of a stencil, but sometimes you need to set its coordinates programmatically. There is the special method to do it: [setCoordinates](/components/cropper.html#setcoordinates-transform). It applies your changes respect to existing limitation (aspect ratios, minimum size and etc.)
-
-<set-coordinates-example></set-coordinates-example>
-
-The minimal working example:
-
-```html
-<script>
-import { Cropper } from 'vue-advanced-cropper';
-
-export default {
-	components: {
-		Cropper,
-	},
-	methods: {
-		resize(width, height, left, top) {
-			this.$refs.cropper.setCoordinates({
-				width: width,
-				height: height,
-				left: left,
-				top: top
-			})
-		},
-	},
-};
-</script>
-```
-
-```html
-<cropper
-	ref="cropper"
-	:src="image"
-/>
-```
-
-### Arguments
-
-The only argument `transform` can be: `Object`, `Function` or `Array` that contains objects or function in the case if you need consequence transforms.
-
-#### `Object`
-
-If you just want to set the known coordinates you can pass object to `setCoordinates` method
-
-```js
-cropper.setCoordinates({
-	width: 32,
-	height: 42,
-	left: 102,
-	top: 74
-})
-```
-
-#### `Function`
-
-But mostly you need to set coordinates based at current coordinates or image size.
-
-1. Center stencil:
-```js
-cropper.setCoordinates((coordinates, imageSize) => ({
-	left: imageSize.width/2 - coordinates.width/2,
-	top: imageSize.height/2 - coordinates.height/2
-}))
-
-```
-2. Maximize stencil:
-```js
-cropper.setCoordinates((coordinates, imageSize) => ({
-	width: imageSize.width,
-	height: imageSize.height
-}))
-```
-
-#### `Array`
-
-Finally, there might be situations where you need to make consequence transforms. For example, resize stencil and then center it.
-
-That can appear to be superfluous, because you can set coordinates and size simultaneosly:
-```js
-cropper.setCoordinates((coordinates, imageSize) => ({
-	width: newWidth,
-	height: newHeight,
-	left: imageSize.width/2 - newWidth.width/2,
-	top: imageSize.height/2 - newHeight.height/2
-}))
-```
-
-But there is a catch, `setCoordinates` method respects limitations, so the new width might be different than `newWidth` in this example.
-
-So the right way is do multiple consequence transforms:
-```js
-cropper.setCoordinates([
-	(coordinates, imageSize) => ({
-		width: newWidth,
-		height: newHeight,
-	}),
-	// There will be coordinates after first transformation
-	(coordinates, imageSize) => ({
-		left: imageSize.width/2 - coordinates.width/2,
-		top: imageSize.height/2 - coordinates.height/2
-	}),
-])
-```
-
-## Manipulate image
-
-
-There are two methods to manipulate visible area programmatically **move** and **scale**.
-
-<manipulate-image-example></manipulate-image-example>
-
-The minimal working example:
-
-```html
-<script>
-import { Cropper } from 'vue-advanced-cropper';
-
-export default {
-	components: {
-		Cropper,
-	},
-	methods: {
-		zoom() {
-			this.$refs.cropper.zoom(2);
-		},
-		move() {
-			this.$refs.cropper.move(100, 100)
-		}
-	},
-};
-</script>
-```
-
-```html
-<cropper
-	ref="cropper"
-	:src="image"
-/>
-```
-
-## Rotate / flip image
-
-To rotate image use `rotate` method, it accepts the only argument: `angle` (in degrees).
-
-::: warning Available Angles
-It's strongly recommended to use an angle multiple of 90. Otherwise, the different restrictions may be broken.
-:::
-
-To flip an image use `flip` method, it accepts two boolean arguments. If first is equal to `true`
-then image will be flipped horizontally, if the second is equal to `true` then image will be flipped vertically and etc.
-
-<rotate-image-example></rotate-image-example>
-
-The minimal working example:
-
-```html
-<script>
-import { Cropper } from 'vue-advanced-cropper';
-
-export default {
-	components: {
-		Cropper,
-	},
-	methods: {
-		flip(x,y) {
-			this.$refs.cropper.flip(x,y);
-		},
-		rotate(angle) {
-			this.$refs.cropper.rotate(angle);
-		},
-	},
-};
-</script>
-```
-
-```html
-<cropper
-	ref="cropper"
-	:src="image"
-/>
-```
-
-
-### Methods
-
-#### `move(left, top)`
-
-Move is used to translate visible area relative to its position: 
-```js
-cropper.move(left, top)
-```
-
-
-#### `zoom(factor, center)`
-
-Zoom is used to scale visible area relative to its scale: 
-```js
-cropper.zoom(factor, center)
-```
-
-The first parameter `factor` is the number, that represents scale factor (i.e. `1.1` to resize to `110%`, `0.8` to resize to `80%`). 
-
-The second parameter `center` is the object `{ left, top }`.
-
 
 ## Default size and position
 
@@ -357,7 +96,7 @@ prop [priority](/components/cropper.html#priority) that can be either `'coordina
 ::: tip 
 If you define only the visible area coordinates it may be easier to set priority to `visibleArea`. It eliminates the necessity
    to set default size and default position by yourself (default algorithms handle this situation).
-   :::
+:::
 
 <default-visible-area-example></default-visible-area-example>
 
@@ -390,6 +129,186 @@ export default {
 	priority="visibleArea"
 />
 ```
+
+## Manipulate image
+
+
+There are two methods to manipulate visible area programmatically **move** and **scale**.
+
+<manipulate-image-example></manipulate-image-example>
+
+The minimal working example:
+
+```html
+<script>
+import { Cropper } from 'vue-advanced-cropper';
+import 'vue-advanced-cropper/dist/style.css'
+
+export default {
+	components: {
+		Cropper,
+	},
+	methods: {
+		zoom() {
+			this.$refs.cropper.zoom(2);
+		},
+		move() {
+			this.$refs.cropper.move(100, 100)
+		}
+	},
+};
+</script>
+```
+
+```html
+<cropper
+	ref="cropper"
+	:src="image"
+/>
+```
+
+## Rotate / flip image
+
+To rotate image use `rotate` method, it accepts the only argument: `angle` (in degrees).
+
+::: warning Available Angles
+It's strongly recommended to use an angle multiple of 90. Otherwise, the different restrictions may be broken.
+:::
+
+To flip an image use `flip` method, it accepts two boolean arguments. If first is equal to `true`
+then image will be flipped horizontally, if the second is equal to `true` then image will be flipped vertically and etc.
+
+<rotate-image-example></rotate-image-example>
+
+The minimal working example:
+
+```html
+<script>
+import { Cropper } from 'vue-advanced-cropper';
+import 'vue-advanced-cropper/dist/style.css'
+
+export default {
+	components: {
+		Cropper,
+	},
+	methods: {
+		flip(x,y) {
+			this.$refs.cropper.flip(x,y);
+		},
+		rotate(angle) {
+			this.$refs.cropper.rotate(angle);
+		},
+	},
+};
+</script>
+```
+
+```html
+<cropper
+	ref="cropper"
+	:src="image"
+/>
+```
+
+## Adjust Stencil
+
+Adjust stencil is the one of [`resizeImage`](/components/cropper.html#resizeimage) prop option.
+By default it's enabled. It makes cropper more convenient especially when you have the limitations of width / height, 
+but you probably shouldn't  use it if you have fixed stencil, because it will change its size. 
+
+Try to resize image when `adjustStencil` is disabled and enabled to feel the difference.
+
+<adjust-stencil-example></adjust-stencil-example>
+
+
+## Different image restrictions
+
+You are able to set different the restrictions of an image position by passing the following string to the `imageRestriction` prop:
+- `fill-area` fill area by image and prevents resizing and moving the image beyond the area
+- `fit-area` fit image to area and prevents resizing and moving the image beyond the area as much as possible ([example](/introduction/news.html#new-image-restriction-type-borders))
+- `stencil` prevents resizing and moving the image beyond the stencil
+- `none` allows free resizing and moving the image
+
+<image-restrictions-example></image-restrictions-example>
+
+
+## Set coordinates
+
+Usually an user changes the coordinates of a stencil, but sometimes you need to set its coordinates programmatically. There is the special method to do it: [setCoordinates](/components/cropper.html#setcoordinates-transform). It applies your changes respect to existing limitation (aspect ratios, minimum size and etc.)
+
+<set-coordinates-example></set-coordinates-example>
+
+The minimal working example:
+
+```html
+<script>
+import { Cropper } from 'vue-advanced-cropper';
+import 'vue-advanced-cropper/dist/style.css'
+
+export default {
+	components: {
+		Cropper,
+	},
+	methods: {
+		resize(width, height, left, top) {
+			this.$refs.cropper.setCoordinates({
+				width: width,
+				height: height,
+				left: left,
+				top: top
+			})
+		},
+	},
+};
+</script>
+```
+
+```html
+<cropper
+	ref="cropper"
+	:src="image"
+/>
+```
+
+
+## Custom size restrictions
+
+There may be situations, when you need to set the minimum and maximum sizes, for example, in percents, not in pixels. In that situations you should redefine the `sizeRestrictionsAlgorithm` functions by passing your custom function as [a corresponding prop](/components/cropper.html#sizeretrictionsalgorithm)
+
+
+<custom-restrictions-example></custom-restrictions-example>
+ 
+```js
+import { Cropper } from 'vue-advanced-cropper';
+
+export default {
+	components: {
+		Cropper,
+	},
+	methods: {
+		percentsRestriction({ minWidth, minHeight, maxWidth, maxHeight, imageWidth, imageHeight }) {
+			return {
+				minWidth: minWidth,
+				minHeight: minHeight,
+				maxWidth: maxWidth,
+				maxHeight: maxHeight,
+			};
+		}
+	}
+};
+```
+
+```html
+<cropper
+	:src="image"
+	:min-height="400"
+	:min-width="400"
+	:size-restrictions-algorithm="pixelsRestriction"
+/>
+```
+
+
+
 
 ## Events
 
@@ -457,10 +376,10 @@ export default {
 };
 ```
 
-## Dynamic cropper size
+## Refresh Cropper
 
-There are situations, when a cropper container size is changed. It's
-can't be handle by cropper itself, because it doesn't know about this changes at all (in contradistinction to window's resize),
+There are situations, when the cropper container size changes. It
+can't be handled by the cropper itself, because it doesn't know about this changes at all (in contradistinction to window's resize),
 so you should call [refresh](/components/cropper.html#refresh) method.
 
 ::: tip 

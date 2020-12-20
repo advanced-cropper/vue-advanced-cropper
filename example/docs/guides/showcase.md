@@ -5,7 +5,7 @@ title: Showcase
 
 # Showcase
 
-::: tip 
+::: tip Hey!
 If you've encountered the cropper on the Web that can't be implemented with this library, feel free to [write me](mailto:norserium@gmail.com) about it.
 :::
 

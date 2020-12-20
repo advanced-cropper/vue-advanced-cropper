@@ -77,7 +77,7 @@ export default {
 				return {};
 			},
 		},
-		scalable: {
+		resizable: {
 			type: Boolean,
 			default: true,
 		},
@@ -126,17 +126,17 @@ export default {
 						class: classnames(
 							this.classes.lines.default,
 							this.classes.lines[point.name],
-							!this.scalable && this.classes.lines.disabled,
+							!this.resizable && this.classes.lines.disabled,
 						),
 						wrapperClass: classnames(
 							this.classes.linesWrappers.default,
 							this.classes.linesWrappers[point.name],
-							!this.scalable && this.classes.linesWrappers.disabled,
+							!this.resizable && this.classes.linesWrappers.disabled,
 						),
 						hoverClass: this.classes.lines.hover,
 						verticalDirection: point.verticalDirection,
 						horizontalDirection: point.horizontalDirection,
-						disabled: !this.scalable,
+						disabled: !this.resizable,
 					});
 				}
 			});
@@ -157,7 +157,7 @@ export default {
 						hoverClass: this.classes.handlers.hover,
 						verticalDirection: point.verticalDirection,
 						horizontalDirection: point.horizontalDirection,
-						disabled: !this.scalable,
+						disabled: !this.resizable,
 					});
 				}
 			});
@@ -211,7 +211,7 @@ export default {
 				respectDirection = 'height';
 			}
 
-			if (this.scalable) {
+			if (this.resizable) {
 				this.$emit(
 					'resize',
 					new ResizeEvent(directions, {

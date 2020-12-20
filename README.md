@@ -44,6 +44,7 @@ If you would to use CDN read the corresponding [documentation section](https://n
 ```js
 import Vue from 'vue'
 import { Cropper } from 'vue-advanced-cropper'
+import 'vue-advanced-cropper/dist/style.css';
 
 new Vue({
   el: '#app',
@@ -98,7 +99,7 @@ new Vue({
 | boundariesClass           | `String`             | The optional class for the area.                                			      |
 | backgroundClass           | `String`             | The optional class for the background under the image           			      |
 | autoZoom                  | `Boolean`            | Enable / disable transitions                                     		          | `false`
-| transitions               | `Boolean`            | Enable / disable auto zoom                                     			      | `false`
+| transitions               | `Boolean`            | Enable / disable auto zoom                                     			      | `true`
 | stencilSize               | `Object `            | The size of the stencil in pixels                                                | 
 | debounce                  | `String`, `Number`   | The time before change event will be emitted after changes (ms) 			      | `500`
 | canvas                    | `Boolean`            | The flag that indicates if canvas should be used                			      | `true`
@@ -112,10 +113,9 @@ new Vue({
 | imageRestriction          | `String`             | Set restrictions for image position ('fill-area' 'fit-area', 'stencil', 'none')  | `'fill-area'`
 | defaultSize               | `Object`, `Function` | The function that returns the default size of the stencil or object              | `core.defaultSize`
 | defaultPosition           | `Object`, `Function` | The function that returns the default position of the stencil or object          | `core.defaultPosition`
-| defaultBoundaries         | `String`, `Function` | The function that determines the boundaries size or string (`'fill'`, `'fit'`)   | `'fit'`
-| sizeRestrictionsAlgorithm | `Function`           | The function that returns the restrictions object                 		          | `core.percentRestrictions`
-| resizeAlgorithm           | `Function`           | The function that determines the resize algorithm                 		          | `core.resize`
-| moveAlgorithm             | `Function`           | The function that determines the move algorithm                   		          | `core.move`
+| defaultBoundaries         | `String`, `Function` | The function that determines the boundaries size or string (`'fill'`, `'fit'`)   | `'fill'`
+| sizeRestrictionsAlgorithm | `Function`           | The function that returns the restrictions object                 		          | 
+
  
 | Event                     | Description
 | ------------------------  | --------------------------------------------------------------
@@ -128,18 +128,20 @@ new Vue({
  
 | Prop                      | Type                | Description                                                    | Default
 | ------------------------  | ------------------- | -------------------------------------------------------------- | ---------------
-| aspectRatio               | `Number`, `String`, | The aspect ratio                                               |
-| minAspectRatio            | `Number`, `String`, | The minimum aspect ratio                                       |
-| maxAspectRatio            | `Number`, `String`, | The maximum aspect ratio                                       |
-| class                     | `String`,           | The class for root block of the stencil component              |
-| previewClass              | `String`,           | The class for the preview component                            |
-| boundingBoxClass          | `String`,           | The class for the bouding box component                        |
+| aspectRatio               | `Number`            | The aspect ratio                                               |
+| minAspectRatio            | `Number`            | The minimum aspect ratio                                       |
+| maxAspectRatio            | `Number`            | The maximum aspect ratio                                       |
+| class                     | `String`            | The class for root block of the stencil component              |
+| previewClass              | `String`            | The class for the preview component                            |
+| boundingBoxClass          | `String`            | The class for the bounding box component                       |
 | handlerComponent          | `String`,`Object`   | The handler component                                          |
-| handlers                  | `Object`,           | The object of handlers that should be visible or hidden.       |
-| handlersClasses           | `Object`,           | The object of custom handler classes                           |
+| handlers                  | `Object`            | The object of handlers that should be visible or hidden.       |
+| handlersClasses           | `Object`            | The object of custom handler classes                           |
+| handlersWrappersClasses   | `Object`            | The object of custom handler wrapper classes                   |
 | lineComponent             | `String`,`Object`   | The handler component                                          |
-| lines                     | `Object`,           | The object of lines  that should be visible or hidden.         |
-| linesClasses              | `Object`,           | The object of custom line classes                              |
+| lines                     | `Object`            | The object of lines  that should be visible or hidden.         |
+| linesClasses              | `Object`            | The object of custom line classes                              |
+| linesWrappersClasses      | `Object`            | The object of custom line wrapper classes                      |
 
 ## License
 

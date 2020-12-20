@@ -86,7 +86,7 @@ There are default customizable components from a box that allow you to create yo
 		},
 		props: [
 			// Image src
-			'img',
+			'image',
 			// Stencil size desired by cropper
 			'stencilCoordinates',
 			// Aspect ratios
@@ -126,7 +126,7 @@ There are default customizable components from a box that allow you to create yo
 		<BoundingBox @resize="onResize">
 			<DraggableArea @move="onMove">
 				<PreviewResult
-					:img="img"
+					:image="image"
 					:stencil-coordinates="stencilCoordinates"
 				/>
 			</DraggableArea>

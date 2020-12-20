@@ -12,19 +12,19 @@ export default {
 			image:
 				'https://images.unsplash.com/photo-1494205577727-d32e58564756?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80',
 			limitations: {
-				minWidth: 200,
-				minHeight: 200,
+				minWidth: 50,
+				minHeight: 50,
 			},
 			result: null,
 		};
 	},
 	methods: {
-		pixelsRestriction({ minWidth, minHeight, maxWidth, maxHeight, imageWidth, imageHeight }) {
+		percentsRestriction({ minWidth, minHeight, maxWidth, maxHeight, imageSize }) {
 			return {
-				minWidth: minWidth,
-				minHeight: minHeight,
-				maxWidth: maxWidth,
-				maxHeight: maxHeight,
+				maxWidth: (imageSize.width * (maxWidth || 100)) / 100,
+				maxHeight: (imageSize.height * (maxHeight || 100)) / 100,
+				minWidth: (imageSize.width * (minWidth || 0)) / 100,
+				minHeight: (imageSize.height * (minHeight || 0)) / 100,
 			};
 		},
 		onCrop({ canvas }) {
@@ -68,7 +68,7 @@ export default {
 			:max-width="limitations.maxWidth"
 			:min-height="limitations.minHeight"
 			:min-width="limitations.minWidth"
-			:size-restrictions-algorithm="pixelsRestriction"
+			:size-restrictions-algorithm="percentsRestriction"
 			:adjust-stencil="true"
 			@change="onCrop"
 		/>

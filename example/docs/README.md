@@ -14,6 +14,7 @@ layout: home-page
 
 <script>
 import { Cropper } from 'vue-advanced-cropper';
+import 'vue-advanced-cropper/dist/style.css';
 
 export default {
 	components: {
@@ -53,7 +54,7 @@ export default {
 		},
 		props: [
 			// Image src
-			'img',
+			'image',
 			// Stencil size desired by cropper
 			'stencilCoordinates',
 			// Aspect ratios
@@ -93,7 +94,7 @@ export default {
 		<BoundingBox @resize="onResize">
 			<DraggableArea @move="onMove">
 				<PreviewResult
-					:img="img"
+					:image="image"
 					:stencil-coordinates="stencilCoordinates"
 				/>
 			</DraggableArea>

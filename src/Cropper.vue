@@ -111,6 +111,49 @@ export default {
 			type: Boolean,
 			default: true,
 		},
+		defaultSize: {
+			type: [Function, Object],
+		},
+		defaultPosition: {
+			type: [Function, Object],
+			default: algorithms.defaultPosition,
+		},
+		defaultVisibleArea: {
+			type: [Function, Object],
+			default: algorithms.defaultVisibleArea,
+		},
+		defaultBoundaries: {
+			type: [Function, String],
+			validator(value) {
+				const invalid = typeof value === 'string' && value !== 'fill' && value !== 'fit';
+				if (invalid) {
+					if (process.env.NODE_ENV !== 'production') {
+						console.warn(
+							`Warning: prop "defaultBoundaries" gets incorrect string value ${value}. It should be either function, 'fill' or 'fit'`,
+						);
+					}
+				}
+				return !invalid;
+			},
+		},
+		priority: {
+			type: String,
+			default: 'coordinates',
+		},
+		stencilSize: {
+			type: [Object, Function],
+		},
+		resizeImage: {
+			type: [Boolean, Object],
+			default: true,
+		},
+		moveImage: {
+			type: [Boolean, Object],
+			default: true,
+		},
+		autoZoomAlgorithm: {
+			type: Function,
+		},
 		resizeAlgorithm: {
 			type: Function,
 			default: algorithms.resize,
@@ -131,34 +174,6 @@ export default {
 			type: Function,
 			default: algorithms.fitVisibleArea,
 		},
-		defaultVisibleArea: {
-			type: [Function, Object],
-			default: algorithms.defaultVisibleArea,
-		},
-		defaultSize: {
-			type: [Function, Object],
-		},
-		defaultPosition: {
-			type: [Function, Object],
-			default: algorithms.defaultPosition,
-		},
-		defaultBoundaries: {
-			type: [Function, String],
-			validator(value) {
-				const invalid = typeof value === 'string' && value !== 'fill' && value !== 'fit';
-				if (invalid) {
-					if (process.env.NODE_ENV !== 'production') {
-						console.warn(
-							`Warning: prop "defaultBoundaries" gets incorrect string value ${value}. It should be either function, 'fill' or 'fit'`,
-						);
-					}
-				}
-				return !invalid;
-			},
-		},
-		autoZoomAlgorithm: {
-			type: Function,
-		},
 		areaRestrictionsAlgorithm: {
 			type: Function,
 			default: algorithms.dynamicAreaRestrictions,
@@ -170,21 +185,6 @@ export default {
 		positionRestrictionsAlgorithm: {
 			type: Function,
 			default: algorithms.positionRestrictions,
-		},
-		priority: {
-			type: String,
-			default: 'coordinates',
-		},
-		stencilSize: {
-			type: [Object, Function],
-		},
-		resizeImage: {
-			type: [Boolean, Object],
-			default: true,
-		},
-		moveImage: {
-			type: [Boolean, Object],
-			default: true,
 		},
 	},
 	data() {
@@ -260,7 +260,7 @@ export default {
 					wheel: {
 						ratio: 0.1,
 					},
-					adjustStencil: false,
+					adjustStencil: true,
 				},
 				{
 					touch: false,
@@ -309,7 +309,7 @@ export default {
 		},
 		sizeRestrictions() {
 			if (this.boundaries.width && this.boundaries.height) {
-				let sizeRestrictions = (this.restrictions || this.sizeRestrictionsAlgorithm)({
+				let sizeRestrictions = this.sizeRestrictionsAlgorithm({
 					imageSize: this.imageSize,
 					minWidth: !isUndefined(this.minWidth) ? parseNumber(this.minWidth) : 0,
 					minHeight: !isUndefined(this.minHeight) ? parseNumber(this.minHeight) : 0,

@@ -4,11 +4,6 @@ title: Migration
 
 # Migration to 1.0
 
-::: danger Not Released
-The next release is not ready. However I've already began to write the migration guide, to commit
-every breaking-changes. 
-:::
-
 On the one hand I want to minimize the breaking-changes in this release, but on the other hand
 due the beta-testing I realize that much aspects should be changed. The library have became
 much larger and much difficult that it was before, so the breaking-changes became inevitable.
@@ -32,7 +27,7 @@ import 'vue-advanced-cropper/dist/style.css';
 ```html
 <script src="https://unpkg.com/vue-advanced-cropper@latest/dist/index.umd.js" />
 <!-- Add the following line to import the cropper styles -->
-<link rel="stylesheet" src="https://unpkg.com/vue-advanced-cropper@latest/dist/style.css" />
+<link rel="stylesheet" href="https://unpkg.com/vue-advanced-cropper@latest/dist/style.css" />
 ```
 
 ## Changed the markup of cropper
@@ -52,6 +47,8 @@ majority of different croppers.
 3. The default `size-restrictions-algorithm` is changed: `minWidth`, `minHeight`, `maxWidth` and `maxHeight` set
 the limitations in the pixels now (before they set limitations in the percents).
 
+4. The default settings of `resizeImage` is changed. Now `adjustStencil` is enabled by default.
+
 ## Changed props
 
 1. Replaced `wheelResize`, `touchResize`, `touchMove`, `mouseMove` props by [`resizeImage`](/components/cropper.html#resizeimage) and [`moveImage`](/components/cropper.html#moveImage) props.
@@ -63,6 +60,8 @@ the limitations in the pixels now (before they set limitations in the percents).
 4. Renamed `restrictions` to `size-restrictions-algorithm`
 
 5. The priority prop now accepts `'visible-area'` instead of `'visibleArea'`.
+
+6. The `RectangleStencil`, `CircleStencil` and `BoundingBox` prop `scalable` was renamed to `resizable`. 
 
 ## Changed methods
 
