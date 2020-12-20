@@ -189,6 +189,7 @@ export default {
 	},
 	data() {
 		return {
+			transitionsActive: false,
 			imageLoaded: false,
 			imageAttributes: {
 				width: null,
@@ -214,7 +215,6 @@ export default {
 				width: 0,
 				height: 0,
 			},
-			transitionsActive: false,
 			visibleArea: null,
 			coordinates: {
 				...DEFAULT_COORDINATES,
@@ -289,7 +289,6 @@ export default {
 		coefficient() {
 			return this.visibleArea ? this.visibleArea.width / this.boundaries.width : 0;
 		},
-		// Restrictions
 		areaRestrictions() {
 			if (this.imageLoaded) {
 				return this.areaRestrictionsAlgorithm({
@@ -518,8 +517,8 @@ export default {
 		},
 		move(left, top, params = {}) {
 			const { transitions = true } = params;
+
 			this.onManipulateImage(
-				// Multiplying on coefficient is temporary solution
 				new ManipulateImageEvent({
 					left: left || 0,
 					top: top || 0,

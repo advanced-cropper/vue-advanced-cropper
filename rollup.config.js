@@ -6,7 +6,7 @@ import resolve from '@rollup/plugin-node-resolve';
 import url from '@rollup/plugin-url';
 import external from 'rollup-plugin-peer-deps-external';
 import vue from 'rollup-plugin-vue';
-import minify from 'rollup-plugin-babel-minify';
+import { terser } from 'rollup-plugin-terser';
 import scss from 'rollup-plugin-scss';
 import typescript from '@rollup/plugin-typescript';
 import pkg from './package.json';
@@ -49,9 +49,7 @@ export default {
 		}),
 		resolve(),
 		commonjs(),
-		minify({
-			comments: false,
-		}),
+		terser(),
 		typescript(),
 		replace({
 			'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
