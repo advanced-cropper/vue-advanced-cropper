@@ -166,8 +166,8 @@ Cropper will emit `error` event when image is unsuccessfully loaded.
 ### `flip(horizontal, vertical)`
 
 - **Arguments:**
-  - `{Number} horizontal`
-  - `{Number} vertical`
+  - `{Boolean} horizontal`
+  - `{Boolean} vertical`
 
 - **Usage:**
 	
