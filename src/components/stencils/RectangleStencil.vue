@@ -62,7 +62,10 @@ export default {
 		transitions: {
 			type: Object,
 		},
-		draggingClass: {
+		movingClass: {
+			type: String,
+		},
+		resizingClass: {
 			type: String,
 		},
 		previewClass: {
@@ -98,15 +101,17 @@ export default {
 	},
 	data() {
 		return {
-			dragging: false,
+			moving: false,
+			resizing: false,
 		};
 	},
 	computed: {
 		classes() {
 			return {
 				stencil: classnames(
-					cn({ movable: this.movable, dragging: this.dragging }),
-					this.dragging && this.draggingClass,
+					cn({ movable: this.movable, moving: this.moving, resizing: this.resizing }),
+					this.moving && this.movingClass,
+					this.resizing && this.resizingClass,
 				),
 				preview: classnames(cn('preview'), this.previewClass),
 				boundingBox: classnames(cn('bounding-box'), this.boundingBoxClass),
@@ -131,19 +136,19 @@ export default {
 	methods: {
 		onMove(moveEvent) {
 			this.$emit('move', moveEvent);
-			this.dragging = true;
+			this.moving = true;
 		},
 		onMoveEnd() {
 			this.$emit('move-end');
-			this.dragging = false;
+			this.moving = false;
 		},
 		onResize(resizeEvent) {
 			this.$emit('resize', resizeEvent);
-			this.dragging = true;
+			this.resizing = true;
 		},
 		onResizeEnd() {
 			this.$emit('resize-end');
-			this.dragging = false;
+			this.resizing = false;
 		},
 		aspectRatios() {
 			return {

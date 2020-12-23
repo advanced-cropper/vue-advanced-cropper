@@ -12,13 +12,21 @@
 
 	The class for the entire stencil.
 
-### `draggingClass`
+### `movingClass`
 
 - **Type:** `String`
 
 - **Details:**
 	
-	The class that applies to the entire stencil, when user drags it.
+	The class that applies to the entire stencil, when user moves it.
+	
+### `resizingClass`
+
+- **Type:** `String`
+
+- **Details:**
+	
+	The class that applies to the entire stencil, when user resizes it.
 	
 ### `previewClass`
 

@@ -100,7 +100,8 @@ export default {
 			}
 		}
 
-		&--dragging {
+		&--moving,
+		&--resizing {
 			.vue-rectangle-stencil__preview,
 			.vue-circle-stencil__preview {
 				&:after,

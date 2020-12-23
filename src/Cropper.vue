@@ -1223,9 +1223,10 @@ export default {
 		user-select: none;
 		position: absolute;
 		transform-origin: center;
+		will-change: transform;
 		// Workaround to prevent bugs at the websites with max-width
 		// rule applied to img (Vuepress for example)
-		max-width: unset !important;
+		max-width: none !important;
 	}
 	&__background,
 	&__foreground {
