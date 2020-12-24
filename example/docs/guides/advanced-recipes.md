@@ -407,24 +407,29 @@ this.$refs.cropper.refresh();
 
 ```html
 <div class="cropper-wrapper">
-	<div :style="{backgroundImage: 'url(' + img + ')'}" class="cropper-background"></div>
-	<cropper :src="img" />
+	<div :style="{backgroundImage: 'url(' + img + ')'}" class="image-background"></div>
+	<cropper :src="img" background-class="cropper-background" />
 </div>
 ```
 
 ```css
 .cropper-wrapper {
+	overflow: hidden;
 	position: relative;
 	height: 400px;
 	background: black;
 }
 .cropper-background {
+	background: none;
+}
+.image-background {
 	position: absolute;
-	width: 100%;
-	height: 100%;
+	width: calc(100% + 20px);
+	height: calc(100% + 20px);
+	left: -10px;
+	top: -10px;
 	background-size: cover;
 	background-position: 50%;
 	filter: blur(5px);
-	opacity: 0.25;
 }
 ```

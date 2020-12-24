@@ -133,6 +133,8 @@ new Vue({
 | maxAspectRatio            | `Number`            | The maximum aspect ratio                                       |
 | class                     | `String`            | The class for root block of the stencil component              |
 | previewClass              | `String`            | The class for the preview component                            |
+| movingClass               | `String`            | The class applied when user drag the stencil                   |
+| resizingClass             | `String`            | The class applied when user resize the stencil                 |
 | boundingBoxClass          | `String`            | The class for the bounding box component                       |
 | handlerComponent          | `String`,`Object`   | The handler component                                          |
 | handlers                  | `Object`            | The object of handlers that should be visible or hidden.       |
