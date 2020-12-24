@@ -73,7 +73,7 @@ please read [this detailed article](/introduction/types.html) about different ty
 
 If you want to use the cropper without using, for example, different build systems you can use the CDN link, but currently the support of this method is quite limited.
 
-[https://unpkg.com/vue-advanced-cropper@latest/dist/index.umd.js](https://unpkg.com/vue-advanced-cropper@latest/dist/index.umd.js)
+[https://unpkg.com/vue-advanced-cropper@1.0.0/dist/index.umd.js](https://unpkg.com/vue-advanced-cropper@1.0.0/dist/index.umd.js)
 
 Then add somewhere in `head` the link to this script:
 ```html

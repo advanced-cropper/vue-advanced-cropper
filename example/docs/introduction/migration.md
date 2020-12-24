@@ -25,9 +25,9 @@ import 'vue-advanced-cropper/dist/style.css';
 ### Using CDN
 
 ```html
-<script src="https://unpkg.com/vue-advanced-cropper@latest/dist/index.umd.js" />
+<script src="https://unpkg.com/vue-advanced-cropper@1.0.0/dist/index.umd.js" />
 <!-- Add the following line to import the cropper styles -->
-<link rel="stylesheet" href="https://unpkg.com/vue-advanced-cropper@latest/dist/style.css" />
+<link rel="stylesheet" href="https://unpkg.com/vue-advanced-cropper@1.0.0/dist/style.css" />
 ```
 
 ## Changed the markup of cropper

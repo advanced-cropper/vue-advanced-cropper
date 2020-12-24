@@ -28,7 +28,11 @@
 				</div>
 
 				<div class="presentation__install">
-					{{ manager === 'npm' ? 'npm install -S vue-advanced-cropper' : 'yarn add vue-advanced-cropper' }}
+					{{
+						manager === 'npm'
+							? 'npm install -S vue-advanced-cropper@release'
+							: 'yarn add vue-advanced-cropper@release'
+					}}
 					<div class="presentation__package-managers">
 						<span
 							:class="`presentation__package-manager ${
