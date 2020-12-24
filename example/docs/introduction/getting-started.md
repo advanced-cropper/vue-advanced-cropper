@@ -4,6 +4,22 @@ title: Getting started
 
 # Getting started
 
+::: warning Important!
+
+The latest version doesn't have `latest` tag now. I did it deliberate because some of CDN users can use this tag and their
+sites will be broken and I should give them time to migrate.
+
+So, to install the actual version point your version exactly:
+```bash
+npm install --save vue-advanced-cropper@1.0.0
+```
+
+Or use the special temporary tag:
+```bash
+npm install --save vue-advanced-cropper@release
+```
+:::
+
 ## Package installation
 To use the package you should install it with `npm` or `yarn`
 ```bash
