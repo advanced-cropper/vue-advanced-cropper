@@ -235,6 +235,8 @@ export default {
 				},
 				translateX: this.visibleArea ? this.visibleArea.left / this.coefficient : 0,
 				translateY: this.visibleArea ? this.visibleArea.top / this.coefficient : 0,
+				scaleX: 1 / this.coefficient,
+				scaleY: 1 / this.coefficient,
 			};
 		},
 		imageSize() {
@@ -404,25 +406,33 @@ export default {
 			return styles;
 		},
 		imageStyle() {
+			const compensations = {
+				rotate: {
+					left: (this.imageAttributes.width - this.imageSize.width) / (2 * this.coefficient),
+					top: (this.imageAttributes.height - this.imageSize.height) / (2 * this.coefficient),
+				},
+				scale: {
+					left: ((1 - 1 / this.coefficient) * this.imageAttributes.width) / 2,
+					top: ((1 - 1 / this.coefficient) * this.imageAttributes.height) / 2,
+				},
+			};
+
 			const result = {
+				width: `${this.imageAttributes.width}px`,
+				height: `${this.imageAttributes.height}px`,
 				left: '0px',
 				top: '0px',
 				transform:
-					`translate(${
-						(this.imageSize.width - this.imageAttributes.width) / (2 * this.coefficient) -
-						this.imageTransforms.translateX
+					`translate3d(${
+						-compensations.rotate.left - compensations.scale.left - this.imageTransforms.translateX
 					}px, ${
-						(this.imageSize.height - this.imageAttributes.height) / (2 * this.coefficient) -
-						this.imageTransforms.translateY
-					}px)` + getStyleTransforms(this.imageTransforms),
+						-compensations.rotate.top - compensations.scale.top - this.imageTransforms.translateY
+					}px, 0px)` + getStyleTransforms(this.imageTransforms),
 			};
 
 			if (this.transitionsOptions.enabled) {
 				result.transition = `${this.transitionsOptions.time}ms ${this.transitionsOptions.timingFunction}`;
 			}
-
-			result.width = `${this.imageAttributes.width / this.coefficient}px`;
-			result.height = `${this.imageAttributes.height / this.coefficient}px`;
 			return result;
 		},
 	},
@@ -1192,8 +1202,8 @@ export default {
 					:stencil-coordinates="stencilCoordinates"
 					:image="{
 						src: imageAttributes.src,
-						width: imageAttributes.width / coefficient,
-						height: imageAttributes.height / coefficient,
+						width: imageAttributes.width,
+						height: imageAttributes.height,
 						transforms: imageTransforms,
 						loaded: imageLoaded,
 					}"
@@ -1230,7 +1240,6 @@ export default {
 		user-select: none;
 		position: absolute;
 		transform-origin: center;
-		will-change: transform;
 		// Workaround to prevent bugs at the websites with max-width
 		// rule applied to img (Vuepress for example)
 		max-width: none !important;

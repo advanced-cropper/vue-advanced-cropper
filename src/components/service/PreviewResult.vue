@@ -69,12 +69,30 @@ export default {
 				left: '0px',
 				top: '0px',
 			};
+
+			const compensations = {
+				rotate: {
+					left: ((this.image.width - virtualSize.width) * imageTransforms.scaleX) / 2,
+					top: ((this.image.height - virtualSize.height) * imageTransforms.scaleY) / 2,
+				},
+				scale: {
+					left: ((1 - imageTransforms.scaleX) * this.image.width) / 2,
+					top: ((1 - imageTransforms.scaleY) * this.image.height) / 2,
+				},
+			};
+
 			result.transform =
 				`translate3d(
-				${-this.stencilCoordinates.left - imageTransforms.translateX + (virtualSize.width - this.image.width) / 2}px,${
+				${
+					-this.stencilCoordinates.left -
+					imageTransforms.translateX -
+					compensations.rotate.left -
+					compensations.scale.left
+				}px,${
 					-this.stencilCoordinates.top -
-					imageTransforms.translateY +
-					(virtualSize.height - this.image.height) / 2
+					imageTransforms.translateY -
+					compensations.rotate.top -
+					compensations.scale.top
 				}px,0) ` + getStyleTransforms(imageTransforms);
 
 			if (this.transitions && this.transitions.enabled) {

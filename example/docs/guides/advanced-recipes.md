@@ -376,10 +376,10 @@ export default {
 };
 ```
 
-## Refresh Cropper
+## Dynamic cropper size
 
-There are situations, when the cropper container size changes. It
-can't be handled by the cropper itself, because it doesn't know about this changes at all (in contradistinction to window's resize),
+There are situations, when a cropper container size is changed. It's
+can't be handle by cropper itself, because it doesn't know about this changes at all (in contradistinction to window's resize),
 so you should call [refresh](/components/cropper.html#refresh) method.
 
 ::: tip 

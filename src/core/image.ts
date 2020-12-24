@@ -155,11 +155,11 @@ function getImageData(img) {
 	});
 }
 
-export function getStyleTransforms({ rotate, flip }) {
+export function getStyleTransforms({ rotate, flip, scaleX, scaleY }) {
 	let transform = '';
 	transform += ` rotate(${rotate}deg) `;
-	transform += ` scaleX(${flip.horizontal ? -1 : 1}) `;
-	transform += ` scaleY(${flip.vertical ? -1 : 1}) `;
+	transform += ` scaleX(${scaleX * (flip.horizontal ? -1 : 1)}) `;
+	transform += ` scaleY(${scaleY * (flip.vertical ? -1 : 1)}) `;
 	return transform;
 }
 
