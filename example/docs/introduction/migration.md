@@ -19,7 +19,7 @@ sites will be broken and I should give them time to migrate.
 
 So, to install the actual version point your version exactly:
 ```bash
-npm install --save vue-advanced-cropper@1.0.0
+npm install --save vue-advanced-cropper@1.0.1
 ```
 
 Or use the special temporary tag:
@@ -43,9 +43,9 @@ import 'vue-advanced-cropper/dist/style.css';
 ### Using CDN
 
 ```html
-<script src="https://unpkg.com/vue-advanced-cropper@1.0.0/dist/index.umd.js" />
+<script src="https://unpkg.com/vue-advanced-cropper@1.0.1/dist/index.umd.js" />
 <!-- Add the following line to import the cropper styles -->
-<link rel="stylesheet" href="https://unpkg.com/vue-advanced-cropper@1.0.0/dist/style.css" />
+<link rel="stylesheet" href="https://unpkg.com/vue-advanced-cropper@1.0.1/dist/style.css" />
 ```
 
 ## Changed the markup of cropper
