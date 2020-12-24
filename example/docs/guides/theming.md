@@ -27,7 +27,7 @@ If you use SCSS preprocessor you can easily customize the theme by redefining av
 For example:
 ```scss
 	$base-color: cornflowerblue;
-	@import '~vue-advanced-cropper/dist/classic.scss';
+	@import '~vue-advanced-cropper/dist/theme.classic.scss';
 ```
 
 ## Themes
@@ -44,7 +44,7 @@ If you loaded styles as written earlier it will be enabled by default. This them
 The compact theme inspired by some of Android croppers. It's well suited
 for mobile devices.
 ```js
-import 'vue-advanced-cropper/dist/themes/compact.css';
+import 'vue-advanced-cropper/dist/themes/theme.compact.css';
 ```
 <theme-example theme="compact"/>
 
@@ -68,7 +68,7 @@ import 'vue-advanced-cropper/dist/themes/compact.css';
 
 It's the default theme with batteries included.
 ```js
-import 'vue-advanced-cropper/dist/themes/classic.css';
+import 'vue-advanced-cropper/dist/themes/theme.classic.css';
 ```
 <theme-example theme="classic"/>
 
@@ -88,7 +88,7 @@ import 'vue-advanced-cropper/dist/themes/classic.css';
 
 The bright and light theme. 
 ```js
-import 'vue-advanced-cropper/dist/themes/bubble.css';
+import 'vue-advanced-cropper/dist/themes/theme.bubble.css';
 ```
 <theme-example theme="bubble"/>
 
