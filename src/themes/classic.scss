@@ -1,0 +1,106 @@
+$base-color: white !default;
+$grid-color: $base-color !default;
+$handler-color: $base-color !default;
+$line-color: $base-color !default;
+$handler-size: 8px !default;
+$grid: true !default;
+
+.vue-simple-line {
+	border-color: rgba($line-color, 0.8);
+}
+
+.vue-simple-handler {
+	display: block;
+	position: relative;
+	flex-shrink: 0;
+	transition: opacity 0.5s;
+	border: none;
+	background: $handler-color;
+	height: $handler-size;
+	width: $handler-size;
+	opacity: 0.5;
+
+	&--hover {
+		opacity: 1;
+	}
+}
+
+.vue-circle-stencil {
+	&__preview {
+		border: solid 2px rgba($line-color, 0.8);
+	}
+	.vue-simple-line {
+		border-color: rgba($line-color, 0.3);
+	}
+	.vue-simple-handler {
+		&--west-north,
+		&--east-south,
+		&--west-south,
+		&--east-north {
+			opacity: 0.5;
+		}
+
+		&--hover {
+			opacity: 1;
+		}
+	}
+}
+
+@if ($grid) {
+	.vue-circle-stencil,
+	.vue-rectangle-stencil {
+		&__preview {
+			&:after,
+			&:before {
+				content: '';
+				opacity: 0;
+				transition: opacity 0.25s;
+				position: absolute;
+				pointer-events: none;
+				z-index: 1;
+			}
+			&:after {
+				border-left: dashed 1px $grid-color;
+				border-right: dashed 1px $grid-color;
+				width: 33%;
+				height: 100%;
+				transform: translateX(-50%);
+				left: 50%;
+				top: 0;
+			}
+			&:before {
+				border-top: dashed 1px $grid-color;
+				border-bottom: dashed 1px $grid-color;
+				height: 33%;
+				width: 100%;
+				transform: translateY(-50%);
+				top: 50%;
+				left: 0;
+			}
+		}
+
+		&--moving,
+		&--resizing {
+			.vue-rectangle-stencil__preview,
+			.vue-circle-stencil__preview {
+				&:after,
+				&:before {
+					opacity: 0.7;
+				}
+			}
+			.vue-simple-handler {
+				opacity: 1;
+			}
+		}
+	}
+}
+
+.vue-circle-stencil,
+.vue-rectangle-stencil {
+	&--moving,
+	&--resizing {
+		.vue-simple-handler {
+			opacity: 1;
+		}
+	}
+}

@@ -4,13 +4,6 @@ title: Theming
 
 # Theming
 
-::: danger Not Released
-This feature is not released. It's the concept of the changes, that may be implemented in future releases. Currently styles are loaded by script,
-but this behavior will be changed in the future and styles should be imported separately.
-
-This page is the sandbox for me to invent some themes for the future
-:::
-
 ## Basics
 
 Theme is the set of predefined styles for the following default components: `Cropper`, `CircleStencil`, `RectangleStencil`, `BoundingBox`, `SimpleHandler` and `SimpleLine`. 
@@ -25,6 +18,16 @@ import 'vue-advanced-cropper/dist/style.css';
 It's the deliberate decision to reduce the count of operations needed to start work with this library. 
 However, because this library uses the BEM methodology the defined styles can be easily redefined later (for example, 
 by importing another theme later).
+
+### Customizing a theme
+
+If you use SCSS preprocessor you can easily customize the theme by redefining available variables and importing the scss theme file.
+
+For example:
+```scss
+	$base-color: cornflowerblue;
+	@import '~vue-advanced-cropper/dist/classic.scss';
+```
 
 ## Themes
 
@@ -44,23 +47,43 @@ import 'vue-advanced-cropper/dist/themes/compact.css';
 ```
 <theme-example theme="compact"/>
 
-### Engineer
+::: details  SCSS variables
 
-The strict and classic theme
-```js
-import 'vue-advanced-cropper/dist/themes/engineer.css';
-```
-<theme-example theme="engineer"/>
+| Name                  | Default Value              |
+| --------------------- | -------------------------- |
+| $base-color | white  |
+| $grid | true  |
+| $grid-color | $base-color  |
+| $handler-color | $base-color  |
+| $big-handler-color | $handler-color  |
+| $small-handler-color | $handler-color  |
+| $line-color | $base-color  |
+| $big-handler-size | 16px  |
+| $small-handler-size | 4px  |
+| $big-handler-width | 2px  |
+:::
 
-### Classic
+### Classic Theme
 
-The simple classic theme
+It's the default theme with batteries included.
 ```js
 import 'vue-advanced-cropper/dist/themes/classic.css';
 ```
 <theme-example theme="classic"/>
 
-### Bubble
+::: details  SCSS variables
+
+| Name                  | Default Value              |
+| --------------------- | -------------------------- |
+| $base-color | white  |
+| $grid | true  |
+| $grid-color | $base-color  |
+| $handler-color | $base-color  |
+| $line-color | $base-color  |
+| $handler-size | 8px  |
+:::
+
+### Bubble Theme
 
 The bright and light theme. 
 ```js
@@ -68,10 +91,15 @@ import 'vue-advanced-cropper/dist/themes/bubble.css';
 ```
 <theme-example theme="bubble"/>
 
-### Noire
+::: details  SCSS variables
 
-The noire, shaded theme.
-```js
-import 'vue-advanced-cropper/dist/themes/noire.css';
-```
-<theme-example theme="noire"/>
+| Name                  | Default Value              |
+| --------------------- | -------------------------- |
+| $base-color | white  |
+| $grid | false  |
+| $grid-color | $base-color  |
+| $handler-color | $base-color  |
+| $line-color | $base-color  |
+| $handler-size | 14px  |
+| $hover-handler-size | 25px  |
+:::
