@@ -15,6 +15,9 @@
 > **WARNING:** If you still use the beta version (< 1.0.0) read [the migration guide](https://norserium.github.io/vue-advanced-cropper/introduction/migration.html). 
 Especially if you use CDN. Your site may be broken in the near future, when `latest` tag will be changed.
 
+
+<h2 align="center"> </h2>
+
 **Vue Advanced Cropper** is the advanced library that gives you opportunity to create your own croppers suited for any website design.
 It means that you are able to change not only the cropper appearance, you area able to customize its behavior also.
 

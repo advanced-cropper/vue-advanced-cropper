@@ -7,10 +7,10 @@ title: Getting started
 ## Package installation
 To use the package you should install it with `npm` or `yarn`
 ```bash
-npm install -S vue-advanced-cropper
+npm install -S vue-advanced-cropper@release
 ```
 ```bash
-yarn add vue-advanced-cropper
+yarn add vue-advanced-cropper@release
 ```
 
 Then you should add somewhere in your script file or block the import of `Cropper` component:
@@ -77,8 +77,8 @@ If you want to use the cropper without using, for example, different build syste
 
 Then add somewhere in `head` the link to this script:
 ```html
-<script src="https://unpkg.com/vue-advanced-cropper@latest/dist/index.umd.js" />
-<link rel="stylesheet" href="https://unpkg.com/vue-advanced-cropper@latest/dist/style.css" />
+<script src="https://unpkg.com/vue-advanced-cropper@1.0.0/dist/index.umd.js" />
+<link rel="stylesheet" href="https://unpkg.com/vue-advanced-cropper@1.0.0/dist/style.css" />
 ```
 
 And you can use globally registered components: `cropper`, `circle-stencil`, `rectangle-stencil`, `simple-handler`, `simple-line`.
