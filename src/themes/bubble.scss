@@ -12,12 +12,6 @@ $hover-handler-size: 25px !default;
 	}
 }
 
-.vue-rectangle-stencil,
-.vue-circle-stencil {
-	&__preview {
-	}
-}
-
 .vue-simple-handler {
 	display: block;
 	background: rgba($handler-color, 0.95);
@@ -84,6 +78,21 @@ $hover-handler-size: 25px !default;
 			}
 			.vue-simple-handler {
 				opacity: 1;
+			}
+		}
+	}
+}
+
+
+.vue-circle-stencil,
+.vue-rectangle-stencil {
+	&--moving,
+	&--resizing {
+		.vue-rectangle-stencil__preview,
+		.vue-circle-stencil__preview {
+			&:after,
+			&:before {
+				opacity: 0.7;
 			}
 		}
 	}

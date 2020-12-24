@@ -10,7 +10,8 @@ Theme is the set of predefined styles for the following default components: `Cro
 
 They define global rules for such classes as `vue-advanced-cropper`, `vue-rectangle-stencil` and etc. 
 
-When you import the styles, you load both service styles that required to correct displaying of components and the simplest default theme.
+When you import the styles, you lo
+ad both service styles that required to correct displaying of components and the simplest default theme.
 ```js
 import 'vue-advanced-cropper/dist/style.css';
 ```
