@@ -44,6 +44,12 @@ export default {
 				return {};
 			},
 		},
+		handlersWrappersClasses: {
+			type: Object,
+			default() {
+				return {};
+			},
+		},
 		lines: {
 			type: Object,
 		},
@@ -54,6 +60,12 @@ export default {
 			},
 		},
 		linesClasses: {
+			type: Object,
+			default() {
+				return {};
+			},
+		},
+		linesWrappersClasses: {
 			type: Object,
 			default() {
 				return {};
@@ -86,6 +98,7 @@ export default {
 	data() {
 		return {
 			moving: false,
+			resizing: false,
 		};
 	},
 	computed: {
@@ -106,8 +119,9 @@ export default {
 			const style = {
 				width: `${width}px`,
 				height: `${height}px`,
-				left: `${left}px`,
-				top: `${top}px`,
+				left: `${0}px`,
+				top: `${0}px`,
+				transform: `translate(${left}px, ${top}px)`,
 			};
 
 			if (this.transitions && this.transitions.enabled) {

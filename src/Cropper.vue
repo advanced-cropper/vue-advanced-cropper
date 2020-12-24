@@ -405,9 +405,16 @@ export default {
 		},
 		imageStyle() {
 			const result = {
-				left: `${this.imageSize.width / (2 * this.coefficient) - this.imageTransforms.translateX}px`,
-				top: `${this.imageSize.height / (2 * this.coefficient) - this.imageTransforms.translateY}px`,
-				transform: `translate(-50%, -50%)` + getStyleTransforms(this.imageTransforms),
+				left: '0px',
+				top: '0px',
+				transform:
+					`translate(${
+						(this.imageSize.width - this.imageAttributes.width) / (2 * this.coefficient) -
+						this.imageTransforms.translateX
+					}px, ${
+						(this.imageSize.height - this.imageAttributes.height) / (2 * this.coefficient) -
+						this.imageTransforms.translateY
+					}px)` + getStyleTransforms(this.imageTransforms),
 			};
 
 			if (this.transitionsOptions.enabled) {

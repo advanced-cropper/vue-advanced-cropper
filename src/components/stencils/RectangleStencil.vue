@@ -123,8 +123,9 @@ export default {
 			const style = {
 				width: `${width}px`,
 				height: `${height}px`,
-				left: `${left}px`,
-				top: `${top}px`,
+				left: `${0}px`,
+				top: `${0}px`,
+				transform: `translate(${left}px, ${top}px)`,
 			};
 
 			if (this.transitions && this.transitions.enabled) {

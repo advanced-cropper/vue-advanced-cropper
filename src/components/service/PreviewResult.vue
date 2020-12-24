@@ -30,10 +30,6 @@ export default {
 		imageClass: {
 			type: String,
 		},
-		refreshDebounce: {
-			type: Number,
-			default: 500,
-		},
 	},
 	computed: {
 		classes() {
@@ -70,18 +66,16 @@ export default {
 			const result = {
 				width: `${this.image.width}px`,
 				height: `${this.image.height}px`,
-				left: `${
-					-this.stencilCoordinates.left -
-					imageTransforms.translateX +
-					(virtualSize.width - this.image.width) / 2
-				}px`,
-				top: `${
+				left: '0px',
+				top: '0px',
+			};
+			result.transform =
+				`translate3d(
+				${-this.stencilCoordinates.left - imageTransforms.translateX + (virtualSize.width - this.image.width) / 2}px,${
 					-this.stencilCoordinates.top -
 					imageTransforms.translateY +
 					(virtualSize.height - this.image.height) / 2
-				}px`,
-			};
-			result.transform = getStyleTransforms(imageTransforms);
+				}px,0) ` + getStyleTransforms(imageTransforms);
 
 			if (this.transitions && this.transitions.enabled) {
 				result.transition = `${this.transitions.time}ms ${this.transitions.timingFunction}`;
