@@ -60,18 +60,16 @@ export default {
 
 <style lang="scss">
 .compact {
-	@import '../../../../src/themes/compact.scss';
+	@import '~vue-advanced-cropper/dist/compact.scss';
 }
 
 .classic {
-	@import '../../../../src/themes/classic.scss';
+	@import '~vue-advanced-cropper/dist/classic.scss';
 }
-
 
 .bubble {
-	@import '../../../../src/themes/bubble.scss';
+	@import '~vue-advanced-cropper/dist/bubble.scss';
 }
-
 
 .noire {
 	.vue-advanced-cropper {
