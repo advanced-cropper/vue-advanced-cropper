@@ -12,7 +12,7 @@
 
 <h2 align="center"> </h2>
 
-> If you use the beta version (< 1.0.0) read [the migration guide](https://norserium.github.io/vue-advanced-cropper/introduction/migration.html). 
+> **WARNING:** If you still use the beta version (< 1.0.0) read [the migration guide](https://norserium.github.io/vue-advanced-cropper/introduction/migration.html). 
 Especially if you use CDN. Your site may be broken in the near future, when `latest` tag will be changed.
 
 **Vue Advanced Cropper** is the advanced library that gives you opportunity to create your own croppers suited for any website design.
