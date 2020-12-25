@@ -1,8 +1,8 @@
 <p align="center"><a href="https://norserium.github.io/vue-advanced-cropper/" target="_blank" rel="noopener noreferrer"><img width="133" src="https://github.com/norserium/vue-advanced-cropper/blob/master/example/readme/logo.svg?raw=true&timestamp=1608385818575" alt="Vue Advanced Cropper logo"></a></p>
 <br/>
 <p align="center">
-  <a href="https://npmcharts.com/compare/vue?minimal=true"><img src="https://img.shields.io/npm/dm/vue-advanced-cropper.svg?sanitize=true" alt="Downloads"></a>
-  <a href="https://www.npmjs.com/package/vue-advanced-cropper"><img src="https://img.shields.io/npm/v/vue-advanced-cropper.svg?sanitize=true" alt="Version"></a>
+  <a href="https://npmcharts.com/compare/vue-advanced-cropper?minimal=true"><img src="https://img.shields.io/npm/dm/vue-advanced-cropper.svg?sanitize=true" alt="Downloads"></a>
+  <a href="https://www.npmjs.com/package/vue-advanced-cropper"><img src="https://img.shields.io/npm/v/release.svg?sanitize=true" alt="Version"></a>
   <a href="https://www.npmjs.com/package/vue-advanced-cropper">
   <br>
   <a href="https://norserium.github.io/vue-advanced-cropper/">Documentation</a target="_blank" rel="noopener noreferrer"> /  
@@ -12,11 +12,18 @@
 
 <h2 align="center"> </h2>
 
-> **WARNING:** If you still use the beta version (< 1.0.0) read [the migration guide](https://norserium.github.io/vue-advanced-cropper/introduction/migration.html). 
+---
+
+**WARNING!** If you still use the beta version (< 1.0.0) read [the migration guide](https://norserium.github.io/vue-advanced-cropper/introduction/migration.html). 
 Especially if you use CDN. Your site may be broken in the near future, when `latest` tag will be changed.
 
+---
 
-<h2 align="center"> </h2>
+---
+
+:fire: **HEADS UP!** You're currently looking at the branch for Vue 2. If you're looking for the branch for Vue 3, [please check out `vue-next` branch](https://github.com/Norserium/vue-advanced-cropper/tree/vue-next).
+
+---
 
 **Vue Advanced Cropper** is the advanced library that gives you opportunity to create your own croppers suited for any website design.
 It means that you are able to change not only the cropper appearance, you area able to customize its behavior also.
