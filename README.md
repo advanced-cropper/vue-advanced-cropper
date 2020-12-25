@@ -2,7 +2,7 @@
 <br/>
 <p align="center">
   <a href="https://npmcharts.com/compare/vue-advanced-cropper?minimal=true"><img src="https://img.shields.io/npm/dm/vue-advanced-cropper.svg?sanitize=true" alt="Downloads"></a>
-  <a href="https://www.npmjs.com/package/vue-advanced-cropper"><img src="https://img.shields.io/npm/v/release.svg?sanitize=true" alt="Version"></a>
+  <a href="https://www.npmjs.com/package/vue-advanced-cropper"><img src="https://img.shields.io/npm/v/vue-advanced-cropper/release.svg" alt="Version"></a>
   <a href="https://www.npmjs.com/package/vue-advanced-cropper">
   <br>
   <a href="https://norserium.github.io/vue-advanced-cropper/">Documentation</a target="_blank" rel="noopener noreferrer"> /  
