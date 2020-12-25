@@ -28,9 +28,9 @@ export default {
 			let rootClass;
 			if (this.horizontalPosition || this.verticalPosition) {
 				const position = directionNames(this.horizontalPosition, this.verticalPosition);
-				rootClass = classnames(this.classname, cn({ [position.classname]: true, disabled: this.disabled }));
+				rootClass = cn({ [position.classname]: true, disabled: this.disabled });
 			} else {
-				rootClass = classnames(this.classname, cn({ disabled: this.disabled }));
+				rootClass = cn({ disabled: this.disabled });
 			}
 			return {
 				root: rootClass,

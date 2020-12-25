@@ -362,7 +362,7 @@ export default {
 		// Styling
 		classes() {
 			return {
-				cropper: classnames(cn(), this.classname),
+				cropper: cn(),
 				image: classnames(cn('image'), this.imageClass),
 				boundaries: classnames(cn('boundaries'), this.boundariesClass),
 				stretcher: classnames(cn('stretcher')),

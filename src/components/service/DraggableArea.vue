@@ -21,7 +21,7 @@ export default {
 	computed: {
 		classnames() {
 			return {
-				default: classnames(cn(), this.classname),
+				default: cn(),
 			};
 		},
 	},
