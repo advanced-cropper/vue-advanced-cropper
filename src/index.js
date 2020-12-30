@@ -25,18 +25,3 @@ export { PreviewImage } from './components/helpers';
 export { ResizeEvent, MoveEvent, DragEvent } from './core/events';
 
 export { default as Cropper } from './Cropper.vue';
-
-const inBrowser = typeof window !== 'undefined';
-
-if (inBrowser && window.Vue) {
-	window.Vue.use({
-		install(Vue) {
-			Vue.component('cropper', Cropper);
-			Vue.component('rectangle-stencil', RectangleStencil);
-			Vue.component('bounding-box', BoundingBox);
-			Vue.component('circle-stencil', CircleStencil);
-			Vue.component('simple-handler', SimpleHandler);
-			Vue.component('simple-line', SimpleLine);
-		},
-	});
-}
