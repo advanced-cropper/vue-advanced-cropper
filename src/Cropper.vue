@@ -1007,12 +1007,10 @@ export default {
 				});
 		},
 		onChange(debounce = true) {
-			if (this.$listeners && this.$listeners.change) {
-				if (debounce && this.debounce) {
-					this.debouncedUpdate();
-				} else {
-					this.update();
-				}
+			if (debounce && this.debounce) {
+				this.debouncedUpdate();
+			} else {
+				this.update();
 			}
 		},
 		onChangeImage() {
