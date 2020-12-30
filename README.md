@@ -7,7 +7,7 @@
   <br>
   <a href="https://norserium.github.io/vue-advanced-cropper/">Documentation</a target="_blank" rel="noopener noreferrer"> /  
   <a href="https://norserium.github.io/vue-advanced-cropper/guides/recipes.html">Examples</a target="_blank" rel="noopener noreferrer"> /
-  <a href="https://codesandbox.io/s/vue-avanced-cropper-basic-jfy5w">Sandbox</a target="_blank" rel="noopener noreferrer">
+  <a href="https://codesandbox.io/s/vue-advanced-cropper-vue-3-yrxou?file=/src/App.vue">Sandbox</a target="_blank" rel="noopener noreferrer">
 </p>
 
 <h2 align="center"> </h2>
