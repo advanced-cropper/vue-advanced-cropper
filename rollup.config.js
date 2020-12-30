@@ -10,32 +10,36 @@ import scss from 'rollup-plugin-scss';
 import typescript from '@rollup/plugin-typescript';
 import pkg from './package.json';
 
+const output = [
+	{
+		file: pkg.module,
+		format: `es`,
+	},
+	{
+		file: pkg.main,
+		format: `cjs`,
+	},
+	{
+		file: pkg.unpkg,
+		format: `iife`,
+	},
+	{
+		file: pkg.browser || pkg.module.replace('bundler', 'browser'),
+		format: `es`,
+	},
+];
+
 export default {
 	external: ['vue'],
 	input: 'src/index.js',
-	output: [
-		{
-			file: pkg.main,
-			format: 'cjs',
-			sourcemap: process.env.NODE_ENV !== 'production',
+	output: output.map((config) => ({
+		...config,
+		name: config.format === 'iife' ? 'VueAdvancedCropper' : undefined,
+		globals: {
+			vue: 'Vue',
 		},
-		{
-			file: pkg.module,
-			format: 'es',
-			sourcemap: process.env.NODE_ENV !== 'production',
-		},
-		{
-			file: pkg.umd,
-			format: 'umd',
-			sourcemap: process.env.NODE_ENV !== 'production',
-			name: 'vue-advanced-cropper',
-		},
-		{
-			file: './testing-vue-next/node_modules/vue-advanced-cropper/dist/index.js',
-			format: 'cjs',
-			sourcemap: process.env.NODE_ENV !== 'production',
-		},
-	],
+		sourcemap: process.env.NODE_ENV !== 'production',
+	})),
 	plugins: [
 		scss({
 			output: './dist/style.css',
