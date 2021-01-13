@@ -395,8 +395,8 @@ export default {
 		},
 		boundariesStyle() {
 			const styles = {
-				width: this.boundaries.width ? `${this.boundaries.width}px` : 'auto',
-				height: this.boundaries.height ? `${this.boundaries.height}px` : 'auto',
+				width: this.boundaries.width ? `${Math.round(this.boundaries.width)}px` : 'auto',
+				height: this.boundaries.height ? `${Math.round(this.boundaries.height)}px` : 'auto',
 				transition: `opacity ${this.transitionTime}ms`,
 				pointerEvents: this.imageLoaded ? 'all' : 'none',
 			};
