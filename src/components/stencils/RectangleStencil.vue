@@ -164,6 +164,7 @@ export default {
 <template>
 	<div :class="classes.stencil" :style="style">
 		<BoundingBox
+			:size="stencilCoordinates"
 			:class="classes.boundingBox"
 			:handlers="handlers"
 			:handlers-component="handlersComponent"

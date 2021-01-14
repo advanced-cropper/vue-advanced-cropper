@@ -70,43 +70,27 @@ export default {
 		justify-content: center;
 	}
 	&--west-north {
-		left: 0;
-		top: 0;
 		cursor: nw-resize;
 	}
 	&--north {
-		left: 50%;
-		top: 0;
 		cursor: n-resize;
 	}
 	&--east-north {
-		left: 100%;
-		top: 0;
 		cursor: ne-resize;
 	}
 	&--east {
-		left: 100%;
-		top: 50%;
 		cursor: e-resize;
 	}
 	&--east-south {
-		left: 100%;
-		top: 100%;
 		cursor: se-resize;
 	}
 	&--south {
-		left: 50%;
-		top: 100%;
 		cursor: s-resize;
 	}
 	&--west-south {
-		left: 0;
-		top: 100%;
 		cursor: sw-resize;
 	}
 	&--west {
-		left: 0;
-		top: 50%;
 		cursor: w-resize;
 	}
 	&--disabled {

@@ -15,6 +15,9 @@ const VERTICAL_DIRECTIONS = ['south', 'north', null];
 export default {
 	name: 'BoundingBox',
 	props: {
+		size: {
+			type: Object,
+		},
 		handlers: {
 			type: Object,
 			default() {
@@ -102,6 +105,16 @@ export default {
 		};
 	},
 	computed: {
+		style() {
+			if (this.size) {
+				return {
+					width: `${this.size.width}px`,
+					height: `${this.size.height}px`,
+				};
+			} else {
+				return {};
+			}
+		},
 		classes() {
 			const handlers = this.handlersClasses;
 			const handlersWrappers = this.handlersWrappersClasses;
@@ -146,7 +159,7 @@ export default {
 			const handlers = [];
 			this.points.forEach((point) => {
 				if (this.handlers[point.name]) {
-					handlers.push({
+					const result = {
 						name: point.name,
 						component: this.handlersComponent,
 						class: classnames(this.classes.handlers.default, this.classes.handlers[point.name]),
@@ -158,7 +171,22 @@ export default {
 						verticalDirection: point.verticalDirection,
 						horizontalDirection: point.horizontalDirection,
 						disabled: !this.resizable,
-					});
+					};
+					if (this.size) {
+						const { width, height } = this.size;
+						const { horizontalDirection, verticalDirection } = point;
+						const left =
+							horizontalDirection === 'east' ? width : horizontalDirection === 'west' ? 0 : width / 2;
+						const top =
+							verticalDirection === 'south' ? height : verticalDirection === 'north' ? 0 : height / 2;
+						result.wrapperClass = cn('handler');
+						result.wrapperStyle = {
+							transform: `translate(${left}px, ${top}px)`,
+						};
+					} else {
+						result.wrapperClass = cn('handler', { [point.classname]: true });
+					}
+					handlers.push(result);
 				}
 			});
 			return handlers;
@@ -232,7 +260,7 @@ export default {
 </script>
 
 <template>
-	<div ref="box" :class="classes.root">
+	<div ref="box" :class="classes.root" :style="style">
 		<slot />
 		<div>
 			<component
@@ -248,11 +276,14 @@ export default {
 				@drag-end="onEnd()"
 			/>
 		</div>
-		<div>
+		<div
+			v-for="handler in handlerNodes"
+			:key="handler.name"
+			:style="handler.wrapperStyle"
+			:class="handler.wrapperClass"
+		>
 			<component
 				:is="handler.component"
-				v-for="handler in handlerNodes"
-				:key="handler.name"
 				:default-class="handler.class"
 				:hover-class="handler.hoverClass"
 				:wrapper-class="handler.wrapperClass"
@@ -271,5 +302,40 @@ export default {
 	position: relative;
 	height: 100%;
 	width: 100%;
+	&__handler {
+		position: absolute;
+		&--west-north {
+			left: 0;
+			top: 0;
+		}
+		&--north {
+			left: 50%;
+			top: 0;
+		}
+		&--east-north {
+			left: 100%;
+			top: 0;
+		}
+		&--east {
+			left: 100%;
+			top: 50%;
+		}
+		&--east-south {
+			left: 100%;
+			top: 100%;
+		}
+		&--south {
+			left: 50%;
+			top: 100%;
+		}
+		&--west-south {
+			left: 0;
+			top: 100%;
+		}
+		&--west {
+			left: 0;
+			top: 50%;
+		}
+	}
 }
 </style>

@@ -385,14 +385,6 @@ export default {
 				return this.defaultCoordinates();
 			}
 		},
-		wrapperStyle() {
-			return {
-				width: `${this.stencilCoordinates.width}px`,
-				height: `${this.stencilCoordinates.height}px`,
-				left: `${this.stencilCoordinates.left}px`,
-				top: `${this.stencilCoordinates.top}px`,
-			};
-		},
 		boundariesStyle() {
 			const styles = {
 				width: this.boundaries.width ? `${Math.round(this.boundaries.width)}px` : 'auto',
