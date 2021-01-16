@@ -53,7 +53,15 @@ This prop is the object, that describes the properties of image and has followin
 - `width` - the image width
 - `height` - the image height
 - `transforms` - the transforms applied to image
-- `loaded` - the flag that indicates if image is loaded
+
+
+### `cooordinates`
+
+It's the object with `left`, `right`, `height` and `width` fields, that represents actual coordinates of the cropped fragment.
+
+### `transitions`
+
+It's the object that represent the current transition settings
 
 ### `stencilCoordinates`
 
@@ -63,15 +71,24 @@ You should set the coordinates of your stencil **himself**. It was done on purpo
 
 So pay attention on the computed property `style`
 
+
+
+::: tip Notice!
+The positions of the stencil is set by `transform` property. It's the optimal way
+to prevent different lags and flickering.
+:::
+
 ```html
 <script>
 export default {
-	name: 'CircleStencil',
 	props: {
 		image: {
 			type: Object
 		},
-		resultCoordinates: {
+		coordinates: {
+			type: Object,
+		},
+		transitions: {
 			type: Object,
 		},
 		stencilCoordinates: {
@@ -84,8 +101,7 @@ export default {
 			return {
 				width: `${width}px`,
 				height: `${height}px`,
-				left: `${left}px`,
-				top: `${top}px`
+				transform: `translate(${left}px, ${top}px)`
 			};
 		}
 	}
@@ -104,12 +120,14 @@ Aspect ratios method should return an object with `minimum` and `maximum` fields
 ```html
 <script>
 export default {
-	name: 'CircleStencil',
 	props: {
 		image: {
 			type: Object
 		},
-		resultCoordinates: {
+		coordinates: {
+			type: Object,
+		},
+		transitions: {
 			type: Object,
 		},
 		stencilCoordinates: {
@@ -130,8 +148,7 @@ export default {
 			return {
 				width: `${width}px`,
 				height: `${height}px`,
-				left: `${left}px`,
-				top: `${top}px`
+				transform: `translate(${left}px, ${top}px)`
 			};
 		}
 	}
@@ -152,23 +169,25 @@ export default {
 
 ## Handler and preview
 
-Now we should add the preview of the cropped area and handler. To display cropped area we will use the standard `PreviewResult` component, handler is the simple img ([download it]('/assets/handler.svg)).
+Now we should add the preview of the cropped area and handler. To display cropped area we will use the standard `StencilPreview` component, handler is the simple img ([download it]('/assets/handler.svg)).
 
 ```html
 <script>
 
-import {PreviewResult} from 'vue-advanced-cropper'
+import { StencilPreview } from 'vue-advanced-cropper'
 
 export default {
-	name: 'CircleStencil',
 	components: {
-		PreviewResult
+		StencilPreview
 	},
 	props: {
 		image: {
 			type: Object
 		},
-		resultCoordinates: {
+		coordinates: {
+			type: Object,
+		},
+		transitions: {
 			type: Object,
 		},
 		stencilCoordinates: {
@@ -189,8 +208,7 @@ export default {
 			return {
 				width: `${width}px`,
 				height: `${height}px`,
-				left: `${left}px`,
-				top: `${top}px`
+				transform: `translate(${left}px, ${top}px)`
 			};
 		}
 	}
@@ -200,10 +218,13 @@ export default {
 <template>
   	<div class="circle-stencil" :style="style">
 	 	<img src="./handler.svg">
-        <preview-result
+        <stencil-preview
         	class="circle-stencil__preview"
 			:image="image"
-			:stencil-coordinates="stencilCoordinates"
+			:coordinates="coordinates"
+			:width="stencilCoordinates.width"
+			:height="stencilCoordinates.height"
+			:transitions="transitions"
       	/>
   	</div>
 </template>
@@ -247,7 +268,7 @@ You may handle drag events himself, but this library provides two very useful co
 <script>
 
 import {
-	PreviewResult,
+	StencilPreview,
 	DraggableElement,
 	DraggableArea
 } from 'vue-advanced-cropper'
@@ -255,7 +276,7 @@ import {
 export default {
 	name: 'CircleStencil',
 	components: {
-		PreviewResult,
+		StencilPreview,
 		DraggableArea,
 		DraggableElement
 	},
@@ -263,7 +284,10 @@ export default {
 		image: {
 			type: Object
 		},
-		resultCoordinates: {
+		coordinates: {
+			type: Object,
+		},
+		transitions: {
 			type: Object,
 		},
 		stencilCoordinates: {
@@ -284,8 +308,7 @@ export default {
 			return {
 				width: `${width}px`,
 				height: `${height}px`,
-				left: `${left}px`,
-				top: `${top}px`
+				transform: `translate(${left}px, ${top}px)`
 			};
 		}
 	}
@@ -294,25 +317,28 @@ export default {
 
 <template>
   	<div class="circle-stencil" :style="style">
-		<draggableElement
+		<draggable-element
 			class="circle-stencil__handler"
-			@drag="onHandlerMove"
+			@drag="onResize"
+			@drag-end="onResizeEnd"
 		>
 			<img :src="require('./assets/handler.svg')">
 		</draggable-element>
-		<draggable-area @move="onMove">
-			<preview-result
+		<draggable-area @move="onMove" @move-end="onMoveEnd">
+			<stencil-preview
 				class="circle-stencil__preview"
 				:image="image"
-				:stencil-coordinates="stencilCoordinates"
+				:coordinates="coordinates"
+				:width="stencilCoordinates.width"
+				:height="stencilCoordinates.height"
+				:transitions="transitions"
 			/>
 		</draggable-area>
  	</div>
 </template>
 ```
 
-
-Notice, we didn't define `onMove` and `onHandlerMove` handlers. It's time to do it.
+Notice, we didn't define `onMove`, `onMoveEnd`, `onResize`, `onResizeEnd` handlers. It's time to do it.
 
 ### Moving stencil (`onMove`)
 
@@ -325,7 +351,17 @@ onMove(moveEvent) {
 ```
 
 
-### Moving handler (`onHandlerMove`)
+### End moving stencil (`onMoveEnd`)
+
+This handler will be straightforward. 
+```js
+onMoveEnd() {
+	this.$emit('move-end');
+}
+```
+
+
+### Moving handler (`onResize`)
 
 It's the most complicated part of creating this custom stencil. We should process the mouse / touch moving and resize our handler accordingly.
 
@@ -333,9 +369,9 @@ Remember, that the [resize event](/events/resize-event.html) tells cropper, how 
 
 ![Resize event](../.vuepress/assets/home/resize-event.svg)
 
-The draft of `onHandlerMove` method is represented below
+The draft of `onResize` method is represented below
 ```js
-onHandlerMove(dragEvent) {
+onResize(dragEvent) {
 	// 1. Parsing the drag event to find out the resize factor
 	// 2. Forming the resize event
 }
@@ -347,7 +383,7 @@ The `dragEvents` is the instance of [DragEvent](/events/drag-event.html) class. 
 
 Fortunately, it has method `shift` that tells us the needed shift to achieve this task
 ```js
-onHandlerMove(dragEvent) {
+onResize(dragEvent) {
 	const shift = dragEvent.shift()
 	const widthResize = shift.left
 	const heightResize = -shift.top
@@ -360,19 +396,51 @@ Notice, that we use negative value for `heightResize` because when the top posit
 It's is pretty easy:
 
 ```js
-onHandlerMove(dragEvent) {
+onResize(dragEvent) {
 	const shift = dragEvent.shift()
 	const widthResize = shift.leftz
 	const heightResize = -shift.top
 	this.$emit('resize', new ResizeEvent(
-		dragEvent.nativeEvent,
 		{
 			left: widthResize,
 			right: widthResize,
 			top: heightResize,
 			bottom: heightResize,
-		}
-	);
+		},
+		{
+			compensate: true,
+		},
+	));
+}
+```
+
+### End moving handler (`onResizeEnd`)
+
+This handler will be straightforward.
+
+```js
+onResizeEnd() {
+	this.$emit('resize-end');
+}
+```
+
+
+## Process transitions
+
+To process the transitions we should customize the computed property `style`:
+
+```js
+style() {
+	const { height, width, left, top } = this.stencilCoordinates;
+	const style = {
+		width: `${width}px`,
+		height: `${height}px`,
+		transform: `translate(${left}px, ${top}px)`
+	};
+	if (this.transitions && this.transitions.enabled) {
+		style.transition = `${this.transitions.time}ms ${this.transitions.timingFunction}`;
+	}
+	return style;
 }
 ```
 
@@ -383,17 +451,17 @@ The full ready-to-use source code of this example is [here](https://codesandbox.
 <advanced-stencil-example></advanced-stencil-example>
 
 ```html
-<script>-eimport {
+<script>
+import {
 	DraggableElement,
 	DraggableArea,
-	PreviewResult,
+	StencilPreview,
 	ResizeEvent
 } from 'vue-advanced-cropper';
 
 export default {
-	name: 'CircleStencil',
 	components: {
-		PreviewResult,
+		StencilPreview,
 		DraggableArea,
 		DraggableElement
 	},
@@ -401,7 +469,10 @@ export default {
 		image: {
 			type: Object
 		},
-		resultCoordinates: {
+		coordinates: {
+			type: Object,
+		},
+		transitions: {
 			type: Object,
 		},
 		stencilCoordinates: {
@@ -411,34 +482,45 @@ export default {
 	computed: {
 		style() {
 			const { height, width, left, top } = this.stencilCoordinates;
-			return {
+			const style = {
 				width: `${width}px`,
 				height: `${height}px`,
-				left: `${left}px`,
-				top: `${top}px`
+				transform: `translate(${left}px, ${top}px)`
 			};
+			if (this.transitions && this.transitions.enabled) {
+				style.transition = `${this.transitions.time}ms ${this.transitions.timingFunction}`;
+			}
+			return style;
 		}
 	},
 	methods: {
 		onMove(moveEvent) {
 			this.$emit('move', moveEvent);
 		},
-		onHandlerMove(dragEvent) {
+		onMoveEnd() {
+        	this.$emit('move-end');
+        },
+		onResize(dragEvent) {
 			const shift = dragEvent.shift();
 
-			const widthResize = shift.left
-			const heightResize = -shift.top
+			const widthResize = shift.left;
+			const heightResize = -shift.top;
 
 			this.$emit('resize', new ResizeEvent(
-				dragEvent.nativeEvent,
 				{
 					left: widthResize,
 					right: widthResize,
 					top: heightResize,
 					bottom: heightResize,
-				}
-			);
+				},
+				{
+					compensate: true,
+				},
+			));
 		},
+		onResizeEnd() {
+        	this.$emit('resize-end');
+        },
 		aspectRatios() {
 			return {
 				minimum: 1,
@@ -456,18 +538,19 @@ export default {
   >
     <draggable-element
       class="circle-stencil__handler"
-      @drag="onHandlerMove"
+      @drag="onResize"
+      @drag-end="onResizeEnd"
     >
-      <img
-        :src="require('./assets/handler.svg')"
-        alt=""
-      >
+		<img :src="require('./assets/handler.svg')">
     </draggable-element>
-    <draggable-area @move="onMove">
-      <preview-result
+    <draggable-area @move="onMove" @move-end="onMoveEnd">
+      <stencil-preview
         class="circle-stencil__preview"
-        :image="image"
-		:stencil-coordinates="stencilCoordinates"
+		:image="image"
+		:coordinates="coordinates"
+		:width="stencilCoordinates.width"
+		:height="stencilCoordinates.height"
+		:transitions="transitions"
       />
     </draggable-area>
   </div>

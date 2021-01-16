@@ -15,7 +15,13 @@ const VERTICAL_DIRECTIONS = ['south', 'north', null];
 export default {
 	name: 'BoundingBox',
 	props: {
-		size: {
+		width: {
+			type: Number,
+		},
+		height: {
+			type: Number,
+		},
+		transitions: {
 			type: Object,
 		},
 		handlers: {
@@ -106,14 +112,16 @@ export default {
 	},
 	computed: {
 		style() {
-			if (this.size) {
-				return {
-					width: `${this.size.width}px`,
-					height: `${this.size.height}px`,
-				};
-			} else {
-				return {};
+			const result = {};
+			if (this.width && this.height) {
+				result.width = `${this.width}px`;
+				result.height = `${this.height}px`;
+
+				if (this.transitions && this.transitions.enabled) {
+					result.transition = `${this.transitions.time}ms ${this.transitions.timingFunction}`;
+				}
 			}
+			return result;
 		},
 		classes() {
 			const handlers = this.handlersClasses;
@@ -157,6 +165,7 @@ export default {
 		},
 		handlerNodes() {
 			const handlers = [];
+			const { width, height } = this;
 			this.points.forEach((point) => {
 				if (this.handlers[point.name]) {
 					const result = {
@@ -172,8 +181,7 @@ export default {
 						horizontalDirection: point.horizontalDirection,
 						disabled: !this.resizable,
 					};
-					if (this.size) {
-						const { width, height } = this.size;
+					if (width && height) {
 						const { horizontalDirection, verticalDirection } = point;
 						const left =
 							horizontalDirection === 'east' ? width : horizontalDirection === 'west' ? 0 : width / 2;
@@ -183,6 +191,10 @@ export default {
 						result.wrapperStyle = {
 							transform: `translate(${left}px, ${top}px)`,
 						};
+
+						if (this.transitions && this.transitions.enabled) {
+							result.wrapperStyle.transition = `${this.transitions.time}ms ${this.transitions.timingFunction}`;
+						}
 					} else {
 						result.wrapperClass = cn('handler', { [point.classname]: true });
 					}

@@ -194,6 +194,65 @@ export default {
 </div>
 ```
 
+## Preview the result
+
+To implement real-time preview of cropping result you can use [`Preview`](/components/preview.html) component (it used internally to
+display the cropped area in the stencil).
+
+
+<preview-result-example></preview-result-example>
+
+```js
+import { Cropper } from 'vue-advanced-cropper';
+
+export default {
+	components: {
+		Cropper,
+	},
+	data() {
+		return {
+			img: 'https://images.unsplash.com/photo-1590291409749-452efbe0d76c?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80',
+			result: {
+				coordinates: null,
+				image: null
+			}
+		};
+	},
+	methods: {
+		onChange({ coordinates, image }) {
+			this.result = {
+				coordinates,
+				image
+			};
+		},
+	},
+};
+```
+
+::: tip Notice!
+The `debounce` is set to `false` to make the preview realtime.
+:::
+
+
+```html
+<div id="app">
+	<cropper
+		:src="img"
+		@change="onChange"
+		:debounce="false"
+		:stencil-props="{
+			aspectRatio: 1
+		}"
+	/>
+	<cropper-preview
+		:width="120"
+		:height="120"
+		:image="result.image"
+		:coordinates="result.coordinates"
+	/>
+</div>
+```
+
 ## Load image from a disc
 
 The image loading doesn't depend at this library and can be completed by a numerous ways. There will be considered only one of them.

@@ -75,18 +75,20 @@ There are default customizable components from a box that allow you to create yo
 ```html
 <script>
 	import {
-		PreviewResult,
+		StencilPreview,
 		BoundingBox,
 		DraggableArea
 	} from 'vue-advanced-cropper';
 
 	export default {
 		components: {
-			PreviewResult, BoundingBox, DraggableArea
+			StencilPreview, BoundingBox, DraggableArea
 		},
 		props: [
-			// Image src
+			// Image object
 			'image',
+			// Actual coordinates of the cropped fragment
+			'coordinates',
 			// Stencil size desired by cropper
 			'stencilCoordinates',
 			// Aspect ratios
@@ -99,8 +101,7 @@ There are default customizable components from a box that allow you to create yo
 					position: 'absolute',
 					width: `${width}px`,
 					height: `${height}px`,
-					left: `${left}px`,
-					top: `${top}px`
+					transform: `translate(${left}px, ${top}px)`
 				};
 			}
 		},
@@ -108,8 +109,14 @@ There are default customizable components from a box that allow you to create yo
 			onMove(moveEvent) {
 				this.$emit('move', moveEvent)
 			},
+			onMoveEnd() {
+				this.$emit('moveEnd')
+			},
 			onResize(resizeEvent) {
 				this.$emit('resize', resizeEvent)
+			},
+			onResizeEnd() {
+				this.$emit('resizeEnd')
 			},
 			aspectRatios() {
 				return {
@@ -123,14 +130,16 @@ There are default customizable components from a box that allow you to create yo
 
 <template>
 	<div :style="style">
-		<BoundingBox @resize="onResize">
-			<DraggableArea @move="onMove">
-				<PreviewResult
+		<bounding-box @resize="onResize" @resize-end="onMoveEnd">
+			<draggable-area @move="onMove" @move-end="onMoveEnd">
+				<stencil-preview
 					:image="image"
-					:stencil-coordinates="stencilCoordinates"
+					:width="stencilCoordinates.width"
+					:height="stencilCoordinates.height"
+					:coordinates="coordinates"
 				/>
-			</DraggableArea>
-		</BoundingBox>
+			</draggable-area>
+		</bounding-box>
 	</div>
 </template>
 ```

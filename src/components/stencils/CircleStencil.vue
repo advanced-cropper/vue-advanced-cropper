@@ -1,21 +1,23 @@
 <script>
 import classnames from 'classnames';
 import bem from 'easy-bem';
-import { PreviewResult, BoundingBox, DraggableArea } from '../service';
+import { BoundingBox, DraggableArea, StencilPreview } from '../service';
 import { SimpleHandler } from '../handlers';
 import { SimpleLine } from '../lines';
 
 const cn = bem('vue-circle-stencil');
 
 export default {
-	name: 'CircleStencil',
 	components: {
-		PreviewResult,
+		StencilPreview,
 		BoundingBox,
 		DraggableArea,
 	},
 	props: {
 		image: {
+			type: Object,
+		},
+		coordinates: {
 			type: Object,
 		},
 		stencilCoordinates: {
@@ -119,8 +121,6 @@ export default {
 			const style = {
 				width: `${width}px`,
 				height: `${height}px`,
-				left: `${0}px`,
-				top: `${0}px`,
 				transform: `translate(${left}px, ${top}px)`,
 			};
 
@@ -159,7 +159,10 @@ export default {
 
 <template>
 	<div :class="classes.stencil" :style="style">
-		<BoundingBox
+		<bounding-box
+			:width="stencilCoordinates.width"
+			:height="stencilCoordinates.height"
+			:transitions="transitions"
 			:class="classes.boundingBox"
 			:handlers="handlers"
 			:handlers-component="handlersComponent"
@@ -173,15 +176,17 @@ export default {
 			@resize="onResize"
 			@resize-end="onResizeEnd"
 		>
-			<DraggableArea :movable="movable" @move="onMove" @move-end="onMoveEnd">
-				<PreviewResult
+			<draggable-area :movable="movable" @move="onMove" @move-end="onMoveEnd">
+				<stencil-preview
 					:image="image"
-					:transitions="transitions"
+					:coordinates="coordinates"
+					:width="stencilCoordinates.width"
+					:height="stencilCoordinates.height"
 					:class="classes.preview"
-					:stencil-coordinates="stencilCoordinates"
+					:transitions="transitions"
 				/>
-			</DraggableArea>
-		</BoundingBox>
+			</draggable-area>
+		</bounding-box>
 	</div>
 </template>
 
@@ -194,6 +199,12 @@ export default {
 	cursor: move;
 	&__preview {
 		border-radius: 50%;
+		position: absolute;
+		width: 100%;
+		height: 100%;
+	}
+	&--movable {
+		cursor: move;
 	}
 }
 </style>

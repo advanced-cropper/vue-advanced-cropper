@@ -1,4 +1,5 @@
 import { Coordinates, PositionRestrictions, SizeRestrictions } from '../typings';
+import { fitToLimits } from '../service';
 
 export interface RoundCoordinatesParams {
 	coordinates: Coordinates;
@@ -27,22 +28,6 @@ export function roundCoordinates({
 	} else if (roundedCoordinates.height < sizeRestrictions.minHeight) {
 		roundedCoordinates.height = Math.ceil(coordinates.height);
 	}
-	if (
-		positionRestrictions.left !== undefined &&
-		(roundedCoordinates.left < positionRestrictions.left ||
-			(positionRestrictions.right !== undefined &&
-				roundedCoordinates.left + roundedCoordinates.width > positionRestrictions.right))
-	) {
-		roundedCoordinates.left = Math.floor(positionRestrictions.left);
-	}
-	if (
-		positionRestrictions.top !== undefined &&
-		(roundedCoordinates.top < positionRestrictions.top ||
-			(positionRestrictions.bottom !== undefined &&
-				roundedCoordinates.top + roundedCoordinates.height > positionRestrictions.bottom))
-	) {
-		roundedCoordinates.top = Math.floor(positionRestrictions.top);
-	}
 
-	return roundedCoordinates;
+	return fitToLimits(roundedCoordinates, positionRestrictions);
 }

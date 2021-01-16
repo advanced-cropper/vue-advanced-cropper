@@ -6,3 +6,4 @@ export { default as CanvasPreviewResult } from './CanvasPreviewResult.vue';
 export { default as PreviewResult } from './PreviewResult.vue';
 export { default as DraggableElement } from './DraggableElement.vue';
 export { default as CropperWrapper } from './CropperWrapper.vue';
+export { default as StencilPreview } from './StencilPreview.vue';

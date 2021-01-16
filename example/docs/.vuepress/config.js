@@ -50,6 +50,7 @@ module.exports = {
 					'/components/cropper',
 					'/components/rectangle-stencil',
 					'/components/circle-stencil',
+					'/components/preview',
 					'/components/bounding-box',
 				],
 			},

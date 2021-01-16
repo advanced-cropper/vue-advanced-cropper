@@ -1,7 +1,8 @@
 <script>
 import classnames from 'classnames';
 import bem from 'easy-bem';
-import { PreviewResult, BoundingBox, DraggableArea } from '../service';
+import { BoundingBox, DraggableArea } from '../service';
+import { Preview } from '../helpers';
 import { SimpleHandler } from '../handlers';
 import { SimpleLine } from '../lines';
 
@@ -10,7 +11,7 @@ const cn = bem('vue-rectangle-stencil');
 export default {
 	name: 'RectangleStencil',
 	components: {
-		PreviewResult,
+		Preview,
 		BoundingBox,
 		DraggableArea,
 	},
@@ -18,7 +19,7 @@ export default {
 		image: {
 			type: Object,
 		},
-		resultCoordinates: {
+		coordinates: {
 			type: Object,
 		},
 		stencilCoordinates: {
@@ -123,8 +124,6 @@ export default {
 			const style = {
 				width: `${width}px`,
 				height: `${height}px`,
-				left: `${0}px`,
-				top: `${0}px`,
 				transform: `translate(${left}px, ${top}px)`,
 			};
 
@@ -163,8 +162,10 @@ export default {
 
 <template>
 	<div :class="classes.stencil" :style="style">
-		<BoundingBox
-			:size="stencilCoordinates"
+		<bounding-box
+			:width="stencilCoordinates.width"
+			:height="stencilCoordinates.height"
+			:transitions="transitions"
 			:class="classes.boundingBox"
 			:handlers="handlers"
 			:handlers-component="handlersComponent"
@@ -178,15 +179,17 @@ export default {
 			@resize="onResize"
 			@resize-end="onResizeEnd"
 		>
-			<DraggableArea :movable="movable" @move="onMove" @move-end="onMoveEnd">
-				<PreviewResult
+			<draggable-area :movable="movable" @move="onMove" @move-end="onMoveEnd">
+				<preview
 					:image="image"
+					:coordinates="coordinates"
+					:width="stencilCoordinates.width"
+					:height="stencilCoordinates.height"
 					:class="classes.preview"
 					:transitions="transitions"
-					:stencil-coordinates="stencilCoordinates"
 				/>
-			</DraggableArea>
-		</BoundingBox>
+			</draggable-area>
+		</bounding-box>
 	</div>
 </template>
 
@@ -196,6 +199,11 @@ export default {
 	height: 100%;
 	width: 100%;
 	box-sizing: border-box;
+	&__preview {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+	}
 	&--movable {
 		cursor: move;
 	}

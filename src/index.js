@@ -14,6 +14,7 @@ export {
 	LineWrapper,
 	HandlerWrapper,
 	DraggableElement,
+	StencilPreview,
 } from './components/service';
 
 export { RectangleStencil, CircleStencil } from './components/stencils';
@@ -22,7 +23,7 @@ export { SimpleHandler } from './components/handlers';
 
 export { SimpleLine } from './components/lines';
 
-export { PreviewImage } from './components/helpers';
+export { Preview } from './components/helpers';
 
 export { ResizeEvent, MoveEvent, DragEvent } from './core/events';
 

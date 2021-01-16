@@ -1,10 +1,9 @@
 <script>
-import { DraggableElement, DraggableArea, PreviewResult, ResizeEvent } from 'vue-advanced-cropper';
+import { DraggableElement, DraggableArea, StencilPreview, ResizeEvent } from 'vue-advanced-cropper';
 
 export default {
-	name: 'CircleStencil',
 	components: {
-		PreviewResult,
+		StencilPreview,
 		DraggableArea,
 		DraggableElement,
 	},
@@ -12,7 +11,10 @@ export default {
 		image: {
 			type: Object,
 		},
-		resultCoordinates: {
+		coordinates: {
+			type: Object,
+		},
+		transitions: {
 			type: Object,
 		},
 		stencilCoordinates: {
@@ -22,23 +24,30 @@ export default {
 	computed: {
 		style() {
 			const { height, width, left, top } = this.stencilCoordinates;
-			return {
+			const style = {
 				width: `${width}px`,
 				height: `${height}px`,
-				left: `0px`,
-				top: `0px`,
 				transform: `translate(${left}px, ${top}px)`,
 			};
+			if (this.transitions && this.transitions.enabled) {
+				style.transition = `${this.transitions.time}ms ${this.transitions.timingFunction}`;
+			}
+			return style;
 		},
 	},
 	methods: {
 		onMove(moveEvent) {
 			this.$emit('move', moveEvent);
 		},
-		onHandlerMove(dragEvent) {
+		onMoveEnd() {
+			this.$emit('move-end');
+		},
+		onResize(dragEvent) {
 			const shift = dragEvent.shift();
-			const widthResize = shift.left / 2;
-			const heightResize = -shift.top / 2;
+
+			const widthResize = shift.left;
+			const heightResize = -shift.top;
+
 			this.$emit(
 				'resize',
 				new ResizeEvent(
@@ -54,6 +63,9 @@ export default {
 				),
 			);
 		},
+		onResizeEnd() {
+			this.$emit('resize-end');
+		},
 		aspectRatios() {
 			return {
 				minimum: 1,
@@ -66,11 +78,18 @@ export default {
 
 <template>
 	<div class="circle-stencil" :style="style">
-		<draggable-element class="circle-stencil__handler" @drag="onHandlerMove">
-			<img :src="require('./assets/handler.svg')" class="circle-stencil__icon" alt="" />
+		<draggable-element class="circle-stencil__handler" @drag="onResize" @drag-end="onResizeEnd">
+			<img :src="require('./assets/handler.svg')" />
 		</draggable-element>
-		<draggable-area @move="onMove">
-			<preview-result class="circle-stencil__preview" :image="image" :stencil-coordinates="stencilCoordinates" />
+		<draggable-area @move="onMove" @move-end="onMoveEnd">
+			<stencil-preview
+				class="circle-stencil__preview"
+				:image="image"
+				:coordinates="coordinates"
+				:width="stencilCoordinates.width"
+				:height="stencilCoordinates.height"
+				:transitions="transitions"
+			/>
 		</draggable-area>
 	</div>
 </template>

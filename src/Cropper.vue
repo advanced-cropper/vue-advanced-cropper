@@ -222,6 +222,14 @@ export default {
 		};
 	},
 	computed: {
+		image() {
+			return {
+				src: this.imageAttributes.src,
+				width: this.imageAttributes.width,
+				height: this.imageAttributes.height,
+				transforms: this.imageTransforms,
+			};
+		},
 		imageTransforms() {
 			return {
 				rotate: this.basicImageTransforms.rotate + this.customImageTransforms.rotate,
@@ -364,6 +372,7 @@ export default {
 			return {
 				cropper: cn(),
 				image: classnames(cn('image'), this.imageClass),
+				stencil: cn('stencil'),
 				boundaries: classnames(cn('boundaries'), this.boundariesClass),
 				stretcher: classnames(cn('stretcher')),
 				background: classnames(cn('background'), this.backgroundClass),
@@ -480,7 +489,7 @@ export default {
 	},
 	methods: {
 		// External methods
-		getResult(canvas) {
+		getResult() {
 			const coordinates = this.initialized
 				? this.prepareResult({ ...this.coordinates })
 				: this.defaultCoordinates();
@@ -490,16 +499,21 @@ export default {
 					...this.imageTransforms.flip,
 				},
 			};
-			if ((canvas || this.canvas) && this.src && this.imageLoaded) {
-				this.updateCanvas();
+			if (this.src && this.imageLoaded) {
+				const cropper = this;
 				return {
+					image: this.image,
 					coordinates,
 					visibleArea: this.visibleArea ? { ...this.visibleArea } : null,
-					canvas: this.$refs.canvas,
 					imageTransforms,
+					get canvas() {
+						cropper.updateCanvas();
+						return cropper.$refs.canvas;
+					},
 				};
 			} else {
 				return {
+					image: this.image,
 					coordinates,
 					visibleArea: this.visibleArea ? { ...this.visibleArea } : null,
 					canvas: undefined,
@@ -1190,15 +1204,10 @@ export default {
 					:is="stencilComponent"
 					v-show="imageLoaded"
 					ref="stencil"
-					:transitions="transitionsOptions"
+					:image="image"
+					:coordinates="coordinates"
 					:stencil-coordinates="stencilCoordinates"
-					:image="{
-						src: imageAttributes.src,
-						width: imageAttributes.width,
-						height: imageAttributes.height,
-						transforms: imageTransforms,
-						loaded: imageLoaded,
-					}"
+					:transitions="transitionsOptions"
 					v-bind="stencilProps"
 					@resize="onResize"
 					@resize-end="onResizeEnd"

@@ -1,1 +1,1 @@
-export { default as PreviewImage } from './PreviewImage.vue';
+export { default as Preview } from './Preview.vue';
