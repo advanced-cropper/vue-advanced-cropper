@@ -203,11 +203,12 @@ display the cropped area in the stencil).
 <preview-result-example></preview-result-example>
 
 ```js
-import { Cropper } from 'vue-advanced-cropper';
+import { Cropper, Preview } from 'vue-advanced-cropper';
 
 export default {
 	components: {
 		Cropper,
+		Preview
 	},
 	data() {
 		return {
@@ -244,7 +245,7 @@ The `debounce` is set to `false` to make the preview realtime.
 			aspectRatio: 1
 		}"
 	/>
-	<cropper-preview
+	<preview
 		:width="120"
 		:height="120"
 		:image="result.image"

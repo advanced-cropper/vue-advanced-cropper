@@ -84,10 +84,6 @@ export default {
 			type: Boolean,
 			default: true,
 		},
-		canvas: {
-			type: Boolean,
-			default: true,
-		},
 		checkOrientation: {
 			type: Boolean,
 			default: true,

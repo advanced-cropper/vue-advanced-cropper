@@ -18,10 +18,10 @@ export default {
 <template>
 	<div class="bounding-box-example">
 		<bounding-box
-			:lines-classnames="{
+			:lines-classes="{
 				default: 'line',
 			}"
-			:handlers-classnames="{
+			:handlers-classes="{
 				default: 'handler',
 			}"
 		>

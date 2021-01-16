@@ -47,8 +47,6 @@
 				horizonal: boolean;
 				vertical: boolean;
 			};
-			translateX: number;
-			translateY: number;
 		}
 	}
 	```

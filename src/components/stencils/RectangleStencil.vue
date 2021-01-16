@@ -1,8 +1,7 @@
 <script>
 import classnames from 'classnames';
 import bem from 'easy-bem';
-import { BoundingBox, DraggableArea } from '../service';
-import { Preview } from '../helpers';
+import { BoundingBox, DraggableArea, StencilPreview } from '../service';
 import { SimpleHandler } from '../handlers';
 import { SimpleLine } from '../lines';
 
@@ -11,7 +10,7 @@ const cn = bem('vue-rectangle-stencil');
 export default {
 	name: 'RectangleStencil',
 	components: {
-		Preview,
+		StencilPreview,
 		BoundingBox,
 		DraggableArea,
 	},
@@ -180,7 +179,7 @@ export default {
 			@resize-end="onResizeEnd"
 		>
 			<draggable-area :movable="movable" @move="onMove" @move-end="onMoveEnd">
-				<preview
+				<stencil-preview
 					:image="image"
 					:coordinates="coordinates"
 					:width="stencilCoordinates.width"
