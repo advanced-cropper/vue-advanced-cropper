@@ -420,11 +420,10 @@ export default {
 				left: '0px',
 				top: '0px',
 				transform:
-					`translate3d(${
+					`translate(${
 						-compensations.rotate.left - compensations.scale.left - this.imageTransforms.translateX
-					}px, ${
-						-compensations.rotate.top - compensations.scale.top - this.imageTransforms.translateY
-					}px, 0px)` + getStyleTransforms(this.imageTransforms),
+					}px, ${-compensations.rotate.top - compensations.scale.top - this.imageTransforms.translateY}px)` +
+					getStyleTransforms(this.imageTransforms),
 			};
 
 			if (this.transitionsOptions.enabled) {

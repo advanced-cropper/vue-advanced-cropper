@@ -124,10 +124,10 @@ export default {
 				};
 
 				result.transform =
-					`translate3d(
+					`translate(
 				${-this.coordinates.left / coefficient - compensations.rotate.left - compensations.scale.left}px,${
 						-this.coordinates.top / coefficient - compensations.rotate.top - compensations.scale.top
-					}px,0) ` + getStyleTransforms(transforms);
+					}px) ` + getStyleTransforms(transforms);
 
 				if (this.transitions && this.transitions.enabled) {
 					result.transition = `${this.transitions.time}ms ${this.transitions.timingFunction}`;

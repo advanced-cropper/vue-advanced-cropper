@@ -82,7 +82,7 @@ export default {
 			};
 
 			result.transform =
-				`translate3d(
+				`translate(
 				${
 					-this.stencilCoordinates.left -
 					imageTransforms.translateX -
@@ -93,7 +93,7 @@ export default {
 					imageTransforms.translateY -
 					compensations.rotate.top -
 					compensations.scale.top
-				}px,0) ` + getStyleTransforms(imageTransforms);
+				}px) ` + getStyleTransforms(imageTransforms);
 
 			if (this.transitions && this.transitions.enabled) {
 				result.transition = `${this.transitions.time}ms ${this.transitions.timingFunction}`;
