@@ -199,10 +199,9 @@ export default {
 
 	&__image {
 		pointer-events: none;
-		position: absolute;
+		position: relative;
 		user-select: none;
 		transform-origin: center;
-		will-change: transform;
 		// Workaround to prevent bugs at the websites with max-width
 		// rule applied to img (Vuepress for example)
 		max-width: none !important;
