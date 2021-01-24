@@ -11,7 +11,7 @@ sites will be broken and I should give them time to migrate.
 
 So, to install the actual version point your version exactly:
 ```bash
-npm install --save vue-advanced-cropper@1.0.1
+npm install --save vue-advanced-cropper@1.2.3
 ```
 
 Or use the special temporary tag:
@@ -89,12 +89,12 @@ please read [this detailed article](/introduction/types.html) about different ty
 
 If you want to use the cropper without using, for example, different build systems you can use the CDN link, but currently the support of this method is quite limited.
 
-[https://unpkg.com/vue-advanced-cropper@1.0.1/dist/index.umd.js](https://unpkg.com/vue-advanced-cropper@1.0.1/dist/index.umd.js)
+[https://unpkg.com/vue-advanced-cropper@1.2.3/dist/index.umd.js](https://unpkg.com/vue-advanced-cropper@1.2.3/dist/index.umd.js)
 
 Then add somewhere in `head` the link to this script:
 ```html
-<script src="https://unpkg.com/vue-advanced-cropper@1.0.1/dist/index.umd.js" />
-<link rel="stylesheet" href="https://unpkg.com/vue-advanced-cropper@1.0.1/dist/style.css" />
+<script src="https://unpkg.com/vue-advanced-cropper@1.2.3/dist/index.umd.js" />
+<link rel="stylesheet" href="https://unpkg.com/vue-advanced-cropper@1.2.3/dist/style.css" />
 ```
 
 And you can use globally registered components: `cropper`, `circle-stencil`, `rectangle-stencil`, `simple-handler`, `simple-line`.
