@@ -1234,7 +1234,7 @@ export default {
 
 	&__image {
 		user-select: none;
-		position: relative;
+		position: absolute;
 		transform-origin: center;
 		// Workaround to prevent bugs at the websites with max-width
 		// rule applied to img (Vuepress for example)

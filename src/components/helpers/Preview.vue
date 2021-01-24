@@ -199,7 +199,7 @@ export default {
 
 	&__image {
 		pointer-events: none;
-		position: relative;
+		position: absolute;
 		user-select: none;
 		transform-origin: center;
 		// Workaround to prevent bugs at the websites with max-width
