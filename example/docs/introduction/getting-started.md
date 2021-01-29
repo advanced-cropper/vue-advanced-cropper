@@ -4,29 +4,16 @@ title: Getting started
 
 # Getting started
 
-::: warning Important!
-
-The latest version doesn't have `latest` tag now. I did it deliberate because some of CDN users can use this tag and their
-sites will be broken and I should give them time to migrate.
-
-So, to install the actual version point your version exactly:
-```bash
-npm install --save vue-advanced-cropper@1.2.4
-```
-
-Or use the special temporary tag:
-```bash
-npm install --save vue-advanced-cropper@release
-```
-:::
-
 ## Package installation
 To use the package you should install it with `npm` or `yarn`
+::: tip Notice!
+If you need to install Vue 3 version, install  `vue-advanced-cropper@next` instead
+:::
 ```bash
-npm install -S vue-advanced-cropper@release
+npm install -S vue-advanced-cropper
 ```
 ```bash
-yarn add vue-advanced-cropper@release
+yarn add vue-advanced-cropper
 ```
 
 Then you should add somewhere in your script file or block the import of `Cropper` component:
@@ -87,16 +74,26 @@ please read [this detailed article](/introduction/types.html) about different ty
 
 ## Using CDN
 
-If you want to use the cropper without using, for example, different build systems you can use the CDN link, but currently the support of this method is quite limited.
+### Vue 2
 
-[https://unpkg.com/vue-advanced-cropper@1.2.4/dist/index.umd.js](https://unpkg.com/vue-advanced-cropper@1.2.4/dist/index.umd.js)
-
-Then add somewhere in `head` the link to this script:
+If you want to use the cropper without using, for example, different build systems you should add the code below toy your page. Notice, that currently the support of this method is quite limited.
 ```html
-<script src="https://unpkg.com/vue-advanced-cropper@1.2.4/dist/index.umd.js" />
-<link rel="stylesheet" href="https://unpkg.com/vue-advanced-cropper@1.2.4/dist/style.css" />
+<script src="https://unpkg.com/vue-advanced-cropper@^1.0.0/dist/index.umd.js" />
+<link rel="stylesheet" href="https://unpkg.com/vue-advanced-cropper@^1.0.0/dist/style.css" />
 ```
 
 And you can use globally registered components: `cropper`, `circle-stencil`, `rectangle-stencil`, `simple-handler`, `simple-line`.
 
 <iframe width="100%" height="500" src="//jsfiddle.net/norserium/38u4v9nb/embedded/" allowfullscreen="allowfullscreen" allowpaymentrequest frameborder="0"></iframe>
+
+### Vue 3
+
+The links for the next Vue version is slightly different:
+```html
+<script src="https://unpkg.com/vue-advanced-cropper@^2.0.0/dist/index.umd.js" />
+<link rel="stylesheet" href="https://unpkg.com/vue-advanced-cropper@^2.0.0/dist/style.css" />
+```
+
+To get the access to components you should use the global object `VueAdvancedCropper`. 
+
+<iframe width="100%" height="500" src="//jsfiddle.net/norserium/pmw8aod5/embedded/" allowfullscreen="allowfullscreen" allowpaymentrequest frameborder="0"></iframe>

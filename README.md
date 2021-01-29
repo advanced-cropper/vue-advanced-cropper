@@ -2,7 +2,7 @@
 <br/>
 <p align="center">
   <a href="https://npmcharts.com/compare/vue-advanced-cropper?minimal=true"><img src="https://img.shields.io/npm/dm/vue-advanced-cropper.svg?sanitize=true" alt="Downloads"></a>
-  <a href="https://www.npmjs.com/package/vue-advanced-cropper"><img src="https://img.shields.io/npm/v/vue-advanced-cropper/release.svg" alt="Version"></a>
+  <a href="https://www.npmjs.com/package/vue-advanced-cropper"><img src="https://img.shields.io/npm/v/vue-advanced-cropper.svg" alt="Version"></a>
   <a href="https://www.npmjs.com/package/vue-advanced-cropper">
   <br>
   <a href="https://norserium.github.io/vue-advanced-cropper/">Documentation</a target="_blank" rel="noopener noreferrer"> /  
@@ -15,7 +15,6 @@
 ---
 
 **WARNING!** If you still use the beta version (< 1.0.0) read [the migration guide](https://norserium.github.io/vue-advanced-cropper/introduction/migration.html). 
-Especially if you use CDN. Your site may be broken in the near future, when `latest` tag will be changed.
 
 ---
 
@@ -43,11 +42,11 @@ The codesandbox for [mobile](https://codesandbox.io/s/vue-advanced-cropper-mobil
 ## Install
 
 ```bash
-npm install --save vue-advanced-cropper@release
+npm install --save vue-advanced-cropper
 ```
 
 ```bash
-yarn add vue-advanced-cropper@release
+yarn add vue-advanced-cropper
 ```
 
 If you would to use CDN read the corresponding [documentation section](https://norserium.github.io/vue-advanced-cropper/introduction/getting-started.html#using-cdn)
