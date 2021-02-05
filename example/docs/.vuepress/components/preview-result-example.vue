@@ -66,17 +66,9 @@ export default {
 			@change="onChange"
 		/>
 		<div class="preview-result-example__previews">
+			<preview class="preview-result-example__preview" :image="result.image" :coordinates="result.coordinates" />
 			<preview
-				class="preview-result-example__preview"
-				:width="120"
-				:height="120"
-				:image="result.image"
-				:coordinates="result.coordinates"
-			/>
-			<preview
-				class="preview-result-example__preview"
-				:width="60"
-				:height="60"
+				class="preview-result-example__preview preview-result-example__preview--small"
 				:image="result.image"
 				:coordinates="result.coordinates"
 			/>
@@ -103,6 +95,12 @@ export default {
 		overflow: hidden;
 		margin-top: 24px;
 		margin-bottom: 24px;
+		width: 100px;
+		height: 100px;
+		&--small {
+			width: 60px;
+			height: 60px;
+		}
 	}
 	&__preview-image {
 		width: 100%;
