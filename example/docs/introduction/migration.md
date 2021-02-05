@@ -12,22 +12,6 @@ This goal of this guide to facilitate the migration to the new version.
 
 ## Installation
 
-::: warning Important!
-
-The latest version doesn't have `latest` tag now. I did it deliberate because some of CDN users can use this tag and their
-sites will be broken and I should give them time to migrate.
-
-So, to install the actual version point your version exactly:
-```bash
-npm install --save vue-advanced-cropper@1.0.1
-```
-
-Or use the special temporary tag:
-```bash
-npm install --save vue-advanced-cropper@release
-```
-:::
-
 ### Styles
 
 Now the styles are not injected automatically. You should import the styles directly.
@@ -43,9 +27,9 @@ import 'vue-advanced-cropper/dist/style.css';
 ### Using CDN
 
 ```html
-<script src="https://unpkg.com/vue-advanced-cropper@1.0.1/dist/index.umd.js" />
+<script src="https://unpkg.com/vue-advanced-cropper@^1.0.0/dist/index.umd.js" />
 <!-- Add the following line to import the cropper styles -->
-<link rel="stylesheet" href="https://unpkg.com/vue-advanced-cropper@1.0.1/dist/style.css" />
+<link rel="stylesheet" href="https://unpkg.com/vue-advanced-cropper@^1.0.0/dist/style.css" />
 ```
 
 ## Changed the markup of cropper
