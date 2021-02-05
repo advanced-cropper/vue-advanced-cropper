@@ -81,6 +81,20 @@ export default {
 		},
 		imageStyle() {
 			if (this.coordinates && this.image) {
+				const width = this.image.width || this.calculatedSize.width;
+				const height = this.image.height || this.calculatedSize.height;
+
+				const optimalImageSize =
+					width > height
+						? {
+								width: Math.min(1024, width),
+								height: Math.min(1024, width) / (width / height),
+						  }
+						: {
+								height: Math.min(1024, height),
+								width: Math.min(1024, height) * (width / height),
+						  };
+
 				const coefficient = this.coordinates.width / this.width;
 
 				const transforms = {
@@ -90,36 +104,33 @@ export default {
 						vertical: false,
 					},
 					...this.image.transforms,
-					scaleX: 1 / coefficient,
-					scaleY: 1 / coefficient,
+					scaleX: (1 / coefficient) * (width / optimalImageSize.width),
+					scaleY: (1 / coefficient) * (width / optimalImageSize.width),
 				};
-
-				const width = this.image.width || this.calculatedSize.width;
-				const height = this.image.height || this.calculatedSize.height;
 
 				const virtualSize = rotateSize(
 					{
-						width,
-						height,
+						width: optimalImageSize.width,
+						height: optimalImageSize.height,
 					},
 					transforms.rotate,
 				);
 
 				const result = {
-					width: `${width}px`,
-					height: `${height}px`,
+					width: `${optimalImageSize.width}px`,
+					height: `${optimalImageSize.height}px`,
 					left: '0px',
 					top: '0px',
 				};
 
 				const compensations = {
 					rotate: {
-						left: ((width - virtualSize.width) * transforms.scaleX) / 2,
-						top: ((height - virtualSize.height) * transforms.scaleY) / 2,
+						left: ((optimalImageSize.width - virtualSize.width) * transforms.scaleX) / 2,
+						top: ((optimalImageSize.height - virtualSize.height) * transforms.scaleY) / 2,
 					},
 					scale: {
-						left: ((1 - transforms.scaleX) * width) / 2,
-						top: ((1 - transforms.scaleY) * height) / 2,
+						left: ((1 - transforms.scaleX) * optimalImageSize.width) / 2,
+						top: ((1 - transforms.scaleY) * optimalImageSize.height) / 2,
 					},
 				};
 

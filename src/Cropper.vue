@@ -403,27 +403,48 @@ export default {
 			return styles;
 		},
 		imageStyle() {
+			const optimalImageSize =
+				this.imageAttributes.width > this.imageAttributes.height
+					? {
+							width: Math.min(1024, this.imageAttributes.width),
+							height:
+								Math.min(1024, this.imageAttributes.width) /
+								(this.imageAttributes.width / this.imageAttributes.height),
+					  }
+					: {
+							height: Math.min(1024, this.imageAttributes.height),
+							width:
+								Math.min(1024, this.imageAttributes.height) *
+								(this.imageAttributes.width / this.imageAttributes.height),
+					  };
+
 			const compensations = {
 				rotate: {
-					left: (this.imageAttributes.width - this.imageSize.width) / (2 * this.coefficient),
-					top: (this.imageAttributes.height - this.imageSize.height) / (2 * this.coefficient),
+					left: (optimalImageSize.width - this.imageSize.width) / (2 * this.coefficient),
+					top: (optimalImageSize.height - this.imageSize.height) / (2 * this.coefficient),
 				},
 				scale: {
-					left: ((1 - 1 / this.coefficient) * this.imageAttributes.width) / 2,
-					top: ((1 - 1 / this.coefficient) * this.imageAttributes.height) / 2,
+					left: ((1 - 1 / this.coefficient) * optimalImageSize.width) / 2,
+					top: ((1 - 1 / this.coefficient) * optimalImageSize.height) / 2,
 				},
 			};
 
+			const transforms = {
+				...this.imageTransforms,
+				scaleX: this.imageTransforms.scaleX * (this.imageAttributes.width / optimalImageSize.width),
+				scaleY: this.imageTransforms.scaleY * (this.imageAttributes.height / optimalImageSize.height),
+			};
+
 			const result = {
-				width: `${this.imageAttributes.width}px`,
-				height: `${this.imageAttributes.height}px`,
+				width: `${optimalImageSize.width}px`,
+				height: `${optimalImageSize.height}px`,
 				left: '0px',
 				top: '0px',
 				transform:
 					`translate(${
 						-compensations.rotate.left - compensations.scale.left - this.imageTransforms.translateX
 					}px, ${-compensations.rotate.top - compensations.scale.top - this.imageTransforms.translateY}px)` +
-					getStyleTransforms(this.imageTransforms),
+					getStyleTransforms(transforms),
 			};
 
 			if (this.transitionsOptions.enabled) {
