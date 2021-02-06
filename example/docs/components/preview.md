@@ -2,28 +2,18 @@
 
 [[toc]]
 
+## Methods
+
+### `refresh()`
+
+- **Usage:**
+
+	This method refreshes the preview. This method is called on every window resize and can be
+	useful if you don't set width and height explicitly and you need to inform the preview
+	that its size should be recalculated.
+
+
 ## Props
-
-
-### `width`
-
-- **Type:** `Number`
-
-
-- **Details:**
-
-	The width of the preview
-	
-
-### `height`
-
-- **Type:** `Number`
-
-
-- **Details:**
-
-	The height of the preview
-
 
 ### `image`
 
@@ -74,3 +64,24 @@
 - **Details:**
 
 	The actual coordinates of the cropped fragment
+
+### `width`
+
+- **Type:** `Number`
+
+
+- **Details:**
+
+	The width of the preview. It's the optional prop. If it is not set the preview will calculate the width of
+	the root preview element by itself. 
+	
+
+### `height`
+
+- **Type:** `Number`
+
+
+- **Details:**
+
+	The height of the preview. It's the optional prop. If it is not set the preview will calculate the height of
+    the root preview element by itself. 
