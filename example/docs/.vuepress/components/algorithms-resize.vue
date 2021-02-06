@@ -114,13 +114,18 @@ export default {
 			return boxStyle(this.stencilResize, this.boundaries);
 		},
 		sizeRestrictions() {
+			const sizeRestrictions = {
+				minWidth: this.minWidth,
+				minHeight: this.minHeight,
+			};
+			if (this.maxWidth) {
+				sizeRestrictions.maxWidth = this.maxWidth;
+			}
+			if (this.maxHeight) {
+				sizeRestrictions.maxHeight = this.maxHeight;
+			}
 			return refineSizeRestrictions({
-				sizeRestrictions: {
-					minWidth: this.minWidth,
-					minHeight: this.minHeight,
-					maxWidth: this.maxWidth,
-					maxHeight: this.maxHeight,
-				},
+				sizeRestrictions,
 				positionRestrictions: toLimits(this.boundaries),
 				imageSize: this.boundaries,
 				boundaries: this.boundaries,
@@ -171,18 +176,6 @@ export default {
 			}
 		},
 		runAlgorithm() {
-			console.log(
-				{ ...this.stencil },
-				{ ...this.stencilResize },
-				{
-					top: this.stencil.top - this.stencilResize.top,
-					left: this.stencil.left - this.stencilResize.left,
-					bottom:
-						this.stencilResize.top + this.stencilResize.height - (this.stencil.top + this.stencil.height),
-					right:
-						this.stencilResize.left + this.stencilResize.width - (this.stencil.left + this.stencil.width),
-				},
-			);
 			this.stencil = resize({
 				coordinates: this.stencil,
 				sizeRestrictions: this.sizeRestrictions,
