@@ -182,6 +182,9 @@ export default {
 			type: Function,
 			default: algorithms.positionRestrictions,
 		},
+		maxCanvasSize: {
+			type: Number,
+		},
 	},
 	data() {
 		return {
@@ -688,7 +691,15 @@ export default {
 					? prepareSource(this.$refs.sourceCanvas, image, this.imageTransforms)
 					: image;
 
-				updateCanvas(canvas, source, this.coordinates);
+				let resultSize;
+				if (this.maxCanvasSize && this.coordinates.width * this.coordinates.height > this.maxCanvasSize) {
+					const scale = Math.sqrt(this.maxCanvasSize / (this.coordinates.width * this.coordinates.height));
+					resultSize = {
+						width: Math.round(scale * this.coordinates.width),
+						height: Math.round(scale * this.coordinates.height),
+					};
+				}
+				updateCanvas(canvas, source, this.coordinates, resultSize);
 			}
 		},
 		update() {
