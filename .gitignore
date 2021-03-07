@@ -3,7 +3,6 @@
 node_modules
 
 # builds
-build
 dist
 .rpt2_cache
 
