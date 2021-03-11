@@ -1050,6 +1050,7 @@ export default {
 		},
 		onPropsChange() {
 			this.coordinates = this.applyTransform(this.coordinates, true);
+			this.onChange(false);
 		},
 		getAreaRestrictions({ visibleArea, type = 'move' } = {}) {
 			return this.areaRestrictionsAlgorithm({
