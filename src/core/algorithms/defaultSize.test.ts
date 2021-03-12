@@ -17,6 +17,7 @@ test('Should return default size in ANY POSSIBLE situations', () => {
 		const imageRestriction = factory.imageRestriction();
 		const aspectRatio = factory.aspectRatio();
 
+		// @ts-ignore
 		const refinedSizeRestriction = refineSizeRestrictions({
 			sizeRestrictions: factory.sizeRestriction({
 				valid: false,
