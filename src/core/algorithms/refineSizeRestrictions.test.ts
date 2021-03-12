@@ -16,6 +16,7 @@ test('Should sets correct restrictions in ANY situation', () => {
 		const imageSize = factory.imageSize();
 		const imageRestriction = factory.imageRestriction();
 
+		// @ts-ignore
 		const refinedSizeRestriction = refineSizeRestrictions({
 			sizeRestrictions: factory.sizeRestriction({
 				valid: false,
