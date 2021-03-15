@@ -8,7 +8,7 @@ module.exports = {
 		repo: 'Norserium/vue-advanced-cropper',
 		docsDir: 'example/docs',
 		editLinks: true,
-		search: false,
+		search: true,
 		nav: [
 			{ text: 'Home', link: '/' },
 			{ text: 'Docs', link: '/introduction/getting-started.html' },

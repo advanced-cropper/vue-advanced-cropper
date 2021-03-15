@@ -33,12 +33,22 @@
 		height: 100%
 		vertical-align: middle
 		width: 100% !important
+		@media (max-width: 720px) {
+			display: none;
+		}
 	.links
 		background: none !important;
 		position: relative !important;
 		margin-left: auto;
 		top: 0 !important
 		right: 0 !important;
+	.search-box
+		input
+			padding: 0 0.25rem 0 2rem
+			border: none;
+			background-color: rgba(255, 255, 255, 0.95)
+			border-radius: 4px;
+			color: #1f8255;
 .nav-item a
 	border-bottom: none !important;
 .nav-item
