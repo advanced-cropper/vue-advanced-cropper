@@ -349,6 +349,22 @@ export default {
 						sizeRestrictions.maxHeight,
 						(areaRestrictions.height * stencilSize.height) / this.boundaries.height,
 					);
+					if (sizeRestrictions.maxWidth < sizeRestrictions.minWidth) {
+						if (process.env.NODE_ENV !== 'production') {
+							console.warn(
+								'Maximum width is smaller than minimum width, because otherwise the area restrictions or stencil size will be broken. Minimum width is reduced.',
+							);
+						}
+						sizeRestrictions.minWidth = sizeRestrictions.maxWidth;
+					}
+					if (sizeRestrictions.maxHeight < sizeRestrictions.minHeight) {
+						if (process.env.NODE_ENV !== 'production') {
+							console.warn(
+								'Maximum height is smaller than minimum height, because otherwise the area restrictions or stencil size will be broken. Minimum height is reduced.',
+							);
+						}
+						sizeRestrictions.minHeight = sizeRestrictions.maxHeight;
+					}
 				}
 				return sizeRestrictions;
 			} else {
