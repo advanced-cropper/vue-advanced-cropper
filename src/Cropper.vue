@@ -317,7 +317,7 @@ export default {
 			};
 		},
 		sizeRestrictions() {
-			if (this.boundaries.width && this.boundaries.height) {
+			if (this.boundaries.width && this.boundaries.height && this.imageSize.width && this.imageSize.height) {
 				let sizeRestrictions = this.sizeRestrictionsAlgorithm({
 					imageSize: this.imageSize,
 					minWidth: !isUndefined(this.minWidth) ? parseNumber(this.minWidth) : 0,
