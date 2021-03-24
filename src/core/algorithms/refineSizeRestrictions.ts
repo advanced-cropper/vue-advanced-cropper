@@ -1,14 +1,25 @@
-import { Boundaries, ImageRestriction, PositionRestrictions, Size, SizeRestrictions, VisibleArea } from '../typings';
-import { fitSize } from '../service';
+import {
+	AreaRestrictions,
+	Boundaries,
+	ImageRestriction,
+	PositionRestrictions,
+	Size,
+	SizeRestrictions,
+	VisibleArea,
+} from '../typings';
+import { fitSize, limitsToSize } from '../service';
+import { isUndefined } from '../utils';
 
 interface RefineSizeRestrictionsParams {
 	sizeRestrictions: Partial<SizeRestrictions>;
+	areaRestrictions: AreaRestrictions;
 	positionRestrictions: PositionRestrictions;
 	boundaries: Boundaries;
 	imageSize: Size;
 	imageRestriction: ImageRestriction;
 }
 export function refineSizeRestrictions({
+	areaRestrictions,
 	sizeRestrictions,
 	imageSize,
 	boundaries,
@@ -36,17 +47,14 @@ export function refineSizeRestrictions({
 	}
 
 	// The situation when stencil larger than maximum visible area or image should be avoided if imageRestriction != 'none':
-	if (imageRestriction !== 'none') {
-		const areaMaximum = fitSize(boundaries, imageSize);
-		const maxWidth = imageRestriction === 'fill-area' ? areaMaximum.width : imageSize.width;
-		const maxHeight = imageRestriction === 'fill-area' ? areaMaximum.height : imageSize.height;
+	const areaLimits = limitsToSize(areaRestrictions);
+	const areaMaximum = fitSize(boundaries, areaLimits);
 
-		if (!restrictions.maxWidth || restrictions.maxWidth > maxWidth) {
-			restrictions.maxWidth = Math.min(restrictions.maxWidth, maxWidth);
-		}
-		if (!restrictions.maxHeight || restrictions.maxHeight > maxHeight) {
-			restrictions.maxHeight = Math.min(restrictions.maxHeight, maxHeight);
-		}
+	if (areaLimits.width < Infinity && (!restrictions.maxWidth || restrictions.maxWidth > areaMaximum.width)) {
+		restrictions.maxWidth = Math.min(restrictions.maxWidth, areaMaximum.width);
+	}
+	if (areaLimits.height < Infinity && (!restrictions.maxHeight || restrictions.maxHeight > areaMaximum.height)) {
+		restrictions.maxHeight = Math.min(restrictions.maxHeight, areaMaximum.height);
 	}
 
 	// Process the border cases when minimum height / width larger than maximum height / width

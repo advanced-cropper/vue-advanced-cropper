@@ -328,6 +328,7 @@ export default {
 
 				sizeRestrictions = algorithms.refineSizeRestrictions({
 					sizeRestrictions,
+					areaRestrictions: this.getAreaRestrictions({ visibleArea: this.visibleArea, type: 'resize' }),
 					imageSize: this.imageSize,
 					boundaries: this.boundaries,
 					positionRestrictions: this.positionRestrictions,
