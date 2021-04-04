@@ -18,16 +18,22 @@ export default {
 		'aspectRatio',
 		'minAspectRatio',
 		'maxAspectRatio',
+		// Transitions:
+		'transitions',
 	],
 	computed: {
 		style() {
 			const { height, width, left, top } = this.stencilCoordinates;
-			return {
+			const style = {
 				position: 'absolute',
 				width: `${width}px`,
 				height: `${height}px`,
 				transform: `translate(${left}px, ${top}px)`,
 			};
+			if (this.transitions && this.transitions.enabled) {
+				style.transition = `${this.transitions.time}ms ${this.transitions.timingFunction}`;
+			}
+			return style;
 		},
 	},
 	methods: {
@@ -62,6 +68,7 @@ export default {
 					:width="stencilCoordinates.width"
 					:height="stencilCoordinates.height"
 					:coordinates="coordinates"
+					:transitions="transitions"
 				/>
 			</draggable-area>
 		</bounding-box>
