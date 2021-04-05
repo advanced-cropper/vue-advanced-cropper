@@ -32,6 +32,12 @@ export default {
 		CropperWrapper,
 	},
 	props: {
+		headers: {
+			type: Object,
+			default() {
+				return {};
+			},
+		},
 		src: {
 			type: String,
 			default: null,
@@ -939,7 +945,7 @@ export default {
 			this.delayedTransforms = null;
 
 			if (this.src) {
-				const promise = parseImage(this.src);
+				const promise = parseImage(this.src, this.headers);
 				if (isCrossOriginURL(this.src)) {
 					this.imageAttributes.crossOrigin = this.crossOrigin;
 				}

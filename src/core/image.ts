@@ -106,7 +106,7 @@ export function getImageTransforms(orientation: number) {
 	}
 	return result;
 }
-function getImageData(img) {
+function getImageData(img, headers) {
 	return new Promise((resolve, reject) => {
 		try {
 			if (img) {
@@ -143,6 +143,9 @@ function getImageData(img) {
 					};
 					http.withCredentials = false;
 					http.open('GET', img, true);
+					for (const key of Object.keys(headers)) {
+						http.setRequestHeader(key, headers[key]);
+					}
 					http.responseType = 'arraybuffer';
 					http.send(null);
 				}
@@ -233,9 +236,9 @@ function getOrientation(arrayBuffer) {
 	}
 }
 
-export function parseImage(src: string) {
+export function parseImage(src: string, headers: object) {
 	return new Promise((resolve) => {
-		getImageData(src)
+		getImageData(src, headers)
 			.then((data) => {
 				resolve(
 					data
