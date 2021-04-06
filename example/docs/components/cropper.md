@@ -319,8 +319,9 @@ Cropper will emit `error` event when image is unsuccessfully loaded.
 
 - **Details:**
 
-	This flag indicates if canvas should be used in cropper. If you need only the coordinates you should set `canvas`  to `false` to optimize performance.
-
+	This flag indicates if canvas should be used in cropper. 
+	
+	If you need only the coordinates only you should set `canvas`  to `false` to optimize performance and prevent the setting of `crossorigin` attribute to image.
 
 ### `checkOrientation`
 

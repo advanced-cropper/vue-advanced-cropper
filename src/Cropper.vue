@@ -88,9 +88,13 @@ export default {
 			type: Boolean,
 			default: true,
 		},
+		canvas: {
+			type: Boolean,
+			default: true,
+		},
 		crossOrigin: {
-			type: String,
-			default: 'anonymous',
+			type: [Boolean, String],
+			default: undefined,
 		},
 		transitionTime: {
 			type: Number,
@@ -543,8 +547,12 @@ export default {
 					visibleArea: this.visibleArea ? { ...this.visibleArea } : null,
 					imageTransforms,
 					get canvas() {
-						cropper.updateCanvas();
-						return cropper.$refs.canvas;
+						if (cropper.canvas) {
+							cropper.updateCanvas();
+							return cropper.$refs.canvas;
+						} else {
+							return undefined;
+						}
 					},
 				};
 			} else {
@@ -939,13 +947,23 @@ export default {
 			this.delayedTransforms = null;
 
 			if (this.src) {
-				const promise = parseImage(this.src);
 				if (isCrossOriginURL(this.src)) {
-					this.imageAttributes.crossOrigin = this.crossOrigin;
+					let crossOrigin = isUndefined(this.crossOrigin) ? this.canvas : this.crossOrigin;
+					if (crossOrigin === true) {
+						crossOrigin = 'anonymous';
+					}
+					this.imageAttributes.crossOrigin = crossOrigin;
 				}
-				setTimeout(() => {
-					promise.then(this.onParseImage);
-				}, this.transitionTime);
+				if (this.checkOrientation) {
+					const promise = parseImage(this.src);
+					setTimeout(() => {
+						promise.then(this.onParseImage);
+					}, this.transitionTime);
+				} else {
+					setTimeout(() => {
+						this.onParseImage({ source: this.src });
+					}, this.transitionTime);
+				}
 			} else {
 				this.clearImage();
 			}
@@ -1259,8 +1277,8 @@ export default {
 					@move="onMove"
 					@move-end="onMoveEnd"
 				/>
-				<canvas ref="canvas" :style="{ display: 'none' }" />
-				<canvas ref="sourceCanvas" :style="{ display: 'none' }" />
+				<canvas v-if="canvas" ref="canvas" :style="{ display: 'none' }" />
+				<canvas v-if="canvas" ref="sourceCanvas" :style="{ display: 'none' }" />
 			</cropper-wrapper>
 		</div>
 	</div>
