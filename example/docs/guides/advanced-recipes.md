@@ -84,6 +84,41 @@ The object:
 />
 ```
 
+### Fill the image
+
+The `default-size` prop can determine the default size based on `imageSize`, `visibleArea`, `stencilRatio` and `sizeRestrictions`  as mentioned in [its documentation](/components/cropper.html#defaultsize).
+
+It can be used to force the cropper fills all visible area by default:
+
+```js
+import { Cropper } from 'vue-advanced-cropper';
+
+export default {
+	components: {
+		Cropper,
+	},
+	methods: {
+		defaultSize({ imageSize, visibleArea }) {
+			return {
+				width: (visibleArea || imageSize).width,
+				height: (visibleArea || imageSize).height,
+			};
+		}
+	}
+};
+```
+
+```html
+<cropper
+	:src="https://images.pexels.com/photos/6524107/pexels-photo-6524107.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+	:default-size="defaultSize"
+/>
+```
+
+<default-filling-example></default-filling-example>
+
+
+
 ## Default visible area
 
 Moreover, there are situations where you need to save, for example, previous visible area position, i.e. zoom or translate image.

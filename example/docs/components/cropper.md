@@ -554,6 +554,8 @@ Cropper will emit `error` event when image is unsuccessfully loaded.
 		height: 73
 	}
 	```
+		
+	#### `Function`
 	
 	The static function should accept the only argument, the object with the following fields:
 	- `visibleArea`: `{ left, top, width, height }` or `null` if the coordinates has [priority](/components/cropper.html#priority).,
