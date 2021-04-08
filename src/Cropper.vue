@@ -513,6 +513,7 @@ export default {
 	created() {
 		this.debouncedUpdate = debounce(this.update, this.debounce);
 		this.debouncedDisableTransitions = debounce(this.disableTransitions, this.transitionsOptions.time);
+		this.awaiting = false;
 	},
 	mounted() {
 		this.$refs.image.addEventListener('load', this.onSuccessLoadImage);
@@ -631,6 +632,15 @@ export default {
 			return this.resetVisibleArea();
 		},
 		// Internal methods
+		awaitRender(callback) {
+			if (!this.awaiting) {
+				this.awaiting = true;
+				this.$nextTick(() => {
+					callback();
+					this.awaiting = false;
+				});
+			}
+		},
 		prepareResult(coordinates) {
 			if (this.roundResult) {
 				return algorithms.roundCoordinates({
@@ -1026,35 +1036,44 @@ export default {
 		},
 		onMove(event) {
 			if (!this.transitionsOptions.enabled) {
-				this.coordinates = this.moveAlgorithm({
-					...this.getPublicProperties(),
-					positionRestrictions: algorithms.limitBy(this.positionRestrictions, this.visibleArea),
-					coordinates: this.coordinates,
-					event: this.normalizeEvent(event),
+				this.awaitRender(() => {
+					this.coordinates = this.moveAlgorithm({
+						...this.getPublicProperties(),
+						positionRestrictions: algorithms.limitBy(this.positionRestrictions, this.visibleArea),
+						coordinates: this.coordinates,
+						event: this.normalizeEvent(event),
+					});
+					this.onChange();
 				});
-				this.onChange();
 			}
 		},
 		onResize(event) {
 			if (!this.transitionsOptions.enabled && (!this.stencilSize || this.autoZoom)) {
-				const sizeRestrictions = this.sizeRestrictions;
+				this.awaitRender(() => {
+					const sizeRestrictions = this.sizeRestrictions;
 
-				// The magic number is the approximation of the handler size
-				// Temporary solution that should be improved in the future
-				const minimumSize = Math.min(this.coordinates.width, this.coordinates.height, 20 * this.coefficient);
+					// The magic number is the approximation of the handler size
+					// Temporary solution that should be improved in the future
+					const minimumSize = Math.min(
+						this.coordinates.width,
+						this.coordinates.height,
+						20 * this.coefficient,
+					);
 
-				this.coordinates = this.resizeAlgorithm({
-					...this.getPublicProperties(),
-					positionRestrictions: algorithms.limitBy(this.positionRestrictions, this.visibleArea),
-					sizeRestrictions: {
-						maxWidth: Math.min(sizeRestrictions.maxWidth, this.visibleArea.width),
-						maxHeight: Math.min(sizeRestrictions.maxHeight, this.visibleArea.height),
-						minWidth: Math.max(sizeRestrictions.minWidth, minimumSize),
-						minHeight: Math.max(sizeRestrictions.minHeight, minimumSize),
-					},
-					event: this.normalizeEvent(event),
+					this.coordinates = this.resizeAlgorithm({
+						...this.getPublicProperties(),
+						positionRestrictions: algorithms.limitBy(this.positionRestrictions, this.visibleArea),
+						sizeRestrictions: {
+							maxWidth: Math.min(sizeRestrictions.maxWidth, this.visibleArea.width),
+							maxHeight: Math.min(sizeRestrictions.maxHeight, this.visibleArea.height),
+							minWidth: Math.max(sizeRestrictions.minWidth, minimumSize),
+							minHeight: Math.max(sizeRestrictions.minHeight, minimumSize),
+						},
+						event: this.normalizeEvent(event),
+					});
+					this.onChange();
+					this.ticking = false;
 				});
-				this.onChange();
 			}
 		},
 		onManipulateImage(event, params = {}) {
