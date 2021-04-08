@@ -76,7 +76,7 @@ export default {
 			}
 		},
 		onMouseDown(e) {
-			if (!this.disabled) {
+			if (!this.disabled && e.button === 0) {
 				const touch = {
 					fake: true,
 					clientX: e.clientX,

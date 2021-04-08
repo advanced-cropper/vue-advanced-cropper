@@ -79,7 +79,7 @@ export default {
 			}
 		},
 		onMouseDown(e) {
-			if (this.movable) {
+			if (this.movable && e.button === 0) {
 				const touch = {
 					fake: true,
 					clientX: e.clientX,
