@@ -261,8 +261,35 @@ The image loading doesn't depend at this library and can be completed by a numer
 That's what you will get:
 <upload-example></upload-example>
 
+::: tip Notice!
+[Blob](https://developer.mozilla.org/en-US/docs/Web/API/Blob) is used in the example below. Ensure that browsers that you support can handle it or you use the corresponding polyfill. 
+:::
+
 ```js
 import { Cropper } from 'vue-advanced-cropper'
+
+// This function is used to detect the actual image type, 
+function getMimeType(file, fallback = null) {
+	const byteArray = (new Uint8Array(file)).subarray(0, 4);
+    let header = '';
+    for (let i = 0; i < byteArray.length; i++) {
+       header += byteArray[i].toString(16);
+    }
+	switch (header) {
+        case "89504e47":
+            return "image/png";
+        case "47494638":
+            return "image/gif";
+        case "ffd8ffe0":
+        case "ffd8ffe1":
+        case "ffd8ffe2":
+        case "ffd8ffe3":
+        case "ffd8ffe8":
+            return "image/jpeg";
+        default:
+            return fallback;
+    }
+}
 
 export default {
 	components: {
@@ -270,25 +297,43 @@ export default {
 	},
 	data() {
 		return {
-			image: null,
+			image: {
+				src: null,
+				type: null
+			}
 		};
 	},
 	methods: {
+		crop() {
+			const { canvas } = this.$refs.cropper.getResult();
+			canvas.toBlob((blob) => {
+				// Do something with blob: upload to a server, download and etc.
+			}, this.image.type);
+		},
 		reset() {
-			this.image = null;
+			this.image = {
+				src: null,
+				type: null
+			}
 		},
 		loadImage(event) {
 			// Reference to the DOM input element
-			var input = event.target;
+			const input = event.target;
 			// Ensure that you have a file before attempting to read it
 			if (input.files && input.files[0]) {
 				// create a new FileReader to read this image and convert to base64 format
-				var reader = new FileReader();
+				const reader = new FileReader();
 				// Define a callback function to run, when FileReader finishes its job
 				reader.onload = (e) => {
 					// Note: arrow function used here, so that "this.imageData" refers to the imageData of Vue component
-					// Read image as base64 and set to imageData
-					this.image = e.target.result;
+					this.image = {
+						// Read image as base64 and set it as src:
+						src: e.target.result,
+						// Determine the image type to preserve it during the extracting the image from canvas
+						// If you don't want to mess with parsing internal file body, you can just rely on input.files[0].type that
+						// is used here as a fallback
+						type: getMimeType(e.target.result, input.files[0].type)
+					};
 				};
 				// Start the reader job - read file as a data url (base64 format)
 				reader.readAsDataURL(input.files[0]);
@@ -302,8 +347,9 @@ export default {
 <div id="app">
 	<div class="upload-example">
 		<cropper
+			ref="cropper"
 			class="upload-example-cropper"
-			:src="image"
+			:src="image.src"
 		/>
 		<div class="button-wrapper">
 			<span class="button" @click="$refs.file.click()">

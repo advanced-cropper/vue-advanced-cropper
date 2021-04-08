@@ -10,6 +10,7 @@
 		"bootstrap-vue": "^2.18.1",
 		"core-js": "^2.6.5",
 		"easy-bem": "^1.0.2",
+		"file-saver": "^2.0.5",
 		"vue": "^2.6.12",
 		"vue-advanced-cropper": "file:.."
 	},
