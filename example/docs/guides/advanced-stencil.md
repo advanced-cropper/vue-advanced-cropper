@@ -217,7 +217,7 @@ export default {
 
 <template>
   	<div class="circle-stencil" :style="style">
-	 	<img src="./handler.svg">
+	 	<img :src="require('./assets/handler.svg')" @mousedown.prevent>
         <stencil-preview
         	class="circle-stencil__preview"
 			:image="image"
@@ -322,7 +322,7 @@ export default {
 			@drag="onResize"
 			@drag-end="onResizeEnd"
 		>
-			<img :src="require('./assets/handler.svg')">
+			<img :src="require('./assets/handler.svg')" @mousedown.prevent>
 		</draggable-element>
 		<draggable-area @move="onMove" @move-end="onMoveEnd">
 			<stencil-preview
@@ -541,7 +541,7 @@ export default {
       @drag="onResize"
       @drag-end="onResizeEnd"
     >
-		<img :src="require('./assets/handler.svg')">
+		<img :src="require('./assets/handler.svg')" @mousedown.prevent>
     </draggable-element>
     <draggable-area @move="onMove" @move-end="onMoveEnd">
       <stencil-preview

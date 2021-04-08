@@ -79,7 +79,7 @@ export default {
 <template>
 	<div class="circle-stencil" :style="style">
 		<draggable-element class="circle-stencil__handler" @drag="onResize" @drag-end="onResizeEnd">
-			<img :src="require('./assets/handler.svg')" />
+			<img :src="require('./assets/handler.svg')" @mousedown.prevent />
 		</draggable-element>
 		<draggable-area @move="onMove" @move-end="onMoveEnd">
 			<stencil-preview
@@ -117,6 +117,7 @@ export default {
 		align-items: center;
 		justify-content: center;
 		transform: translate(50%, -50%);
+		user-drag: none;
 	}
 	&__preview {
 		border-radius: 50%;
