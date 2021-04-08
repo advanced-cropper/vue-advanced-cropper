@@ -262,7 +262,7 @@ That's what you will get:
 <upload-example></upload-example>
 
 ::: tip Notice!
-[Blob](https://developer.mozilla.org/en-US/docs/Web/API/Blob) is used in the example below. Ensure that browsers that you support can handle it or you use the corresponding polyfill. 
+[Blob](https://developer.mozilla.org/en-US/docs/Web/API/Blob) is used in the example below. Ensure that browsers that you support can fully handle it or use the corresponding polyfill. 
 :::
 
 ```js
@@ -372,46 +372,14 @@ export default {
 			:src="image.src"
 		/>
 		<div class="button-wrapper">
-			<span class="button" @click="$refs.file.click()">
+			<button class="button" @click="$refs.file.click()">
 				<input type="file" ref="file" @change="loadImage($event)" accept="image/*">
 				Load image
-			</span>
+			</button>
 		</div>
 	</div>
 </div>
 ```
-
-```css
-.upload-example-cropper {
-	border: solid 1px #EEE;
-	height: 300px;
-	width: 100%;
-}
-
-.button-wrapper {
-	display: flex;
-	justify-content: center;
-	margin-top: 17px;
-}
-
-.button {
-	color: white;
-	font-size: 16px;
-	padding: 10px 20px;
-	background: #3fb37f;
-	cursor: pointer;
-	transition: background 0.5s;
-}
-
-.button:hover {
-	background: #38d890;
-}
-
-.button input {
-	display: none;
-}
-```
-
 
 ## Upload image to a server
 
