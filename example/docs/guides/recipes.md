@@ -318,28 +318,48 @@ export default {
 		},
 		loadImage(event) {
 			// Reference to the DOM input element
-			const input = event.target;
+			const { files } = event.target;
 			// Ensure that you have a file before attempting to read it
-			if (input.files && input.files[0]) {
-				// create a new FileReader to read this image and convert to base64 format
+			if (files && files[0]) {
+				// 1. Revoke the object URL, to allow the garbage collector to destroy the uploaded before file
+				if (this.image.src) {
+					URL.revokeObjectURL(this.image.src)
+				}
+				// 2. Create the blob link to the file to optimize performance:
+				const blob = URL.createObjectURL(files[0]);
+				
+				// 3. The steps below are designated to determine a file mime type to use it during the 
+				// getting of a cropped image from the canvas. You can replace it them by the following string, 
+				// but the type will be derived from the extension and it can lead to an incorrect result:
+				//
+				// this.image = {
+				//    src: blob;
+				//    type: files[0].type
+				// }
+				
+				// Create a new FileReader to read this image binary data
 				const reader = new FileReader();
 				// Define a callback function to run, when FileReader finishes its job
 				reader.onload = (e) => {
-					// Note: arrow function used here, so that "this.imageData" refers to the imageData of Vue component
+					// Note: arrow function used here, so that "this.image" refers to the image of Vue component
 					this.image = {
 						// Read image as base64 and set it as src:
-						src: e.target.result,
-						// Determine the image type to preserve it during the extracting the image from canvas
-						// If you don't want to mess with parsing internal file body, you can just rely on input.files[0].type that
-						// is used here as a fallback
-						type: getMimeType(e.target.result, input.files[0].type)
+						src: blob,
+						// Determine the image type to preserve it during the extracting the image from canvas:
+						type: getMimeType(e.target.result, files[0].type),
 					};
 				};
 				// Start the reader job - read file as a data url (base64 format)
-				reader.readAsDataURL(input.files[0]);
+				reader.readAsDataURL(files[0]);
 			}
 		},
 	},
+	destroyed() {
+		// Revoke the object URL, to allow the garbage collector to destroy the uploaded before file
+		if (this.image.src) {
+			URL.revokeObjectURL(this.image.src)
+		}
+	}
 };
 ```
 
