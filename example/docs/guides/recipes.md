@@ -194,6 +194,29 @@ export default {
 </div>
 ```
 
+## Resize the result
+
+If you use coordinates only, the result should be scaled on server-side, but if you use canvas you prefer to resize the result on client-side.
+
+The most simplest way to do it is pass the restrictions for the result size in [`canvas`](/components/cropper.html#canvas) property.
+
+```html
+<cropper
+	:src="image"
+	:canvas="{
+		minHeight: 0,
+		minWidth: 0,
+		maxHeight: 2048,
+		maxWidth: 2048,
+	}"
+/>
+```
+
+<resize-result-example></resize-result-example>
+
+It uses default canvas image scaling procedure under the hood. If the result doesn't suit you, try to use the external libraries
+to resize image ([pica](https://github.com/nodeca/pica), [downscale](https://github.com/ytiurin/downscale) and etc.)
+
 ## Preview the result
 
 To implement real-time preview of cropping result you can use [`Preview`](/components/preview.html) component (it used internally to

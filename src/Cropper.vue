@@ -11,11 +11,13 @@ import {
 	isFunction,
 	isLoadedImage,
 	isNumber,
+	isNumeric,
 	isObject,
 	limitBy,
 	radians,
 	replacedProp,
 } from './core';
+import { approximatedSize } from './core/algorithms';
 import { updateCanvas } from './core/canvas';
 import { ManipulateImageEvent } from './core/events';
 import { isEqual, limitSizeRestrictions, limitsToSize, ratio } from './core/service';
@@ -89,7 +91,7 @@ export default {
 			default: true,
 		},
 		canvas: {
-			type: Boolean,
+			type: [Object, Boolean],
 			default: true,
 		},
 		crossOrigin: {
@@ -188,6 +190,12 @@ export default {
 		},
 		maxCanvasSize: {
 			type: Number,
+			validator(value) {
+				if (!isUndefined(value) && process.env.NODE_ENV !== 'production') {
+					console.warn(`Warning: prop "maxCanvasSize" is deprecated now.`);
+				}
+				return true;
+			},
 		},
 	},
 	data() {
@@ -726,15 +734,41 @@ export default {
 					? prepareSource(this.$refs.sourceCanvas, image, this.imageTransforms)
 					: image;
 
-				let resultSize;
-				if (this.maxCanvasSize && this.coordinates.width * this.coordinates.height > this.maxCanvasSize) {
-					const scale = Math.sqrt(this.maxCanvasSize / (this.coordinates.width * this.coordinates.height));
-					resultSize = {
-						width: Math.round(scale * this.coordinates.width),
-						height: Math.round(scale * this.coordinates.height),
+				const options = {
+					minWidth: 0,
+					minHeight: 0,
+					maxWidth: Infinity,
+					maxHeight: Infinity,
+					maxArea: this.maxCanvasSize,
+					imageSmoothingEnabled: true,
+					imageSmoothingQuality: 'medium',
+					...this.canvas,
+				};
+
+				let size = approximatedSize({
+					sizeRestrictions: {
+						minWidth: isNumeric(options.minWidth) ? options.minWidth : 0,
+						minHeight: isNumeric(options.minHeight) ? options.minHeight : 0,
+						maxWidth: isNumeric(options.maxWidth) ? options.maxWidth : Infinity,
+						maxHeight: isNumeric(options.maxHeight) ? options.maxHeight : Infinity,
+					},
+					width: this.coordinates.width,
+					height: this.coordinates.height,
+					aspectRatio: {
+						minimum: this.coordinates.width / this.coordinates.height,
+						maximum: this.coordinates.width / this.coordinates.height,
+					},
+				});
+
+				if (options.maxArea && size.width * size.height > options.maxArea) {
+					const scale = Math.sqrt(options.maxArea / (size.width * size.height));
+					size = {
+						width: Math.round(scale * size.width),
+						height: Math.round(scale * size.height),
 					};
 				}
-				updateCanvas(canvas, source, this.coordinates, resultSize);
+
+				updateCanvas(canvas, source, this.coordinates, size);
 			}
 		},
 		update() {

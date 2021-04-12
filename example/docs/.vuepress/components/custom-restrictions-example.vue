@@ -69,7 +69,6 @@ export default {
 			:min-height="limitations.minHeight"
 			:min-width="limitations.minWidth"
 			:size-restrictions-algorithm="percentsRestriction"
-			:adjust-stencil="true"
 			@change="onCrop"
 		/>
 		<div class="panel">

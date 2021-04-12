@@ -136,6 +136,10 @@ export function isNumber(value) {
 	);
 }
 
+export function isNumeric(value) {
+	return !Number.isNaN(parseFloat(value)) && isFinite(value);
+}
+
 export function isNaN(value) {
 	return value !== value;
 }
