@@ -144,7 +144,11 @@ export function manipulateImage(params: ManipulateImageParams): ManipulateImageR
 		if (scale.factor > 1) {
 			areaScale = Math.min(scaleRestrictions.area.maximum, scale.factor) / stencilScale;
 		} else if (scale.factor < 1) {
-			areaScale = Math.max(coordinates.height / visibleArea.height, scale.factor / stencilScale);
+			areaScale = Math.max(
+				coordinates.height / visibleArea.height,
+				coordinates.width / visibleArea.width,
+				scale.factor / stencilScale,
+			);
 		}
 		if (areaScale !== 1) {
 			visibleArea = applyScale(visibleArea, areaScale, scale.factor > 1 ? scale.center : getCenter(coordinates));
