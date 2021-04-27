@@ -172,7 +172,7 @@ function getStringFromCharCode(dataView, start, length) {
 	return str;
 }
 
-function getOrientation(arrayBuffer) {
+function resetAndGetOrientation(arrayBuffer) {
 	try {
 		const dataView = new DataView(arrayBuffer);
 		let orientation;
@@ -237,9 +237,10 @@ export function parseImage(src: string) {
 	return new Promise((resolve) => {
 		getImageData(src)
 			.then((data) => {
+				const orientation = resetAndGetOrientation(data);
 				resolve(
 					data
-						? { source: src, arrayBuffer: data, orientation: getOrientation(data) }
+						? { source: src, arrayBuffer: data, orientation }
 						: { source: src, arrayBuffer: null, orientation: null },
 				);
 			})

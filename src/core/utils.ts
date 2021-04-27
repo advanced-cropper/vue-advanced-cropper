@@ -12,8 +12,16 @@ export function directionNames(hDirection, vDirection) {
 	return { name, classname };
 }
 
+export function isBlob(url: string) {
+	return /^blob:/.test(url);
+}
+
+export function isDataUrl(url: string) {
+	return /^data:/.test(url);
+}
+
 export function isLocal(url: string) {
-	return /^data:/.test(url) || /^blob:/.test(url);
+	return isBlob(url) || isDataUrl(url);
 }
 
 export function isCrossOriginURL(url: string) {

@@ -8,6 +8,7 @@ import {
 	fillBoundaries,
 	fitBoundaries,
 	getOptions,
+	isBlob,
 	isFunction,
 	isLoadedImage,
 	isNumber,
@@ -535,6 +536,9 @@ export default {
 	destroyed() {
 		window.removeEventListener('resize', this.refresh);
 		window.removeEventListener('orientationchange', this.refresh);
+		if (this.imageAttributes.revoke && this.imageAttributes.src) {
+			URL.revokeObjectURL(this.imageAttributes.src);
+		}
 	},
 	methods: {
 		// External methods
@@ -1031,8 +1035,17 @@ export default {
 			}
 		},
 		onParseImage({ source, arrayBuffer, orientation }) {
-			if (arrayBuffer && orientation && isLocal(source)) {
-				this.imageAttributes.src = arrayBufferToDataURL(arrayBuffer);
+			if (this.imageAttributes.revoke && this.imageAttributes.src) {
+				URL.revokeObjectURL(this.imageAttributes.src);
+			}
+			this.imageAttributes.revoke = false;
+			if (arrayBuffer && orientation && orientation > 1 && isLocal(source)) {
+				if (isBlob(source)) {
+					this.imageAttributes.src = URL.createObjectURL(new Blob([arrayBuffer]));
+					this.imageAttributes.revoke = true;
+				} else {
+					this.imageAttributes.src = arrayBufferToDataURL(arrayBuffer);
+				}
 			} else {
 				this.imageAttributes.src = source;
 			}
