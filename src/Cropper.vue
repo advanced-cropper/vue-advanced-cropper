@@ -561,8 +561,7 @@ export default {
 					imageTransforms,
 					get canvas() {
 						if (cropper.canvas) {
-							cropper.updateCanvas();
-							return cropper.$refs.canvas;
+							return cropper.getCanvas();
 						} else {
 							return undefined;
 						}
@@ -724,7 +723,7 @@ export default {
 				event,
 			});
 		},
-		updateCanvas() {
+		getCanvas() {
 			// This function can be asynchronously called because it's debounced
 			// Therefore there is workaround to prevent processing after the component was unmounted
 			if (this.$refs.canvas) {
@@ -745,7 +744,7 @@ export default {
 					maxHeight: Infinity,
 					maxArea: this.maxCanvasSize,
 					imageSmoothingEnabled: true,
-					imageSmoothingQuality: 'medium',
+					imageSmoothingQuality: 'high',
 					...this.canvas,
 				};
 
@@ -772,7 +771,9 @@ export default {
 					};
 				}
 
-				updateCanvas(canvas, source, this.coordinates, size);
+				updateCanvas(canvas, source, this.coordinates, size, options);
+
+				return canvas;
 			}
 		},
 		update() {
