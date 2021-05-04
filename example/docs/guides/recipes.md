@@ -366,14 +366,14 @@ export default {
 				reader.onload = (e) => {
 					// Note: arrow function used here, so that "this.image" refers to the image of Vue component
 					this.image = {
-						// Read image as base64 and set it as src:
+						// Set the image source (it will look like blob:http://example.com/2c5270a5-18b5-406e-a4fb-07427f5e7b94)
 						src: blob,
 						// Determine the image type to preserve it during the extracting the image from canvas:
 						type: getMimeType(e.target.result, files[0].type),
 					};
 				};
 				// Start the reader job - read file as a data url (base64 format)
-				reader.readAsDataURL(files[0]);
+				reader.readAsArrayBuffer(files[0]);
 			}
 		},
 	},

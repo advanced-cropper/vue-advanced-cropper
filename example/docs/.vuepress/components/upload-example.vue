@@ -86,7 +86,7 @@ export default {
 					};
 				};
 				// Start the reader job - read file as a data url (base64 format)
-				reader.readAsDataURL(files[0]);
+				reader.readAsArrayBuffer(files[0]);
 			}
 		},
 	},
@@ -105,18 +105,21 @@ export default {
 		class="upload-example"
 		href="https://github.com/Norserium/vue-advanced-cropper/blob/master/example/docs/.vuepress/components/upload-example.vue"
 	>
-		<div class="cropper-wrapper">
-			<cropper ref="cropper" class="upload-example-cropper" check-orientation :src="image.src" />
-			<div class="reset-button" title="Reset Image" @click="reset()">
+		<div class="upload-example__cropper-wrapper">
+			<cropper ref="cropper" class="upload-example__cropper" check-orientation :src="image.src" />
+			<div class="upload-example__reset-button" title="Reset Image" @click="reset()">
 				<img :src="require('../assets/icons/reset.svg')" />
 			</div>
+			<div class="upload-example__file-type" v-if="image.type">
+				{{ image.type }}
+			</div>
 		</div>
-		<div class="button-wrapper">
-			<button class="button" @click="$refs.file.click()">
+		<div class="upload-example__buttons-wrapper">
+			<button class="upload-example__button" @click="$refs.file.click()">
 				<input ref="file" type="file" accept="image/*" @change="loadImage($event)" />
 				Upload image
 			</button>
-			<button v-if="image.src" class="button" @click="crop()">Download result</button>
+			<button v-if="image.src" class="upload-example__button" @click="crop()">Download result</button>
 		</div>
 	</example-wrapper>
 </template>
@@ -127,18 +130,18 @@ export default {
 	margin-bottom: 20px;
 	user-select: none;
 
-	.upload-example-cropper {
+	&__cropper {
 		border: solid 1px #eee;
 		min-height: 300px;
 		max-height: 500px;
 		width: 100%;
 	}
 
-	.cropper-wrapper {
+	&__cropper-wrapper {
 		position: relative;
 	}
 
-	.reset-button {
+	&__reset-button {
 		position: absolute;
 		right: 20px;
 		bottom: 20px;
@@ -155,13 +158,13 @@ export default {
 		}
 	}
 
-	.button-wrapper {
+	&__buttons-wrapper {
 		display: flex;
 		justify-content: center;
 		margin-top: 17px;
 	}
 
-	.button {
+	&__button {
 		border: none;
 		outline: solid transparent;
 		color: white;
@@ -171,15 +174,25 @@ export default {
 		cursor: pointer;
 		transition: background 0.5s;
 		margin: 0 16px;
+		&:hover,
+		&:focus {
+			background: #38d890;
+		}
+		input {
+			display: none;
+		}
 	}
 
-	.button:hover,
-	.button:focus {
-		background: #38d890;
-	}
-
-	.button input {
-		display: none;
+	&__file-type {
+		position: absolute;
+		top: 20px;
+		left: 20px;
+		background: #0d0d0d;
+		border-radius: 5px;
+		padding: 0px 10px;
+		padding-bottom: 2px;
+		font-size: 12px;
+		color: white;
 	}
 }
 </style>
