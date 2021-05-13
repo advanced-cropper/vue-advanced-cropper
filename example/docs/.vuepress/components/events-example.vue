@@ -44,7 +44,9 @@ export default {
 		class="events-example"
 		href="https://github.com/Norserium/vue-advanced-cropper/blob/master/example/docs/.vuepress/components/events-example.vue"
 	>
-		<input v-model="img.src" />
+		<div class="events-example__input-wrapper">
+			<input v-model="img.src" />
+		</div>
 		<div class="cropper-wrapper">
 			<img class="cropper-wrapper__loading" src="../assets/tutorials/loading.svg" v-if="img.loading" />
 			<cropper :src="img.src" @ready="ready" @error="error" @change="change" />
@@ -68,14 +70,16 @@ export default {
 		top: 50%;
 		transform: translate(-50%, -50%);
 	}
+	&__input-wrapper {
+		padding: 10px;
+	}
 	input {
 		display: block;
 		background: white;
-		border-radius: 10px;
+		border-radius: 6px;
 		border: solid 1px #eee;
 		padding: 8px 16px;
 		outline: none;
-		margin-bottom: 10px;
 		width: 100%;
 		text-overflow: ellipsis;
 	}

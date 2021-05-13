@@ -1026,8 +1026,10 @@ export default {
 			}
 		},
 		onFailLoadImage() {
-			this.clearImage();
-			this.$emit('error');
+			if (this.imageAttributes.src) {
+				this.clearImage();
+				this.$emit('error');
+			}
 		},
 		onSuccessLoadImage() {
 			// After loading image the current component can be unmounted
