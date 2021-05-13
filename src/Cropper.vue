@@ -626,21 +626,29 @@ export default {
 							this.debouncedDisableTransitions();
 						}
 					}
+					this.onChange();
 				}
 			});
 		},
 		refresh() {
 			const image = this.$refs.image;
 			if (this.src && image) {
+				let promise;
 				if (this.initialized) {
-					return this.updateVisibleArea();
+					return this.updateVisibleArea().then(() => {
+						this.onChange();
+					});
 				} else {
-					return this.reset();
+					return this.resetVisibleArea().then(() => {
+						this.onChange();
+					});
 				}
 			}
 		},
 		reset() {
-			return this.resetVisibleArea();
+			return this.resetVisibleArea().then(() => {
+				this.onChange();
+			});
 		},
 		// Internal methods
 		awaitRender(callback) {
