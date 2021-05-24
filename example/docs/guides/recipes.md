@@ -212,6 +212,19 @@ The most simplest way to do it is pass the restrictions for the result size in [
 />
 ```
 
+If you need to set the specific height and width use `height` and `width` attributes. 
+But you should note that canvas will have the same aspect ratio as the stencil, so the result size may
+be different than one that you have set.
+```html
+<cropper
+	:src="image"
+	:canvas="{
+		height: 256,
+		width: 256
+	}"
+/>
+```
+
 <resize-result-example></resize-result-example>
 
 It uses default canvas image scaling procedure under the hood. If the result doesn't suit you, try to use the external libraries

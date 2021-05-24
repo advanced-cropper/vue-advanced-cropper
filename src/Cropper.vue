@@ -756,12 +756,14 @@ export default {
 					...this.canvas,
 				};
 
+				const firstNumeric = (array) => array.find((el) => isNumeric(el));
+
 				let size = approximatedSize({
 					sizeRestrictions: {
-						minWidth: isNumeric(options.minWidth) ? options.minWidth : 0,
-						minHeight: isNumeric(options.minHeight) ? options.minHeight : 0,
-						maxWidth: isNumeric(options.maxWidth) ? options.maxWidth : Infinity,
-						maxHeight: isNumeric(options.maxHeight) ? options.maxHeight : Infinity,
+						minWidth: firstNumeric([options.width, options.minWidth]) || 0,
+						minHeight: firstNumeric([options.height, options.minHeight]) || 0,
+						maxWidth: firstNumeric([options.width, options.maxWidth]) || Infinity,
+						maxHeight: firstNumeric([options.height, options.maxHeight]) || Infinity,
 					},
 					width: this.coordinates.width,
 					height: this.coordinates.height,

@@ -36,10 +36,10 @@ export default {
 			class="resize-result-cropper"
 			:src="image"
 			:canvas="{
-				maxHeight: limitations.maxHeight,
 				maxWidth: limitations.maxWidth,
-				minHeight: limitations.minHeight,
 				minWidth: limitations.minWidth,
+				height: limitations.height,
+				width: limitations.width,
 				maxArea: limitations.maxArea,
 			}"
 		/>
@@ -50,16 +50,16 @@ export default {
 					<input v-model="limitations.maxWidth" class="input__control" type="text" />
 				</div>
 				<div class="input">
-					<span class="input__label">Max height</span>
-					<input v-model="limitations.maxHeight" class="input__control" type="text" />
-				</div>
-				<div class="input">
 					<span class="input__label">Min width</span>
 					<input v-model="limitations.minWidth" class="input__control" type="text" />
 				</div>
 				<div class="input">
-					<span class="input__label">Min height</span>
-					<input v-model="limitations.minHeight" class="input__control" type="text" />
+					<span class="input__label">Width</span>
+					<input v-model="limitations.width" class="input__control" type="text" />
+				</div>
+				<div class="input">
+					<span class="input__label">Height</span>
+					<input v-model="limitations.height" class="input__control" type="text" />
 				</div>
 				<div class="input">
 					<span class="input__label">Max area (width × height)</span>

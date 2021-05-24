@@ -323,6 +323,8 @@ Cropper will emit `error` event when image is unsuccessfully loaded.
 	
 	Options:
 	
+	- `width` - the width of the canvas (it's equal to setting of `minWidth` equal to `maxWidth`)
+	- `height` - the height of the canvas (it's equal to setting of `minHeight` equal to `maxHeight`)
 	- `minWidth` - the minimum width of the canvas (by default `0`)
 	- `minHeight` - the minimum height of the canvas (by default `0`)
 	- `maxWidth` - the maximum width of the canvas (by default `Infinity`)
