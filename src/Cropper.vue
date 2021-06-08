@@ -753,6 +753,7 @@ export default {
 					maxArea: this.maxCanvasSize,
 					imageSmoothingEnabled: true,
 					imageSmoothingQuality: 'high',
+					fillColor: 'transparent',
 					...this.canvas,
 				};
 

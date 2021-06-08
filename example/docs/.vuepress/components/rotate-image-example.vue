@@ -54,7 +54,6 @@ export default {
 			class="cropper"
 			:src="image"
 			:transitions="true"
-			default-boundaries="fill"
 			image-restriction="fit-area"
 			@change="change"
 		/>

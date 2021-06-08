@@ -332,6 +332,7 @@ Cropper will emit `error` event when image is unsuccessfully loaded.
 	- `maxArea` - the maximum width × height of the canvas (it may be useful to correspond [browser limitations](https://github.com/jhildenbiddle/canvas-size#test-results))
 	- `imageSmoothingEnabled` - the [context property](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/imageSmoothingEnabled) that determines whether scaled images are smoothed (by default, `true`) 
 	- `imageSmoothingQuality` - the [context property](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/imageSmoothingQuality) that determines the smooth quality (by default, `'high'`) 
+	- `fillColor` - the color to fill alpha background (by default `transparent`)
 	 
 	If you need the coordinates only you should set `canvas`  to `false` to optimize performance and prevent the setting of `crossorigin` attribute to image.
 	

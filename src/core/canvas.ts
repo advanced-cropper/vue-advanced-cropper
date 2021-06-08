@@ -3,6 +3,7 @@ import { Coordinates, Size } from './typings';
 interface Options {
 	imageSmoothingQuality?: 'low' | 'medium' | 'high';
 	imageSmoothingEnabled?: boolean;
+	fillColor?: string;
 }
 
 export function updateCanvas(
@@ -16,6 +17,9 @@ export function updateCanvas(
 	canvas.height = resultSize ? resultSize.height : coordinates.height;
 
 	const ctx = canvas.getContext('2d');
+
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+
 	if (options) {
 		if (options.imageSmoothingEnabled) {
 			ctx.imageSmoothingEnabled = options.imageSmoothingEnabled;
@@ -23,8 +27,13 @@ export function updateCanvas(
 		if (options.imageSmoothingQuality) {
 			ctx.imageSmoothingQuality = options.imageSmoothingQuality;
 		}
+		if (options.fillColor) {
+			ctx.fillStyle = options.fillColor;
+			ctx.fillRect(0, 0, canvas.width, canvas.height);
+			ctx.save();
+		}
 	}
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
+
 	ctx.drawImage(
 		source,
 		coordinates.left,
