@@ -8,6 +8,8 @@
 
 Cropper will emit `change` event on mounting, resizing the stencil, moving the stencil and changing the image.
 
+The event payload is the object: `{ coordinates, image, visibleArea, canvas }`.
+
 ### `ready`
 
 Cropper will emit `ready` event when image is successfully loaded.
@@ -21,7 +23,7 @@ Cropper will emit `error` event when image is unsuccessfully loaded.
 ### `getResult()`
 
 - **Returns:**  
-	- The object: `{ coordinates, imageTransforms, visibleArea, canvas }`
+	- The object: `{ coordinates, image, visibleArea, canvas }`
 
 
 - **Usage:**
@@ -30,7 +32,7 @@ Cropper will emit `error` event when image is unsuccessfully loaded.
 	
 	```js
 	const { 
-		coordinates, imageTransforms, visibleArea, canvas 
+		coordinates, image, visibleArea, canvas 
 	} = this.$refs.cropper.getResult();
 	```
 
