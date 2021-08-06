@@ -1,6 +1,6 @@
 {
 	"name": "vue-advanced-cropper",
-	"version": "1.7.0",
+	"version": "1.8.0",
 	"description": "The advanced library to create your own croppers suited for any website design",
 	"author": "Norserium",
 	"license": "MIT",
@@ -9,6 +9,7 @@
 	"umd": "dist/index.umd.js",
 	"module": "dist/index.es.js",
 	"jsnext:main": "dist/index.es.js",
+	"types": "types/index.d.ts",
 	"keywords": [
 		"vue",
 		"cropper",
@@ -89,7 +90,8 @@
 		"easy-bem": "^1.0.2"
 	},
 	"files": [
-		"dist"
+		"dist",
+		"types/index.d.ts"
 	],
 	"lint-staged": {
 		"*.{js,vue,ts}": [

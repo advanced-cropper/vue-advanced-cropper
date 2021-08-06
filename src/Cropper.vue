@@ -189,15 +189,6 @@ export default {
 			type: Function,
 			default: algorithms.positionRestrictions,
 		},
-		maxCanvasSize: {
-			type: Number,
-			validator(value) {
-				if (!isUndefined(value) && process.env.NODE_ENV !== 'production') {
-					console.warn(`Warning: prop "maxCanvasSize" is deprecated now.`);
-				}
-				return true;
-			},
-		},
 	},
 	data() {
 		return {
