@@ -141,7 +141,12 @@ export declare class Cropper extends Vue {
 		coordinates: Coordinates;
 		visibleArea: VisibleArea;
 		canvas?: HTMLCanvasElement;
-		imageTransforms: ImageTransforms;
+		image: {
+			width: number;
+			height: number;
+			transforms: ImageTransforms;
+			src: string | null;
+		};
 	};
 	setCoordinates: (transform: Transform | Transform[]) => void;
 	refresh: () => void;
@@ -174,4 +179,6 @@ export declare class SimpleHandler extends Vue {}
 
 export declare class SimpleLine extends Vue {}
 
-export declare class Preview extends Vue {}
+export declare class Preview extends Vue {
+	refresh: () => void;
+}
