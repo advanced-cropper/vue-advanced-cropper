@@ -45,7 +45,6 @@ export default {
 	<div :class="classes.root">
 		<DraggableElement
 			:class="classes.draggable"
-			:disabled="disabled"
 			@drag="$emit('drag', $event)"
 			@drag-end="$emit('drag-end')"
 			@leave="$emit('leave')"

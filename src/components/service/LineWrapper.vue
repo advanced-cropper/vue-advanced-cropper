@@ -30,7 +30,6 @@ export default {
 <template>
 	<DraggableElement
 		:class="classname"
-		:disabled="disabled"
 		@drag="$emit('drag', $event)"
 		@drag-end="$emit('drag-end')"
 		@leave="$emit('leave')"
