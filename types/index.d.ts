@@ -1,4 +1,4 @@
-import Vue from 'vue';
+import { DefineComponent } from 'vue';
 
 declare class ManipulateImageEvent implements StencilEvent {
 	type: 'manipulateImage';
@@ -136,49 +136,57 @@ export interface ImageTransforms {
 	};
 }
 
-export declare class Cropper extends Vue {
-	getResult: () => {
-		coordinates: Coordinates;
-		visibleArea: VisibleArea;
-		canvas?: HTMLCanvasElement;
-		image: {
-			width: number;
-			height: number;
-			transforms: ImageTransforms;
-			src: string | null;
-		};
+export interface CropperResult {
+	coordinates: Coordinates;
+	visibleArea: VisibleArea;
+	canvas?: HTMLCanvasElement;
+	image: {
+		width: number;
+		height: number;
+		transforms: ImageTransforms;
+		src: string | null;
 	};
-	setCoordinates: (transform: Transform | Transform[]) => void;
-	refresh: () => void;
-	zoom: (factor: number, center?: Point) => void;
-	move: (left: number, top?: number) => void;
-	rotate: (angle: number) => void;
-	flip: (horizontal: boolean, vertical?: boolean) => void;
-	reset: () => void;
 }
 
-export declare class PreviewResult extends Vue {}
+export declare const Cropper: DefineComponent<
+	any,
+	{
+		getResult: () => CropperResult;
+		setCoordinates: (transform: Transform | Transform[]) => void;
+		refresh: () => void;
+		zoom: (factor: number, center?: Point) => void;
+		move: (left: number, top?: number) => void;
+		rotate: (angle: number) => void;
+		flip: (horizontal: boolean, vertical?: boolean) => void;
+		reset: () => void;
+	}
+>;
 
-export declare class DraggableArea extends Vue {}
+export declare const PreviewResult: DefineComponent<any>;
 
-export declare class BoundingBox extends Vue {}
+export declare const DraggableArea: DefineComponent<any>;
 
-export declare class LineWrapper extends Vue {}
+export declare const BoundingBox: DefineComponent<any>;
 
-export declare class HandlerWrapper extends Vue {}
+export declare const LineWrapper: DefineComponent<any>;
 
-export declare class DraggableElement extends Vue {}
+export declare const HandlerWrapper: DefineComponent<any>;
 
-export declare class StencilPreview extends Vue {}
+export declare const DraggableElement: DefineComponent<any>;
 
-export declare class RectangleStencil extends Vue {}
+export declare const StencilPreview: DefineComponent<any>;
 
-export declare class CircleStencil extends Vue {}
+export declare const RectangleStencil: DefineComponent<any>;
 
-export declare class SimpleHandler extends Vue {}
+export declare const CircleStencil: DefineComponent<any>;
 
-export declare class SimpleLine extends Vue {}
+export declare const SimpleHandler: DefineComponent<any>;
 
-export declare class Preview extends Vue {
-	refresh: () => void;
-}
+export declare const SimpleLine: DefineComponent<any>;
+
+export declare const Preview: DefineComponent<
+	any,
+	{
+		refresh: () => void;
+	}
+>;

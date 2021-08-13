@@ -20,7 +20,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-testing-internet-explorer/
+testing-types/
 testing-vue-next/
 example/package-lock.json
 stats.html
