@@ -3,10 +3,14 @@
 		<div class="navigation">
 			<div class="navigation__frameworks">
 				<a class="navigation__link navigation__link--active" href="/"> Vue </a>
-				<span class="navigation__link navigation__link--blocked" href="/">
+				<a
+					class="navigation__link"
+					href="https://norserium.github.io/react-advanced-cropper/"
+					target="_blank"
+					rel="noreferrer norel"
+				>
 					React
-					<span class="tooltip"> I plan to port this library after the end of beta testing Vue library </span>
-				</span>
+				</a>
 			</div>
 			<div class="navigation__sections">
 				<a class="navigation__link navigation__link--active" href="/#"> Home </a>
@@ -28,11 +32,7 @@
 				</div>
 
 				<div class="presentation__install">
-					{{
-						manager === 'npm'
-							? 'npm install -S vue-advanced-cropper'
-							: 'yarn add vue-advanced-cropper'
-					}}
+					{{ manager === 'npm' ? 'npm install -S vue-advanced-cropper' : 'yarn add vue-advanced-cropper' }}
 					<div class="presentation__package-managers">
 						<span
 							:class="`presentation__package-manager ${
