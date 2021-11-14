@@ -182,7 +182,7 @@ export default {
 			}
 		},
 	},
-	emits: ['resize', 'move'],
+	emits: ['resize', 'move', 'transform-end'],
 };
 </script>
 
