@@ -3,7 +3,7 @@ import classnames from 'classnames';
 import bem from 'easy-bem';
 import debounce from 'debounce';
 import { RectangleStencil } from './components/stencils';
-import { CropperWrapper } from './components/service';
+import { BackgroundWrapper } from './components/service';
 import {
 	fillBoundaries,
 	fitBoundaries,
@@ -13,16 +13,14 @@ import {
 	isLoadedImage,
 	isNumber,
 	isNumeric,
-	isObject,
 	limitBy,
 	radians,
-	replacedProp,
 } from './core';
 import { approximatedSize } from './core/algorithms';
 import { updateCanvas } from './core/canvas';
 import { ManipulateImageEvent } from './core/events';
 import { isEqual, limitSizeRestrictions, limitsToSize, ratio } from './core/service';
-import { isLocal, isCrossOriginURL, isUndefined, getSettings, parseNumber } from './core/utils';
+import { isLocal, isCrossOriginURL, isUndefined, parseNumber } from './core/utils';
 import { arrayBufferToDataURL, getImageTransforms, getStyleTransforms, prepareSource, parseImage } from './core/image';
 import { IMAGE_RESTRICTIONS, DEFAULT_COORDINATES } from './core/constants';
 import * as algorithms from './core/algorithms';
@@ -32,7 +30,7 @@ const cn = bem('vue-advanced-cropper');
 export default {
 	name: 'Cropper',
 	components: {
-		CropperWrapper,
+		BackgroundWrapper,
 	},
 	props: {
 		src: {
@@ -43,6 +41,12 @@ export default {
 			type: [Object, String],
 			default() {
 				return RectangleStencil;
+			},
+		},
+		backgroundWrapperComponent: {
+			type: [Object, String],
+			default() {
+				return BackgroundWrapper;
 			},
 		},
 		stencilProps: {
@@ -1313,7 +1317,8 @@ export default {
 		<div ref="stretcher" :class="classes.stretcher" />
 
 		<div :class="classes.boundaries" :style="boundariesStyle">
-			<cropper-wrapper
+			<component
+				:is="backgroundWrapperComponent"
 				:class="classes.cropperWrapper"
 				:wheel-resize="settings.resizeImage.wheel"
 				:touch-resize="settings.resizeImage.touch"
@@ -1350,7 +1355,7 @@ export default {
 				/>
 				<canvas v-if="canvas" ref="canvas" :style="{ display: 'none' }" />
 				<canvas v-if="canvas" ref="sourceCanvas" :style="{ display: 'none' }" />
-			</cropper-wrapper>
+			</component>
 		</div>
 	</div>
 </template>

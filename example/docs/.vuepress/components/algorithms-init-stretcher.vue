@@ -55,7 +55,6 @@ export default {
 			if (stretcher) {
 				this.displayStretcher = true;
 				this.$nextTick(() => {
-					console.log(stretcher.$el, { ...this.image });
 					initStretcher({
 						stretcher: stretcher.$el,
 						imageSize: this.image,

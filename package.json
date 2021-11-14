@@ -1,6 +1,6 @@
 {
 	"name": "vue-advanced-cropper",
-	"version": "1.8.2",
+	"version": "1.9.0",
 	"description": "The advanced library to create your own croppers suited for any website design",
 	"author": "Norserium",
 	"license": "MIT",
@@ -73,7 +73,7 @@
 		"prettier": "^2.1.2",
 		"rollup": "^2.26.10",
 		"rollup-plugin-peer-deps-external": "^2.2.3",
-		"rollup-plugin-scss": "^2.6.1",
+		"rollup-plugin-scss": "^3.0.0",
 		"rollup-plugin-terser": "^7.0.2",
 		"rollup-plugin-visualizer": "^1.1.1",
 		"rollup-plugin-vue": "^5.1.9",

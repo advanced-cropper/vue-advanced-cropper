@@ -92,7 +92,11 @@ export function fitConditions({
 	});
 
 	if (preserveRatio) {
-		const multiplier = Math.min(...ALL_DIRECTIONS.map((direction) => maxResize[direction]));
+		// TODO: Temporary solution to replace spread operator
+		const multiplier = Math.min.apply(
+			null,
+			ALL_DIRECTIONS.map((direction) => maxResize[direction]),
+		);
 		if (multiplier !== Infinity) {
 			ALL_DIRECTIONS.forEach((direction) => {
 				fittedDirections[direction] *= multiplier;

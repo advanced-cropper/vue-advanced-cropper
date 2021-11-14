@@ -33,7 +33,7 @@ Sometime you should set the default position and default size of cropper. For ex
 
 <default-positioning-example></default-positioning-example>
 
-Notice, you can use either a function or object to set the default position and size. 
+Notice, you can use either a function or object to set the default position and size.
 
 The function:
 ```js
@@ -128,7 +128,7 @@ It should be noted, that visible area can be calculated either before default
 coordinates calculation or after one's calculation. The priority is set by
 prop [priority](/components/cropper.html#priority) that can be either `'coordinates'` (default) or `'visibleArea'`.
 
-::: tip 
+::: tip
 If you define only the visible area coordinates it may be easier to set priority to `visibleArea`. It eliminates the necessity
    to set default size and default position by yourself (default algorithms handle this situation).
 :::
@@ -248,8 +248,8 @@ export default {
 ## Adjust Stencil
 
 Adjust stencil is the one of [`resizeImage`](/components/cropper.html#resizeimage) prop option.
-By default it's enabled. It makes cropper more convenient especially when you have the limitations of width / height, 
-but you probably shouldn't  use it if you have fixed stencil, because it will change its size. 
+By default it's enabled. It makes cropper more convenient especially when you have the limitations of width / height,
+but you probably shouldn't  use it if you have fixed stencil, because it will change its size.
 
 Try to resize image when `adjustStencil` is disabled and enabled to feel the difference.
 
@@ -312,7 +312,7 @@ There may be situations, when you need to set the minimum and maximum sizes, for
 
 
 <custom-restrictions-example></custom-restrictions-example>
- 
+
 ```js
 import { Cropper } from 'vue-advanced-cropper';
 
@@ -417,8 +417,8 @@ There are situations, when a cropper container size is changed. It's
 can't be handle by cropper itself, because it doesn't know about this changes at all (in contradistinction to window's resize),
 so you should call [refresh](/components/cropper.html#refresh) method.
 
-::: tip 
-This situation may seems unlikely, but in fact if your cropper was in a container that was, for example, hidden by 
+::: tip
+This situation may seems unlikely, but in fact if your cropper was in a container that was, for example, hidden by
 `display: none`, you should call `refresh` method after its appearing.
 :::
 
@@ -434,6 +434,18 @@ this.$refs.cropper.refresh();
 
 
 <refresh-example></refresh-example>
+
+
+## Scroll the cropper
+
+Sometimes, there are situations, where an user can scroll the page and accidentally stops the scrolling when cursor happens to be placed on the cropper.
+This default behavior is the result of preventing all default mouse and touch events in the cropper background wrapper.
+
+However, this behavior can be easily redefined by replacing the default `BackgroundWrapper` by the custom one by setting it in `background-wrapper-component` prop.
+
+The full source code of the example below is available [here](https://codesandbox.io/s/vue-advanced-cropper-custom-scroll-dmkfw).
+
+<cropper-scroll-example></cropper-scroll-example>
 
 
 ## Blurred background
