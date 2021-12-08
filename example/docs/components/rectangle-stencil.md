@@ -126,7 +126,7 @@
 	```
 
 
-### `handlersWrapperClasses`
+### `handlersWrappersClasses`
 
 - **Type:** `Object`
 
@@ -198,7 +198,7 @@
 		east: 'line--ease',
 	}
 	```
-### `linesWrapperClasses`
+### `linesWrappersClasses`
 
 - **Type:** `Object`
 
