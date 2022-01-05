@@ -210,7 +210,7 @@ export default {
 			imageAttributes: {
 				width: null,
 				height: null,
-				crossOrigin: false,
+				crossOrigin: null,
 				src: null,
 			},
 			defaultImageTransforms: {
@@ -1021,7 +1021,7 @@ export default {
 					if (crossOrigin === true) {
 						crossOrigin = 'anonymous';
 					}
-					this.imageAttributes.crossOrigin = crossOrigin;
+					this.imageAttributes.crossOrigin = crossOrigin || null;
 				}
 				if (this.checkOrientation) {
 					const promise = parseImage(this.src);
