@@ -5,9 +5,9 @@ title: Getting started
 # Getting started
 
 ## Package installation
-To use the package you should install it with `npm` or `yarn`
+To use the library you should install it with `npm` or `yarn`
 ::: tip Notice!
-If you need to install Vue 3 version, install  `vue-advanced-cropper@next` instead
+To install the Vue 3 version, use  `npm install -S vue-advanced-cropper@next` instead
 :::
 ```bash
 npm install -S vue-advanced-cropper
@@ -16,17 +16,17 @@ npm install -S vue-advanced-cropper
 yarn add vue-advanced-cropper
 ```
 
-Then you should add somewhere in your script file or block the import of `Cropper` component:
+Then import the `Cropper` component:
 ```js
 import { Cropper } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css';
 ```
 
-After that [register](https://vuejs.org/v2/guide/components-registration.html) this component locally or globally.
+After that [register](https://vuejs.org/v2/guide/components-registration.html) the component locally or globally.
 
 ## Minimal working example
 
-The following example is demonstrating the using of the cropper in a custom component:
+The following example shows the usage of the cropper in a custom component:
 ```js
 import { Cropper } from 'vue-advanced-cropper';
 import 'vue-advanced-cropper/dist/style.css';
@@ -58,31 +58,35 @@ export default {
 ```
 ```css
 /*
-	Maybe you need to set the limits for the cropper sizes or its container sizes
-	otherwise a cropping image will try to fill all available space
+	It may be necessary to set limits on the size of the cropper, otherwise the cropper image will try to fill all the available space.
 */
 .cropper {
 	height: 600px;
+	width: 600px;
 	background: #DDD;
 }
 ```
 
 <getting-started-example/>
 
-If you need to change the behavior of cropper (for example, you want to create a fixed one for mobile devices),
-please read [this detailed article](/introduction/types.html) about different types of croppers.
+If you need to change the behavior of the cropper (for example, you want to create a fixed one for mobile devices),
+please read [this detailed article](/introduction/types.html) about the different variants of croppers.
 
 ## Using CDN
 
 ### Vue 2
 
-If you want to use the cropper without using, for example, different build systems you should add the code below toy your page. Notice, that currently the support of this method is quite limited.
+If you want to use the cropper without using, (for example, different build systems), you should add the code below to your page. 
+
+::: Tip Notice!
+Currently support for this method is limited.
+:::
 ```html
 <script src="https://unpkg.com/vue-advanced-cropper@^1.0.0/dist/index.umd.js" />
 <link rel="stylesheet" href="https://unpkg.com/vue-advanced-cropper@^1.0.0/dist/style.css" />
 ```
 
-And you can use globally registered components: `cropper`, `circle-stencil`, `rectangle-stencil`, `simple-handler`, `simple-line`.
+You can use globally registered components: `cropper`, `circle-stencil`, `rectangle-stencil`, `simple-handler`, `simple-line`.
 
 <iframe width="100%" height="500" src="//jsfiddle.net/norserium/38u4v9nb/embedded/" allowfullscreen="allowfullscreen" allowpaymentrequest frameborder="0"></iframe>
 
@@ -94,6 +98,6 @@ The links for the next Vue version is slightly different:
 <link rel="stylesheet" href="https://unpkg.com/vue-advanced-cropper@^2.0.0/dist/style.css" />
 ```
 
-To get the access to components you should use the global object `VueAdvancedCropper`. 
+To get access to components you should use the global object `VueAdvancedCropper`. 
 
 <iframe width="100%" height="500" src="//jsfiddle.net/norserium/pmw8aod5/embedded/" allowfullscreen="allowfullscreen" allowpaymentrequest frameborder="0"></iframe>
