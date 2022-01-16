@@ -58,8 +58,7 @@ export default {
 ```
 ```css
 /*
-	Control the size of the cropper bounding box to prevent over-fill as the cropper
-	will atempt to fill the html element.
+	It may be necessary to set limits on the size of the cropper, otherwise the cropper image will try to fill all the available space.
 */
 .cropper {
 	height: 600px;
