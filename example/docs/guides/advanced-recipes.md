@@ -435,6 +435,43 @@ this.$refs.cropper.refresh();
 
 <refresh-example></refresh-example>
 
+## Default transforms
+
+There are situations where you need to save the transforms. In this case `defaultTransforms` can be useful.
+It sets the default transforms for the cropper.
+
+It can be either a function or an object.
+
+<default-transforms-example></default-transforms-example>
+
+```js
+import { Cropper } from 'vue-advanced-cropper';
+
+export default {
+	components: {
+		Cropper,
+	},
+	methods: {
+		defaultTransforms() {
+			return {
+				rotate: 90,
+				flip: {
+					horizontal: false,
+					vertical: false,
+				}
+			};
+		}
+	}
+};
+```
+
+
+```html
+<cropper
+	:src="image"
+	:default-transforms="defaultTransforms"
+/>
+```
 
 ## Scroll the cropper
 

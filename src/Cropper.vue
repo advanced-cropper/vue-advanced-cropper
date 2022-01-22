@@ -13,6 +13,7 @@ import {
 	isLoadedImage,
 	isNumber,
 	isNumeric,
+	isObject,
 	limitBy,
 	radians,
 } from './core';
@@ -21,7 +22,14 @@ import { updateCanvas } from './core/canvas';
 import { ManipulateImageEvent } from './core/events';
 import { isEqual, limitSizeRestrictions, limitsToSize, ratio } from './core/service';
 import { isLocal, isCrossOriginURL, isUndefined, parseNumber } from './core/utils';
-import { arrayBufferToDataURL, getImageTransforms, getStyleTransforms, prepareSource, parseImage } from './core/image';
+import {
+	arrayBufferToDataURL,
+	getImageTransforms,
+	getStyleTransforms,
+	prepareSource,
+	parseImage,
+	fillImageTransforms,
+} from './core/image';
 import { IMAGE_RESTRICTIONS, DEFAULT_COORDINATES } from './core/constants';
 import * as algorithms from './core/algorithms';
 
@@ -129,6 +137,9 @@ export default {
 			type: [Function, Object],
 			default: algorithms.defaultVisibleArea,
 		},
+		defaultTransforms: {
+			type: [Function, Object],
+		},
 		defaultBoundaries: {
 			type: [Function, String],
 			validator(value) {
@@ -204,14 +215,7 @@ export default {
 				crossOrigin: false,
 				src: null,
 			},
-			customImageTransforms: {
-				rotate: 0,
-				flip: {
-					horizontal: false,
-					vertical: false,
-				},
-			},
-			basicImageTransforms: {
+			appliedImageTransforms: {
 				rotate: 0,
 				flip: {
 					horizontal: false,
@@ -239,14 +243,10 @@ export default {
 		},
 		imageTransforms() {
 			return {
-				rotate: this.basicImageTransforms.rotate + this.customImageTransforms.rotate,
+				rotate: this.appliedImageTransforms.rotate,
 				flip: {
-					horizontal: Boolean(
-						this.basicImageTransforms.flip.horizontal ^ this.customImageTransforms.flip.horizontal,
-					),
-					vertical: Boolean(
-						this.basicImageTransforms.flip.vertical ^ this.customImageTransforms.flip.vertical,
-					),
+					horizontal: this.appliedImageTransforms.flip.horizontal,
+					vertical: this.appliedImageTransforms.flip.vertical,
 				},
 				translateX: this.visibleArea ? this.visibleArea.left / this.coefficient : 0,
 				translateY: this.visibleArea ? this.visibleArea.top / this.coefficient : 0,
@@ -1058,17 +1058,15 @@ export default {
 			} else {
 				this.imageAttributes.src = source;
 			}
-			this.customImageTransforms = {
-				rotate: 0,
-				flip: {
-					horizontal: false,
-					vertical: false,
-				},
-			};
-			this.basicImageTransforms = {
-				...this.customImageTransforms,
-				...getImageTransforms(orientation),
-			};
+
+			if (isFunction(this.defaultTransforms)) {
+				this.appliedImageTransforms = fillImageTransforms(this.defaultTransforms());
+			} else if (isObject(this.defaultTransforms)) {
+				this.appliedImageTransforms = fillImageTransforms(this.defaultTransforms);
+			} else {
+				this.appliedImageTransforms = getImageTransforms(orientation);
+			}
+
 			this.$nextTick(() => {
 				const image = this.$refs.image;
 				if (image && image.complete) {
@@ -1259,10 +1257,10 @@ export default {
 				});
 
 				if (horizontal) {
-					this.customImageTransforms.flip.horizontal = !this.customImageTransforms.flip.horizontal;
+					this.appliedImageTransforms.flip.horizontal = !this.appliedImageTransforms.flip.horizontal;
 				}
 				if (vertical) {
-					this.customImageTransforms.flip.vertical = !this.customImageTransforms.flip.vertical;
+					this.appliedImageTransforms.flip.vertical = !this.appliedImageTransforms.flip.vertical;
 				}
 
 				this.visibleArea = visibleArea;
@@ -1283,7 +1281,7 @@ export default {
 				}
 				const previousImageSize = { ...this.imageSize };
 
-				this.customImageTransforms.rotate += angle;
+				this.appliedImageTransforms.rotate += angle;
 				let { visibleArea, coordinates } = algorithms.rotateImage({
 					visibleArea: this.visibleArea,
 					coordinates: this.coordinates,

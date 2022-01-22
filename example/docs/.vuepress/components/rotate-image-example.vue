@@ -13,8 +13,7 @@ export default {
 	},
 	data() {
 		return {
-			image:
-				'https://images.unsplash.com/photo-1600353068867-5b4de71e3afb?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80',
+			image: 'https://images.unsplash.com/photo-1600353068867-5b4de71e3afb?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80',
 			size: {
 				width: null,
 				height: null,
@@ -23,7 +22,7 @@ export default {
 	},
 	methods: {
 		flip(x, y) {
-			if (this.$refs.cropper.customImageTransforms.rotate % 180 !== 0) {
+			if (this.$refs.cropper.imageTransforms.rotate % 180 !== 0) {
 				this.$refs.cropper.flip(!x, !y);
 			} else {
 				this.$refs.cropper.flip(x, y);

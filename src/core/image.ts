@@ -69,14 +69,21 @@ function objectURLToBlob(url, callback) {
 	http.send();
 }
 
-export function getImageTransforms(orientation: number) {
-	const result: ImageTransforms = {
+export function fillImageTransforms(transforms: {
+	rotate?: number;
+	flip?: Partial<ImageTransforms['flip']>;
+}): ImageTransforms {
+	return {
+		rotate: transforms.rotate || 0,
 		flip: {
-			horizontal: false,
-			vertical: false,
+			horizontal: transforms?.flip?.horizontal || false,
+			vertical: transforms?.flip?.vertical || false,
 		},
-		rotate: 0,
 	};
+}
+
+export function getImageTransforms(orientation: number) {
+	const result: ImageTransforms = fillImageTransforms({});
 	if (orientation) {
 		switch (orientation) {
 			case 2:
