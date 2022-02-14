@@ -1048,8 +1048,8 @@ export default {
 				URL.revokeObjectURL(this.imageAttributes.src);
 			}
 			this.imageAttributes.revoke = false;
-			if (arrayBuffer && orientation && orientation > 1 && isLocal(source)) {
-				if (isBlob(source)) {
+			if (arrayBuffer && orientation && orientation > 1) {
+				if (isBlob(source) || !isLocal(source)) {
 					this.imageAttributes.src = URL.createObjectURL(new Blob([arrayBuffer]));
 					this.imageAttributes.revoke = true;
 				} else {
