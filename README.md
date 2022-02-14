@@ -5,18 +5,12 @@
   <a href="https://www.npmjs.com/package/vue-advanced-cropper"><img src="https://img.shields.io/npm/v/vue-advanced-cropper.svg" alt="Version"></a>
   <a href="https://www.npmjs.com/package/vue-advanced-cropper">
   <br>
-  <a href="https://norserium.github.io/vue-advanced-cropper/">Documentation</a target="_blank" rel="noopener noreferrer"> /  
+  <a href="https://norserium.github.io/vue-advanced-cropper/">Documentation</a target="_blank" rel="noopener noreferrer"> /
   <a href="https://norserium.github.io/vue-advanced-cropper/guides/recipes.html">Examples</a target="_blank" rel="noopener noreferrer"> /
   <a href="https://codesandbox.io/s/vue-avanced-cropper-basic-jfy5w">Sandbox</a target="_blank" rel="noopener noreferrer">
 </p>
 
 <h2 align="center"> </h2>
-
----
-
-**WARNING!** If you still use the beta version (< 1.0.0) read [the migration guide](https://norserium.github.io/vue-advanced-cropper/introduction/migration.html). 
-
----
 
 ---
 
@@ -112,13 +106,13 @@ new Vue({
 | backgroundClass           | `String`             | The optional class for the background under the image           			      |
 | autoZoom                  | `Boolean`            | Enable / disable transitions                                     		          | `false`
 | transitions               | `Boolean`            | Enable / disable auto zoom                                     			      | `true`
-| stencilSize               | `Object `            | The size of the stencil in pixels                                                | 
+| stencilSize               | `Object `            | The size of the stencil in pixels                                                |
 | debounce                  | `String`, `Number`   | The time before change event will be emitted after changes (ms) 			      | `500`
 | canvas                    | `Boolean`            | The flag that indicates if canvas should be used                			      | `true`
-| minWidth                  | `String`, `Number`   | The minimum width of the stencil (percents)                     			      | 
-| minHeight                 | `String`, `Number`   | The minimum height of the stencil (percents)                    			      | 
-| maxWidth                  | `String`, `Number`   | The maximum width of the stencil (percents)                     			      | 
-| maxHeight                 | `String`, `Number`   | The maximum height of the stencil (percents)                    			      | 
+| minWidth                  | `String`, `Number`   | The minimum width of the stencil (percents)                     			      |
+| minHeight                 | `String`, `Number`   | The minimum height of the stencil (percents)                    			      |
+| maxWidth                  | `String`, `Number`   | The maximum width of the stencil (percents)                     			      |
+| maxHeight                 | `String`, `Number`   | The maximum height of the stencil (percents)                    			      |
 | checkOrientation          | `Boolean`            | Check if EXIF orientation should be checked                     			      | `true`
 | resizeImage               | `Boolean`, `Object`  | The options for the image resizing ([details](https://norserium.github.io/vue-advanced-cropper/components/cropper.html#resizeimage)) | `true`
 | moveImage                 | `Boolean`, `Object`  | The options for the image moving ([details](https://norserium.github.io/vue-advanced-cropper/components/cropper.html#moveimage)) | `true`
@@ -126,18 +120,18 @@ new Vue({
 | defaultSize               | `Object`, `Function` | The function that returns the default size of the stencil or object              | `core.defaultSize`
 | defaultPosition           | `Object`, `Function` | The function that returns the default position of the stencil or object          | `core.defaultPosition`
 | defaultBoundaries         | `String`, `Function` | The function that determines the boundaries size or string (`'fill'`, `'fit'`)   | `'fill'`
-| sizeRestrictionsAlgorithm | `Function`           | The function that returns the restrictions object                 		          | 
+| sizeRestrictionsAlgorithm | `Function`           | The function that returns the restrictions object                 		          |
 
- 
+
 | Event                     | Description
 | ------------------------  | --------------------------------------------------------------
 | change                    | Invoked on changing of a stencil position / size, after mounting the component and on an image changing
 | ready                     | Invoked on success of an image loading
 | error                     | Invoked on error of an image loading
- 
- 
+
+
 ## RectangleStencil
- 
+
 | Prop                      | Type                | Description                                                    | Default
 | ------------------------  | ------------------- | -------------------------------------------------------------- | ---------------
 | aspectRatio               | `Number`            | The aspect ratio                                               |
