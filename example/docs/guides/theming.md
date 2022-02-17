@@ -44,7 +44,7 @@ If you loaded styles as written earlier it will be enabled by default. This them
 The compact theme inspired by some of Android croppers. It's well suited
 for mobile devices.
 ```js
-import 'vue-advanced-cropper/dist/themes/theme.compact.css';
+import 'vue-advanced-cropper/dist/theme.compact.css';
 ```
 <theme-example theme="compact"/>
 
@@ -68,7 +68,7 @@ import 'vue-advanced-cropper/dist/themes/theme.compact.css';
 
 It's the default theme with batteries included.
 ```js
-import 'vue-advanced-cropper/dist/themes/theme.classic.css';
+import 'vue-advanced-cropper/dist/theme.classic.css';
 ```
 <theme-example theme="classic"/>
 
@@ -88,7 +88,7 @@ import 'vue-advanced-cropper/dist/themes/theme.classic.css';
 
 The bright and light theme. 
 ```js
-import 'vue-advanced-cropper/dist/themes/theme.bubble.css';
+import 'vue-advanced-cropper/dist/theme.bubble.css';
 ```
 <theme-example theme="bubble"/>
 
