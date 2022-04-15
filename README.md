@@ -3,11 +3,11 @@
 <p align="center">
   <a href="https://npmcharts.com/compare/vue-advanced-cropper?minimal=true"><img src="https://img.shields.io/npm/dm/vue-advanced-cropper.svg?sanitize=true" alt="Downloads"></a>
   <a href="https://www.npmjs.com/package/vue-advanced-cropper"><img src="https://img.shields.io/npm/v/vue-advanced-cropper/next.svg?sanitize=true" alt="Version"></a>
-  <a href="https://www.npmjs.com/package/vue-advanced-cropper">
+  <a href="https://www.npmjs.com/package/vue-advanced-cropper"></a>
   <br>
-  <a href="https://norserium.github.io/vue-advanced-cropper/">Documentation</a target="_blank" rel="noopener noreferrer"> /
-  <a href="https://norserium.github.io/vue-advanced-cropper/guides/recipes.html">Examples</a target="_blank" rel="noopener noreferrer"> /
-  <a href="https://codesandbox.io/s/vue-advanced-cropper-vue-3-yrxou?file=/src/App.vue">Sandbox</a target="_blank" rel="noopener noreferrer">
+ 	<a href="https://norserium.github.io/vue-advanced-cropper/" target="_blank" rel="noopener noreferrer">Documentation</a> /
+  	<a href="https://norserium.github.io/vue-advanced-cropper/guides/recipes.html" target="_blank" rel="noopener noreferrer">Examples</a> /
+    <a href="https://codesandbox.io/s/vue-advanced-cropper-vue-3-yrxou?file=/src/App.vue" target="_blank" rel="noopener noreferrer">Sandbox</a> / <a href="https://codesandbox.io/s/vue-advanced-cropper-composition-api-5z0ww0?file=/src/App.vue" target="_blank" rel="noopener noreferrer">Sandbox + Composition API</a>
 </p>
 
 <h2 align="center"> </h2>
