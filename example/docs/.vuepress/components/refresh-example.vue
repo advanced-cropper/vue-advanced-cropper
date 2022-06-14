@@ -13,7 +13,7 @@ export default {
 	data() {
 		return {
 			img:
-				'https://images.unsplash.com/photo-1553301208-a3718cc0150e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1024&q=80',
+				require('../assets/pictures/photo-1553301208-a3718cc0150e.jpg'),
 			width: 0,
 			height: 0,
 			left: 0,

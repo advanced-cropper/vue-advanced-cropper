@@ -10,7 +10,7 @@ export default {
 	data() {
 		return {
 			img:
-				'https://images.unsplash.com/photo-1602718571797-49d5e9d54563?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjcyNTgzfQ&auto=format&fit=crop&w=1024&q=80',
+				require('../assets/pictures/photo-1602718571797-49d5e9d54563.jpg'),
 		};
 	},
 	methods: {

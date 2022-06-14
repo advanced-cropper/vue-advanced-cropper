@@ -6,12 +6,6 @@ export default {
 	components: {
 		BoundingBox,
 	},
-	data() {
-		return {
-			img:
-				'https://images.pexels.com/photos/1254140/pexels-photo-1254140.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-		};
-	},
 };
 </script>
 

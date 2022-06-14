@@ -10,7 +10,7 @@ export default {
 	},
 	data() {
 		return {
-			image: 'https://images.pexels.com/photos/5006465/pexels-photo-5006465.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260',
+			image: require('../assets/pictures/pexels-photo-5006465.jpeg'),
 			transform: 'horizontal-flip',
 		};
 	},

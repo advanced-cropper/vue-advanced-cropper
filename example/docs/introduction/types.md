@@ -7,22 +7,22 @@ title: Cropper Types
 # Cropper Types
 
 The croppers are different. The mission of this library is give the developer possibility to create
-not only croppers with different appearance, but also with different behavior. 
+not only croppers with different appearance, but also with different behavior.
 
 Despite the variety of different croppers they can be classified on the three groups:
  - [Classic](/introduction/types.html#classic-cropper)
  - [Static](/introduction/types.html#static-cropper)
  - [Hybrid](/introduction/types.html#hybrid-cropper)
- 
+
 If you able to create all of them, you will able to create almost any of existing and even possible croppers.
 
- 
+
 ## Classic Cropper
 
 The classic cropper is the cropper, where the major way to choice an area is the resizing and moving the stencil. Depending on specific cropper
-use may or may not resize and move image, but it's always the minor way. 
+use may or may not resize and move image, but it's always the minor way.
 
-<types-classic-cropper img="https://images.pexels.com/photos/3761018/pexels-photo-3761018.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260"></types-classic-cropper>
+<types-classic-cropper :img="require('../.vuepress/assets/pictures/pexels-photo-3761018.jpeg')"></types-classic-cropper>
 
 
 Examples: [Yandex](https://www.yandex.com).
@@ -53,7 +53,7 @@ To implement the static cropper above you should:
 - set the aspect ratio, because you can't change aspect ratio in the static cropper and you shouldn't rely on a random one
 
 ```html
-<cropper 
+<cropper
 	:src="img"
 	:stencil-props="{
 		handlers: {},
@@ -73,23 +73,23 @@ To implement the static cropper above you should:
 
 #### The fixed stencil size
 
-<types-static-cropper 
-	:small-height="true" 
-	img="https://images.unsplash.com/photo-1583172332547-c768b4e2f5ff?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=900&q=80"
+<types-static-cropper
+	:small-height="true"
+	:img="require('../.vuepress/assets/pictures/photo-1583172332547-c768b4e2f5ff.jpg')"
 ></types-static-cropper>
 
 The stencil size in the cropper above is pretty unpredictable. For the used image above it's already too small.
-You can imagine what the stencil size you would get for a narrower image. So the fixed croppers have fixed stencil size alike. 
+You can imagine what the stencil size you would get for a narrower image. So the fixed croppers have fixed stencil size alike.
 
 The most simpler way to set fixed stencil size is using [`stencil-size`](http://localhost:8080/vue-advanced-cropper/components/cropper.html#stencilsize) prop.
 
 Notice, that in the following example:
- - `aspectRatio` is not set explicitly because it's calculated from `stencil-size`, 
+ - `aspectRatio` is not set explicitly because it's calculated from `stencil-size`,
  - `adjustStencil` option is absented too because it's always disabled if you use `stencil-size` prop.
 
 
 ```html
-<cropper 
+<cropper
 	:src="img"
 	:stencil-props="{
 		handlers: {},
@@ -105,11 +105,10 @@ Notice, that in the following example:
 ```
 
 
-<types-static-cropper 
+<types-static-cropper
 	:stencil-size="{ width: 250, height: 250}"
-	:small-height="true" 
-	
-	img="https://images.unsplash.com/photo-1583172332547-c768b4e2f5ff?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=900&q=80"
+	:small-height="true"
+	:img="require('../.vuepress/assets/pictures/photo-1583172332547-c768b4e2f5ff.jpg')"
 ></types-static-cropper>
 
 
@@ -118,7 +117,7 @@ Notice, that in the following example:
 
 Thus, taking into account the written above the recommended implementation of **fixed cropper** type is following:
 ```html
-<cropper 
+<cropper
 	:src="img"
 	:stencil-props="{
 		handlers: {},
@@ -152,14 +151,14 @@ prop to them.
 The **classic hybrid** is the cropper type, that is very similar to the **classic cropper**, but its stencil is
 automatically resized and moved. It makes it more closer to static cropper, because its stencil tries to be static.
 ```html
-<cropper 
+<cropper
 	:src="img"
 	:auto-zoom="true"
  />
 ```
 
-<types-hybrid-cropper 
-	src="https://images.unsplash.com/photo-1586598901893-8ac605430b78?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80"
+<types-hybrid-cropper
+	:src="require('../.vuepress/assets/pictures/photo-1586598901893-8ac605430b78.jpg')"
 	:auto-zoom="true"
 ></types-hybrid-cropper>
 
@@ -168,7 +167,7 @@ automatically resized and moved. It makes it more closer to static cropper, beca
 The **fixed hybrid** is the cropper type, that is very similar to the **fixed cropper**, but user is able to change
 the size and position of cropper.
 ```html
-<cropper 
+<cropper
 	:src="img"
 	:auto-zoom="true"
 	:stencil-size="{
@@ -179,8 +178,8 @@ the size and position of cropper.
  />
 ```
 
-<types-hybrid-cropper 
-	src="https://images.unsplash.com/photo-1583853287541-6e82b3d5ea12?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=2048&q=80"
+<types-hybrid-cropper
+	:src="require('../.vuepress/assets/pictures/photo-1583853287541-6e82b3d5ea12.jpg')"
 	:auto-zoom="true"
 	:stencil-size="{
 		width: 280,

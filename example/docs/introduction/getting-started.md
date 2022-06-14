@@ -67,7 +67,7 @@ export default {
 }
 ```
 
-<getting-started-example/>
+<getting-started-example></getting-started-example>
 
 If you need to change the behavior of the cropper (for example, you want to create a fixed one for mobile devices),
 please read [this detailed article](/introduction/types.html) about the different variants of croppers.
@@ -76,7 +76,7 @@ please read [this detailed article](/introduction/types.html) about the differen
 
 ### Vue 2
 
-If you want to use the cropper without using, (for example, different build systems), you should add the code below to your page. 
+If you want to use the cropper without using, (for example, different build systems), you should add the code below to your page.
 
 ::: Tip Notice!
 Currently support for this method is limited.
@@ -98,6 +98,6 @@ The links for the next Vue version is slightly different:
 <link rel="stylesheet" href="https://unpkg.com/vue-advanced-cropper@^2.0.0/dist/style.css" />
 ```
 
-To get access to components you should use the global object `VueAdvancedCropper`. 
+To get access to components you should use the global object `VueAdvancedCropper`.
 
 <iframe width="100%" height="500" src="//jsfiddle.net/norserium/pmw8aod5/embedded/" allowfullscreen="allowfullscreen" allowpaymentrequest frameborder="0"></iframe>

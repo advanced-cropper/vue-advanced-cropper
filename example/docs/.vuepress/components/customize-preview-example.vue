@@ -9,7 +9,7 @@ export default {
 	},
 	data() {
 		return {
-			img: 'https://images.pexels.com/photos/1642574/pexels-photo-1642574.jpeg?h=1500&w=2520',
+			img: require('../assets/pictures/pexels-photo-1642574.jpeg'),
 		};
 	},
 };

@@ -10,7 +10,7 @@ export default {
 	data() {
 		return {
 			image:
-				'https://images.pexels.com/photos/1988684/pexels-photo-1988684.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+				require('../assets/pictures/pexels-photo-1988684.jpeg'),
 			limitations: {
 				maxWidth: 256,
 			},

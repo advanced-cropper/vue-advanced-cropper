@@ -11,7 +11,7 @@
 			return {
 				adjustStencil: true,
 				img:
-					'https://images.unsplash.com/photo-1583853287541-6e82b3d5ea12?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1400&q=80',
+					require('../assets/pictures/photo-1583853287541-6e82b3d5ea12.jpg'),
 			};
 		},
 		methods: {

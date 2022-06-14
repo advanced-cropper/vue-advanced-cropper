@@ -14,7 +14,7 @@ export default {
 	data() {
 		return {
 			image:
-				'https://images.unsplash.com/photo-1538888649860-8fb12eb67541?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1011&q=80',
+				require('../assets/pictures/photo-1538888649860-8fb12eb67541.jpg'),
 			size: {
 				width: null,
 				height: null,

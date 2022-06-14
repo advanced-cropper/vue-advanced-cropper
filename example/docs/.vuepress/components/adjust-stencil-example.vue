@@ -14,7 +14,7 @@ export default {
 	data() {
 		return {
 			image:
-				'https://images.unsplash.com/photo-1596473322597-91d5b6938b8a?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80',
+				require('../assets/pictures/photo-1596473322597-91d5b6938b8a.jpg'),
 			adjustStencil: false,
 		};
 	},
@@ -35,18 +35,18 @@ export default {
 			default-boundaries="fill"
 			image-restriction="fit-area"
 			:default-size="{
-				width: 594,
-				height: 400,
+				width: 1024,
+				height: 689,
 			}"
 			:default-position="{
 				left: 19,
-				top: 209,
+				top: 360,
 			}"
 			:default-visible-area="{
-				width: 594,
-				height: 450,
+				width: 1024,
+				height: 689,
 				left: 19,
-				top: 183,
+				top: 285,
 			}"
 		/>
 		<label class="adjust-stencil-example__adjust">

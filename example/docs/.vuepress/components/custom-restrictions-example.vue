@@ -10,7 +10,7 @@ export default {
 	data() {
 		return {
 			image:
-				'https://images.unsplash.com/photo-1494205577727-d32e58564756?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80',
+				require('../assets/pictures/photo-1494205577727-d32e58564756.jpg'),
 			limitations: {
 				minWidth: 50,
 				minHeight: 50,

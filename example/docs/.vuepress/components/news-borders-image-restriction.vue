@@ -14,7 +14,7 @@
 				imageRestriction: 'borders',
 				defaultBoundaries: 'fill',
 				img:
-					'https://images.unsplash.com/photo-1583172332547-c768b4e2f5ff?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=1024&q=80',
+					require('../assets/pictures/photo-1583172332547-c768b4e2f5ff.jpg'),
 			};
 		},
 		methods: {
