@@ -184,6 +184,8 @@ export declare const SimpleHandler: DefineComponent<any>;
 
 export declare const SimpleLine: DefineComponent<any>;
 
+export declare const TransformableImage: DefineComponent<any>;
+
 export declare const Preview: DefineComponent<
 	any,
 	{
