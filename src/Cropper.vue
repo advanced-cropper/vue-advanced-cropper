@@ -215,6 +215,13 @@ export default {
 				crossOrigin: false,
 				src: null,
 			},
+			defaultImageTransforms: {
+				rotate: 0,
+				flip: {
+					horizontal: false,
+					vertical: false,
+				},
+			},
 			appliedImageTransforms: {
 				rotate: 0,
 				flip: {
@@ -927,6 +934,13 @@ export default {
 		resetVisibleArea() {
 			return this.updateBoundaries()
 				.then(() => {
+					this.appliedImageTransforms = {
+						...this.defaultImageTransforms,
+						flip: {
+							...this.defaultImageTransforms.flip,
+						},
+					};
+
 					if (this.priority !== 'visible-area') {
 						this.visibleArea = null;
 						this.resetCoordinates();
@@ -1066,6 +1080,13 @@ export default {
 			} else {
 				this.appliedImageTransforms = getImageTransforms(orientation);
 			}
+
+			this.defaultImageTransforms = {
+				...this.appliedImageTransforms,
+				flip: {
+					...this.appliedImageTransforms.flip,
+				},
+			};
 
 			this.$nextTick(() => {
 				const image = this.$refs.image;
