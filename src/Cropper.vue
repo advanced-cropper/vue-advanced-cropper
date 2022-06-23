@@ -932,15 +932,15 @@ export default {
 			});
 		},
 		resetVisibleArea() {
+			// Reset the applied image transforms first to recalculate the image size correctly
+			this.appliedImageTransforms = {
+				...this.defaultImageTransforms,
+				flip: {
+					...this.defaultImageTransforms.flip,
+				},
+			};
 			return this.updateBoundaries()
 				.then(() => {
-					this.appliedImageTransforms = {
-						...this.defaultImageTransforms,
-						flip: {
-							...this.defaultImageTransforms.flip,
-						},
-					};
-
 					if (this.priority !== 'visible-area') {
 						this.visibleArea = null;
 						this.resetCoordinates();
