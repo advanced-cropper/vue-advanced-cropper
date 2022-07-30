@@ -53,7 +53,7 @@ export default {
 <template>
 	<example-wrapper
 		class="manipulate-image-example"
-		href="https://github.com/Norserium/vue-advanced-cropper/blob/master/example/docs/.vuepress/components/manipulate-image-example.vue"
+		href="https://github.com/advanced-cropper/vue-advanced-cropper/blob/master/example/docs/.vuepress/components/manipulate-image-example.vue"
 	>
 		<cropper
 			ref="cropper"

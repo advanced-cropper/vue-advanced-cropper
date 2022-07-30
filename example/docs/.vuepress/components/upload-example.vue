@@ -103,7 +103,7 @@ export default {
 	<example-wrapper
 		:no-border="true"
 		class="upload-example"
-		href="https://github.com/Norserium/vue-advanced-cropper/blob/master/example/docs/.vuepress/components/upload-example.vue"
+		href="https://github.com/advanced-cropper/vue-advanced-cropper/blob/master/example/docs/.vuepress/components/upload-example.vue"
 	>
 		<div class="upload-example__cropper-wrapper">
 			<cropper ref="cropper" class="upload-example__cropper" check-orientation :src="image.src" />

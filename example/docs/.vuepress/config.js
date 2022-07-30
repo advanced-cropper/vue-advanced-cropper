@@ -5,14 +5,14 @@ module.exports = {
 	base: '/vue-advanced-cropper/',
 	head: [['link', { rel: 'icon', href: '/favicon.png' }]],
 	themeConfig: {
-		repo: 'Norserium/vue-advanced-cropper',
+		repo: 'advanced-cropper/vue-advanced-cropper',
 		docsDir: 'example/docs',
 		editLinks: true,
 		search: true,
 		nav: [
 			{ text: 'Home', link: '/' },
 			{ text: 'Docs', link: '/introduction/getting-started.html' },
-			{ text: 'Github', link: 'http://github.com/Norserium/vue-advanced-cropper/' },
+			{ text: 'Github', link: 'http://github.com/advanced-cropper/vue-advanced-cropper/' },
 		],
 		sidebar: [
 			{

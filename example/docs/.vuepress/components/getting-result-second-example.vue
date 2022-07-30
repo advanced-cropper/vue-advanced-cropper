@@ -37,7 +37,7 @@ export default {
 <template>
 	<example-wrapper
 		class="getting-result-second-example"
-		href="https://github.com/Norserium/vue-advanced-cropper/blob/master/example/docs/.vuepress/components/getting-result-second-example.vue"
+		href="https://github.com/advanced-cropper/vue-advanced-cropper/blob/master/example/docs/.vuepress/components/getting-result-second-example.vue"
 	>
 		<cropper
 			ref="cropper"

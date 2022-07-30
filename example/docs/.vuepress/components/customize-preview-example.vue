@@ -18,7 +18,7 @@ export default {
 <template>
 	<example-wrapper
 		class="customize-preview-example"
-		href="https://github.com/Norserium/vue-advanced-cropper/blob/master/example/docs/.vuepress/components/customize-preview-example.vue"
+		href="https://github.com/advanced-cropper/vue-advanced-cropper/blob/master/example/docs/.vuepress/components/customize-preview-example.vue"
 	>
 		<cropper
 			:src="img"

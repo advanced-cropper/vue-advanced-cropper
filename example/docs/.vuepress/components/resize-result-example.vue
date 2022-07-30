@@ -29,7 +29,7 @@ export default {
 <template>
 	<example-wrapper
 		class="resize-result-example"
-		href="https://github.com/Norserium/vue-advanced-cropper/blob/master/example/docs/.vuepress/components/resize-result-example.vue"
+		href="https://github.com/advanced-cropper/vue-advanced-cropper/blob/master/example/docs/.vuepress/components/resize-result-example.vue"
 	>
 		<cropper
 			ref="cropper"

@@ -42,7 +42,7 @@ export default {
 <template>
 	<example-wrapper
 		class="events-example"
-		href="https://github.com/Norserium/vue-advanced-cropper/blob/master/example/docs/.vuepress/components/events-example.vue"
+		href="https://github.com/advanced-cropper/vue-advanced-cropper/blob/master/example/docs/.vuepress/components/events-example.vue"
 	>
 		<div class="events-example__input-wrapper">
 			<input v-model="img.src" />

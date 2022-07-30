@@ -30,7 +30,7 @@ export default {
 <template>
 	<example-wrapper
 		class="image-restriction-example"
-		href="https://github.com/Norserium/vue-advanced-cropper/blob/master/example/docs/.vuepress/components/image-restrictions-example.vue"
+		href="https://github.com/advanced-cropper/vue-advanced-cropper/blob/master/example/docs/.vuepress/components/image-restrictions-example.vue"
 	>
 		<cropper
 			class="cropper"

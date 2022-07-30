@@ -25,7 +25,7 @@ export default {
 </script>
 <template>
 	<example-wrapper
-		href="https://github.com/Norserium/vue-advanced-cropper/blob/master/example/docs/.vuepress/components/default-filling-example.vue"
+		href="https://github.com/advanced-cropper/vue-advanced-cropper/blob/master/example/docs/.vuepress/components/default-filling-example.vue"
 	>
 		<cropper :src="img" :default-size="defaultSize" />
 	</example-wrapper>

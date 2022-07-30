@@ -58,7 +58,7 @@ export default {
 <template>
 	<example-wrapper
 		class="custom-restrictions-example"
-		href="https://github.com/Norserium/vue-advanced-cropper/blob/master/example/docs/.vuepress/components/custom-restrictions-example.vue"
+		href="https://github.com/advanced-cropper/vue-advanced-cropper/blob/master/example/docs/.vuepress/components/custom-restrictions-example.vue"
 	>
 		<cropper
 			class="custom-restrictions-cropper"

@@ -5,7 +5,7 @@
 				<a class="navigation__link navigation__link--active" href="/"> Vue </a>
 				<a
 					class="navigation__link"
-					href="https://norserium.github.io/react-advanced-cropper/"
+					href="https://advanced-cropper.github.io/react-advanced-cropper/"
 					target="_blank"
 					rel="noreferrer norel"
 				>
@@ -15,7 +15,7 @@
 			<div class="navigation__sections">
 				<a class="navigation__link navigation__link--active" href="/#"> Home </a>
 				<a class="navigation__link" href="/vue-advanced-cropper/introduction/getting-started.html"> Docs </a>
-				<a class="navigation__link" href="http://github.com/Norserium/vue-advanced-cropper/" target="_blank">
+				<a class="navigation__link" href="http://github.com/advanced-cropper/vue-advanced-cropper/" target="_blank">
 					Github
 				</a>
 			</div>
