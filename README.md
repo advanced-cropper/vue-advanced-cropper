@@ -1,12 +1,12 @@
-<p align="center"><a href="https://norserium.github.io/vue-advanced-cropper/" target="_blank" rel="noopener noreferrer"><img width="133" src="https://github.com/norserium/vue-advanced-cropper/blob/master/example/readme/logo.svg?raw=true&timestamp=1608385818575" alt="Vue Advanced Cropper logo"></a></p>
+<p align="center"><a href="https://advanced-cropper.github.io/vue-advanced-cropper/" target="_blank" rel="noopener noreferrer"><img width="133" src="https://github.com/norserium/vue-advanced-cropper/blob/master/example/readme/logo.svg?raw=true&timestamp=1608385818575" alt="Vue Advanced Cropper logo"></a></p>
 <br/>
 <p align="center">
   <a href="https://npmcharts.com/compare/vue-advanced-cropper?minimal=true"><img src="https://img.shields.io/npm/dm/vue-advanced-cropper.svg?sanitize=true" alt="Downloads"></a>
   <a href="https://www.npmjs.com/package/vue-advanced-cropper"><img src="https://img.shields.io/npm/v/vue-advanced-cropper/next.svg?sanitize=true" alt="Version"></a>
   <a href="https://www.npmjs.com/package/vue-advanced-cropper"></a>
   <br>
- 	<a href="https://norserium.github.io/vue-advanced-cropper/" target="_blank" rel="noopener noreferrer">Documentation</a> /
-  	<a href="https://norserium.github.io/vue-advanced-cropper/guides/recipes.html" target="_blank" rel="noopener noreferrer">Examples</a> /
+ 	<a href="https://advanced-cropper.github.io/vue-advanced-cropper/" target="_blank" rel="noopener noreferrer">Documentation</a> /
+  	<a href="https://advanced-cropper.github.io/vue-advanced-cropper/guides/recipes.html" target="_blank" rel="noopener noreferrer">Examples</a> /
     <a href="https://codesandbox.io/s/vue-advanced-cropper-vue-3-yrxou?file=/src/App.vue" target="_blank" rel="noopener noreferrer">Sandbox</a> / <a href="https://codesandbox.io/s/vue-advanced-cropper-composition-api-5z0ww0?file=/src/App.vue" target="_blank" rel="noopener noreferrer">Sandbox + Composition API</a>
 </p>
 
@@ -14,7 +14,7 @@
 
 ---
 
-**WARNING!** If you still use the beta version (< 1.0.0) read [the migration guide](https://norserium.github.io/vue-advanced-cropper/introduction/migration.html).
+**WARNING!** If you still use the beta version (< 1.0.0) read [the migration guide](https://advanced-cropper.github.io/vue-advanced-cropper/introduction/migration.html).
 
 ---
 
@@ -30,7 +30,7 @@ It means that you are able to change not only the cropper appearance, you area a
 Features:
 
 - full mobile / desktop support
-- support [all three main types of croppers](https://norserium.github.io/vue-advanced-cropper/introduction/types.html) right out of the box
+- support [all three main types of croppers](https://advanced-cropper.github.io/vue-advanced-cropper/introduction/types.html) right out of the box
 - support both canvas and coordinates modes, minimum and maximum aspect ratios, custom size restrictions
 - zoom, rotate, resize image
 - auto-zoom, transitions
@@ -49,7 +49,7 @@ npm install --save vue-advanced-cropper@next
 yarn add vue-advanced-cropper@next
 ```
 
-If you would to use CDN read the corresponding [documentation section](https://norserium.github.io/vue-advanced-cropper/introduction/getting-started.html#using-cdn)
+If you would to use CDN read the corresponding [documentation section](https://advanced-cropper.github.io/vue-advanced-cropper/introduction/getting-started.html#using-cdn)
 
 ## Usage
 
@@ -120,8 +120,8 @@ new Vue({
 | maxWidth                  | `String`, `Number`   | The maximum width of the stencil (percents)                     			      |
 | maxHeight                 | `String`, `Number`   | The maximum height of the stencil (percents)                    			      |
 | checkOrientation          | `Boolean`            | Check if EXIF orientation should be checked                     			      | `true`
-| resizeImage               | `Boolean`, `Object`  | The options for the image resizing ([details](https://norserium.github.io/vue-advanced-cropper/components/cropper.html#resizeimage)) | `true`
-| moveImage                 | `Boolean`, `Object`  | The options for the image moving ([details](https://norserium.github.io/vue-advanced-cropper/components/cropper.html#moveimage)) | `true`
+| resizeImage               | `Boolean`, `Object`  | The options for the image resizing ([details](https://advanced-cropper.github.io/vue-advanced-cropper/components/cropper.html#resizeimage)) | `true`
+| moveImage                 | `Boolean`, `Object`  | The options for the image moving ([details](https://advanced-cropper.github.io/vue-advanced-cropper/components/cropper.html#moveimage)) | `true`
 | imageRestriction          | `String`             | Set restrictions for image position ('fill-area' 'fit-area', 'stencil', 'none')  | `'fill-area'`
 | defaultSize               | `Object`, `Function` | The function that returns the default size of the stencil or object              | `core.defaultSize`
 | defaultPosition           | `Object`, `Function` | The function that returns the default position of the stencil or object          | `core.defaultPosition`
