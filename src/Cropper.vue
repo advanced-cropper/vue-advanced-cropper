@@ -541,6 +541,8 @@ export default {
 		if (this.imageAttributes.revoke && this.imageAttributes.src) {
 			URL.revokeObjectURL(this.imageAttributes.src);
 		}
+		this.debouncedUpdate.clear();
+		this.debouncedDisableTransitions.clear();
 	},
 	methods: {
 		// External methods
@@ -649,7 +651,7 @@ export default {
 		},
 		reset() {
 			return this.resetVisibleArea().then(() => {
-				this.onChange();
+				this.onChange(false);
 			});
 		},
 		// Internal methods
@@ -1051,7 +1053,7 @@ export default {
 				this.imageAttributes.height = image.naturalHeight;
 				this.imageAttributes.width = image.naturalWidth;
 				this.imageLoaded = true;
-				this.reset().then(() => {
+				this.resetVisibleArea().then(() => {
 					this.$emit('ready');
 					this.onChange(false);
 				});
