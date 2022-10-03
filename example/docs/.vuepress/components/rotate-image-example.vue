@@ -13,8 +13,7 @@ export default {
 	},
 	data() {
 		return {
-			image:
-				require('../assets/pictures/photo-1600353068867-5b4de71e3afb.jpg'),
+			image: require('../assets/pictures/photo-1600353068867-5b4de71e3afb.jpg'),
 			size: {
 				width: null,
 				height: null,
@@ -23,7 +22,8 @@ export default {
 	},
 	methods: {
 		flip(x, y) {
-			if (this.$refs.cropper.imageTransforms.rotate % 180 !== 0) {
+			const { image } = this.$refs.cropper.getResult();
+			if (image.transforms.rotate % 180 !== 0) {
 				this.$refs.cropper.flip(!x, !y);
 			} else {
 				this.$refs.cropper.flip(x, y);
