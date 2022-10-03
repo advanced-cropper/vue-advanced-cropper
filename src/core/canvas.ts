@@ -34,14 +34,17 @@ export function updateCanvas(
 		}
 	}
 
+	const offsetX = coordinates.left < 0 ? -coordinates.left : 0;
+	const offsetY = coordinates.top < 0 ? -coordinates.top : 0;
+
 	ctx.drawImage(
 		source,
-		coordinates.left,
-		coordinates.top,
+		coordinates.left + offsetX,
+		coordinates.top + offsetY,
 		coordinates.width,
 		coordinates.height,
-		0,
-		0,
+		offsetX,
+		offsetY,
 		canvas.width,
 		canvas.height,
 	);
