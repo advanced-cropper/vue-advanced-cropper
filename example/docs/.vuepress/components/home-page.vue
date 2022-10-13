@@ -116,7 +116,7 @@
 					<div class="feature">
 						<div class="feature__title">Advanced Features</div>
 						<div class="feature__text">
-							Set minimum and maximum aspect ratios, customizie minimum and maximum height and width, etc.
+							Set minimum and maximum aspect ratios, customize minimum and maximum height and width, etc.
 						</div>
 					</div>
 				</div>
