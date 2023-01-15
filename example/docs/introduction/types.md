@@ -58,7 +58,7 @@ To implement the static cropper above you should:
 	:stencil-props="{
 		handlers: {},
 		movable: false,
-		scalable: false,
+		resizable: false,
 		aspectRatio: 1,
 	}"
 	:resize-image="{
@@ -94,7 +94,7 @@ Notice, that in the following example:
 	:stencil-props="{
 		handlers: {},
 		movable: false,
-		scalable: false,
+		resizable: false,
 	}"
 	:stencil-size="{
 		width: 280,
@@ -122,7 +122,7 @@ Thus, taking into account the written above the recommended implementation of **
 	:stencil-props="{
 		handlers: {},
 		movable: false,
-		scalable: false,
+		resizable: false,
 	}"
 	:stencil-size="{
 		width: 280,
