@@ -35,12 +35,24 @@ The codesandbox for [mobile](https://codesandbox.io/s/vue-advanced-cropper-mobil
 
 ## Install
 
+### Vue 3.0
+
 ```bash
 npm install --save vue-advanced-cropper
 ```
 
 ```bash
 yarn add vue-advanced-cropper
+```
+
+### Vue 2.0
+
+```bash
+npm install --save vue-advanced-cropper@vue-2
+```
+
+```bash
+yarn add vue-advanced-cropper@vue-2
 ```
 
 If you would to use CDN read the corresponding [documentation section](https://advanced-cropper.github.io/vue-advanced-cropper/introduction/getting-started.html#using-cdn)
