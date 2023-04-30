@@ -35,8 +35,10 @@ export default {
 	components: {
 		Cropper,
 	},
-	data: {
-		img: 'https://images.unsplash.com/photo-1600984575359-310ae7b6bdf2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=700&q=80'
+	data() {
+	    return {
+	        img: 'https://images.unsplash.com/photo-1600984575359-310ae7b6bdf2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=700&q=80',
+	    }
 	},
 	methods: {
 		change({ coordinates, canvas }) {
