@@ -128,7 +128,7 @@ new Vue({
 | checkOrientation          | `Boolean`            | Check if EXIF orientation should be checked                     			      | `true`
 | resizeImage               | `Boolean`, `Object`  | The options for the image resizing ([details](https://advanced-cropper.github.io/vue-advanced-cropper/components/cropper.html#resizeimage)) | `true`
 | moveImage                 | `Boolean`, `Object`  | The options for the image moving ([details](https://advanced-cropper.github.io/vue-advanced-cropper/components/cropper.html#moveimage)) | `true`
-| imageRestriction          | `String`             | Set restrictions for image position ('efill-area' 'fit-area', 'stencil', 'none')  | `'fill-area'`
+| imageRestriction          | `String`             | Set restrictions for image position ('fill-area' 'fit-area', 'stencil', 'none')  | `'fill-area'`
 | defaultSize               | `Object`, `Function` | The function that returns the default size of the stencil or object              | `core.defaultSize`
 | defaultPosition           | `Object`, `Function` | The function that returns the default position of the stencil or object          | `core.defaultPosition`
 | defaultBoundaries         | `String`, `Function` | The function that determines the boundaries size or string (`'fill'`, `'fit'`)   | `'fill'`
