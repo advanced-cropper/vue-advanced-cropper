@@ -18,7 +18,7 @@
 
 ---
 
-**Vue Advanced Cropper** is the advanced library that allows you to create your custom croppers suited for any website design.
+**Vue Advanced Cropper** is the advanced library that allows you to create custom croppers suited for any website design.
 It means that you can change not only the cropper's appearance but also its behavior.
 
 Features:
