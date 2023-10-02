@@ -15,16 +15,16 @@
 
 ---
 
-:fire: **HEADS UP!** You're currently looking at the branch for Vue 2. If you're looking for the branch for Vue 3, [please check out `vue-next` branch](https://github.com/advanced-cropper/vue-advanced-cropper/tree/vue-next).
+:fire: **HEADS UP!** You're currently looking at the branch for Vue 2. For the Vue 3 branch, [please check out the `vue-next` branch](https://github.com/advanced-cropper/vue-advanced-cropper/tree/vue-next).
 
 ---
 
-**Vue Advanced Cropper** is the advanced library that gives you opportunity to create your own croppers suited for any website design.
-It means that you are able to change not only the cropper appearance, you area able to customize its behavior also.
+**Vue Advanced Cropper** is the advanced library that allows you to create custom croppers suited for any website design.
+It means that you can change not only the cropper's appearance but also its behavior.
 
 Features:
 
-- full mobile / desktop support
+- full mobile/desktop support
 - support [all three main types of croppers](https://advanced-cropper.github.io/vue-advanced-cropper/introduction/types.html) right out of the box
 - support both canvas and coordinates modes, minimum and maximum aspect ratios, custom size restrictions
 - zoom, rotate, resize image
@@ -56,7 +56,7 @@ npm install --save vue-advanced-cropper@vue-2
 yarn add vue-advanced-cropper@vue-2
 ```
 
-If you would to use CDN read the corresponding [documentation section](https://advanced-cropper.github.io/vue-advanced-cropper/introduction/getting-started.html#using-cdn)
+If you would like to use a CDN, please read the corresponding [documentation section](https://advanced-cropper.github.io/vue-advanced-cropper/introduction/getting-started.html#using-cdn)
 
 ## Usage
 
@@ -96,8 +96,8 @@ new Vue({
 
 ```
 /*
-  Maybe you need to set the limits for the cropper sizes or its container sizes
-  otherwise a cropping image will try to fill all available space
+  You may need to set the limits for the cropper sizes or container sizes,
+  otherwise, a cropping image will try to fill all available space
 */
 .cropper {
   height: 600px;
@@ -120,7 +120,7 @@ new Vue({
 | autoZoom                  | `Boolean`            | Enable / disable transitions                                     		          | `false`
 | transitions               | `Boolean`            | Enable / disable auto zoom                                     			      | `true`
 | stencilSize               | `Object `            | The size of the stencil in pixels                                                |
-| debounce                  | `String`, `Number`   | The time before change event will be emitted after changes (ms) 			      | `500`
+| debounce                  | `String`, `Number`   | The time before the `change` event will be emitted after changes (ms) 			      | `500`
 | canvas                    | `Boolean`            | The flag that indicates if canvas should be used                			      | `true`
 | minWidth                  | `String`, `Number`   | The minimum width of the stencil (percents)                     			      |
 | minHeight                 | `String`, `Number`   | The minimum height of the stencil (percents)                    			      |
@@ -138,9 +138,9 @@ new Vue({
 
 | Event                     | Description
 | ------------------------  | --------------------------------------------------------------
-| change                    | Invoked on changing of a stencil position / size, after mounting the component and on an image changing
-| ready                     | Invoked on success of an image loading
-| error                     | Invoked on error of an image loading
+| change                    | Invoked on the changing of a stencil's position/size after mounting the component and on an image change
+| ready                     | Invoked on the success of an image loading
+| error                     | Invoked on an error of an image loading
 
 
 ## RectangleStencil
@@ -150,20 +150,20 @@ new Vue({
 | aspectRatio               | `Number`            | The aspect ratio                                               |
 | minAspectRatio            | `Number`            | The minimum aspect ratio                                       |
 | maxAspectRatio            | `Number`            | The maximum aspect ratio                                       |
-| class                     | `String`            | The class for root block of the stencil component              |
+| class                     | `String`            | The class for the root block of the stencil component              |
 | previewClass              | `String`            | The class for the preview component                            |
-| movingClass               | `String`            | The class applied when user drag the stencil                   |
-| resizingClass             | `String`            | The class applied when user resize the stencil                 |
+| movingClass               | `String`            | The class applied when the user drags the stencil                   |
+| resizingClass             | `String`            | The class applied when the user resizes the stencil                 |
 | boundingBoxClass          | `String`            | The class for the bounding box component                       |
 | handlerComponent          | `String`,`Object`   | The handler component                                          |
 | handlers                  | `Object`            | The object of handlers that should be visible or hidden.       |
 | handlersClasses           | `Object`            | The object of custom handler classes                           |
 | handlersWrappersClasses   | `Object`            | The object of custom handler wrapper classes                   |
 | lineComponent             | `String`,`Object`   | The handler component                                          |
-| lines                     | `Object`            | The object of lines  that should be visible or hidden.         |
+| lines                     | `Object`            | The object of the lines that should be visible or hidden.         |
 | linesClasses              | `Object`            | The object of custom line classes                              |
 | linesWrappersClasses      | `Object`            | The object of custom line wrapper classes                      |
 
 ## License
 
-The source code of this library is licensed under MIT, the documentation and photos are belong to their respective owners.
+The source code of this library is licensed under the MIT license, and the documentation and photos belong to their respective owners.
