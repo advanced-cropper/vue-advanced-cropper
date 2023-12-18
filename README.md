@@ -39,7 +39,7 @@ The codesandbox for [mobile](https://codesandbox.io/s/vue-advanced-cropper-mobil
 ### Vue 3.0
 
 ```bash
-npm install --save vue-advanced-cropper@next
+npm install --save vue-advanced-cropper@vue-3
 ```
 
 ```bash
