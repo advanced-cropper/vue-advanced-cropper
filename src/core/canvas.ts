@@ -43,8 +43,8 @@ export function updateCanvas(
 		coordinates.top + offsetY,
 		coordinates.width,
 		coordinates.height,
-		offsetX,
-		offsetY,
+		offsetX * (canvas.width / coordinates.width),
+		offsetY * (canvas.height / coordinates.height),
 		canvas.width,
 		canvas.height,
 	);
